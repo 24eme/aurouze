@@ -151,6 +151,18 @@ class PaiementsController extends Controller {
 
             $dm->persist($paiements);
             $dm->flush();
+
+            $facturesIds = array_merge($facturesIds,$paiements->getFacturesArrayIds());
+
+            array_unique($facturesIds);
+
+            foreach ($facturesIds as $factureId) {
+               $facture = $dm->getRepository('AppBundle:Facture')->findOneById($factureId);
+               $facture->updateMontantPaye();
+               $dm->persist($facture);
+               $dm->flush();
+            }
+
             return $this->redirectToRoute('paiements_modification', array('id' => $paiements->getId()));
         }
 
