@@ -5,6 +5,8 @@ namespace AppBundle\Model;
 use AppBundle\Document\Etablissement;
 use AppBundle\Document\Compte;
 use AppBundle\Document\RendezVous;
+use AppBundle\Document\Passage;
+use AppBundle\Document\Devis;
 use AppBundle\Manager\PassageManager;
 use Doctrine\Common\Collections\ArrayCollection;
 
@@ -287,6 +289,29 @@ trait DocumentPlanifiableMethodsTrait
         return $this->commentaireInterne;
     }
 
+    /**
+     * Set dateAcceptation
+     *
+     * @param date $dateAcceptation
+     * @return $this
+     */
+    public function setDateAcceptation($dateAcceptation)
+    {
+        $this->dateAcceptation = $dateAcceptation;
+        return $this;
+    }
+
+    /**
+     * Get dateAcceptation
+     *
+     * @return date $dateAcceptation
+     */
+    public function getDateAcceptation()
+    {
+        return $this->dateAcceptation;
+    }
+
+
 
     /** @MongoDB\PrePersist */
     public function prePersist() {
@@ -361,13 +386,17 @@ trait DocumentPlanifiableMethodsTrait
 
     public function updateStatut() {
         if (!$this->isAnnule()) {
-            if ($this->getDatePrevision() && !boolval($this->getDateFin()) && !boolval($this->getDateDebut()) && !boolval($this->getDateRealise())) {
+            if ($this->getDatePrevision() && !boolval($this->getDateFin()) && !boolval($this->getDateDebut()) && !boolval($this->getDateRealise()) && ($this->getTypePlanifiable() == Passage::DOCUMENT_TYPE)) {
                 $this->setStatut(PassageManager::STATUT_A_PLANIFIER);
                 return;
             }
-            if (boolval($this->getDateDebut()) && !boolval($this->getDateFin()) && !boolval($this->getDateRealise())) {
+            if (boolval($this->getDateDebut()) && !boolval($this->getDateFin()) && !boolval($this->getDateRealise()) && ($this->getTypePlanifiable() == Passage::DOCUMENT_TYPE)) {
                 $this->setStatut(PassageManager::STATUT_A_PLANIFIER);
                 return;
+            }
+            if(boolval($this->getDateDebut()) && !boolval($this->getDateFin()) && !boolval($this->getDateRealise()) && boolval($this->getDateAcceptation()) && ($this->getTypePlanifiable() == Devis::DOCUMENT_TYPE)){
+              $this->setStatut(PassageManager::STATUT_A_PLANIFIER);
+              return;
             }
             if (boolval($this->getDateDebut()) && boolval($this->getDateFin()) && !boolval($this->getDateRealise())) {
                 $this->setStatut(PassageManager::STATUT_PLANIFIE);

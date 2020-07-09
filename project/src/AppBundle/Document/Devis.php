@@ -426,8 +426,6 @@ class Devis implements DocumentSocieteInterface, DocumentPlanifiableInterface, F
     }
 
 
-// A partir de là => a mutualiser avec les passages
-
     public function getDureePrevisionnelle(){
       return '01:00';
     }

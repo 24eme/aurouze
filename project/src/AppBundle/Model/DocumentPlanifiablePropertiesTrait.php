@@ -82,4 +82,11 @@ trait DocumentPlanifiablePropertiesTrait
      * @MongoDB\Field(type="bool")
      */
     protected $pdfNonEnvoye;
+
+    /**
+     * @MongoDB\Field(type="date")
+     */
+    protected $dateAcceptation;
+
+
 }

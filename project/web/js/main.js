@@ -44,6 +44,7 @@
         $.initTransfertContrat();
         $.initPaiementsAutoSave();
         $.initCommentairesPlanif();
+        $.initDevisForm();
     });
 
     $.initClickInputAddon = function(){
@@ -109,6 +110,21 @@
           $("#contrat_acceptation_button_row button#contrat_acceptation_save").attr("disabled","disabled");
       }
 
+    }
+
+    $.initDevisForm = function() {
+      if('#devis_dateAcceptation'){
+        $("button#generer_et_planifier").removeAttr("disabled");
+      }else{
+        $("button#generer_et_planifier").attr("disabled","disabled");
+      }
+        $('#devis_dateAcceptation').on('change', function () {
+            if($(this).val()){
+              $("button#generer_et_planifier").removeAttr("disabled");
+            }else{
+              $("button#generer_et_planifier").attr("disabled","disabled");
+            }
+        });
     }
 
     $.initPopupRelancePdf = function() {
