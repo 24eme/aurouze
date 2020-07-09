@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use AppBundle\Manager\DevisManager;
+use AppBundle\Manager\PassageManager;
 use AppBundle\Document\Devis;
 use AppBundle\Document\Societe;
 use AppBundle\Document\RendezVous;
@@ -31,11 +32,15 @@ class DevisController extends Controller
     {
         $devisManager = $this->get('devis.manager');
 
-        $devisEnAttente = $devisManager->getRepository('AppBundle:Devis')->findBy(
-            ['dateSignature' => null], ['dateEmission' => 'desc']
+        $devisEnAttenteAcceptation = $devisManager->getRepository('AppBundle:Devis')->findBy(
+            ['dateAcceptation' => null], ['dateEmission' => 'desc']
         );
 
-        return $this->render('devis/index.html.twig', compact('devisEnAttente'));
+        $devisAPlanifier = $devisManager->getRepository('AppBundle:Devis')->findBy(
+            ['statut' => PassageManager::STATUT_A_PLANIFIER], ['dateEmission' => 'desc']
+        );
+
+        return $this->render('devis/index.html.twig', array('devisEnAttenteAcceptation' => $devisEnAttenteAcceptation, 'devisAPlanifier' => $devisAPlanifier));
     }
 
     /**
@@ -89,7 +94,9 @@ class DevisController extends Controller
 
             $dm->persist($devis);
             $dm->flush();
-
+            if(!$devis->getStatut()){
+              return $this->redirectToRoute('devis_societe', array('id' => $societe->getId()));
+            }
             return $this->redirectToRoute('calendar', array(
                 'planifiable' => $devis->getId(),
                 'date' => $devis->getDatePrevision()->format('d-m-Y'),
