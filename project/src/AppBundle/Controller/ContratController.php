@@ -147,6 +147,10 @@ class ContratController extends Controller {
                     $facture->setSociete($formValues['societe']);
                 }
 
+                foreach ($contrat->getMouvements() as $mouvement) {
+                    $mouvement->setSociete($formValues['societe']);
+                }
+
                 $dm->flush();
 
                 return $this->redirectToRoute('contrat_visualisation', array('id' => $contrat->getId()));
