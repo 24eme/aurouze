@@ -67,7 +67,8 @@ class FactureRepository extends DocumentRepository {
 
         $q = $this->createQueryBuilder();
 
-        $q->field('dateFacturation')->gte($dateDebut)->lte($dateFin)->sort('dateFacturation', 'asc');
+        $q->field('dateFacturation')->gte($dateDebut)->lte($dateFin)->sort('dateFacturation', 'asc');        
+        $q->addAnd($q->expr()->field('numeroFacture')->notEqual(null));
         $query = $q->getQuery();
 
         return $query->execute();

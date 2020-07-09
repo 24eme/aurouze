@@ -40,7 +40,7 @@ class PaiementsController extends Controller {
      * @ParamConverter("societe", class="AppBundle:Societe")
      */
     public function societeAction(Request $request, Societe $societe) {
-
+        ini_set('memory_limit', '-1');
         $paiementsDocs = $this->get('paiements.manager')->getRepository()->getBySociete($societe);
 
 

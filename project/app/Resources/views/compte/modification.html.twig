@@ -4,7 +4,7 @@
     <ol class="breadcrumb">
         <li><a href="{{ path('societe') }}">Societe</a></li>
         <li><a href="{{ path('societe_visualisation',{ 'id' : societe.id }) }}">&nbsp;{{ societe.raisonSociale }}&nbsp;<small>{{societe.adresse.intitule }}</small></a></li>
-        <li>&nbsp;{{ compte.identite }}</li>
+        <li>&nbsp;{{ compte.identite }} <small>({{ compte.id }})</small></li>
 
     </ol>
     <div class="row">

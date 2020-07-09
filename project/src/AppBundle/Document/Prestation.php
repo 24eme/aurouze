@@ -107,12 +107,12 @@ class Prestation {
           return 'cafard';
       }elseif($this->isPictoForLibelles($nom_libelles, $mot_punaise)){
           return 'punaise';
-      }elseif($this->isPictoForLibelles($nom_libelles, $mot_puce)){
-          return 'puce';
       }elseif($this->isPictoForLibelles($nom_libelles, $mot_moustique)){
           return 'moustique';
       }elseif($this->isPictoForLibelles($nom_libelles, $mot_chenille)){
           return 'chenille';
+      }elseif($this->isPictoForLibelles($nom_libelles, $mot_puce)){
+          return 'puce';
       }elseif($this->isPictoForLibelles($nom_libelles, $mot_pigeon)){
           return 'pigeon';
       }elseif($this->isPictoForLibelles($nom_libelles, $mot_bois)){
@@ -157,14 +157,14 @@ class Prestation {
             }
 
             return 'rongeur '.$type_rongeur;
-        }elseif($this->isPictoForLibelles($nom_libelles, $mot_puce)){
-            return 'puce';
         }elseif($this->isPictoForLibelles($nom_libelles, $mot_moustique)){
             return 'moustique';
         }elseif($this->isPictoForLibelles($nom_libelles, $mot_cafard)){
             return 'cafard';
         }elseif($this->isPictoForLibelles($nom_libelles, $mot_chenille)){
             return 'chenille';
+        }elseif($this->isPictoForLibelles($nom_libelles, $mot_puce)){
+            return 'puce';
         }elseif($this->isPictoForLibelles($nom_libelles, $mot_pigeon)){
             return 'pigeon';
         }elseif($this->isPictoForLibelles($nom_libelles, $mot_bois)){
