@@ -5,6 +5,7 @@ namespace AppBundle\Model;
 use AppBundle\Document\Etablissement;
 use AppBundle\Document\Compte;
 use AppBundle\Document\RendezVous;
+use Symfony\Component\Validator\Constraints as Assert;
 
 trait DocumentPlanifiablePropertiesTrait
 {
@@ -30,6 +31,8 @@ trait DocumentPlanifiablePropertiesTrait
 
     /**
      * @MongoDB\Field(type="date")
+     * @Assert\NotBlank
+     * @Assert\Date
      */
     protected $datePrevision;
 

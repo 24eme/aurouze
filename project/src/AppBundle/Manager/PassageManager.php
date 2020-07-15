@@ -8,9 +8,9 @@ use AppBundle\Document\Contrat;
 use AppBundle\Document\Passage;
 use AppBundle\Manager\ContratManager;
 
-class PassageManager {
-
-
+class PassageManager
+{
+    const STATUT_A_ACCEPTER = "A_ACCEPTER";
     const STATUT_A_PLANIFIER = "A_PLANIFIER";
     const STATUT_PLANIFIE = "PLANIFIE";
     const STATUT_REALISE = "REALISE";
@@ -25,17 +25,28 @@ class PassageManager {
     const TYPE_INFESTATION_PRESENCE = "PRESENCE";
     const TYPE_INFESTATION_ELEVE = "ELEVE";
 
-    public static $statutsLibellesActions = array(self::STATUT_A_PLANIFIER => 'A planifier',
+    public static $statutsLibellesActions = array(
+        self::STATUT_A_ACCEPTER => 'À accepter',
+        self::STATUT_A_PLANIFIER => 'À planifier',
         self::STATUT_PLANIFIE => 'Planifié',
-        self::STATUT_REALISE => 'Réalisé', self::STATUT_ANNULE => 'Annulé');
-    public static $statutsLibelles = array(self::STATUT_A_PLANIFIER => 'À planifier',
+        self::STATUT_REALISE => 'Réalisé',
+        self::STATUT_ANNULE => 'Annulé'
+    );
+
+    public static $statutsLibelles = array(
+        self::STATUT_A_ACCEPTER => 'À accepter',
+        self::STATUT_A_PLANIFIER => 'À planifier',
         self::STATUT_PLANIFIE => 'Planifié',
-        self::STATUT_REALISE => 'Réalisé', self::STATUT_ANNULE => 'Annulé');
+        self::STATUT_REALISE => 'Réalisé',
+        self::STATUT_ANNULE => 'Annulé'
+    );
+
     public static $typesPassageLibelles = array(
         self::TYPE_PASSAGE_CONTRAT => "Sous contrat",
         self::TYPE_PASSAGE_GARANTIE => "Sous garantie",
         self::TYPE_PASSAGE_CONTROLE => "Contrôle",
     );
+
     public static $applications = array(
         'En place',
         'Souillés',

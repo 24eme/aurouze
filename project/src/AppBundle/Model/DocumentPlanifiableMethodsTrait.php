@@ -355,6 +355,10 @@ trait DocumentPlanifiableMethodsTrait
         return $this->statut == PassageManager::STATUT_A_PLANIFIER;
     }
 
+    public function isAAccepter() {
+        return $this->statut == PassageManager::STATUT_A_ACCEPTER;
+    }
+
     public function isAnnule() {
         return $this->statut == PassageManager::STATUT_ANNULE;
     }
@@ -385,26 +389,28 @@ trait DocumentPlanifiableMethodsTrait
     }
 
     public function updateStatut() {
-        if (!$this->isAnnule()) {
-            if ($this->getDatePrevision() && !boolval($this->getDateFin()) && !boolval($this->getDateDebut()) && !boolval($this->getDateRealise()) && ($this->getTypePlanifiable() == Passage::DOCUMENT_TYPE)) {
-                $this->setStatut(PassageManager::STATUT_A_PLANIFIER);
-                return;
-            }
-            if (boolval($this->getDateDebut()) && !boolval($this->getDateFin()) && !boolval($this->getDateRealise()) && ($this->getTypePlanifiable() == Passage::DOCUMENT_TYPE)) {
-                $this->setStatut(PassageManager::STATUT_A_PLANIFIER);
-                return;
-            }
-            if(boolval($this->getDateDebut()) && !boolval($this->getDateFin()) && !boolval($this->getDateRealise()) && boolval($this->getDateAcceptation()) && ($this->getTypePlanifiable() == Devis::DOCUMENT_TYPE)){
-              $this->setStatut(PassageManager::STATUT_A_PLANIFIER);
-              return;
-            }
-            if (boolval($this->getDateDebut()) && boolval($this->getDateFin()) && !boolval($this->getDateRealise())) {
-                $this->setStatut(PassageManager::STATUT_PLANIFIE);
-                return;
-            }
-            if (boolval($this->getDateRealise())) {
-                $this->setStatut(PassageManager::STATUT_REALISE);
-            }
+        if ($this->isAnnule()) {
+            return;
+        }
+
+        if (! $this->getDateAcceptation()) {
+            $this->setStatut(PassageManager::STATUT_A_ACCEPTER);
+            return;
+        }
+
+        if (! $this->getDateFin() || ! $this->getDateDebut()) {
+            $this->setStatut(PassageManager::STATUT_A_PLANIFIER);
+            return;
+        }
+
+        if ($this->getDateDebut() && $this->getDateFin() && ! $this->getDateRealise()) {
+            $this->setStatut(PassageManager::STATUT_PLANIFIE);
+            return;
+        }
+
+        if ($this->getDateRealise()) {
+            $this->setStatut(PassageManager::STATUT_REALISE);
+            return;
         }
     }
 

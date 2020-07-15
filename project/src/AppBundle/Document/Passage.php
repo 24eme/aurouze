@@ -16,6 +16,7 @@ use AppBundle\Document\Prestation;
 use AppBundle\Document\Produit;
 use AppBundle\Document\RendezVous;
 use AppBundle\Document\EtablissementInfos;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @MongoDB\Document(repositoryClass="AppBundle\Repository\PassageRepository") @HasLifecycleCallbacks
