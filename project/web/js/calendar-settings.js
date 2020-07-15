@@ -17,10 +17,10 @@ $(function () {
             revertDuration: 0
         });
         $(this).click(function () {
-            var passage = $(this).data('passage');
+            var planifiable = $(this).data('planifiable');
             $.get(
             $('#calendrier').data('urlRead'), {
-                passage: passage,
+                planifiable: planifiable,
                 service: encodeURI(location.href)
             }, function (response) {
                 $('#modal-calendrier-infos').html(response);

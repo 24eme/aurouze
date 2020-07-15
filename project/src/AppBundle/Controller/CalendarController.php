@@ -309,7 +309,7 @@ class CalendarController extends Controller {
         if($request->get('planifiable') && !$request->get('id')) {
             $planifiable = $request->get('planifiable');
             $planifiable = $this->guessTypePlanifiable($planifiable, $dm);
-            $rdv = $rvm->createFromPassage($planifiable);
+            $rdv = $rvm->createFromPlanifiable($planifiable);
         } elseif($request->get('id')) {
             $rdv = $dm->getRepository('AppBundle:RendezVous')->findOneById($request->get('id'));
         }
