@@ -29,9 +29,9 @@
 {% block body %}
 
     <ol class="breadcrumb">
-        <li><a href="">Devis</a></li>
-        <li><a href=""> {{ devis.societe.raisonSociale }} <small>{{devis.societe.adresse.intitule }}</small></a></li>
-        <li><a href=""> {% if(not devis.id) %}Création d'un devis{% elseif(devis.numeroDevis) %}Modification du devis n°{{ devis.numeroDevis }}{% else %}Création d'un devis{% endif %}</a></li>
+        <li><a href="{{ path('devis') }}">Devis</a></li>
+        <li><a href="{{ path('devis_societe', {id: devis.societe.id}) }}"> {{ devis.societe.raisonSociale }} <small>{{devis.societe.adresse.intitule }}</small></a></li>
+        <li>{% if(not devis.id) %}Création d'un devis{% elseif(devis.numeroDevis) %}Modification du devis n°{{ devis.numeroDevis }}{% else %}Création d'un devis{% endif %}</li>
     </ol>
 
     <div id="formProduitsSuggested" class="form-horizontal" data-produits="{{ produitsSuggestion | json_encode }}">
