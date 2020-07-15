@@ -24,9 +24,13 @@
       </span>
         <h3 class="modal-title col-xs-7">
           {{ rdv.titre }}
-            <br /><small><i class="mdi mdi-today mdi-lg"></i> <a title="Voir sur le calendrier" href='{% if (rdv.participants | length >= 1) %}{{ path('calendar', {'date': rdv.dateDebut | date('Y-m-d'), 'technicien': rdv.participants.first.id, 'id': "0"}) }}{% else %}{{ path('calendarManuel', {'date': rdv.dateDebut | date('Y-m-d')}) }}{% endif %}'>
-                {{ rdv.dateDebut | localizeddate('full', 'none') | capitalize }} de {{ rdv.dateDebut | date('H') }}:{{ rdv.dateDebut | date('i') }} à {{ rdv.dateFin | date('H') }}:{{ rdv.dateFin | date('i') }}</span></a>{% if(rdv.duree) %}
-            <span><i class="mdi mdi-schedule mdi-lg"></i> {{ rdv.duree }}{% endif %}</small>
+            <br />
+            <small><i class="mdi mdi-today mdi-lg"></i> <a title="Voir sur le calendrier" href='{% if (rdv.participants | length >= 1) %}{{ path('calendar', {'date': rdv.dateDebut | date('Y-m-d'), 'technicien': rdv.participants.first.id, 'id': "0"}) }}{% else %}{{ path('calendarManuel', {'date': rdv.dateDebut | date('Y-m-d')}) }}{% endif %}'>
+                {{ rdv.dateDebut | localizeddate('full', 'none') | capitalize }} de {{ rdv.dateDebut | date('H:i') }} à {{ rdv.dateFin | date('H:i') }}</span></a>
+              {% if rdv.dateFin and rdv.dateDebut %}
+                <span><i class="mdi mdi-schedule mdi-lg"></i> {{ rdv.duree }}</span>
+              {% endif %}
+            </small>
         </h3>
     </div>
     <div class="modal-body form-horizontal">
