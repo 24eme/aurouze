@@ -215,7 +215,7 @@ class PassageController extends Controller
 
             if($request->get('action') == "creer_planifier") {
 
-                return $this->redirectToRoute('passage_planifier', array('passage' => $passage->getId()));
+                return $this->redirectToRoute('calendar_planifier', array('planifiable' => $passage->getId()));
             }
 
             return $this->redirectToRoute('contrat_visualisation', array('id' => $contrat->getId()));
@@ -276,22 +276,6 @@ class PassageController extends Controller
 
 
         return $this->render('passage/modification.html.twig', array('passage' => $passage, 'form' => $form->createView()));
-    }
-
-    /**
-     * @Route("/passage/{passage}/planifier", name="passage_planifier")
-     * @ParamConverter("passage", class="AppBundle:Passage")
-     */
-    public function planifierAction(Request $request, Passage $passage) {
-        if(!count($passage->getTechniciens())) {
-
-            return $this->redirectToRoute('calendarManuel', array('passage' => $passage->getId()));
-        }
-        if ($date = $passage->getDateForPlanif()) {
-            return $this->redirectToRoute('calendar', array('planifiable' => $passage->getId(),'id' => $passage->getEtablissement()->getId(), 'date' => $date->format('d-m-Y'), 'technicien' => $passage->getTechniciens()->first()->getId()));
-        } else {
-            return $this->redirectToRoute('calendar', array('planifiable' => $passage->getId(),'id' => $passage->getEtablissement()->getId(), 'technicien' => $passage->getTechniciens()->first()->getId()));
-        }
     }
 
     /**

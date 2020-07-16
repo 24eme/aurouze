@@ -380,6 +380,24 @@ class CalendarController extends Controller {
         return $this->redirect($this->generateUrl('calendarManuel'));
     }
 
+    /**
+     * @Route("/calendar/{planifiable}/planifier", name="calendar_planifier")
+     */
+    public function planifierAction(Request $request, $planifiable) {
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $planifiable = $this->guessTypePlanifiable($planifiable, $dm);
+
+        if(!count($planifiable->getTechniciens())) {
+
+            return $this->redirectToRoute('calendarManuel', array('passage' => $planifiable->getId()));
+        }
+        if ($date = $planifiable->getDateForPlanif()) {
+            return $this->redirectToRoute('calendar', array('planifiable' => $planifiable->getId(),'id' => $planifiable->getEtablissement()->getId(), 'date' => $date->format('d-m-Y'), 'technicien' => $planifiable->getTechniciens()->first()->getId()));
+        } else {
+            return $this->redirectToRoute('calendar', array('planifiable' => $planifiable->getId(),'id' => $planifiable->getEtablissement()->getId(), 'technicien' => $planifiable->getTechniciens()->first()->getId()));
+        }
+    }
+
     public function buildEventObjCalendar($rdv,$technicien){
         $event = $rdv->getEventJson($technicien->getCouleur());
         $em = $this->get('etablissement.Manager');

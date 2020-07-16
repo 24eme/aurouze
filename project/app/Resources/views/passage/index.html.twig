@@ -107,7 +107,7 @@
                                                     <i class="mdi mdi-group mdi-lg"></i>
                                                 </span>
                                             {% endif %}
-                                            <a href="{{ path("passage_planifier", {'passage': passage.id}) }}" class="btn btn-link" >
+                                            <a href="{{ path("calendar_planifier", {'planifiable': passage.id}) }}" class="btn btn-link" >
                                                 <i class="mdi mdi-date-range mdi-lg"></i>
                                                 {{ passage.datePrevision | localizeddate("medium", "none", null, null, "MMM yyyy") | capitalize }}
                                             </a>
