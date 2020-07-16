@@ -5,6 +5,7 @@ namespace AppBundle\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use AppBundle\Document\RendezVous;
 use AppBundle\Document\Compte;
+use AppBundle\Document\EtablissementInfos;
 use AppBundle\Model\DocumentSocieteInterface;
 use AppBundle\Model\DocumentPlanifiableInterface;
 use AppBundle\Model\DocumentPlanifiableTrait;
@@ -90,6 +91,7 @@ class Devis implements DocumentSocieteInterface, DocumentPlanifiableInterface, F
     protected $lignes;
 
     public function __construct() {
+        $this->etablissementInfos = new EtablissementInfos();
         $this->techniciens = new ArrayCollection();
         $this->emetteur = new Soussigne();
         $this->destinataire = new Soussigne();
@@ -445,7 +447,7 @@ class Devis implements DocumentSocieteInterface, DocumentPlanifiableInterface, F
     }
 
     public function getEtablissementInfos() {
-        return $this->getEtablissement();
+        return $this->etablissementInfos;
     }
 
 
@@ -537,5 +539,53 @@ class Devis implements DocumentSocieteInterface, DocumentPlanifiableInterface, F
 
     public function getDatePrecedente() {
         return null;
+    }
+
+    public function getDureePrecedente() {
+        return null;
+    }
+
+    public function getPrestationsNom() {
+        return [];
+    }
+
+    public function getWordingsArrFacturant() {
+        return ['facturant'];
+    }
+
+    public function getEtablissementIdentifiant() {
+        return $this->etablissement->getId();
+    }
+
+    public function getPrestations() {
+        return [];
+    }
+
+    public function getLibelle() {
+        return 'Devis';
+    }
+
+    public function isGarantie() {
+        return false;
+    }
+
+    public function isControle() {
+        return false;
+    }
+
+    public function isMouvementDeclenchable() {
+        return false;
+    }
+
+    public function getNumeroPassage() {
+        return null;
+    }
+
+    public function isAudit() {
+        return false;
+    }
+
+    public function getMultiTechnicien () {
+        return count($this->techniciens);
     }
 }

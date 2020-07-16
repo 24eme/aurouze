@@ -7,6 +7,7 @@ use AppBundle\Document\Compte;
 use AppBundle\Document\RendezVous;
 use AppBundle\Document\Passage;
 use AppBundle\Document\Devis;
+use AppBundle\Document\EtablissementInfos;
 use AppBundle\Manager\PassageManager;
 use Doctrine\Common\Collections\ArrayCollection;
 
@@ -21,6 +22,7 @@ trait DocumentPlanifiableMethodsTrait
     public function setEtablissement(Etablissement $etablissement)
     {
         $this->etablissement = $etablissement;
+        $this->getEtablissementInfos()->pull($this->getEtablissement());
         return $this;
     }
 
@@ -32,6 +34,26 @@ trait DocumentPlanifiableMethodsTrait
     public function getEtablissement()
     {
         return $this->etablissement;
+    }
+
+    /**
+     * Set etablissementInfos
+     *
+     * @param EtablissementInfos $etablissementInfos
+     * @return self
+     */
+    public function setEtablissementInfos(EtablissementInfos $etablissementInfos) {
+        $this->etablissementInfos = $etablissementInfos;
+        return $this;
+    }
+
+    /**
+     * Get etablissementInfos
+     *
+     * @return EtablissementInfos $etablissementInfos
+     */
+    public function getEtablissementInfos() {
+        return $this->etablissementInfos;
     }
 
     /**

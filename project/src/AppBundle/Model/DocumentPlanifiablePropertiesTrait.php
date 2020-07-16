@@ -15,6 +15,11 @@ trait DocumentPlanifiablePropertiesTrait
     protected $etablissement;
 
     /**
+     * @MongoDB\EmbedOne(targetDocument="AppBundle\Document\EtablissementInfos")
+     */
+    protected $etablissementInfos;
+
+    /**
      * @MongoDB\ReferenceMany(targetDocument="Compte", inversedBy="techniciens", simple=true)
      */
     protected $techniciens;

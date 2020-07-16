@@ -64,11 +64,6 @@ class Passage implements DocumentEtablissementInterface, DocumentSocieteInterfac
     protected $etablissementIdentifiant;
 
     /**
-     * @MongoDB\EmbedOne(targetDocument="AppBundle\Document\EtablissementInfos")
-     */
-    protected $etablissementInfos;
-
-    /**
      * @MongoDB\Field(type="string")
      */
     protected $libelle;
@@ -375,26 +370,6 @@ class Passage implements DocumentEtablissementInterface, DocumentSocieteInterfac
      */
     public function getEtablissementIdentifiant() {
         return $this->etablissementIdentifiant;
-    }
-
-    /**
-     * Set etablissementInfos
-     *
-     * @param EtablissementInfos $etablissementInfos
-     * @return self
-     */
-    public function setEtablissementInfos(EtablissementInfos $etablissementInfos) {
-        $this->etablissementInfos = $etablissementInfos;
-        return $this;
-    }
-
-    /**
-     * Get etablissementInfos
-     *
-     * @return EtablissementInfos $etablissementInfos
-     */
-    public function getEtablissementInfos() {
-        return $this->etablissementInfos;
     }
 
     /**
