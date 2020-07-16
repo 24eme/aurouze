@@ -495,4 +495,8 @@ trait DocumentPlanifiableMethodsTrait
 
         return "background: " . $colors['background'] . "; color: " . $colors['text'] . ";";
     }
+
+    public function getType() {
+        return self::DOCUMENT_TYPE;
+    }
  }
