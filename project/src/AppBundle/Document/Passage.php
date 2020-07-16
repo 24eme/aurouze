@@ -416,14 +416,6 @@ class Passage implements DocumentEtablissementInterface, DocumentSocieteInterfac
         return $this->getEtablissement()->getRegion();
     }
 
-    public function getDateForPlanif() {
-    	$today = new \DateTime();
-    	if ($this->datePrevision && $this->datePrevision->format('Ymd') < $today->format('Ymd')) {
-    		return $today;
-    	}
-    	return $this->datePrevision;
-    }
-
     /**
      * Set mouvementDeclenchable
      *
