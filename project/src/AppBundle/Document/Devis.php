@@ -534,4 +534,8 @@ class Devis implements DocumentSocieteInterface, DocumentPlanifiableInterface, F
     {
         return $this->saisieTechnicien;
     }
+
+    public function getDatePrecedente() {
+        return null;
+    }
 }

@@ -6,6 +6,7 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
 use AppBundle\Tool\RechercheTool;
 use AppBundle\Document\societe;
 use MongoDate as MongoDate;
+use AppBundle\Manager\PassageManager;
 
 /**
  * DevisRepository
@@ -33,4 +34,10 @@ class DevisRepository extends DocumentRepository {
     return $query->execute();
   }
 
+  public function findToPlan() {
+    $q = $this->createQueryBuilder();
+    $q->field('statut')->equals(PassageManager::STATUT_A_PLANIFIER);
+
+    return $q->getQuery()->execute();
+  }
 }
