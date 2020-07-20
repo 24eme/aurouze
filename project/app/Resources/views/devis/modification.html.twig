@@ -152,7 +152,7 @@
             </div>
             <div class="col-xs-4 text-center">
               {% if (devis.numeroDevis) %}
-                <a class="btn btn-danger" href="{{ path('devis_suppression',{ 'societe' : devis.societe.id, 'id' : devis.id }) }}" onclick="return confirm('Etes-vous sûr de vouloir supprimer ce devis ?')"><span class="glyphicon glyphicon-remove"></span> Supprimer le devis</a>
+                <a class="btn btn-danger" href="{{ path('devis_annulation',{ 'societe' : devis.societe.id, 'id' : devis.id }) }}" onclick="return confirm('Êtes-vous sûr de vouloir annuler ce devis ?')"><span class="glyphicon glyphicon-remove"></span> Annuler le devis</a>
               {% endif %}
                 <button type="submit" name="previsualiser" value="previsualiser" class="btn btn-default"><span class="glyphicon glyphicon-file"></span> Prévisualiser le devis</button>
             </div>

@@ -109,13 +109,14 @@ class DevisController extends Controller
     }
 
     /**
-     * @Route("/societe/{societe}/devis/{id}/suppression", name="devis_suppression")
+     * @Route("/societe/{societe}/devis/{id}/annulation", name="devis_annulation")
      * @ParamConverter("societe", class="AppBundle:Societe")
      * @ParamConverter("devis", class="AppBundle:Devis")
      */
     public function suppressionAction(Request $request, Societe $societe, Devis $devis) {
+        $devis->setStatut(PassageManager::STATUT_ANNULE);
+
         $dm = $this->get('doctrine_mongodb')->getManager();
-        $dm->remove($devis);
         $dm->flush();
 
         return $this->redirectToRoute('devis_societe', array('id' => $societe->getId()));
