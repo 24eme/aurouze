@@ -25,7 +25,7 @@ class DevisLigneType extends AbstractType {
 	{
 		$builder
 			->add('libelle', TextType::class, array("attr" => array("class" => "typeahead form-control", "placeholder" => "Libellé (Produit ou autre)")))
-		    ->add('quantite', TextType::class, array('attr' => array('placeholder' => "Quantité")))
+		    ->add('quantite', TextType::class, array('attr' => array('placeholder' => "Quantité", 'class' => 'quantite')))
 		    ->add('prixUnitaire', TextType::class, array('attr' => array('placeholder' => "Prix unitaire", "class" => "form-control prix-unitaire")))
 			->add('tauxTaxe', TextType::class, array('attr' => array('placeholder' => "Taux de TVA")));
 	}

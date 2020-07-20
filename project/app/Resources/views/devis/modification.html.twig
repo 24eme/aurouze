@@ -89,7 +89,7 @@
       </div>
 <br/>
 <h4>Liste de produits</h4>
-        <table class="table table-bordered">
+        <table id="devis_produit" class="table table-bordered">
             <thead>
                 <tr>
                     <th class="col-xs-7">Libellé</th>
@@ -106,6 +106,12 @@
                 <th colspan="5" class="text-right"><a href="javascript:void(0);" data-collection-target="#facture_lignes_collection"  class="btn btn-primary dynamic-collection-add"><span class="glyphicon glyphicon-plus-sign"></span></a></th>
             </tfoot>
         </table>
+
+        <div class="clearfix">
+          <p class="pull-right">
+            <strong>Total :</strong> <span id="devis_produit_total"></span> € HT
+          </p>
+        </div>
 
         <hr />
     <div class="row">
