@@ -171,3 +171,12 @@
         {{ form_end(form) }}
     </div>
 {% endblock %}
+
+{% block javascripts %}
+  {% if app.request.attributes.get('_route') == 'devis_creation' %}
+    {% set path = path('devis_societe', {'id': devis.societe.id }) %}
+    <script>
+      history.replaceState({}, "", "{{ path }}");
+    </script>
+  {% endif %}
+{% endblock %}

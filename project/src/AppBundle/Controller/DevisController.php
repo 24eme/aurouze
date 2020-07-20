@@ -82,7 +82,7 @@ class DevisController extends Controller
         $produitsSuggestion = $this->getProduitsSuggestion($cm->getConfiguration()->getProduits());
 
         $form = $this->createForm(new DevisType($dm, $cm, $societe,  $appConf['commercial']), $devis, array(
-            'action' => "",
+            'action' => $this->generateUrl('devis_creation', ['societe' => $societe->getId()]),
             'method' => 'POST',
         ));
 
