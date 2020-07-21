@@ -83,11 +83,6 @@ class Devis implements DocumentSocieteInterface, DocumentPlanifiableInterface, F
     /**
      * @MongoDB\Field(type="string")
      */
-    protected $description;
-
-    /**
-     * @MongoDB\Field(type="string")
-     */
     protected $commentaireTechnicien;
 
     /**
@@ -442,11 +437,6 @@ class Devis implements DocumentSocieteInterface, DocumentPlanifiableInterface, F
     {
     }
 
-    public function setCommentaire($commentaire){
-      return $this->setDescription($commentaire);
-    }
-
-
     public function isTransmis(){
       return boolval($this->signatureBase64) || boolval($this->emailTransmission);
     }
@@ -496,28 +486,6 @@ class Devis implements DocumentSocieteInterface, DocumentPlanifiableInterface, F
 
     public function getTypePlanifiable() {
         return self::DOCUMENT_TYPE;
-    }
-
-    /**
-     * Set description
-     *
-     * @param string $description
-     * @return $this
-     */
-    public function setDescription($description)
-    {
-        $this->description = $description;
-        return $this;
-    }
-
-    /**
-     * Get description
-     *
-     * @return string $description
-     */
-    public function getDescription()
-    {
-        return $this->description;
     }
 
     /**

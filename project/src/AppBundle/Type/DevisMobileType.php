@@ -34,8 +34,7 @@ class DevisMobileType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $devisId = $builder->getData()->getId();
-        $builder->add('description', TextareaType::class, array('label' => 'Constat :', 'required' => false, "attr" => array("class" => " phoenix", "rows" => 10)))
-                ->add('commentaireTechnicien', TextareaType::class, [
+        $builder->add('commentaireTechnicien', TextareaType::class, [
                     'label' => 'Commentaire technicien:',
                     'required' => false,
                     "attr" => array("class" => " phoenix", "rows" => 5)
