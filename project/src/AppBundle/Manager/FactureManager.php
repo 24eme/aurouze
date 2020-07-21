@@ -179,7 +179,6 @@ public static $export_stats_libelle = array(
         $facture->setMontantTaxe($devis->getMontantTaxe());
 
         $facture->setNumeroDevis($devis->getNumeroDevis());
-        $facture->setDescription($devis->getDescription());
         foreach ($devis->getLignes() as $ligne) {
           $facture->addLigne($ligne);
         }
