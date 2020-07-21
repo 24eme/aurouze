@@ -43,7 +43,7 @@
                         </div>
                     </div>
                     <div class="form-group" style="margin-bottom: 0">
-                      <label class="control-label col-xs-2">Com. technicien</label>
+                      <label class="control-label col-xs-2">Com. interne</label>
                           <div class="col-xs-10">
                               <p class="form-control-static">
                                {{ rdv.devis.commentaireInterne }}
@@ -80,12 +80,12 @@
                                     </p>
                                 </div>
                             </div>
-                            {% if(rdv.devis.commentaireInterne) %}
+                            {% if rdv.devis.commentaireTechnicien %}
                             <div class="form-group" style="margin-bottom: 0">
-                                  <label class="control-label col-xs-2">Com. interne</label>
+                                  <label class="control-label col-xs-2">Com. technicien</label>
                                   <div class="col-xs-10">
                                       <p class="form-control-static">
-                                        {{ rdv.devis.commentaireInterne | nl2br }}
+                                        {{ rdv.devis.commentaireTechnicien | nl2br }}
                                       </p>
                                   </div>
                               </div>
