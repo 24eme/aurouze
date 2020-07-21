@@ -58,7 +58,7 @@ class DevisType extends AbstractType
                 'delete_empty' => true,
                 'label' => '',
             ))
-            ->add('description', TextareaType::class, array('label' => 'Informations complémentaires :', 'required' => false, "attr" => array("class" => "form-control", "rows" => 3)))
+            ->add('commentaireInterne', TextareaType::class, array('label' => 'Informations complémentaires', 'required' => false, "attr" => array("class" => "form-control", "rows" => 3)))
             ->add('commercial', DocumentType::class, array_merge(array('required' => false), array(
                 "choices" => $this->getCommerciaux(),
                 'label' => 'Commercial* :',
