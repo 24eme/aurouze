@@ -86,6 +86,11 @@ class Devis implements DocumentSocieteInterface, DocumentPlanifiableInterface, F
     protected $description;
 
     /**
+     * @MongoDB\Field(type="string")
+     */
+    protected $commentaireTechnicien;
+
+    /**
      * @MongoDB\EmbedMany(targetDocument="LigneFacturable")
      */
     protected $lignes;
@@ -535,6 +540,23 @@ class Devis implements DocumentSocieteInterface, DocumentPlanifiableInterface, F
     public function getSaisieTechnicien()
     {
         return $this->saisieTechnicien;
+    }
+
+    /**
+     * Get commentaireTechnicien
+     * @return string $commentaireTechnicien
+     */
+    public function getCommentaireTechnicien() {
+        return $this->commentaireTechnicien;
+    }
+
+    /**
+     * Set commentaireTechnicien
+     *
+     * @param string $commentaire
+     */
+    public function setCommentaireTechnicien($commentaire) {
+        $this->commentaireTechnicien = $commentaire;
     }
 
     public function getDatePrecedente() {

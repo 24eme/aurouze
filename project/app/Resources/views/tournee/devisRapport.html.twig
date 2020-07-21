@@ -32,6 +32,12 @@
   </li>
 </ul>
 
+  <h3 class="ui-bar ui-bar-a ui-corner-all"><strong>Commentaire technicien</strong></h3>
+  <div class="ui-body ui-body">
+    {{ form_errors(form.commentaireTechnicien) }}
+    {{ form_widget(form.commentaireTechnicien) }}
+  </div>
+
   <h3 class="ui-bar ui-bar-a ui-corner-all"><strong>Nom</strong></h3>
     <div class="ui-body ui-body">
       {{ form_errors(form.nomTransmission) }}
