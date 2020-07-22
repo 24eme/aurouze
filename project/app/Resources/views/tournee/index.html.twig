@@ -21,59 +21,64 @@
           </h3>
         </div>
       </div>
-  {% for technicienId,passagesTechnicien in passagesByTechniciens %}
-  <div class="panel panel-default" id="{{ passagesTechnicien.technicien.identifiant }}">
+  {% for technicienId,planifiablesTechnicien in planifiablesByTechniciens %}
+  <div class="panel panel-default">
   	<div class="panel-body">
     	<div class="row">
     		<div class="col-xs-2">
           <br/>
     			<h4>
-            <i class="mdi mdi-face mdi-lg" ></i><br/><strong>{{ passagesTechnicien.technicien.identite }}</strong>
+            <i class="mdi mdi-face mdi-lg" ></i><br/><strong>{{ planifiablesTechnicien.technicien.identite }}</strong>
           </h4>
           <br/><br/>
-          <a href="{{ path('calendar',{ 'technicien': passagesTechnicien.technicien.id, 'date': date | localizeddate('medium', 'none', null, null, 'yyyy-MM-dd') , 'id': '0' }) }}" ><span class="glyphicon glyphicon-calendar"></span>&nbsp;calendrier</a>
+          <a href="{{ path('calendar',{ 'technicien': planifiablesTechnicien.technicien.id, 'date': date | localizeddate('medium', 'none', null, null, 'yyyy-MM-dd') , 'id': '0' }) }}" ><span class="glyphicon glyphicon-calendar"></span>&nbsp;calendrier</a>
         </div>
     		<div class="col-xs-8">
-          {% for passage in passagesTechnicien.passages %}
-            <div class="list-group-item" {% if passage.isValideTechnicien() and passage.isSaisieTechnicien() %} style="background-color:{{ passage.rendezVous.getStatusColor() }}; color:{{ passage.rendezVous.getTextColor() }}" {% endif %}>
+          {% for planifiable in planifiablesTechnicien.planifiables %}
+          <div class="list-group-item" style="{{ planifiable.getColors }}">
               <a data-toggle="modal" data-remote="false"
               data-target="#modal-calendrier-infos"
-              href="{{ path('passage_visualisation', { 'id': passage.id, 'service': app.request.uri }) }}%23{{ passagesTechnicien.technicien.identifiant }}" class="deco-none">
+              href="{{ path(planifiable.typeplanifiable|lower ~ '_visualisation', { 'id': planifiable.id, 'service': app.request.uri }) }}" class="deco-none">
               <div class="row">
-                <div class="col-xs-2">{{passage.dateDebut | date("H") }}h{{passage.dateDebut | date("i") }}</div>
-                <div class="col-xs-7"><strong>{% if passage.etablissement.societe.raisonSociale != passage.etablissementInfos.nom %}{{ passage.etablissement.societe.raisonSociale }}, {% endif %}{{ passage.etablissementInfos.nom }}</strong></div>
-                <div class="col-xs-3"><small>{{ passage.contrat.commercial.identite }}</small></div>
+                <div class="col-xs-2">{{planifiable.dateDebut | date("H") }}h{{planifiable.dateDebut | date("i") }}</div>
+                <div class="col-xs-7"><strong>{% if planifiable.etablissement.societe.raisonSociale != planifiable.etablissementInfos.nom %}{{ planifiable.etablissement.societe.raisonSociale }}, {% endif %}{{ planifiable.etablissementInfos.nom }}</strong></div>
+                <div class="col-xs-3"><small>{% if planifiable.contrat is defined %}{{ planifiable.contrat.commercial.identite }}{% else %}{{ planifiable.commercial.identite }}{% endif %}</small></div>
               </div>
               <div class="row">
                 <div class="col-xs-2"></div>
-                <div class="col-xs-7">{{ passage.etablissementInfos.adresse.adresse }}
-                    {{ passage.etablissementInfos.adresse.codePostal }}
-                    {{ passage.etablissementInfos.adresse.commune }}</div>
+                <div class="col-xs-7">{{ planifiable.etablissementInfos.adresse.adresse }}
+                    {{ planifiable.etablissementInfos.adresse.codePostal }}
+                    {{ planifiable.etablissementInfos.adresse.commune }}</div>
+                    {% if planifiable.getTypePlanifiable() and planifiable.getTypePlanifiable() == constant('AppBundle\\Document\\Devis::DOCUMENT_TYPE') %}
+                      <span style="position:absolute; top: 10px; right:10px; font-size: 14pt" ><i class="mdi mdi-local-shipping"></i></span>
+                    {% endif %}
                 <div class="col-xs-3"></div>
               </div>
               <div class="row">
                 <div class="col-xs-2">
-                  {% if(passage.isGarantie or passage.isControle) %}
-                    <span class="badge badge-warning">{% if(passage.isGarantie) %}ganrantie{% elseif(passage.isControle) %}contrôle{% endif %}</span>
+                  {% if((planifiable.isGarantie is defined and planifiable.isControle is defined) and (planifiable.isGarantie or planifiable.isControle)) %}
+                    <span class="badge badge-warning">{% if(planifiable.isGarantie) %}ganrantie{% elseif(planifiable.isControle) %}contrôle{% endif %}</span>
                   {% endif %}
 
-                  {% if(passage.mouvementDeclenchable and passage.getContrat.getNbFactures > 0) %}
-                    <a href="{{ path('facture_societe', { 'id': passage.societe.id }) }}" class="deco-none"><span class="badge{% if (passage.isMouvementAlreadyFacture) %} badge-success  {% else %} badge-inverse {% endif %}">{% if (passage.isMouvementAlreadyFacture) %}facturé{% else %}facturant{% endif %}</span></a>
+                  {% if(planifiable.mouvementDeclenchable is defined and planifiable.mouvementDeclenchable and planifiable.getContrat.getNbFactures > 0) %}
+                    <a href="{{ path('facture_societe', { 'id': planifiable.societe.id }) }}" class="deco-none"><span class="badge{% if (planifiable.isMouvementAlreadyFacture) %} badge-success  {% else %} badge-inverse {% endif %}">{% if (planifiable.isMouvementAlreadyFacture) %}facturé{% else %}facturant{% endif %}</span></a>
                   {% endif %}
                 </div>
                 <div class="col-xs-7">
-                  {% for prestation in passage.prestations %}
-                  {% if(prestation.wordToPicto) %}
-                  <span class="step size-24" title="{{  prestation.nomToString }}"
-                  data-toggle="tooltip"> <i class="mdi-{{prestation.wordToPicto}}"
-                  style="cursor: pointer;">&nbsp;</i></span>
-                  {% else %}
-                  <span class="label label-xs label-primary">{{ prestation.nomToString }}</span>
+                  {% if planifiable.prestations is defined %}
+                    {% for prestation in planifiable.prestations %}
+                    {% if(prestation.wordToPicto) %}
+                    <span class="step size-24" title="{{  prestation.nomToString }}"
+                    data-toggle="tooltip"> <i class="mdi-{{prestation.wordToPicto}}"
+                    style="cursor: pointer;">&nbsp;</i></span>
+                    {% else %}
+                    <span class="label label-xs label-primary">{{ prestation.nomToString }}</span>
+                    {% endif %}
+                    {% endfor %}
                   {% endif %}
-                  {% endfor %}
                 </div>
                 <div class="col-xs-3">
-                      {% if(passage.duree) %}<span><i class="mdi mdi-schedule mdi-lg"></i>&nbsp;{{passage.duree }}</span>{% endif %}
+                      {% if(planifiable.duree is defined and planifiable.duree) %}<span><i class="mdi mdi-schedule mdi-lg"></i>&nbsp;{{planifiable.duree }}</span>{% endif %}
                 </div>
           </div>
         </a>
@@ -81,7 +86,7 @@
   {% endfor %}
     		</div>
     		<div class="col-xs-2 text-right">
-          <a title="Accéder à la tournée" href="{{ path('tournee_technicien', {'technicien': passagesTechnicien.technicien.id, 'date': date | localizeddate('medium', 'none', null, null, 'yyyy-MM-dd') })}}" class="btn btn-success">Tournée&nbsp;<span class="glyphicon glyphicon-chevron-right"></span></a>
+          <a title="Accéder à la tournée" href="{{ path('tournee_technicien', {'technicien': planifiablesTechnicien.technicien.id, 'date': date | localizeddate('medium', 'none', null, null, 'yyyy-MM-dd') })}}" class="btn btn-success">Tournée&nbsp;<span class="glyphicon glyphicon-chevron-right"></span></a>
     		</div>
     	</div>
     </div>

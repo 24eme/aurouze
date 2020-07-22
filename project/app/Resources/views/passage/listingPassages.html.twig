@@ -78,7 +78,7 @@
 			{% elseif passage.realise %}<a class="btn btn-block btn-xs btn-default"
 				href="{{ path('passage_edition', { id: passage.id })}}">Modifier le
 				rapport</a> {% elseif passage.aPlanifie %}
-				<a class="btn btn-sm btn-block btn-primary" href="{{ path('passage_planifier', {'passage' : passage.id}) }}">Planifier</a>
+				<a class="btn btn-sm btn-block btn-primary" href="{{ path('calendar_planifier', {'planifiable' : passage.id}) }}">Planifier</a>
 			{% endif %}
 		</div>
 	</div>

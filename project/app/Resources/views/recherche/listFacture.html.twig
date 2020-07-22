@@ -15,7 +15,7 @@
         <tr class="">
             <td>{{ ((facture.isDevis) ? facture.dateDevis : facture.dateFacturation) | localizeddate("medium", "none", null, null, "d MMMM yyyy") }}</td>
             <td>
-              <a href="{{ path('facture_pdf', {'id': facture.id })}}"><span class="glyphicon glyphicon-file"></span> {% if facture.isDevis %}Devis n° {{ facture.numeroDevis }}{% elseif(facture.isAvoir) %}Avoir n° {{ facture.numeroFacture }}{% else %}Facture n° {{ facture.numeroFacture }}{% endif %}</a>
+              <a href="{{ path('facturable_pdf', {'document': facture.id })}}"><span class="glyphicon glyphicon-file"></span> {% if facture.isDevis %}Devis n° {{ facture.numeroDevis }}{% elseif(facture.isAvoir) %}Avoir n° {{ facture.numeroFacture }}{% else %}Facture n° {{ facture.numeroFacture }}{% endif %}</a>
               {% if facture.isFacture and facture.hasDevis %}
                 <br/>
                 Devis n°: {{ facture.numeroDevis }}
@@ -23,7 +23,7 @@
             </td>
             <td><a href="{{ path('facture_societe', {'id': facture.societe.id })}}">{{ facture.destinataire.nom }}</a></td>
             <td>
-                <a data-toggle="tooltip" title="{% for ligne in facture.lignes %}{{ (ligne.libelle) ? ligne.libelle~"\n" : "Aucun" }}{% endfor %}" href="{{ path('facture_pdf', {'id': facture.id })}}">{{ facture.lignes | length}} ligne(s)</a>
+                <a data-toggle="tooltip" title="{% for ligne in facture.lignes %}{{ (ligne.libelle) ? ligne.libelle~"\n" : "Aucun" }}{% endfor %}" href="{{ path('facturable_pdf', {'document': facture.id })}}">{{ facture.lignes | length}} ligne(s)</a>
                 {% for origine in facture.origines %}
                     - <a href="{{ path('contrat_visualisation', {'id': origine.id })}}">Contrat n° {{ origine.numeroArchive }}</a>
                 {% endfor %}

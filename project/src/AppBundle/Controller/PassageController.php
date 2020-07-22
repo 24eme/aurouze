@@ -83,6 +83,7 @@ class PassageController extends Controller
             'method' => 'GET',
         ));
         $passageManager = $this->get('passage.manager');
+        $devisManager = $this->get('devis.manager');
 
         $moisCourant = ($request->get('mois', null) == "courant");
         $dateFin = new \DateTime();
@@ -111,6 +112,11 @@ class PassageController extends Controller
         $passages = null;
         $moisPassagesArray = $passageManager->getNbPassagesToPlanPerMonth($secteur, clone $dateFinAll);
         $passages = $passageManager->getRepository()->findToPlan($secteur, $dateDebut, clone $dateFin)->toArray();
+        $devis = $devisManager->getRepository()->findToPlan()->toArray();
+
+        foreach ($devis as $key => $d) {
+            $passages[] = $d;
+        }
 
         usort($passages, array("AppBundle\Document\Passage", "triPerHourPrecedente"));
         $lat = $request->get('lat', 48.8593829);
@@ -124,7 +130,8 @@ class PassageController extends Controller
         $geojson = $this->buildGeoJson($passages);
         $passagesFiltreExportForm = $this->getPassagesFiltreExportForm();
 
-        return $this->render('passage/index.html.twig', array('passages' => $passages,
+        return $this->render('passage/index.html.twig', array(
+            'passages' => $passages,
             'anneeMois' => $anneeMois,
             'dateFinCourant' => $dateFinCourant,
             'dateFin' => $dateFin,
@@ -208,7 +215,7 @@ class PassageController extends Controller
 
             if($request->get('action') == "creer_planifier") {
 
-                return $this->redirectToRoute('passage_planifier', array('passage' => $passage->getId()));
+                return $this->redirectToRoute('calendar_planifier', array('planifiable' => $passage->getId()));
             }
 
             return $this->redirectToRoute('contrat_visualisation', array('id' => $contrat->getId()));
@@ -269,22 +276,6 @@ class PassageController extends Controller
 
 
         return $this->render('passage/modification.html.twig', array('passage' => $passage, 'form' => $form->createView()));
-    }
-
-    /**
-     * @Route("/passage/{passage}/planifier", name="passage_planifier")
-     * @ParamConverter("passage", class="AppBundle:Passage")
-     */
-    public function planifierAction(Request $request, Passage $passage) {
-        if(!count($passage->getTechniciens())) {
-
-            return $this->redirectToRoute('calendarManuel', array('passage' => $passage->getId()));
-        }
-        if ($date = $passage->getDateForPlanif()) {
-            return $this->redirectToRoute('calendar', array('passage' => $passage->getId(),'id' => $passage->getEtablissement()->getId(), 'date' => $date->format('d-m-Y'), 'technicien' => $passage->getTechniciens()->first()->getId()));
-        } else {
-            return $this->redirectToRoute('calendar', array('passage' => $passage->getId(),'id' => $passage->getEtablissement()->getId(), 'technicien' => $passage->getTechniciens()->first()->getId()));
-        }
     }
 
     /**
@@ -390,7 +381,7 @@ class PassageController extends Controller
             return $this->redirectToRoute('calendarRead', array('id' => $passage->getRendezVous()->getId(), 'service' => $request->get('service')));
         }
 
-        return $this->forward('AppBundle:Calendar:calendarRead', array('passage' => $passage->getId(), 'service' => $request->get('service')));
+        return $this->forward('AppBundle:Calendar:calendarRead', array('planifiable' => $passage->getId(), 'service' => $request->get('service')));
     }
 
     /**

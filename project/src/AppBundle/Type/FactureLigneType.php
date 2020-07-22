@@ -33,7 +33,7 @@ class FactureLigneType extends AbstractType {
 	public function setDefaultOptions(OptionsResolverInterface $resolver)
 	{
 		$resolver->setDefaults(array(
-			'data_class' => 'AppBundle\Document\FactureLigne',
+			'data_class' => 'AppBundle\Document\LigneFacturable',
 		));
 	}
 

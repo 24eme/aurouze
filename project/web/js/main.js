@@ -44,6 +44,7 @@
         $.initTransfertContrat();
         $.initPaiementsAutoSave();
         $.initCommentairesPlanif();
+        $.initDevisForm();
     });
 
     $.initClickInputAddon = function(){
@@ -109,6 +110,54 @@
           $("#contrat_acceptation_button_row button#contrat_acceptation_save").attr("disabled","disabled");
       }
 
+    }
+
+    $.initDevisForm = function() {
+      var devis_produit_total = document.getElementById("devis_produit_total")
+      var devis_produit = document.getElementById('devis_produit')
+
+      var updateTotal = function (table) {
+        var trs = table.querySelectorAll('tr')
+        var total = 0
+        devis_produit_total.innerText = 0.0
+
+        trs.forEach(function (tr) {
+          var qte = tr.querySelector('input.quantite')
+
+          if (qte == null) return
+
+          qte = qte.value
+
+          if (tr.querySelector('input.tt-input').value.length == 0 || isNaN(qte)) {
+            qte = 0
+          }
+
+          total += qte * tr.querySelector('.prix-unitaire').value
+        })
+
+        devis_produit_total.innerText = Math.round(total * 100) / 100
+      }
+
+      devis_produit_total.innerText = 0.0
+
+      updateTotal(devis_produit)
+      devis_produit.addEventListener('input', function() {
+        updateTotal(devis_produit)
+      })
+
+      if('#devis_dateAcceptation'){
+        $("button#generer_et_planifier").removeAttr("disabled");
+      }else{
+        $("button#generer_et_planifier").attr("disabled","disabled");
+      }
+
+      $('#devis_dateAcceptation').on('change', function () {
+        if($(this).val()){
+          $("button#generer_et_planifier").removeAttr("disabled");
+        }else{
+          $("button#generer_et_planifier").attr("disabled","disabled");
+        }
+      });
     }
 
     $.initPopupRelancePdf = function() {
@@ -483,10 +532,10 @@
     });
 
     $.initTypeheadFacture = function () {
-        if (!$('#factureLibre').length) {
+        if (!$('#formProduitsSuggested').length) {
             return;
         }
-        var produits = $('#factureLibre').data('produits');
+        var produits = $('#formProduitsSuggested').data('produits');
 
         var produitsSource = new Bloodhound({
             datumTokenizer: Bloodhound.tokenizers.obj.whitespace('libelle'),
@@ -613,11 +662,6 @@
         		document.location.href=(target.replace('_id_', suggestion.id)).replace('_object_', suggestion.object);
         	}
         });
-
-    }
-
-    $.initFactureLibre = function () {
-
 
     }
 

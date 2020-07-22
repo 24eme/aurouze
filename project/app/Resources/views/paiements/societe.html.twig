@@ -39,7 +39,7 @@
             		<td></td>
             		<td>
             			<small>
-            			<a title="Voir la société" href="{{ path('societe_visualisation', {'id': paiement.facture.societe.id })}}">{% if paiement.facture.societe.raisonSociale | length > 40 %}{{ paiement.facture.societe.raisonSociale | slice(0, 40)~"..." }}{%else%}{{ paiement.facture.societe.raisonSociale }}{% endif %}</a> Facture n°<a href="{{ path('facture_pdf', {'id': paiement.facture.id })}}">{{ paiement.facture.numeroFacture }}</a>
+            			<a title="Voir la société" href="{{ path('societe_visualisation', {'id': paiement.facture.societe.id })}}">{% if paiement.facture.societe.raisonSociale | length > 40 %}{{ paiement.facture.societe.raisonSociale | slice(0, 40)~"..." }}{%else%}{{ paiement.facture.societe.raisonSociale }}{% endif %}</a> Facture n°<a href="{{ path('facturable_pdf', {'document': paiement.facture.id })}}">{{ paiement.facture.numeroFacture }}</a>
                     	</small>
                     </td>
             		<td class="text-right">{{ paiement.montant | number_format(2, ',', ' ')}}&nbsp;€</td>

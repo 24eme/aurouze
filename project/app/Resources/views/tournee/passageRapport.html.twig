@@ -1,10 +1,10 @@
-<div class="passage_rapport" data-role="page" id="passage_rapport_{{ passage.id }}" data-id="{{ passage.id }}">
+<div class="rapport" data-role="page" id="rapport_{{ planifiable.id }}" data-id="{{ planifiable.id }}">
   <div data-role="header" style="overflow:hidden;" data-position="fixed">
   <h1>Tournée {{ technicien.identite }}</h1>
-  <a href="#passage_visualisation_{{ passage.id }}" class="ui-btn ui-icon-arrow-l ui-btn-icon-left" >
+  <a href="#visualisation_{{ planifiable.id }}" class="ui-btn ui-icon-arrow-l ui-btn-icon-left" >
         &nbsp;Retour
   </a>
-  <a  class="ui-btn ui-icon-check ui-btn-icon-right passage_rapport"  href="#passage_visualisation_{{ passage.id }}" >
+  <a  class="ui-btn ui-icon-check ui-btn-icon-right rapport"  href="#visualisation_{{ planifiable.id }}" >
       Valider&nbsp;
   </a>
   <div class="reloadWarning ui-bar ui-bar-b" style="display:none;">
@@ -18,18 +18,18 @@
   <div data-role="main" class="ui-content">
   {{ form_start(form, { 'attr': { 'class': 'form-horizontal'} }) }}
         <h2>Rapport de visite</h2>
-        <h3><strong>{% if passage.etablissement.societe.raisonSociale != passage.etablissementInfos.nom %}{{ passage.etablissement.societe.raisonSociale }}, {% endif %}{{ passage.etablissementInfos.nom }}</strong></h3>
-        <h4><strong>{{ passage.etablissementInfos.adresse.adresse }}&nbsp;{{ passage.etablissementInfos.adresse.codePostal }}&nbsp;{{ passage.etablissementInfos.adresse.commune }}
+        <h3><strong>{% if planifiable.etablissement.societe.raisonSociale != planifiable.etablissementInfos.nom %}{{ planifiable.etablissement.societe.raisonSociale }}, {% endif %}{{ planifiable.etablissementInfos.nom }}</strong></h3>
+        <h4><strong>{{ planifiable.etablissementInfos.adresse.adresse }}&nbsp;{{ planifiable.etablissementInfos.adresse.codePostal }}&nbsp;{{ planifiable.etablissementInfos.adresse.commune }}
         </strong>
-        {% if(passage.etablissement.commentaire) %}
-            <br/><br/><span class="ui-btn ui-btn-a ui-icon-info ui-btn-icon-notext ui-btn-inline ui-shadow"></span><span style="text-decoration: underline;">Etablissement : </span><br/>{{ passage.etablissement.commentaire | nl2br}}
+        {% if(planifiable.etablissement.commentaire) %}
+            <br/><br/><span class="ui-btn ui-btn-a ui-icon-info ui-btn-icon-notext ui-btn-inline ui-shadow"></span><span style="text-decoration: underline;">Etablissement : </span><br/>{{ planifiable.etablissement.commentaire | nl2br}}
         {% endif %}
-        {% if(passage.commentaire) %}
-          <br/><br/><span class="ui-btn ui-btn-a ui-icon-info ui-btn-icon-notext ui-btn-inline ui-shadow"></span><span style="text-decoration: underline;">Informations : </span><br/>{{ passage.commentaire | nl2br}}
+        {% if(planifiable.commentaire) %}
+          <br/><br/><span class="ui-btn ui-btn-a ui-icon-info ui-btn-icon-notext ui-btn-inline ui-shadow"></span><span style="text-decoration: underline;">Informations : </span><br/>{{ planifiable.commentaire | nl2br}}
         {% endif %}
         </h4>
         <br/>
-{% set passageId = passage.id %}
+{% set passageId = planifiable.id %}
 <h3 class="ui-bar ui-bar-a ui-corner-all"><strong>Durée intervention</strong></h3>
 <div class="ui-body ui-body">
   {{ form_errors(form.dureeRaw) }}
@@ -44,7 +44,7 @@
 
 <h3 class="ui-bar ui-bar-a ui-corner-all"><strong>Niveau infestation</strong></h3>
 <div class="ui-body ui-body">
-  <ul data-role="listview" id="niveauInfestation-liste-{{ passage.id }}" class="niveauInfestation-list" data-id="{{ passage.id }}"
+  <ul data-role="listview" id="niveauInfestation-liste-{{ planifiable.id }}" class="niveauInfestation-list" data-id="{{ planifiable.id }}"
     data-prototype="{{ form_widget(form.niveauInfestation.vars.prototype) |e }}">
     {% for niveauInfestationField in form.niveauInfestation %}
         <li>
@@ -55,7 +55,7 @@
 </ul>
 <ul data-role="listview">
   <li>
-    <a class="ui-link ui-btn ui-shadow ui-corner-all niveauInfestation-ajout-lien" id="niveauInfestation-ajout-lien-{{ passage.id }}" data-id="{{ passage.id }}" >Ajouter une prestation</a>
+    <a class="ui-link ui-btn ui-shadow ui-corner-all niveauInfestation-ajout-lien" id="niveauInfestation-ajout-lien-{{ planifiable.id }}" data-id="{{ planifiable.id }}" >Ajouter une prestation</a>
   </li>
 </ul>
 </div>
@@ -81,7 +81,7 @@
 
 <h3 class="ui-bar ui-bar-a ui-corner-all"><strong>Produits</strong></h3>
 <div class="ui-body ui-body">
-  <ul data-role="listview" id="produits-liste-{{ passage.id }}" class="produits-list" data-id="{{ passage.id }}"
+  <ul data-role="listview" id="produits-liste-{{ planifiable.id }}" class="produits-list" data-id="{{ planifiable.id }}"
     data-prototype="{{ form_widget(form.produits.vars.prototype) |e }}">
     {% for produitField in form.produits %}
         <li>
@@ -92,7 +92,7 @@
 </ul>
 <ul data-role="listview">
   <li>
-    <a class="ui-link ui-btn ui-shadow ui-corner-all produits-ajout-lien" id="produits-ajout-lien-{{ passage.id }}" data-id="{{ passage.id }}" >Ajouter un produit</a>
+    <a class="ui-link ui-btn ui-shadow ui-corner-all produits-ajout-lien" id="produits-ajout-lien-{{ planifiable.id }}" data-id="{{ planifiable.id }}" >Ajouter un produit</a>
   </li>
 </ul>
 </div>
@@ -117,7 +117,7 @@
 
     <div>{{ form_widget(form.signatureBase64) }}</div>
     <h3 class="ui-bar ui-bar-a ui-corner-all">
-      <a class="ui-btn ui-icon-edit ui-btn-icon-left" data-id="{{ passage.id }}" href="#passage_signature_{{ passage.id }}" >Signer</a>
+      <a class="ui-btn ui-icon-edit ui-btn-icon-left" data-id="{{ planifiable.id }}" href="#signature_{{ planifiable.id }}" >Signer</a>
     </h3>
 </form>
 </div>

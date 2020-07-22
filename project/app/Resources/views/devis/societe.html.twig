@@ -1,0 +1,52 @@
+{% set _menu_active = 'devis' %}
+{% extends 'base.html.twig' %}
+
+{% block title %}Factures {{ societe.raisonSociale }}{% endblock title %}
+
+{% block body %}
+
+    <ol class="breadcrumb">
+        <li><a href="{{ path('devis') }}">Facture</a></li>
+        <li><a href="{{ path('devis_societe',{ 'id' : societe.id }) }}">&nbsp;{{ societe.raisonSociale }}&nbsp;<small>{{societe.adresse.intitule }}</small></a></li>
+    </ol>
+
+    {{ include('societe/choixForm.html.twig', {'urlTarget': path('devis_societe', {'id': '_id_'})}) }}
+
+    <div class="row">
+      <div class="col-sm-6">
+        <h3>Devis</h3>
+      </div>
+      <div class="col-sm-6 pull-right">
+        <div class="btn-toolbar">
+          <div class="btn-group pull-right">
+            <a href="{{ path('devis_creation', { 'societe': societe.id } ) }}" class="btn btn-default btn-sm">
+              <span class="glyphicon glyphicon-plus"></span> Créer un devis
+            </a>
+          </div>
+
+          <div class="btn-group pull-right">
+            <a data-toggle="modal" data-target="#exportSocieteForm" class="btn btn-default btn-sm">
+              <span class="glyphicon glyphicon-usd"></span> Export des devis
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <table class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <th class="col-xs-2">Date</th>
+          <th class="col-xs-2">Document</th>
+          <th class="col-xs-3">Contenu</th>
+          <th class="col-xs-1 text-right">Montant TTC</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for document in devis %}
+          {{ include('devis/ligne.html.twig', {'devis': devis, 'societe' : societe}) }}
+        {% endfor %}
+      </tbody>
+    </table>
+{% endblock %}

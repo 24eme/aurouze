@@ -46,7 +46,7 @@ class PassageCreationType extends AbstractType
 
         $builder->add('techniciens', DocumentType::class, array(
             	'choices' => $this->getTechniciens(),
-                'class' => 'AppBundle\Document\Compte',
+                'class' => Compte::class,
                 'required' => false,
         		'expanded' => false,
         		'multiple' => true,

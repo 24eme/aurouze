@@ -80,6 +80,11 @@ class Compte implements DocumentSocieteInterface, InterlocuteurInterface {
     protected $facturesProduit = array();
 
     /**
+     *  @MongoDB\ReferenceMany(targetDocument="Devis", mappedBy="commercial")
+     */
+    protected $devis = array();
+
+    /**
      * @MongoDB\Field(type="bool")
      */
     protected $actif;
@@ -294,6 +299,7 @@ class Compte implements DocumentSocieteInterface, InterlocuteurInterface {
         $this->contactCoordonnee = new ContactCoordonnee();
         $this->passages = new ArrayCollection();
         $this->facturesProduit = new ArrayCollection();
+        $this->devis = new ArrayCollection();
         $this->prestations = new ArrayCollection();
         $this->setSociete($societe);
 
@@ -615,5 +621,55 @@ class Compte implements DocumentSocieteInterface, InterlocuteurInterface {
     public function getFacturesProduit()
     {
         return $this->facturesProduit;
+    }
+
+    /**
+     * Add devis
+     *
+     * @param AppBundle\Document\Devis $devis
+     */
+    public function addDevis(\AppBundle\Document\Devis $devis)
+    {
+        $this->devis[] = $devis;
+    }
+
+    /**
+     * Remove devis
+     *
+     * @param AppBundle\Document\Devis $devis
+     */
+    public function removeDevis(\AppBundle\Document\Devis $devis)
+    {
+        $this->devis->removeElement($devis);
+    }
+
+    /**
+     * Get devis
+     *
+     * @return \Doctrine\Common\Collections\Collection $devis
+     */
+    public function getDevis()
+    {
+        return $this->devis;
+    }
+
+    /**
+     * Add devi
+     *
+     * @param AppBundle\Document\Devis $devi
+     */
+    public function addDevi(\AppBundle\Document\Devis $devi)
+    {
+        $this->devis[] = $devi;
+    }
+
+    /**
+     * Remove devi
+     *
+     * @param AppBundle\Document\Devis $devi
+     */
+    public function removeDevi(\AppBundle\Document\Devis $devi)
+    {
+        $this->devis->removeElement($devi);
     }
 }

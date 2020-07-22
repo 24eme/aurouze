@@ -93,6 +93,10 @@ services:
         class: AppBundle\Import\FactureCsvImporter
         arguments: [@doctrine_mongodb.odm.default_document_manager, @facture.manager, @societe.manager, @contrat.manager]
 
+    devis.manager:
+        class: AppBundle\Manager\DevisManager
+        arguments: [@doctrine_mongodb.odm.default_document_manager, "%facture%"]
+
     tool.osm:
         class: AppBundle\Tool\OSMAdresses
         arguments: [%osm.url_search%,%osm.return_format%]

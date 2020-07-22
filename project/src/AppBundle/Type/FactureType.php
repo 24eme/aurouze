@@ -20,14 +20,12 @@ class FactureType extends AbstractType
     protected $dm = null;
     protected $cm = null;
     protected $com = null;
-    protected $devis = false;
     protected $contrat = null;
 
-    public function __construct($dm, $cm, $commercial, $devis = false, $contrat = null) {
+    public function __construct($dm, $cm, $commercial, $contrat = null) {
         $this->dm = $dm;
         $this->cm = $cm;
         $this->com = $commercial;
-        $this->devis = $devis;
         if($contrat){
           $this->contrat = $contrat;
         }
@@ -69,19 +67,7 @@ class FactureType extends AbstractType
           $builder->add('contrat', TextType::class, array('disabled' => true, "mapped" => false, "attr" => array('placeholder' => $this->contrat->getIntitule())));
         }
 
-        if($this->devis) {
-            $builder->add('dateDevis', DateType::class, array(
-            'label' => 'Date du devis',
-            "attr" => array(
-                'class' => 'input-inline datepicker',
-                'data-provide' => 'datepicker',
-                'data-date-format' => 'dd/mm/yyyy'
-            ),
-            'widget' => 'single_text',
-            'format' => 'dd/MM/yyyy'
-            ));
-        } else {
-            $builder->add('dateFacturation', DateType::class, array(
+        $builder->add('dateFacturation', DateType::class, array(
             'label' => 'Date de facturation',
             "attr" => array(
                 'class' => 'input-inline datepicker',
@@ -90,8 +76,7 @@ class FactureType extends AbstractType
             ),
             'widget' => 'single_text',
             'format' => 'dd/MM/yyyy'
-            ));
-        }
+        ));
     }
 
     /**

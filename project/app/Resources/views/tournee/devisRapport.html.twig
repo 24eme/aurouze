@@ -1,0 +1,65 @@
+{% set type = planifiable.getTypePlanifiable|lower %}
+<div class="rapport" data-role="page" id="rapport_{{ planifiable.id }}" data-id="{{ planifiable.id }}">
+  <div data-role="header" style="overflow:hidden;" data-position="fixed">
+  <h1>Tournée {{ technicien.identite }}</h1>
+  <a href="#visualisation_{{ planifiable.id }}" class="ui-btn ui-icon-arrow-l ui-btn-icon-left" >
+        &nbsp;Retour
+  </a>
+  <a  class="ui-btn ui-icon-check ui-btn-icon-right rapport"  href="#visualisation_{{ planifiable.id }}" >
+      Valider&nbsp;
+  </a>
+  <div class="reloadWarning ui-bar ui-bar-b" style="display:none;">
+  	<h3>Votre tournée a été modifiée. Il est préférable de la recharger.&nbsp;
+        <a onclick="window.location.reload()" class="ui-btn ui-icon-back ui-btn-icon-left" data-role="button" data-mini="true" >
+          &nbsp;Recharger
+        </a>
+    </h3>
+  </div>
+  </div>
+  <div data-role="main" class="ui-content">
+  {{ form_start(form, { 'attr': { 'class': 'form-horizontal'} }) }}
+        <h2>Livraison</h2>
+        <h3><strong>{% if planifiable.etablissement.societe.raisonSociale != planifiable.etablissementInfos.nom %}{{ planifiable.etablissement.societe.raisonSociale }}, {% endif %}{{ planifiable.etablissementInfos.nom }}</strong></h3>
+        <h4><strong>{{ planifiable.etablissementInfos.adresse.adresse }}&nbsp;{{ planifiable.etablissementInfos.adresse.codePostal }}&nbsp;{{ planifiable.etablissementInfos.adresse.commune }}
+        </strong>
+        </h4>
+        <br/>
+{% set passageId = planifiable.id %}
+
+<ul data-role="listview">
+  <li>
+    <a class="ui-link ui-btn ui-shadow ui-corner-all produits-ajout-lien" id="produits-ajout-lien-{{ planifiable.id }}" data-id="{{ planifiable.id }}" >Ajouter un produit</a>
+  </li>
+</ul>
+
+  <h3 class="ui-bar ui-bar-a ui-corner-all"><strong>Commentaire technicien</strong></h3>
+  <div class="ui-body ui-body">
+    {{ form_errors(form.commentaireTechnicien) }}
+    {{ form_widget(form.commentaireTechnicien) }}
+  </div>
+
+  <h3 class="ui-bar ui-bar-a ui-corner-all"><strong>Nom</strong></h3>
+    <div class="ui-body ui-body">
+      {{ form_errors(form.nomTransmission) }}
+      {{ form_widget(form.nomTransmission) }}
+    </div>
+
+    <h3 class="ui-bar ui-bar-a ui-corner-all"><strong>Email</strong></h3>
+    <div class="ui-body ui-body">
+      {{ form_errors(form.emailTransmission) }}
+      {{ form_widget(form.emailTransmission) }}
+    </div>
+
+    <h3 class="ui-bar ui-bar-a ui-corner-all"><strong>Email supplémentaire</strong></h3>
+    <div class="ui-body ui-body">
+      {{ form_errors(form.secondEmailTransmission) }}
+      {{ form_widget(form.secondEmailTransmission) }}
+    </div>
+
+    <div>{{ form_widget(form.signatureBase64) }}</div>
+    <h3 class="ui-bar ui-bar-a ui-corner-all">
+      <a class="ui-btn ui-icon-edit ui-btn-icon-left" data-id="{{ planifiable.id }}" href="#signature_{{ planifiable.id }}" >Signer</a>
+    </h3>
+</form>
+</div>
+</div>

@@ -12,6 +12,26 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class RendezVous {
 
+    const COLOR_BORDER_BLUE = '#bce8f1';
+    const COLOR_BORDER_YELLOW = '#faebcc';
+    const COLOR_BORDER_GREEN = '#d6e9c6';
+    const COLOR_BORDER_RED = '#ebccd1';
+    const COLOR_BORDER_GREY = '#e1e1e8';
+
+    const COLOR_TEXT_BLUE = '#31708f';
+    const COLOR_TEXT_MAROON = '#8a6d3b';
+    const COLOR_TEXT_BROWN = '#7d5e09';
+    const COLOR_TEXT_GREEN = '#3c763d';
+    const COLOR_TEXT_RED = '#a94442';
+    const COLOR_TEXT_BLACK = '#333';
+
+    const COLOR_STATUS_BLUE = '#d9edf7';
+    const COLOR_STATUS_YELLOW = '#fcf8e3';
+    const COLOR_STATUS_GOLD = '#ffd55f';
+    const COLOR_STATUS_GREEN = '#dff0d8';
+    const COLOR_STATUS_RED = '#f2dede';
+    const COLOR_STATUS_WHITE = '#f7f7f9';
+
     /**
      * @MongoDB\Id(strategy="CUSTOM", type="string", options={"class"="AppBundle\Document\Id\RendezVousGenerator"})
      */
@@ -58,6 +78,10 @@ class RendezVous {
      */
     protected $passage;
 
+    /**
+     * @MongoDB\ReferenceOne(targetDocument="Devis", simple=true)
+     */
+    protected $devis;
 
   /**
    * @MongoDB\Field(type="bool")
@@ -71,100 +95,61 @@ class RendezVous {
     }
 
     public function getEventJson($backgroundColor) {
+        $colors = $this->calculateTilesColors();
+
         $event = new \stdClass();
         $event->id = $this->getId();
         $event->title = $this->getTitre();
         $event->start = $this->getDateDebut()->format('c');
         $event->end = $this->getDateFin()->format('c');
-        $event->textColor = $this->getTextColor();
-        $event->backgroundColor =  $this->getStatusColor();
-        $event->borderColor = $this->getBorderColor();
+        $event->textColor = $colors['text'];
+        $event->backgroundColor = $colors['background'];
+        $event->borderColor = $colors['border'];
         $event->rendezVousConfirme = $this->getRendezVousConfirme();
         return $event;
     }
 
-    public function getBorderColor() {
-        if($this->getPassage() && $this->getPassage()->isPlanifie() && !$this->getPassage()->isImprime()) {
+    public function calculateTilesColors()
+    {
+        $planifiable = $this->getPlanifiable();
+        $colors = [
+            'border' => self::COLOR_BORDER_GREY,
+            'text' => self::COLOR_TEXT_BLACK,
+            'background' => self::COLOR_STATUS_WHITE
+        ];
 
-            return "#bce8f1";
+        if (! $planifiable) { return $colors; }
+
+        if ($planifiable->isAnnule()) {
+            return $colors = [
+                'border' => self::COLOR_BORDER_RED,
+                'text' => self::COLOR_TEXT_RED,
+                'background' => self::COLOR_STATUS_RED
+            ];
         }
 
-        if($this->getPassage() && $this->getPassage()->isPlanifie()) {
-
-            return "#faebcc";
+        if ($planifiable->isPlanifie()) {
+            $colors['border'] = self::COLOR_BORDER_BLUE;
         }
 
-        if($this->getPassage() && $this->getPassage()->isRealise()) {
-
-            return "#d6e9c6";
+        if ($planifiable->isRealise()) {
+            $colors['border'] = self::COLOR_BORDER_GREEN;
         }
 
-        if($this->getPassage() && $this->getPassage()->isAnnule()) {
-
-            return "#ebccd1";
+        if ($planifiable->isSaisieTechnicien()) {
+            if ($planifiable->isPdfNonEnvoye()) {
+                $colors['text'] = self::COLOR_TEXT_BROWN;
+                $colors['background'] = self::COLOR_STATUS_GOLD;
+            } else {
+                $colors['text'] = self::COLOR_TEXT_GREEN;
+                $colors['background'] = self::COLOR_STATUS_GREEN;
+            }
+        } else {
+            $colors['text'] = self::COLOR_TEXT_BLUE;
+            $colors['background'] = self::COLOR_STATUS_BLUE;
         }
 
-        return '#e1e1e8';
-    }
-
-    public function getTextColor() {
-
-       if($this->getPassage() && ($this->getPassage()->isPlanifie() || $this->getPassage()->isRealise()) && !$this->getPassage()->isSaisieTechnicien()) {
-
-            return "#31708f";
-        }
-
-        if($this->getPassage() && $this->getPassage()->isPlanifie() && !$this->getPassage()->isImprime() && !$this->getPassage()->isSaisieTechnicien()) {
-
-          return "#8a6d3b";
-        }
-
-        if($this->getPassage() && ($this->getPassage()->isSaisieTechnicien() && $this->getPassage()->isPdfNonEnvoye())) {
-
-          return "#7D5E09";
-        }
-
-        if($this->getPassage() && ($this->getPassage()->isSaisieTechnicien() && !$this->getPassage()->isPdfNonEnvoye())) {
-
-          return "#3c763d";
-        }
-
-
-        if($this->getPassage() && $this->getPassage()->isAnnule()) {
-
-            return "#a94442";
-        }
-
-        return '#333';
-    }
-
-    public function getStatusColor() {
-
-        if($this->getPassage() && ($this->getPassage()->isPlanifie() || $this->getPassage()->isRealise()) && !$this->getPassage()->isSaisieTechnicien()) {
-
-            return "#d9edf7";
-        }
-
-        if($this->getPassage() && $this->getPassage()->isPlanifie() && !$this->getPassage()->isImprime() && !$this->getPassage()->isSaisieTechnicien()) {
-
-          return "#fcf8e3";
-        }
-
-        if($this->getPassage() && ($this->getPassage()->isSaisieTechnicien() && $this->getPassage()->isPdfNonEnvoye())) {
-          return "#FFD55F";
-        }
-
-        if($this->getPassage() && ($this->getPassage()->isSaisieTechnicien() && !$this->getPassage()->isPdfNonEnvoye())) {
-
-          return "#dff0d8";
-        }
-
-        if($this->getPassage() && $this->getPassage()->isAnnule()) {
-
-            return "#f2dede";
-        }
-
-        return '#f7f7f9';
+        return $colors;
     }
 
     public function getParticipantsIds() {
@@ -179,23 +164,26 @@ class RendezVous {
         return $participants;
     }
 
-    public function pushToPassage() {
-        if(!$this->getPassage()) {
-
+    public function pushToPlanifiable() {
+        if(!$this->getPlanifiable()) {
             return;
         }
 
-        if(count(array_diff($this->getParticipantsIds(), $this->getPassage()->getTechniciensIds())) > 0 || count(array_diff($this->getPassage()->getTechniciensIds(), $this->getParticipantsIds())) > 0) {
-            $this->getPassage()->removeAllTechniciens();
+        if(count(array_diff($this->getParticipantsIds(), $this->getPlanifiable()->getTechniciensIds())) > 0 || count(array_diff($this->getPlanifiable()->getTechniciensIds(), $this->getParticipantsIds())) > 0) {
+            $this->getPlanifiable()->removeAllTechniciens();
 
             foreach($this->getParticipants() as $participant) {
-                $this->getPassage()->addTechnicien($participant);
+                $this->getPlanifiable()->addTechnicien($participant);
             }
         }
 
-        $this->getPassage()->setCommentaire($this->getDescription());
-        $this->getPassage()->setDateDebut($this->getDateDebut());
-        $this->getPassage()->setDateFin($this->getDateFin());
+        //$this->getPlanifiable()->setCommentaire($this->getDescription());
+        $this->getPlanifiable()->setDateDebut($this->getDateDebut());
+        $this->getPlanifiable()->setDateFin($this->getDateFin());
+
+        if ($this->getPlanifiable()->getTypePlanifiable() === Devis::DOCUMENT_TYPE) {
+            $this->getPlanifiable()->setDatePrevision($this->getDateDebut());
+        }
     }
 
     public function setTimeDebut($time) {
@@ -225,16 +213,16 @@ class RendezVous {
 
     /** @MongoDB\PreFlush */
     public function preFlush() {
-        $this->pushToPassage();
+        $this->pushToPlanifiable();
     }
 
     /** @MongoDB\PreRemove */
     public function preRemove()
     {
-        if(!$this->getPassage()) {
+        if(!$this->getPlanifiable()) {
             return;
         }
-        $this->getPassage()->deplanifier();
+        $this->getPlanifiable()->deplanifier();
         $this->removePassage();
     }
 
@@ -433,6 +421,17 @@ class RendezVous {
         return $this;
     }
 
+    public function getPlanifiable()
+    {
+        if($this->getPassage()){
+          return $this->getPassage();
+        }
+        if($this->getDevis()){
+          return $this->getDevis();
+        }
+        return null;
+    }
+
     /**
      * Get passage
      *
@@ -443,4 +442,18 @@ class RendezVous {
         return $this->passage;
     }
 
+    public function setDevis(Devis $devis)
+    {
+        $this->devis = $devis;
+    }
+
+    /**
+     * Get passage
+     *
+     * @return AppBundle\Document\Devis $devis
+     */
+    public function getDevis()
+    {
+        return $this->devis;
+    }
 }

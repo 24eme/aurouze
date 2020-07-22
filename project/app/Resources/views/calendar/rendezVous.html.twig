@@ -17,11 +17,11 @@
                     {% endif %}
                 {% elseif (rdv.passage and rdv.passage.realise) %}
                       {% if (rdv.passage.getPdfNonEnvoye) %}
-                        <button class="btn btn-md btn-block" style="background-color:{{rdv.getStatusColor()}}; color:{{rdv.getTextColor()}};">
+                        <button class="btn btn-md btn-block" style="background-color:{{rdv.calculateTilesColors().background}}; color:{{rdv.calculateTilesColors().text}};">
                           Pdf non envoyé
                         </button>
                       {% else %}
-                        <button class="btn btn-md btn-block" style="background-color:{{rdv.getStatusColor()}}; color:{{rdv.getTextColor()}};;">
+                        <button class="btn btn-md btn-block" style="background-color:{{rdv.calculateTilesColors().background}}; color:{{rdv.calculateTilesColors().text}};">
                           Pdf envoyé
                         </button>
                       {% endif %}

@@ -1,0 +1,157 @@
+<div class="modal-dialog modal-lg">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+
+      <span class="col-xs-3 text-center">
+        {% if rdv.planifiable.annule %}
+          <button class="btn btn-md btn-block btn-danger">{{ rdv.planifiable.getStatutLibelle() }}</button>
+        {% elseif rdv.planifiable.aPlanifie %}
+          <button class="btn btn-md btn-block btn-primary">{{ rdv.planifiable.getStatutLibelle() }}</button>
+        {% elseif rdv.planifiable.planifie %}
+          <button style="margin-bottom: 10px;" class="btn btn-md btn-block btn-warning">Planifié</button>
+        {% elseif rdv.planifiable.realise %}
+          {% if (rdv.planifiable.getPdfNonEnvoye) %}
+            <button class="btn btn-md btn-block" style="background-color:{{rdv.calculateTilesColors().background}}; color:{{rdv.calculateTilesColors().text}};">
+              Facture non Emise
+            </button>
+          {% else %}
+          <button class="btn btn-md btn-block" style="background-color:{{rdv.calculateTilesColors().background}}; color:{{rdv.calculateTilesColors().text}};">
+            Facture éditée
+          </button>
+          {% endif %}
+        {% endif %}
+      </span>
+        <h3 class="modal-title col-xs-7">
+          {{ rdv.titre }}
+            <br />
+            <small><i class="mdi mdi-today mdi-lg"></i> <a title="Voir sur le calendrier" href='{% if (rdv.participants | length >= 1) %}{{ path('calendar', {'date': rdv.dateDebut | date('Y-m-d'), 'technicien': rdv.participants.first.id, 'id': "0"}) }}{% else %}{{ path('calendarManuel', {'date': rdv.dateDebut | date('Y-m-d')}) }}{% endif %}'>
+                {{ rdv.dateDebut | localizeddate('full', 'none') | capitalize }} de {{ rdv.dateDebut | date('H:i') }} à {{ rdv.dateFin | date('H:i') }}</span></a>
+              {% if rdv.dateFin and rdv.dateDebut %}
+                <span><i class="mdi mdi-schedule mdi-lg"></i> {{ rdv.duree }}</span>
+              {% endif %}
+            </small>
+        </h3>
+    </div>
+    <div class="modal-body form-horizontal">
+        <div class="form-group" style="margin-bottom: 0">
+                        <label class="control-label col-xs-2">Devis</label>
+                        <div class="col-xs-10">
+                            <p class="form-control-static">
+                                <a title="Voir le devis" href="{{ path('devis_modification', {'id': rdv.devis.id, 'service': service })}}}">N° {{ rdv.devis.getNumeroDevis() }} du {{ rdv.dateDebut | localizeddate('full', 'none') | capitalize }}</a>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0">
+                      <label class="control-label col-xs-2">Com. interne</label>
+                          <div class="col-xs-10">
+                              <p class="form-control-static">
+                               {{ rdv.devis.commentaireInterne }}
+                              </p>
+                          </div>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0">
+                                              <label class="control-label col-xs-2">Lieu</label>
+                                              <div class="col-xs-10">
+                                                  <p class="form-control-static">
+                                                      <a title="Voir la société" href="{{ path('societe_visualisation', {'id': rdv.devis.etablissement.societe.id })}}">{% if rdv.devis.etablissement.societe.raisonSociale != rdv.devis.etablissementInfos.nom %}{{ rdv.devis.etablissement.societe.raisonSociale }}, {% endif %}{{ rdv.devis.etablissementInfos.nom }},
+                                                          {{ rdv.devis.etablissementInfos.adresse.adresse }}
+                                                          {{ rdv.devis.etablissementInfos.adresse.codePostal }}
+                                                          {{ rdv.devis.etablissementInfos.adresse.commune }}
+                                                        </a></p>
+                                              </div>
+                        </div>
+                        {% if rdv.devis and rdv.devis.realise and form is not defined %}
+                            <div class="form-group" style="margin-bottom: 0">
+                                <label class="control-label col-xs-2">Technicien</label>
+                                <div class="col-xs-10">
+                                    <p class="form-control-static">
+                                        {% for tech in rdv.devis.techniciens %}
+                                            {{ tech.identite }}
+                                        {% endfor %}
+                                    </p>
+                                </div>
+                            </div>
+                            {% if rdv.devis.commentaireTechnicien %}
+                            <div class="form-group" style="margin-bottom: 0">
+                                  <label class="control-label col-xs-2">Com. technicien</label>
+                                  <div class="col-xs-10">
+                                      <p class="form-control-static">
+                                        {{ rdv.devis.commentaireTechnicien | nl2br }}
+                                      </p>
+                                  </div>
+                              </div>
+                            {% endif %}
+                            {% if(rdv.devis.nomTransmission or rdv.devis.emailTransmission or rdv.devis.secondEmailTransmission) %}
+                              <div class="form-group" style="margin-bottom: 0">
+                                  <label class="control-label col-xs-2">Nom / Email</label>
+                                  <div class="col-xs-10">
+                                      <p class="form-control-static">
+                                        {% if(rdv.devis.nomTransmission) %}{{ rdv.devis.nomTransmission }}{% else %}pas de nom{% endif %}&nbsp;/&nbsp;
+                                        {% if(rdv.devis.emailTransmission) %}{{ rdv.devis.emailTransmission }}{% else %}pas d'email{% endif %}&nbsp;/&nbsp;
+                                        {% if(rdv.devis.secondEmailTransmission) %}{{ rdv.devis.secondEmailTransmission }}{% else %}pas de second email{% endif %}
+                                      </p>
+                                  </div>
+                              </div>
+                            {% endif %}
+                            {% if(rdv.devis.signatureBase64) %}
+                              <div class="form-group" style="margin-bottom: 0">
+                                  <label class="control-label col-xs-2">Signature</label>
+                                  <div class="col-xs-4" style="padding: 0 0 0 15px; margin:0;" >
+                                    <div style="height:50px; width:145px;">
+                                        <div class="well" style="padding:0; margin-bottom:0;" >
+                                          <img src="{{ rdv.devis.signatureBase64   }}" height="50px;" width="145px;" >
+                                        </div>
+                                    </div>
+                                  </div>
+                              </div>
+                            {% endif %}
+                        {% endif %}
+      <hr style="margin-top: 0;" />
+      <div class="modal-footer">
+          <div class="row">
+            <div class="col-xs-2 text-left">
+              <button type="button" class="btn btn-block btn-default" data-dismiss="modal">
+                Fermer
+              </button>
+            </div>
+            <div class="col-xs-6 text-center">
+              <div class="btn-group">
+                {% if rdv.id %}
+                  <a class="btn btn-sm btn-default text-danger rdv-deplanifier-link"
+                    onclick="return confirm('Êtes vous sûr de vouloir supprimer ce rendez-vous ?')"
+                    href="{{ path('calendarDelete', {'id': rdv.id, 'service': service }) }}">
+                      <span class="text-danger"><i class="glyphicon glyphicon-trash"></i> Supprimer RDV</span>
+                  </a>
+                {% endif %}
+
+                {% if (rdv.id and rdv.planifiable) %}
+                  <a class="btn btn-sm btn-default" href="{{ path('devis_modification', {'id': rdv.devis.id, 'service': service })}}"></span> Modification du devis</a>
+                {% endif %}
+              </div>
+            </div>
+            <div class="col-xs-4 text-right">
+              {% if (rdv.planifiable and rdv.planifiable.isValideTechnicien and rdv.planifiable.isSaisieTechnicien) %}
+              <div class="btn-group">
+                {% if (rdv.planifiable.isPdfNonEnvoye) %}
+                <a class="btn btn-sm btn-default"
+                   href="{{ path('devis_create-facture', {'id': rdv.devis.id })}}"
+                   title="Création de la facture"
+                   data-toggle="tooltip" >
+                      <span class="glyphicon glyphicon-file"></span>&nbsp;Facturer le devis produit
+                </a>
+                {% else %}
+                <a class="btn btn-sm btn-default"
+                   href="{{ path('facture_societe', {'id': rdv.devis.societe.id })}}"
+                   title="Retour aux facture"
+                   data-toggle="tooltip" >&nbsp;Retour aux factures
+                </a>
+              {% endif %}
+
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+    </div>
+  </div>

@@ -74,7 +74,7 @@
             </div>
             <div class="panel-body  form-horizontal">
             	<div class="row">
-              	<div class="col-xs-5">{{ factures|length }} Facture{% if factures|length > 1 %}s{% endif %}{% if factures|length > 0 %} :{% endif %}</small><ul class="list-unstyled" style="margin-top: 10px; margin-left: 10px;">{% for facture in factures %}<li><a href="{{ path('facture_pdf', {'id': facture.id })}}"><span class="glyphicon glyphicon-file"></span> {% if facture.isDevis %}Devis n° {{ facture.numeroDevis }}{% elseif(facture.isAvoir) %}Avoir n° {{ facture.numeroFacture }}{% else %}Facture n° {{ facture.numeroFacture }}{% endif %}</a></li>{% endfor %}</ul></div>
+              	<div class="col-xs-5">{{ factures|length }} Facture{% if factures|length > 1 %}s{% endif %}{% if factures|length > 0 %} :{% endif %}</small><ul class="list-unstyled" style="margin-top: 10px; margin-left: 10px;">{% for facture in factures %}<li><a href="{{ path('facturable_pdf'', {'document': facture.id })}}"><span class="glyphicon glyphicon-file"></span> {% if facture.isDevis %}Devis n° {{ facture.numeroDevis }}{% elseif(facture.isAvoir) %}Avoir n° {{ facture.numeroFacture }}{% else %}Facture n° {{ facture.numeroFacture }}{% endif %}</a></li>{% endfor %}</ul></div>
               	<div class="col-xs-1"><span class="glyphicon glyphicon-chevron-left"></span><span class="glyphicon glyphicon-chevron-right"></span></div>
             	<div class="col-xs-6">
                         {{ form_row(form.factures) }}

@@ -23,7 +23,7 @@ use Behat\Transliterator\Transliterator;
 use AppBundle\Import\CsvFile;
 use Symfony\Component\Console\Helper\ProgressBar;
 use AppBundle\Document\Facture;
-use AppBundle\Document\FactureLigne;
+use AppBundle\Document\LigneFacturable;
 
 class FactureCsvImporter {
 

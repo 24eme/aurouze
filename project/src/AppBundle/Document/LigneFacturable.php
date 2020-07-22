@@ -6,7 +6,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 /**
  * @MongoDB\EmbeddedDocument
 */
-class FactureLigne {
+class LigneFacturable {
 
     /**
      * @MongoDB\Field(type="string")

@@ -1,6 +1,6 @@
 <div class="well">
   <a class="btn btn-default" href="{{ path("passage_etablissement", {'id': etablissement.id}) }}">Voir l'établissement</a>
-  <a class="btn btn-primary" href="{{ path("passage_planifier", {'passage': passage.id}) }}">Planifier</a>
+  <a class="btn btn-primary" href="{{ path("calendar_planifier", {'planifiable': passage.id}) }}">Planifier</a>
   <h5>
     <i class="mdi mdi-lg mdi-{{ societe.icon }}"></i> Société :
     <a href="{{path("societe_visualisation", {'id': societe.id})}}">

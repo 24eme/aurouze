@@ -6,21 +6,27 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\HasLifecycleCallbacks;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\PreUpdate;
 use Doctrine\Common\Collections\ArrayCollection;
+use AppBundle\Manager\ContratManager;
 use AppBundle\Manager\PassageManager;
-use AppBundle\Document\EtablissementInfos;
 use AppBundle\Model\DocumentEtablissementInterface;
 use AppBundle\Model\DocumentSocieteInterface;
+use AppBundle\Model\DocumentPlanifiableInterface;
+use AppBundle\Model\DocumentPlanifiableTrait;
 use AppBundle\Document\Prestation;
 use AppBundle\Document\Produit;
 use AppBundle\Document\RendezVous;
-use AppBundle\Manager\ContratManager;
+use AppBundle\Document\EtablissementInfos;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @MongoDB\Document(repositoryClass="AppBundle\Repository\PassageRepository") @HasLifecycleCallbacks
  */
-class Passage implements DocumentEtablissementInterface, DocumentSocieteInterface {
+class Passage implements DocumentEtablissementInterface, DocumentSocieteInterface, DocumentPlanifiableInterface
+{
+    use DocumentPlanifiableTrait;
 
     const PREFIX = "PASSAGE";
+    const DOCUMENT_TYPE = 'Passage';
 
     /**
      * @MongoDB\Id(strategy="CUSTOM", type="string", options={"class"="AppBundle\Document\Id\PassageGenerator"})
@@ -50,42 +56,12 @@ class Passage implements DocumentEtablissementInterface, DocumentSocieteInterfac
     /**
      * @MongoDB\Field(type="date")
      */
-    protected $datePrevision;
-
-    /**
-     * @MongoDB\Field(type="date")
-     */
-    protected $dateDebut;
-
-    /**
-     * @MongoDB\Field(type="date")
-     */
-    protected $dateFin;
-
-    /**
-     * @MongoDB\Field(type="date")
-     */
-    protected $dateRealise;
-
-    /**
-     * @MongoDB\Field(type="date")
-     */
     protected $dateModification;
 
     /**
      * @MongoDB\Field(type="string")
      */
     protected $etablissementIdentifiant;
-
-    /**
-     * @MongoDB\ReferenceOne(targetDocument="Etablissement", inversedBy="passages", simple=true)
-     */
-    protected $etablissement;
-
-    /**
-     * @MongoDB\EmbedOne(targetDocument="AppBundle\Document\EtablissementInfos")
-     */
-    protected $etablissementInfos;
 
     /**
      * @MongoDB\Field(type="string")
@@ -96,21 +72,6 @@ class Passage implements DocumentEtablissementInterface, DocumentSocieteInterfac
      * @MongoDB\Field(type="string")
      */
     protected $commentaire;
-
-    /**
-     * @MongoDB\Field(type="string")
-     */
-    protected $description;
-
-    /**
-     * @MongoDB\ReferenceMany(targetDocument="Compte", inversedBy="techniciens", simple=true)
-     */
-    protected $techniciens;
-
-    /**
-     * @MongoDB\Field(type="string")
-     */
-    protected $statut;
 
     /**
      * @MongoDB\ReferenceOne(targetDocument="Contrat", simple=true)
@@ -153,11 +114,6 @@ class Passage implements DocumentEtablissementInterface, DocumentSocieteInterfac
     protected $typePassage;
 
     /**
-    * @MongoDB\ReferenceOne(targetDocument="RendezVous", simple=true)
-     */
-    protected $rendezVous;
-
-    /**
      *  @MongoDB\Field(type="collection")
      */
     protected $nettoyages;
@@ -195,27 +151,12 @@ class Passage implements DocumentEtablissementInterface, DocumentSocieteInterfac
     /**
      * @MongoDB\Field(type="string")
      */
-    protected $emailTransmission;
-
-    /**
-     * @MongoDB\Field(type="string")
-     */
-    protected $secondEmailTransmission;
-
-    /**
-     * @MongoDB\Field(type="string")
-     */
-    protected $nomTransmission;
-
-    /**
-     * @MongoDB\Field(type="string")
-     */
     protected $signatureBase64;
 
     /**
      * @MongoDB\Field(type="string")
      */
-    protected $commentaireInterne;
+    protected $description;
 
     /**
      * @MongoDB\Field(type="string")
@@ -226,16 +167,6 @@ class Passage implements DocumentEtablissementInterface, DocumentSocieteInterfac
      * @MongoDB\Field(type="int")
      */
     protected $multiTechnicien;
-
-    /**
-     * @MongoDB\Field(type="bool")
-     */
-    protected $saisieTechnicien;
-
-    /**
-     * @MongoDB\Field(type="bool")
-     */
-    protected $pdfNonEnvoye;
 
     public function __construct() {
         $this->etablissementInfos = new EtablissementInfos();
@@ -325,28 +256,9 @@ class Passage implements DocumentEtablissementInterface, DocumentSocieteInterfac
         return $techniciens;
     }
 
-    public function getDescriptionTransformed() {
-        return str_replace('\n', "\n", $this->description);
-    }
-
-    public function isRealise() {
-        return $this->statut == PassageManager::STATUT_REALISE;
-    }
-
-    public function isPlanifie() {
-        return $this->statut == PassageManager::STATUT_PLANIFIE;
-    }
-
-    public function isAPlanifie() {
-        return $this->statut == PassageManager::STATUT_A_PLANIFIER;
-    }
-
-    public function isAnnule() {
-        return $this->statut == PassageManager::STATUT_ANNULE;
-    }
-
     /** @MongoDB\PreUpdate */
     public function preUpdate() {
+        $this->setDateModification(new \DateTime());
         $this->updateStatut();
         $this->getLibelle();
         $this->getNumeroOrdre();
@@ -355,41 +267,6 @@ class Passage implements DocumentEtablissementInterface, DocumentSocieteInterfac
         }
     }
 
-    /** @MongoDB\PrePersist */
-    public function prePersist() {
-        $this->updateStatut();
-    }
-
-    public function deplanifier() {
-        $this->setDateDebut($this->getDatePrevision());
-        $this->setDateFin(null);
-        if($this->isRealise()) {
-            $this->setDateRealise(null);
-        }
-        $this->removeRendezVous();
-
-        $this->updateStatut();
-    }
-
-    public function updateStatut() {
-        if (!$this->isAnnule()) {
-            if ($this->getDatePrevision() && !boolval($this->getDateFin()) && !boolval($this->getDateDebut()) && !boolval($this->getDateRealise())) {
-                $this->setStatut(PassageManager::STATUT_A_PLANIFIER);
-                return;
-            }
-            if (boolval($this->getDateDebut()) && !boolval($this->getDateFin()) && !boolval($this->getDateRealise())) {
-                $this->setStatut(PassageManager::STATUT_A_PLANIFIER);
-                return;
-            }
-            if (boolval($this->getDateDebut()) && boolval($this->getDateFin()) && !boolval($this->getDateRealise())) {
-                $this->setStatut(PassageManager::STATUT_PLANIFIE);
-                return;
-            }
-            if (boolval($this->getDateRealise())) {
-                $this->setStatut(PassageManager::STATUT_REALISE);
-            }
-        }
-    }
 
     public function getIntitule() {
 
@@ -402,6 +279,8 @@ class Passage implements DocumentEtablissementInterface, DocumentSocieteInterfac
 		}
         return '01:00';
     }
+
+    public function setDureePrevisionnelle($dureePrevisionnelle){}
 
     public function getPassageIdentifiant() {
         return $this->identifiant;
@@ -472,53 +351,6 @@ class Passage implements DocumentEtablissementInterface, DocumentSocieteInterfac
         return $this->societeIdentifiant;
     }
 
-    /**
-     * Set dateDebut
-     *
-     * @param date $dateDebut
-     * @return self
-     */
-    public function setDateDebut($dateDebut) {
-        $this->setDateModification(new \DateTime());
-        if ($this->dateDebut && $dateDebut != $this->dateDebut) {
-            $this->setImprime(false);
-        }
-        $this->dateDebut = $dateDebut;
-        return $this;
-    }
-
-    /**
-     * Get dateDebut
-     *
-     * @return date $dateDebut
-     */
-    public function getDateDebut() {
-        return $this->dateDebut;
-    }
-
-    /**
-     * Set dateFin
-     *
-     * @param date $dateFin
-     * @return self
-     */
-    public function setDateFin($dateFin) {
-        $this->setDateModification(new \DateTime());
-        if ($this->dateFin && $dateFin != $this->dateFin) {
-            $this->setImprime(false);
-        }
-        $this->dateFin = $dateFin;
-        return $this;
-    }
-
-    /**
-     * Get dateFin
-     *
-     * @return date $dateFin
-     */
-    public function getDateFin() {
-        return $this->dateFin;
-    }
 
     /**
      * Set etablissementIdentifiant
@@ -538,26 +370,6 @@ class Passage implements DocumentEtablissementInterface, DocumentSocieteInterfac
      */
     public function getEtablissementIdentifiant() {
         return $this->etablissementIdentifiant;
-    }
-
-    /**
-     * Set etablissementInfos
-     *
-     * @param EtablissementInfos $etablissementInfos
-     * @return self
-     */
-    public function setEtablissementInfos(EtablissementInfos $etablissementInfos) {
-        $this->etablissementInfos = $etablissementInfos;
-        return $this;
-    }
-
-    /**
-     * Get etablissementInfos
-     *
-     * @return EtablissementInfos $etablissementInfos
-     */
-    public function getEtablissementInfos() {
-        return $this->etablissementInfos;
     }
 
     /**
@@ -602,75 +414,6 @@ class Passage implements DocumentEtablissementInterface, DocumentSocieteInterfac
     public function getRegion() {
 
         return $this->getEtablissement()->getRegion();
-    }
-
-    /**
-     * Set description
-     *
-     * @param string $description
-     * @return self
-     */
-    public function setDescription($description) {
-        $this->description = $description;
-        return $this;
-    }
-
-    /**
-     * Get description
-     *
-     * @return string $description
-     */
-    public function getDescription() {
-        return $this->description;
-    }
-
-    /**
-     * Set statut
-     *
-     * @param string $statut
-     * @return self
-     */
-    public function setStatut($statut) {
-        $this->setDateModification(new \DateTime());
-        $this->statut = $statut;
-        return $this;
-    }
-
-    /**
-     * Get statut
-     *
-     * @return string $statut
-     */
-    public function getStatut() {
-        return $this->statut;
-    }
-
-    /**
-     * Set datePrevision
-     *
-     * @param date $datePrevision
-     * @return self
-     */
-    public function setDatePrevision($datePrevision) {
-        $this->datePrevision = $datePrevision;
-        return $this;
-    }
-
-    /**
-     * Get datePrevision
-     *
-     * @return date $datePrevision
-     */
-    public function getDatePrevision() {
-        return $this->datePrevision;
-    }
-
-    public function getDateForPlanif() {
-    	$today = new \DateTime();
-    	if ($this->datePrevision && $this->datePrevision->format('Ymd') < $today->format('Ymd')) {
-    		return $today;
-    	}
-    	return $this->datePrevision;
     }
 
     /**
@@ -784,47 +527,6 @@ class Passage implements DocumentEtablissementInterface, DocumentSocieteInterfac
     }
 
     /**
-     * Add technicien
-     *
-     * @param AppBundle\Document\Compte $technicien
-     */
-    public function addTechnicien(\AppBundle\Document\Compte $technicien) {
-        $this->setDateModification(new \DateTime());
-        foreach ($this->getTechniciens() as $tech) {
-            if ($tech->getIdentifiant() == $technicien->getIdentifiant()) {
-                return;
-            }
-        }
-        $this->setImprime(false);
-        $this->techniciens[] = $technicien;
-    }
-
-    /**
-     * Get techniciens
-     *
-     * @return \Doctrine\Common\Collections\Collection $techniciens
-     */
-    public function getTechniciens() {
-        return $this->techniciens;
-    }
-
-    /**
-     * Remove technicien
-     *
-     * @param AppBundle\Document\Compte $technicien
-     */
-    public function removeTechnicien(\AppBundle\Document\Compte $technicien) {
-        $this->setDateModification(new \DateTime());
-        $this->techniciens->removeElement($technicien);
-    }
-
-    public function removeAllTechniciens() {
-        $this->setDateModification(new \DateTime());
-        $this->techniciens = new ArrayCollection();
-        $this->setImprime(false);
-    }
-
-    /**
      * Add prestation
      *
      * @param AppBundle\Document\Prestation $prestation
@@ -922,32 +624,8 @@ class Passage implements DocumentEtablissementInterface, DocumentSocieteInterfac
         return $this->produits;
     }
 
-    public function getStatutLibelle() {
-        return PassageManager::$statutsLibelles[$this->getStatut()];
-    }
-
     public function getStatutLibelleActions() {
         return PassageManager::$statutsLibellesActions[$this->getStatut()];
-    }
-
-    /**
-     * Set dateRealise
-     *
-     * @param date $dateRealise
-     * @return self
-     */
-    public function setDateRealise($dateRealise) {
-        $this->dateRealise = $dateRealise;
-        return $this;
-    }
-
-    /**
-     * Get dateRealise
-     *
-     * @return date $dateRealise
-     */
-    public function getDateRealise() {
-        return $this->dateRealise;
     }
 
     /**
@@ -1139,36 +817,6 @@ class Passage implements DocumentEtablissementInterface, DocumentSocieteInterfac
         return $this->imprime;
     }
 
-    /**
-     * Set rendezVous
-     *
-     * @param AppBundle\Document\RendezVous $rendezVous
-     * @return self
-     */
-    public function setRendezVous(\AppBundle\Document\RendezVous $rendezVous)
-    {
-        $this->rendezVous = $rendezVous;
-        return $this;
-    }
-
-    public function removeRendezVous()
-    {
-        $this->rendezVous = null;
-        unset($this->rendezVous);
-
-        return $this;
-    }
-
-    /**
-     * Get rendezVous
-     *
-     * @return AppBundle\Document\RendezVous $rendezVous
-     */
-    public function getRendezVous()
-    {
-        return $this->rendezVous;
-    }
-
    /**
     * Get duree
     *
@@ -1355,72 +1003,6 @@ class Passage implements DocumentEtablissementInterface, DocumentSocieteInterfac
     }
 
     /**
-     * Set emailTransmission
-     *
-     * @param string $emailTransmission
-     * @return self
-     */
-    public function setEmailTransmission($emailTransmission)
-    {
-        $this->emailTransmission = $emailTransmission;
-        return $this;
-    }
-
-    /**
-     * Get emailTransmission
-     *
-     * @return string $emailTransmission
-     */
-    public function getEmailTransmission()
-    {
-        return $this->emailTransmission;
-    }
-
-    /**
-     * Set secondEmailTransmission
-     *
-     * @param string $secondEmailTransmission
-     * @return self
-     */
-    public function setSecondEmailTransmission($secondEmailTransmission)
-    {
-        $this->secondEmailTransmission = $secondEmailTransmission;
-        return $this;
-    }
-
-    /**
-     * Get secondEmailTransmission
-     *
-     * @return string $secondEmailTransmission
-     */
-    public function getSecondEmailTransmission()
-    {
-        return $this->secondEmailTransmission;
-    }
-
-    /**
-     * Set nomTransmission
-     *
-     * @param string $nomTransmission
-     * @return self
-     */
-    public function setNomTransmission($nomTransmission)
-    {
-        $this->nomTransmission = $nomTransmission;
-        return $this;
-    }
-
-    /**
-     * Get nomTransmission
-     *
-     * @return string $nomTransmission
-     */
-    public function getNomTransmission()
-    {
-        return $this->nomTransmission;
-    }
-
-    /**
      * Set signatureBase64
      *
      * @param string $signatureBase64
@@ -1462,10 +1044,6 @@ class Passage implements DocumentEtablissementInterface, DocumentSocieteInterfac
     public function getAudit()
     {
         return $this->audit;
-    }
-
-    public function isTransmis(){
-      return boolval($this->signatureBase64) || boolval($this->emailTransmission);
     }
 
     /**
@@ -1527,84 +1105,29 @@ class Passage implements DocumentEtablissementInterface, DocumentSocieteInterfac
     }
 
     /**
-     * Set saisieTechnicien
+     * Set description
      *
-     * @param boolean $saisieTechnicien
-     * @return self
+     * @param string $description
+     * @return $this
      */
-    public function setSaisieTechnicien($saisieTechnicien)
+    public function setDescription($description)
     {
-        $this->saisieTechnicien = $saisieTechnicien;
+        $this->description = $description;
         return $this;
     }
 
     /**
-     * Get saisieTechnicien
+     * Get description
      *
-     * @return boolean $saisieTechnicien
+     * @return string $description
      */
-    public function getSaisieTechnicien()
+    public function getDescription()
     {
-        return $this->saisieTechnicien;
+        return $this->description;
     }
 
-    public function isSaisieTechnicien(){
-      return $this->saisieTechnicien;
-    }
-
-    public function isValideTechnicien()
-    {
-        return $this->getSignatureBase64() || $this->getNomTransmission() || $this->getEmailTransmission();
-    }
-
-    /**
-     * Set pdfNonEnvoye
-     *
-     * @param boolean $pdfNonEnvoye
-     * @return self
-     */
-    public function setPdfNonEnvoye($pdfNonEnvoye)
-    {
-        $this->pdfNonEnvoye = $pdfNonEnvoye;
-        return $this;
-    }
-
-    /**
-     * Get pdfNonEnvoye
-     *
-     * @return boolean $pdfNonEnvoye
-     */
-    public function getPdfNonEnvoye()
-    {
-        return $this->pdfNonEnvoye;
-    }
-
-    public function isPdfNonEnvoye()
-    {
-        return $this->pdfNonEnvoye;
-    }
-
-
-    /**
-     * Set commentaireInterne
-     *
-     * @param string $commentaireInterne
-     * @return self
-     */
-    public function setCommentaireInterne($commentaireInterne)
-    {
-        $this->commentaireInterne = $commentaireInterne;
-        return $this;
-    }
-
-    /**
-     * Get commentaireInterne
-     *
-     * @return string $commentaireInterne
-     */
-    public function getCommentaireInterne()
-    {
-        return $this->commentaireInterne;
+    public function getDescriptionTransformed() {
+        return str_replace('\n', "\n", $this->description);
     }
 
     public function getMouvementFacture(){
@@ -1624,5 +1147,46 @@ class Passage implements DocumentEtablissementInterface, DocumentSocieteInterfac
 
     public function getWordingsArrFacturant(){
       return ($this->getMouvementDeclenchable())? array("facturant") : array("nonfacturant");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function plannifie(){}
+
+    /**
+     * {@inheritDoc}
+     */
+    public function termine(){}
+
+    /**
+     * {@inheritDoc}
+     */
+    public function annule(){}
+
+      public function getTypePlanifiable() {
+          return self::DOCUMENT_TYPE;
+      }
+
+    /**
+     * Set saisieTechnicien
+     *
+     * @param bool $saisieTechnicien
+     * @return $this
+     */
+    public function setSaisieTechnicien($saisieTechnicien)
+    {
+        $this->saisieTechnicien = $saisieTechnicien;
+        return $this;
+    }
+
+    /**
+     * Get saisieTechnicien
+     *
+     * @return bool $saisieTechnicien
+     */
+    public function getSaisieTechnicien()
+    {
+        return $this->saisieTechnicien;
     }
 }

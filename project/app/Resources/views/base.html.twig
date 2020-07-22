@@ -75,6 +75,8 @@
                         </li>
                         <li class="{%if (_menu_active == 'facture') %}active{% endif %}"><a href="{% if(app.request.get('societe') and _menu_active != 'facture') %}{{ path('facture_societe', { id: app.request.get('societe').id }) }}{% else %}{{ path('facture') }}{% endif %}" >Factures</a>
                         </li>
+                        <li class="{%if (_menu_active == 'devis') %}active{% endif %}"><a href="{% if(app.request.get('societe') and _menu_active != 'devis') %}{{ path('devis_societe', { id: app.request.get('societe').id }) }}{% else %}{{ path('devis') }}{% endif %}" >Devis</a>
+                        </li>
                         <li class="{%if (_menu_active == 'paiements') %}active{% endif %}"><a href="{% if(app.request.get('societe') and _menu_active != 'paiements') %}{{ path('paiements_societe', { id: app.request.get('societe').id }) }}{% else %}{{ path('paiements_liste') }}{% endif %}">Paiements</a></li>
                         <li class="{%if (_menu_active == 'paiementsRetard') %}active{% endif %}"><a href="{% if(app.request.get('societe') and _menu_active != 'paiementsRetard') %}
                       {{ path('factures_retard_societe',{ id : app.request.get('societe').id }) }}
