@@ -1,0 +1,19 @@
+<tr>
+  <td>{{ document.dateEmission | localizeddate('medium', 'none', null, null, 'd MMMM yyyy') }}</td>
+  <td>
+    <span class="glyphicon glyphicon-file"></span>
+    <a href="{{ path('facturable_pdf', {'document': document.id}) }}">
+       Devis n° {{ document.numeroDevis }}
+    </a>
+  </td>
+  <td>
+    <a href="{{ path('facturable_pdf', {'document': document.id}) }}" data-toggle="tooltip"
+      title="{% for ligne in document.lignes %}{{ (ligne.libelle) ?:"Aucun" }}{% endfor %}">
+        {{ document.lignes | length }} ligne(s)
+    </a>
+  </td>
+  <td class="text-right">{{ "%0.2f" | format(document.montantTTC)  }} €</td>
+  <td>
+    <a href="{{ path('devis_modification', {'id': document.id}) }}">Modifier</a>
+  </td>
+</tr>

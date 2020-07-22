@@ -29,23 +29,25 @@
     <span class="ui-li-count">{{ rendezVousByTechnicien | length }}</span>
   </li>
   {% for rendezvous in rendezVousByTechnicien %}
-      {% if rendezvous.passage %}
-        {% set passage = rendezvous.passage %}
+      {% if rendezvous.planifiable %}
+        {% set planifiable = rendezvous.planifiable %}
+        {% set type = planifiable.getTypePlanifiable|lower %}
         <li>
-        <a class="tournee_passage_visualisation anchor-link {% if( passage.isTransmis ) %}transmis{% endif %}" href="#passage_visualisation_{{ passage.id }}"  >
-          <h2>{% if(passage.dateDebut | date('Ymd') < date | date('Ymd')) %}Début le {{passage.dateDebut | localizeddate("medium", "none", null, null, "dd MMMM")}}
-              {% else %}{{passage.dateDebut | date("H") }}h{{passage.dateDebut | date("i") }}
+        <a class="tournee_visualisation anchor-link {% if( planifiable.isTransmis ) %}transmis{% endif %}" href="#visualisation_{{ planifiable.id }}"  >
+          <h2>{% if(planifiable.dateDebut | date('Ymd') < date | date('Ymd')) %}Début le {{planifiable.dateDebut | localizeddate("medium", "none", null, null, "dd MMMM")}}
+              {% else %}{{planifiable.dateDebut | date("H") }}h{{planifiable.dateDebut | date("i") }}
               {% endif %}
-              &nbsp;-&nbsp;{% if passage.etablissement.societe.raisonSociale != passage.etablissementInfos.nom %}{{ passage.etablissement.societe.raisonSociale }}, {% endif %}{{ passage.etablissementInfos.nom }}
+              &nbsp;-&nbsp;{% if planifiable.etablissement.societe.raisonSociale != planifiable.etablissementInfos.nom %}{{ planifiable.etablissement.societe.raisonSociale }}, {% endif %}{{ planifiable.etablissementInfos.nom }}
           </h2>
 
           <p>
-            <strong>{{ passage.etablissementInfos.adresse.adresse }}
-            {{ passage.etablissementInfos.adresse.codePostal }}
-            {{ passage.etablissementInfos.adresse.commune }}</strong>
+            <strong>{{ planifiable.etablissementInfos.adresse.adresse }}
+            {{ planifiable.etablissementInfos.adresse.codePostal }}
+            {{ planifiable.etablissementInfos.adresse.commune }}</strong>
           </p>
             <p>
-            {% for prestation in passage.prestations %}
+            {% if planifiable.prestations is defined %}
+            {% for prestation in planifiable.prestations %}
 
                 {% if(prestation.wordToPicto) %}
                   <span class="step size-18"><i class="mdi-{{prestation.wordToPicto}}" style="cursor: pointer;"></i></span>
@@ -53,6 +55,10 @@
                 &nbsp;<strong>{{ prestation.nom }}</strong>&nbsp;&nbsp;
 
               {% endfor %}
+            {% endif %}
+            {% if planifiable.getTypePlanifiable and planifiable.getTypePlanifiable == constant('AppBundle\\Document\\Devis::DOCUMENT_TYPE') %}
+              <span  class="step size-18" ><i class="mdi mdi-local-shipping" style="cursor: pointer;"></i></span>
+            {% endif %}
             </p>
         </a>
         </li>
@@ -66,6 +72,7 @@
             <div class="col-xs-12">
               {{rendezvous.description | nl2br }}
             </div>
+          </div>
         </li>
       {% endif %}
   {% endfor %}
@@ -73,16 +80,22 @@
 </div>
 </div>
 {% for rendezvous in rendezVousByTechnicien %}
-  {% if rendezvous.passage %}
-    {% set passage = rendezvous.passage %}
-    <div class="passage_visualisation" data-role="page" id="passage_visualisation_{{ passage.id }}">
+  {% if rendezvous.planifiable %}
+    {% set planifiable = rendezvous.planifiable %}
+    {% set type = planifiable.getTypePlanifiable|lower %}
+
+    <div class="visualisation" data-role="page" id="visualisation_{{ planifiable.id }}">
       <div data-role="main" class="ui-content">
-        {{ include('tournee/passageVisualisation.html.twig', { 'passage' : passage, "technicien" : technicien, "historiquePassages" : historiqueAllPassages[passage.id],'telephoneSecretariat' : telephoneSecretariat}) }}
+        {% set historiquePassages = [] %}
+        {% if historiqueAllPassages[planifiable.id] is defined %}
+          {% set historiquePassages = historiqueAllPassages[planifiable.id] %}
+        {% endif %}
+          {{ include('tournee/'~type~'Visualisation.html.twig', { 'planifiable' : planifiable, "technicien" : technicien, "historiquePassages" : historiquePassages,'telephoneSecretariat' : telephoneSecretariat}) }}
       </div>
     </div>
-  {{ include('tournee/passageRapport.html.twig', { 'passage' : passage, "technicien" : technicien, "form" : passagesForms[passage.id]}) }}
-  {{ include('tournee/passageSignature.html.twig', { 'passage' : passage, "technicien" : technicien, "form" : passagesForms[passage.id]}) }}
-  {{ include('tournee/attachementAjout.html.twig', { 'passage' : passage, "technicien" : technicien, "attachementform" : attachementsForms[passage.etablissement.id]}) }}
+  {{ include('tournee/'~type~'Rapport.html.twig', { 'planifiable' : planifiable, "technicien" : technicien, "form" : planifiableForms[planifiable.id]}) }}
+  {{ include('tournee/'~type~'Signature.html.twig', { 'planifiable' : planifiable, "technicien" : technicien, "form" : planifiableForms[planifiable.id]}) }}
+  {{ include('tournee/attachementAjout.html.twig', { 'planifiable' : planifiable, "technicien" : technicien, "attachementform" : attachementsForms[planifiable.etablissement.id]}) }}
   {% endif %}
 
 {% endfor %}

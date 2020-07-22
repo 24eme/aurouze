@@ -1,6 +1,5 @@
 {% set _menu_active = 'facture' %}
 {% extends 'base.html.twig' %}
-
 {% form_theme form _self %}
 
 {% block _facture_lignes_entry_row %}
@@ -32,12 +31,17 @@
     <ol class="breadcrumb">
         <li><a href="{{ path('facture') }}">Facture</a></li>
         <li><a href="{{ path('facture_societe',{ 'id' : societe.id }) }}">&nbsp;{{ societe.raisonSociale }}&nbsp;<small>{{societe.adresse.intitule }}</small></a></li>
-        <li><a href="">{% if(facture.isDevis) %}Création d'un devis{% elseif(facture.numeroFacture) %}Modification de la facture n°{{ facture.numeroFacture }}{% else %}Création d'une facture{% endif %}</a></li>
+        <li><a href="">{% if(facture.numeroFacture) %}Modification de la facture n°{{ facture.numeroFacture }}{% else %}Création d'une facture{% endif %}</a></li>
     </ol>
 
-    <div id="factureLibre" class="form-horizontal" data-produits="{{ produitsSuggestion | json_encode }}">
+    <div id="formProduitsSuggested" class="form-horizontal" data-produits="{{ produitsSuggestion | json_encode }}">
         {{ form_start(form) }}
-        <h3>{% if(not facture.id and facture.isDevis) %}Création d'un devis{% elseif(facture.id and not facture.numeroFacture and facture.isFacture) %}Transformation du devis n°{{ facture.numeroDevis }} en facture{% elseif(facture.numeroFacture) %}Modification de {% if (facture.isAvoir) %}l'avoir{% else %}la facture{% endif %} n°{{ facture.numeroFacture }}{% elseif(facture.isDevis) %}Modification du devis n°{{ facture.numeroDevis }}{% else %}Création d'une facture{% endif %}</h3>
+        <h3>{% if(facture.numeroFacture) %}
+              Modification de {% if (facture.isAvoir) %}l'avoir{% else %}la facture{% endif %} n°{{ facture.numeroFacture }}
+            {% else %}
+              Création d'une facture
+            {% endif %}
+        </h3>
         <hr />
         <div class="row">
             <div class="col-xs-5">
@@ -142,13 +146,13 @@
                 <a class="btn btn-default" href="{{ path('facture_societe',{ 'id' : societe.id }) }}">Retour</a>
             </div>
             <div class="col-xs-4 text-center">
-            	{% if (not facture.numeroFacture and facture.getContrat() and not facture.isDevis() and not facture.isAvoir()) %}
+            	{% if (not facture.numeroFacture and facture.getContrat() and not facture.isAvoir()) %}
             	<a class="btn btn-danger" href="{{ path('facture_suppression',{ 'societe' : societe.id, 'id' : facture.id }) }}" onclick="return confirm('Etes-vous sûr de vouloir supprimer cette facture ?')"><span class="glyphicon glyphicon-remove"></span> Supprimer la facture</a>
             	{% endif %}
-                <button type="submit" name="previsualiser" value="previsualiser" class="btn btn-default"><span class="glyphicon glyphicon-file"></span> Prévisualiser {% if(facture.isDevis) %}le devis{% else %}la facture{% endif %}</button>
+                <button type="submit" name="previsualiser" value="previsualiser" class="btn btn-default"><span class="glyphicon glyphicon-file"></span> Prévisualiser la facture</button>
             </div>
             <div class="col-xs-4 text-right">
-                <button type="submit" class="btn btn-success">{% if(facture.isDevis and not facture.numeroDevis) %}Générer le devis{% elseif(not facture.numeroFacture and facture.getContrat()) %}Modifier la facture prévue{% elseif(facture.numeroFacture) %}Modifier la facture{% elseif(facture.isDevis) %}Modifier le devis{% else %}Générer la facture{% endif %}</button>
+                <button type="submit" class="btn btn-success">{% if not facture.numeroFacture and facture.getContrat() %}Modifier la facture prévue{% elseif(facture.numeroFacture) %}Modifier la facture{% else %}Générer la facture{% endif %}</button>
             </div>
         </div>
         {{ form_end(form) }}

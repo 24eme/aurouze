@@ -32,7 +32,7 @@
                 <tr>
                   <td></td>
                   <td>
-                    <a href="{{ path('facture_pdf', {id: facture.id}) }}">{{ ligne.libelle }}</a>
+                    <a href="{{ path('facturable_pdf', {document: facture.id}) }}">{{ ligne.libelle }}</a>
                   </td>
                   <td>{{ ligne.montantHT + ligne.montantTaxe }} €</td>
                 </tr>

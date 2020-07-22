@@ -23,7 +23,7 @@ class PassageMobileType extends AbstractType
     protected $passageId;
     protected $previousPassage;
 
-    public function __construct(DocumentManager $documentManager,$passageId,$previousPassage) {
+    public function __construct(DocumentManager $documentManager,$passageId, $previousPassage) {
         $this->dm = $documentManager;
         $this->passageId = $passageId;
         $this->previousPassage = $previousPassage;
@@ -140,7 +140,7 @@ class PassageMobileType extends AbstractType
            'data' => $defaultNomResp,
            'attr' => array('class' => " phoenix","placeholder" => 'Nom du signataire')));
 
-        $builder->add('signatureBase64', HiddenType::class, array('required' => false, 'attr' => array('class' => "phoenix", "data-cible" => "passage_mobile_".$passageId."_signatureBase64")));
+        $builder->add('signatureBase64', HiddenType::class, array('required' => false, 'attr' => array('class' => "phoenix", "data-cible" => "mobile_".$passageId."_signatureBase64")));
     }
 
     /**
@@ -158,7 +158,7 @@ class PassageMobileType extends AbstractType
      */
     public function getName()
     {
-        return 'passage_mobile_'.str_replace("-","_",$this->passageId);
+        return 'mobile_'.str_replace("-","_",$this->passageId);
     }
 
     public function getTechniciens() {

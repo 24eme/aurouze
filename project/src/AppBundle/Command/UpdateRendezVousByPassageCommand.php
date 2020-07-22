@@ -42,7 +42,7 @@ class UpdateRendezVousByPassageCommand extends ContainerAwareCommand {
         foreach($passages as $passage) {
             if($passage->getDateDebut() && $passage->getDateFin()){
               if(!$passage->getRendezVous()) {
-                $rdv = $rvm->createFromPassage($passage);
+                $rdv = $rvm->createFromPlanifiable($passage);
                 $this->dm->persist($rdv);
                 $idRdv = $rdv->getId();
                 echo "Création du rendez-vous $idRdv \n";

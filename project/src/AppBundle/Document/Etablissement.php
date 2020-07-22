@@ -366,6 +366,11 @@ class Etablissement implements DocumentSocieteInterface, EtablissementInfosInter
         return $this->getNom($includeRaisonSociale) . ' ' . $this->getAdresse()->getIntitule() . ' (' . $this->identifiant . ')';
     }
 
+    public function __toString() {
+
+        return $this->getIntitule();
+    }
+
     /**
      * Set societe
      *

@@ -1,0 +1,122 @@
+{% set type = planifiable.getTypePlanifiable|lower %}
+<div data-role="header" style="overflow:hidden;" data-position="fixed">
+<h1>Tournée {{ technicien.identite }}</h1>
+<a href="#tournee_accueil" class="ui-btn ui-icon-arrow-l ui-btn-icon-left" >
+      &nbsp;Retour
+</a>
+<a class="ui-btn ui-icon-check ui-btn-icon-right transmission_rapport" data-id="{{ planifiable.id }}" >
+    Envoyer&nbsp;
+</a>
+<div class="reloadWarning ui-bar ui-bar-b" style="display:none;">
+	<h3>Votre tournée a été modifiée. Il est préférable de la recharger.&nbsp;
+      <a onclick="window.location.reload()" class="ui-btn ui-icon-back ui-btn-icon-left" data-role="button" data-mini="true" >
+        &nbsp;Recharger
+      </a>
+  </h3>
+</div>
+</div>
+
+<div class="ui-grid-a">
+    <div class="ui-block-a">
+      <div class="ui-bar ui-bar-a" style="height:60px">
+        <h2>{{ technicien.identite }}</h2><br/>
+        <h3>{{ planifiable.dateDebut | localizeddate("medium", "none", null, null, "d MMMM yyyy") }} {{planifiable.dateDebut | date("H") }}h{{planifiable.dateDebut | date("i") }}</h3>
+      </div>
+    </div>
+    <div class="ui-block-b">
+      <div class="ui-bar ui-bar-a" style="height:60px">
+        <a class="rapport_saisie ui-btn ui-icon-info ui-btn-icon-left" href="#rapport_{{ planifiable.id }}">Livraison</a>
+      </div>
+    </div>
+</div>
+
+<div class="ui-corner-all custom-corners">
+  <div class="ui-bar ui-bar-a">
+    <strong>{% if planifiable.etablissement.societe.raisonSociale != planifiable.etablissementInfos.nom %}{{ planifiable.etablissement.societe.raisonSociale }}, {% endif %}{{ planifiable.etablissementInfos.nom }}</strong><br/>
+    {{ planifiable.etablissementInfos.adresse.adresse }}<br/>
+    {{ planifiable.etablissementInfos.adresse.codePostal }}&nbsp;{{ planifiable.etablissementInfos.adresse.commune }}
+    {% if(planifiable.etablissement.commentaire) %}
+        <br/><br/><span class="ui-btn ui-btn-a ui-icon-info ui-btn-icon-notext ui-btn-inline ui-shadow"></span><span style="text-decoration: underline;">Etablissement : </span><br/>{{ planifiable.etablissement.commentaire | nl2br}}
+    {% endif %}
+    {% if(planifiable.commentaireInterne) %}
+      <br/><br/><span class="ui-btn ui-btn-a ui-icon-info ui-btn-icon-notext ui-btn-inline ui-shadow"></span><span style="text-decoration: underline;">Informations : </span><br/> {{ planifiable.commentaireInterne | nl2br }}
+    {% endif %}
+    {% if planifiable.etablissementInfos.telephoneFixe or planifiable.etablissementInfos.telephonePortable %}
+        <br/>{% if planifiable.etablissementInfos.telephoneFixe %}<i class="mdi mdi-call mdi-lg"></i>&nbsp;<a href="tel:{{ planifiable.etablissementInfos.telephoneFixe }}">{{ planifiable.etablissementInfos.telephoneFixe }}</a>{% endif %}
+        {% if planifiable.etablissementInfos.telephonePortable %}<a href="tel:{{ planifiable.etablissementInfos.telephonePortable }}">{{ planifiable.etablissementInfos.telephonePortable }}</a>{% endif %}
+    {% endif %}
+    <a href="tel:{{telephoneSecretariat}}">Tél Secrétariat</a>
+    <br/>
+    {% if planifiable.techniciensWithout(technicien) | length > 0 %}
+    Autres techniciens : {{ planifiable.techniciensWithout(technicien) | join(', ') }}
+    {% else %}
+    <span style="font-weight: normal">Pas d'autres techniciens</span>
+    {% endif %}
+    <br/><br/>
+    <span><strong>Commercial : {{ planifiable.commercial.identite }}</strong></span>
+  </div>
+  <hr/>
+  <div class="ui-corner-all custom-corners">
+    <div class="ui-bar ui-bar-a">
+      <h3>Produits</h3>
+    </div>
+    <div class="ui-body ui-body-a">
+      <table data-role="table" class="ui-responsive table-stroke">
+        <thead>
+          <tr>
+            <th>Produit</th>
+            <th>Quantité</th>
+            <th>Prix HT</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for produit in planifiable.lignes %}
+          <tr>
+            <td>{{ produit.libelle }}</td>
+            <td>{{ produit.quantite }}</td>
+            <td class="text-right">{{ produit.montantHT }} € HT</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="ui-body ui-body-a">
+    <p>
+      <a class="rapport_saisie ui-link ui-btn ui-shadow ui-corner-all" href="#rapport_{{ planifiable.id }}" >VALIDER LIVRAISON</a>
+    </p>
+  </div>
+</div>
+<hr/>
+<div class="ui-corner-all custom-corners">
+    <div class="ui-bar ui-bar-a">
+        <h3>Photos/Documents</h3>
+    </div>
+  <div class="ui-bar ui-bar-a">
+    <div class="ui-grid-solo">
+      {% for attachement in planifiable.etablissement.attachements %}
+          {% if attachement.visibleTechnicien %}
+              <div class="ui-block-a">
+                  {% if attachement.isImage %}
+                <a href="#popupPhoto-{{ attachement.id }}" data-rel="popup" data-position-to="window" class="ui-btn ui-corner-all ui-shadow" data-transition="fade">
+                  <img src="{{ attachement.getBase64Src() }}" alt="{{ attachement.originalName }}" style="width: 100%; margin-bottom:0"/>
+                </a>
+                <div data-role="popup" id="popupPhoto-{{ attachement.id }}" class="photopopup" data-overlay-theme="a" data-corners="false" data-tolerance="30,15">
+                    <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a><img src="{{ attachement.getBase64Src() }}" alt="{{ attachement.originalName }}">
+                </div>
+                {% else %}
+                <a href="{{ attachement.getBase64Src() }}" class="ui-btn ui-corner-all ui-shadow" >
+                 {{ attachement.originalName }}
+                </a>
+                {% endif %}
+              </div>
+          {% endif %}
+      {% endfor %}
+    </div>
+</div>
+    <div class="ui-bar ui-bar-a">
+      <p>
+        <a class="attachement-mobile-add ui-link ui-btn ui-shadow ui-corner-all" href="#attachement_add_{{ planifiable.id }}" >Ajouter une photo</a>
+      </p>
+    </div>
+</div>

@@ -1,0 +1,138 @@
+{% extends 'base_pdf.html.twig' %}
+
+{% block body %}
+{% for lignes in pages %}
+<div class="row">
+    <div class="col-xs-6">
+        <br />
+        <p>
+            <span class="lead">{{ devis.emetteur.nom }}</span><br />
+            {% if(devis.emetteur) %}
+            {{ devis.emetteur.adresse }}<br />
+            {{ devis.emetteur.codePostal }}, {{ devis.emetteur.commune }}<br />
+            {% endif %}
+            Tél : {{ devis.emetteur.telephone }}<br />
+            {% if(devis.emetteur.email) %}
+            E-mail: {{ devis.emetteur.email }}
+            {% endif %}
+        </p>
+    </div>
+    <div class="col-xs-6">
+        <div class="text-right">
+        <h3>DEVIS {% if(devis.numeroDevis) %}N° {{ devis.numeroDevis }}{% else %}BROUILLON{% endif %}</h3>
+        <span>Du {{ devis.dateEmission|date("d/m/Y") }}</span>
+        <br /><br />
+        </div>
+        <br />
+        <br />
+        <p>
+        	<small>
+            {{ devis.destinataire.nomFormatee | nl2br }}<br />
+            {{ devis.destinataire.adresseFormatee | nl2br }}<br />
+            {{ devis.destinataire.codePostal }} {{ devis.destinataire.commune }}<br />
+            </small>
+        </p>
+    </div>
+</div>
+{% if loop.length > 1 %}
+<p class="text-center"><small>Page {{ loop.index }} / {{ loop.length }}</small></p>
+{% else %}
+    <br />
+    <br />
+{% endif %}
+<table class="table table-bordered table-condensed" style="border-bottom: 0 !important; border-right: 0 !important;  border-left: 0 !important;">
+    <thead>
+        <tr>
+            <th class="col-xs-7">Libellé</th>
+            <th class="text-center col-xs-1">Qté</th>
+            <th class="text-right col-xs-2">Prix unit. HT</th>
+            <th class="text-right col-xs-2">Sous-total HT</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for ligne in lignes %}
+        <tr>
+            <td>
+                {% if(ligne.libelle is defined) %}{{ ligne.libelle|replace({'1/1': ''}) }}<br />{% endif %}
+                {% if ligne.referenceClient is defined and ligne.referenceClient %}<small><small>Votre Réf CDE : {{ ligne.referenceClient }}</small><br /></small>{% endif %}
+                {% if ligne.details is defined %}
+                <small>
+                    <small>
+                    {% for libelle, details in ligne.details %}
+                        {% if details is iterable %}
+                        {{ libelle }} :
+                        <ul class="list-unstyled" style="padding-left: 10px; margin-bottom: 0">
+                        	{% for detailLigne in details %}
+                            <li>- {{ detailLigne }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% else %}
+                            {{ details | nl2br }}
+                        {% endif %}
+                    {% endfor %}
+                    </small>
+                </small>
+                {% endif %}
+            </td>
+            <td class="text-center">{% if ligne.quantite is defined %}{{ ligne.quantite }}{% endif %}</td>
+            <td class="text-right">{% if ligne.prixUnitaire is defined %}{{ ligne.prixUnitaire|number_format(2, ',', ' ')  }} €{% endif %}</td>
+            <td class="text-right">{% if ligne.montantHT is defined %}{{ ligne.montantHT|number_format(2, ',', ' ')  }} €{% endif %}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+    {% if loop.last %}
+    <tfoot class="lead">
+        <tr>
+            <td style="height: 15px; border: 0 !important;"></td>
+            <td colspan="4" style="height: 15px; border-left: 0 !important; border-right: 0 !important;"></td>
+        </tr>
+        <tr>
+            <td rowspan="3" style="border: 0 !important; padding: 0;"></td>
+            <td colspan="2">Total HT</td>
+            <td colspan="2" class="text-right">{{ devis.montantHT|number_format(2, ',', ' ')  }} €</td>
+        </tr>
+        <tr>
+            <td colspan="2">TVA {{ (0.2 * 100)|number_format(2, ',', ' ') }}%</td>
+            <td colspan="2" class="text-right">{{ devis.montantTaxe|number_format(2, ',', ' ') }} €</td>
+        </tr>
+        <tr>
+            <td colspan="2">Total TTC</td>
+            <td colspan="2" class="text-right">{{ devis.montantTTC|number_format(2, ',', ' ')  }} €</td>
+        </tr>
+    </tfoot>
+    {% endif %}
+</table>
+{% if not loop.last %}
+    <div style="page-break-after: always;"></div>
+{% endif %}
+{% endfor %}
+
+<small>
+<p class="text-center" style="line-height: 13px;">
+    <small>
+    {{ parameters.emetteur.infos }}<br />
+    {{ parameters.emetteur.banque }}<br />
+    {{ parameters.emetteur.virement }}<br />
+    {% if parameters.emetteur.numero_agrement is defined %}Agrément du Ministère de l'Agriculture A. I. F. {{ parameters.emetteur.numero_agrement }}<br />{% endif %}
+    </small>
+</p>
+</small>
+<div style="border-top: 1px dashed #ccc; margin-top: 15px;">
+    <div class="row">
+        <div class="col-xs-12 text-center">
+            <small>Coupon à joindre avec votre règlement</small>
+        </div>
+        <div class="col-xs-6">
+            <p>
+            <span class="lead" style="font-size: 15px;">Devis n° {{ devis.numeroDevis }} du {{ devis.dateEmission|date("d/m/Y") }}</span><br />
+            <small>Client : {{ devis.destinataire.raisonSociale }} ({{ devis.destinataire.codeComptable }})</small>
+            </p>
+        </div>
+        <div class="col-xs-6 text-right">
+            <p>
+            <span class="lead" style="font-size: 15px;">Montant : {{ devis.montantTTC|number_format(2, ',', ' ')  }} €</span><br />
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

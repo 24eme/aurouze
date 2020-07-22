@@ -8,7 +8,7 @@ use AppBundle\Document\Adresse;
 /**
  * @MongoDB\EmbeddedDocument
 */
-class FactureSoussigne  {
+class Soussigne  {
 
     /**
      * @MongoDB\Field(type="string")

@@ -85,8 +85,8 @@
       </table>
 {% endif %}
     <h3>Liste des Factures <strong>non cloturées</strong>
-                      <div class="btn-group pull-right"><a href="{{ path('facture_creation', { 'societe': societe.id, 'type': 'devis' })}}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-plus"></span> Créer un devis</a>
-                        <a href="{{ path('facture_creation', { 'societe': societe.id, 'type': 'facture' } ) }}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-plus"></span> Créer une facture</a></div>
+                      <div class="btn-group pull-right">
+                        <a href="{{ path('facture_creation', { 'societe': societe.id } ) }}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-plus"></span> Créer une facture</a></div>
                         <div class="btn-group pull-right">
                           <a data-toggle="modal" data-target="#exportSocieteForm" class="btn btn-default btn-sm">
                             <span class="glyphicon glyphicon-usd"></span> Export des factures

@@ -8,8 +8,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Manager\FactureManager;
+use AppBundle\Model\FacturableControllerTrait;
 use AppBundle\Document\Facture;
-use AppBundle\Document\FactureLigne;
+use AppBundle\Document\LigneFacturable;
 use AppBundle\Type\FactureType;
 use AppBundle\Document\Contrat;
 use AppBundle\Document\Societe;
@@ -27,7 +28,9 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
  *
  * @Route("/facture")
  */
-class FactureController extends Controller {
+class FactureController extends Controller
+{
+    use FacturableControllerTrait;
 
     /**
      * @Route("/", name="facture")
@@ -42,10 +45,10 @@ class FactureController extends Controller {
     }
 
     /**
-     * @Route("/societe/{societe}/creation/{type}/{contratId}", name="facture_creation", defaults={"contratId" = "0"})
+     * @Route("/societe/{societe}/creation-facture/{contratId}", name="facture_creation", defaults={"contratId" = "0"})
      * @ParamConverter("societe", class="AppBundle:Societe")
      */
-    public function creationAction(Request $request, Societe $societe, $type, $contratId) {
+    public function creationAction(Request $request, Societe $societe, $contratId) {
         $dm = $this->get('doctrine_mongodb')->getManager();
         $cm = $this->get('configuration.manager');
         $contratManager = $this->get('contrat.manager');
@@ -67,7 +70,7 @@ class FactureController extends Controller {
 
         if (!isset($facture)) {
             $facture = $fm->createVierge($societe);
-            $factureLigne = new FactureLigne();
+            $factureLigne = new LigneFacturable();
             $factureLigne->setTauxTaxe(0.2);
             $factureLigne->setQuantite(1);
             if ($contrat) {
@@ -90,10 +93,8 @@ class FactureController extends Controller {
             }
             $facture->setCommercial($commercial);
         }
-        if ($type == "devis" && !$facture->getDateDevis()) {
-            $facture->setDateDevis(new \DateTime());
 
-        } elseif ($type == "facture" && !$facture->getDateFacturation()) {
+        if (! $facture->getDateFacturation()) {
             $facture->setDateFacturation(new \DateTime());
         }
 
@@ -102,7 +103,7 @@ class FactureController extends Controller {
             $produitsSuggestion[] = array("libelle" => $produit->getNom(), "conditionnement" => $produit->getConditionnement(), "identifiant" => $produit->getIdentifiant(), "prix" => $produit->getPrixVente());
         }
 
-        $form = $this->createForm(new FactureType($dm, $cm, $appConf['commercial'], $facture->isDevis(), $contrat), $facture, array(
+        $form = $this->createForm(new FactureType($dm, $cm, $appConf['commercial'], $contrat), $facture, array(
             'action' => "",
             'method' => 'POST',
         ));
@@ -145,7 +146,7 @@ class FactureController extends Controller {
      */
     public function suppressionAction(Request $request, Societe $societe, Facture $facture) {
         $dm = $this->get('doctrine_mongodb')->getManager();
-        if (!$facture->getNumeroFacture() && $facture->getContrat() && !$facture->isDevis() && !$facture->isAvoir()) {
+        if (!$facture->getNumeroFacture() && $facture->getContrat() && !$facture->isAvoir()) {
             $dm->remove($facture);
             $dm->flush();
         }
@@ -283,7 +284,6 @@ class FactureController extends Controller {
         return $this->redirectToRoute('facture_societe', array('id' => $societe->getId()));
     }
 
-
     /**
      * @Route("/facturer/{id}/{identifiant}", name="facture_defacturer")
      * @ParamConverter("contrat", class="AppBundle:Contrat")
@@ -293,117 +293,6 @@ class FactureController extends Controller {
     	$contrat->resetFacturableMouvement($identifiant);
         $dm->flush();
         return $this->redirectToRoute('facture_societe', array('id' => $contrat->getSociete()->getId()));
-    }
-
-    /**
-     * @Route("/pdf/{id}", name="facture_pdf")
-     * @ParamConverter("etablissement", class="AppBundle:Facture")
-     */
-    public function pdfAction(Request $request, Facture $facture) {
-        $fm = $this->get('facture.manager');
-
-        $pages = array();
-
-        $nbLigneMaxPourPageVierge = 50;
-        $nbLigneMaxPourDernierePage = 30;
-        $nbPage = 1;
-        $nbMaxCharByLigne = 60;
-        $nbCurrentLigne = 0;
-        $nbCurrentPage = 1;
-        $nbLigneParLigneFacture = array();
-        $nbLigneParPage = array(1 => $nbLigneMaxPourDernierePage);
-
-        foreach($facture->getLignes() as $key => $ligne) {
-            $nbCurrentLigne += 2;
-            if($ligne->getReferenceClient()) {
-                $nbCurrentLigne += 1;
-            }
-
-            if($ligne->isOrigineContrat()) {
-                $nbCurrentLigne += 4;
-                $nbCurrentLigne += count($ligne->getOrigineDocument()->getPrestations());
-                $nbCurrentLigne += count($ligne->getOrigineDocument()->getContratPassages());
-            }
-
-            $nbLigneParLigneFacture[$key] = $nbCurrentLigne;
-
-            if($nbCurrentPage == $nbPage && $nbCurrentLigne > $nbLigneMaxPourDernierePage) {
-                $nbLigneParPage[$nbCurrentPage] = $nbLigneMaxPourDernierePage;
-                $nbPage += 1;
-                $nbLigneParPage[$nbPage] = $nbLigneMaxPourDernierePage;
-            }
-
-            if($nbCurrentPage < $nbPage && $nbCurrentLigne > $nbLigneMaxPourPageVierge) {
-                $nbLigneParPage[$nbCurrentPage] = $nbLigneMaxPourPageVierge;
-                $nbCurrentPage += 1;
-                $nbCurrentLigne = 0;
-            }
-
-        }
-
-        $nbCurrentPage = 1;
-        $nbCurrentLigne = 0;
-        foreach($facture->getLignes() as $key => $ligneFacture) {
-
-            $ligne = $this->buildLignePDFFacture($ligneFacture);
-
-            // La ligne ne tient pas sur une page complète
-            if(($nbLigneParLigneFacture[$key]) > $nbLigneParPage[$nbCurrentPage]) {
-                $nbLignes2Keep = (int)(0.8 * $nbLigneParPage[$nbCurrentPage]);
-                $lignesSplitted = $this->splitLigne($ligne, $nbLignes2Keep);
-                $pages[$nbCurrentPage][] = $lignesSplitted[0];
-                $pages[$nbCurrentPage+1][] = $lignesSplitted[1];
-                $nbCurrentLigne = 0;
-                $nbCurrentPage += 1;
-                continue;
-            }
-
-            // La ligne tient sur la page
-            if(($nbCurrentLigne + $nbLigneParLigneFacture[$key]) < $nbLigneParPage[$nbCurrentPage]) {
-
-                $pages[$nbCurrentPage][] = $ligne;
-                continue;
-            }
-
-            // La ligne ne tient plus sur la page
-            if(($nbCurrentLigne + $nbLigneParLigneFacture[$key]) > $nbLigneParPage[$nbCurrentPage]) {
-
-                $nbCurrentLigne = 0;
-                $nbCurrentPage += 1;
-                $pages[$nbCurrentPage][] = $ligne;
-                continue;
-            }
-        }
-
-        $html = $this->renderView('facture/pdf.html.twig', array(
-            'facture' => $facture,
-            'pages' => $pages,
-            'parameters' => $fm->getParameters(),
-        ));
-
-        if ($request->get('output') == 'html') {
-
-            return new Response($html, 200);
-        }
-
-        if ($facture->isDevis() && $facture->getNumeroDevis()) {
-            $filename = "devis_" . $facture->getSociete()->getIdentifiant() . "_" . $facture->getDateDevis()->format('Ymd') . "_N" . $facture->getNumeroDevis() . ".pdf";
-        } elseif ($facture->isFacture() && $facture->getNumeroFacture()) {
-            $prefix = ($facture->isAvoir())? 'avoir' : 'facture';
-            $filename = $prefix."_" . $facture->getSociete()->getIdentifiant() . "_" . $facture->getDateFacturation()->format('Ymd') . "_N" . $facture->getNumeroFacture() . ".pdf";
-        } elseif ($facture->isDevis()) {
-            $filename = "devis_" . $facture->getSociete()->getIdentifiant() . "_" . $facture->getDateDevis()->format('Ymd') . "_brouillon.pdf";
-        } else {
-            $prefix = ($facture->isAvoir())? 'avoir' : 'facture';
-            $filename = $prefix."_" . $facture->getSociete()->getIdentifiant() . "_" . $facture->getDateFacturation()->format('Ymd') . "_brouillon.pdf";
-        }
-
-        return new Response(
-                $this->get('knp_snappy.pdf')->getOutputFromHtml($html, $this->getPdfGenerationOptions()), 200, array(
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-                )
-        );
     }
 
     public function createExportSocieteForm(Societe $societe) {
@@ -431,71 +320,6 @@ class FactureController extends Controller {
       $exportForm = $formBuilder->getForm();
 
       return $exportForm;
-    }
-
-    public function splitLigne($ligne, $nbLignes2Keep) {
-        $ligneSplitted = array();
-
-        $ligneSplitted["libelle"] = $ligne['libelle']." (Suite)";
-        foreach($ligne["details"] as $key => $details) {
-            if(!preg_match("/^Lieu/", $key)) {
-                continue;
-            }
-            $nb = 0;
-            $keySplitted = $key." (Suite)";
-            $ligneSplitted["details"] = array();
-            $ligneSplitted["details"][$keySplitted] = array();
-            foreach($details as $keyLieu => $lieu) {
-                $nb += 1;
-                if($nb <= $nbLignes2Keep) {
-                    continue;
-                }
-                $ligneSplitted["details"][$keySplitted][] = $lieu;
-                unset($ligne["details"][$key][$keyLieu]);
-            }
-            $ligne["details"][$key][] = "(Suite de la liste sur la page suivante)";
-        }
-
-        return array($ligne, $ligneSplitted);
-    }
-
-    public function buildLignePDFFacture($ligneFacture) {
-        $ligne = array();
-        $ligne['libelle'] = $ligneFacture->getLibelle();
-        $ligne['quantite'] = $ligneFacture->getQuantite();
-        $ligne['prixUnitaire'] = $ligneFacture->getPrixUnitaire();
-        $ligne['montantHT'] = $ligneFacture->getMontantHT();
-        $ligne['referenceClient'] = $ligneFacture->getReferenceClient();
-        if($ligneFacture->isOrigineContrat()) {
-            $ligne['details'] = array();
-
-            $keyPrestation = "Prestation";
-            if (count($ligneFacture->getOrigineDocument()->getPrestations()) > 1) { $keyPrestation .= "s"; }
-            foreach($ligneFacture->getOrigineDocument()->getPrestations() as $prestation) {
-                $ligne['details'][$keyPrestation][] = $prestation->getNom();
-            }
-
-            $keyPassage = "Lieu";
-            if(count($ligneFacture->getOrigineDocument()->getContratPassages()) > 1) { $keyPassage .= "x"; }
-            $keyPassage .= " d'application";
-            if(count($ligneFacture->getOrigineDocument()->getContratPassages()) > 1) { $keyPassage .= "s"; }
-            foreach($ligneFacture->getOrigineDocument()->getContratPassages() as $passage) {
-               $lignePassage = $passage->getEtablissement()->getNom(false).", ";
-               if($passage->getEtablissement()->getAdresse()->getAdresse()){ $lignePassage .= $passage->getEtablissement()->getAdresse()->getAdresse().", "; }
-               $lignePassage .= $passage->getEtablissement()->getAdresse()->getCodePostal()." ".$passage->getEtablissement()->getAdresse()->getCommune();
-               $ligne['details'][$keyPassage][] = $lignePassage;
-            }
-        }
-
-        if($ligneFacture->getDescription()) {
-            $ligne["details"]["description"] = $ligneFacture->getDescription();
-        }
-
-        return $ligne;
-    }
-
-    public function getPdfGenerationOptions() {
-        return array('disable-smart-shrinking' => null, 'encoding' => 'utf-8', 'margin-left' => 3, 'margin-right' => 3, 'margin-top' => 4, 'margin-bottom' => 4);
     }
 
     /**

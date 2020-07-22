@@ -1,11 +1,12 @@
 {% for facture in facturesEnAttente|reverse(true) %}
 
             <td>{{ ((facture.isDevis) ? facture.dateDevis : facture.dateFacturation) | localizeddate("medium", "none", null, null, "d MMMM yyyy") }}</td>
-            <td><a href="{{ path('facture_pdf', {'id': facture.id })}}">
-           	<a data-toggle="tooltip" title="{% for ligne in facture.lignes %}{{ (ligne.libelle) ? ligne.libelle~"\n" : "Aucun" }}{% endfor %}" href="{{ path('facture_pdf', {'id': facture.id })}}">Facture prévue</a>&nbsp;<span class="glyphicon glyphicon-file"></span></td>
+            <td><a href="{{ path('facturable_pdf', {'document': facture.id })}}">
+           	<a data-toggle="tooltip" title="{% for ligne in facture.lignes %}{{ (ligne.libelle) ? ligne.libelle~"\n" : "Aucun" }}{% endfor %}" href="{{ path('facturable_pdf', {'document': facture.id })}}">Facture prévue <span class="glyphicon glyphicon-file"></span></a></td>
             <td>
                 {% for origine in facture.origines %}
-                    <a href="{{ path('contrat_visualisation', {'id': origine.id })}}">Contrat n° {{ origine.numeroArchive }}</a>
+                  <a data-toggle="tooltip" title="{% for etab in origine.etablissements %}{{ etab }}<br/>{% endfor %}"
+                      href="{{ path('contrat_visualisation', {'id': origine.id })}}">Contrat n° {{ origine.numeroArchive }}</a>
                 {% endfor %}
             </td>
             <td class="col-xs-1">{{ facture.societe.raisonSociale}}</td>

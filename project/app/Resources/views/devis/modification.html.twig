@@ -1,0 +1,184 @@
+{% set _menu_active = 'devis' %}
+{% extends 'base.html.twig' %}
+{% form_theme form _self %}
+
+{% block _devis_lignes_entry_row %}
+    {% set readOnly = (form.vars.data and form.vars.data.origineDocument and form.vars.data.quantite > 0) %}
+    <tr class="dynamic-collection-item">
+        <td>
+            {{ form_widget(form.libelle) }}
+        </td>
+        <td >
+            {{ form_widget(form.quantite, {'attr': {'readonly': (readOnly) ? "readonly": false }}) }}
+        </td>
+        <td>
+            <div class="input-group">
+                {{ form_widget(form.prixUnitaire, {'attr': {'class': 'text-right prix-unitaire form-control'}}) }}
+                <div class="input-group-addon">€ HT</div>
+            </div>
+        </td>
+        <td>
+            {{ form_widget(form.tauxTaxe, {'value' : (form.tauxTaxe.vars.value) ? form.tauxTaxe.vars.value : 0.2, 'attr': {'class': 'text-right form-control'}}) }}
+        </td>
+        <td style="width: 0;" class="text-right">
+            <button {% if (readOnly) %}disabled="disabled"{% endif %} type="button" tabindex="-1" class="btn btn-default dynamic-collection-remove"><span class="glyphicon glyphicon-remove"></span></button>
+        </td>
+    </tr>
+{% endblock %}
+
+{% block body %}
+
+    <ol class="breadcrumb">
+        <li><a href="{{ path('devis') }}">Devis</a></li>
+        <li><a href="{{ path('devis_societe', {id: devis.societe.id}) }}"> {{ devis.societe.raisonSociale }} <small>{{devis.societe.adresse.intitule }}</small></a></li>
+        <li>{% if(not devis.id) %}Création d'un devis{% elseif(devis.numeroDevis) %}Modification du devis n°{{ devis.numeroDevis }}{% else %}Création d'un devis{% endif %}</li>
+    </ol>
+
+    <div id="formProduitsSuggested" class="form-horizontal" data-produits="{{ produitsSuggestion | json_encode }}">
+        {{ form_start(form) }}
+        <h3>{% if(not devis.id) %}Création d'un devis{% else %}Modification du devis n°{{ devis.numeroDevis }}{% endif %}</h3>
+        <hr />
+          <div class="row">
+            <div class="col-xs-12 col-xs-offset-2">
+              {% if devis.destinataire.nom %}
+                <span class="lead">{{ devis.destinataire.nom }}</span><br />
+                {{ devis.destinataire.adresseFormatee }}<br />
+                {{ devis.destinataire.codePostal }} {{ devis.destinataire.commune }}<br />
+              {% else %}
+                <span class="lead">{{ societe.raisonSociale }}</span><br />
+                {{ societe.adresse.adresseFormatee }}<br />ttt
+                {{ societe.adresse.codePostal }} {{ societe.adresse.commune }}<br />
+              {% endif %}
+            </div>
+        </div>
+        <hr />
+        <br/>
+        <div class="row">
+            <div class="col-xs-9">
+                <div class="form-group">
+                    {{ form_errors(form.commercial) }}
+                    {{ form_label(form.commercial, "Commercial", {'label_attr': {'class': 'col-xs-4 control-label'}}) }}
+                    <div class="col-xs-8">
+                        {{ form_widget(form.commercial) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br/>
+        <div class="row">
+          <div class="col-xs-9">
+              <div class="form-group">
+                    {{ form_errors(form.etablissement) }}
+                    {{ form_label(form.etablissement, "Lieux de livraison", {'label_attr': {'class': 'col-xs-4 control-label'}}) }}
+                    <div class="col-xs-8">
+                      {{ form_widget(form.etablissement) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-9">
+            <div class="form-group">
+                {{ form_errors(form.commentaireInterne) }}
+                {{ form_label(form.commentaireInterne, "Commentaire interne", {'label_attr': {'class': 'col-xs-4 control-label'}}) }}
+                <div class="col-xs-8">
+                    {{ form_widget(form.commentaireInterne) }}
+                </div>
+            </div>
+          </div>
+      </div>
+<br/>
+<h4>Liste de produits</h4>
+        <table id="devis_produit" class="table table-bordered">
+            <thead>
+                <tr>
+                    <th class="col-xs-7">Libellé</th>
+                    <th class="col-xs-2">Quantité</th>
+                    <th class="col-xs-2">Prix Unitaire</th>
+                    <th class="col-xs-1">Taux de TVA</th>
+                    <th style="width: 0;"></th>
+                </tr>
+            </thead>
+            <tbody id="facture_lignes_collection" class="dynamic-collection" data-prototype="{{ form_row(form.lignes.vars.prototype)|e('html_attr') }}">
+                {{ form_widget(form.lignes, { 'attr': {'class': 'dynamic-collection'} }) }}
+            </tbody>
+            <tfoot>
+                <th colspan="5" class="text-right"><a href="javascript:void(0);" data-collection-target="#facture_lignes_collection"  class="btn btn-primary dynamic-collection-add"><span class="glyphicon glyphicon-plus-sign"></span></a></th>
+            </tfoot>
+        </table>
+
+        <div class="clearfix">
+          <p class="pull-right">
+            <strong>Total :</strong> <span id="devis_produit_total"></span> € HT
+          </p>
+        </div>
+
+        <hr />
+    <div class="row">
+        <div class="col-xs-6">
+            <div class="form-group">
+                {{ form_errors(form.techniciens) }}
+                {{ form_label(form.techniciens, "Techniciens", {'label_attr': {'class': 'col-xs-2 control-label'}}) }}
+                <div class="col-xs-10">
+                    {{ form_widget(form.techniciens) }}
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-6">
+            <div class="form-group">
+                {{ form_errors(form.datePrevision) }}
+                {{ form_label(form.datePrevision, "Date prévue pour signature", {'label_attr': {'class': 'col-xs-5 control-label'}}) }}
+                <div class="col-xs-7">
+                    <div class="input-group">
+                        {{ form_widget(form.datePrevision) }}
+                        <div class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-6 col-xs-offset-6">
+            <div class="form-group">
+                {{ form_errors(form.dateAcceptation) }}
+                {{ form_label(form.dateAcceptation, "Date d'acceptation du devis", {'label_attr': {'class': 'col-xs-5 control-label acceptation_date'}}) }}
+                <div class="col-xs-7">
+                    <div class="input-group">
+                        {{ form_widget(form.dateAcceptation) }}
+                        <div class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+     <hr />
+     <br/>
+      <div class="row form-group">
+            <div class="col-xs-4 text-left">
+                <a class="btn btn-default" href="{{ path('devis_societe',{ 'id' : devis.societe.id }) }}">Retour</a>
+            </div>
+            <div class="col-xs-4 text-center">
+              {% if (devis.numeroDevis) %}
+                <a class="btn btn-danger" href="{{ path('devis_annulation',{ 'societe' : devis.societe.id, 'id' : devis.id }) }}" onclick="return confirm('Êtes-vous sûr de vouloir annuler ce devis ?')"><span class="glyphicon glyphicon-remove"></span> Annuler le devis</a>
+                <a class="btn btn-default" href="{{ path('facturable_pdf', {'document': devis.id}) }}">
+                  <i class="glyphicon glyphicon-file"></i> Voir le PDF du devis
+                </a>
+              {% endif %}
+            </div>
+            <div class="col-xs-4 text-right">
+              {{ form_widget(form.edit) }}
+              {{ form_widget(form.plan) }}
+            </div>
+            </div>
+        </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+  {% if app.request.attributes.get('_route') == 'devis_creation' %}
+    {% set path = path('devis_societe', {'id': devis.societe.id }) %}
+    <script>
+      history.replaceState({}, "", "{{ path }}");
+    </script>
+  {% endif %}
+{% endblock %}

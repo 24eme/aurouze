@@ -125,26 +125,31 @@
     $.initSaisie = function () {
 
       $('form').each(function(){
-          forms[$(this).closest('.passage_rapport').attr('data-id')] = $(this);
+          forms[$(this).closest('.rapport').attr('data-id')] = $(this);
       });
 
-      $('.passage_signature_valider').on("click",function(){
+      $('.signature_valider').on("click",function(){
         var signaturePadIndex = "signature_pad_"+$(this).attr('data-id');
-        var signatureHiddenCible = "input[data-cible='passage_mobile_"+$(this).attr('data-id')+"_signatureBase64']";
+        var signatureHiddenCible = "input[data-cible='mobile_"+$(this).attr('data-id')+"_signatureBase64']";
+
 
         var signaturePad = signaturesPad[signaturePadIndex];
-        if(typeof signaturePad != undefined)
-        $(signatureHiddenCible).each(function(){ $(this).val(signaturePad.toDataURL()); });
+        if(typeof signaturePad != undefined){
+            $(signatureHiddenCible).each(function(){
+              $(this).val(signaturePad.toDataURL());
+             });
+        }
+
       });
 
-      $('.passage_signature_vider').on("click",function(){
+      $('.signature_vider').on("click",function(){
         var signaturePadIndex = "signature_pad_"+$(this).attr('data-id');
         var divs = document.querySelectorAll('canvas');
         [].forEach.call(divs, function(div) {
             if(signaturePadIndex == div.id){
               var idCanva = div.id;
               signaturesPad[idCanva].clear();
-              var signatureHiddenCible = "input[data-cible='passage_mobile_"+$(this).attr('data-id')+"_signatureBase64']";
+              var signatureHiddenCible = "input[data-cible='mobile_"+$(this).attr('data-id')+"_signatureBase64']";
               $(signatureHiddenCible).each(function(){ $(this).val(""); });
             }
           });
@@ -231,8 +236,8 @@
           var idCanva = div.id;
           delete signaturesPad[idCanva];
           signaturesPad[idCanva] = new SignaturePad(div);
-          var idPassage = $("#"+idCanva).parents('.passage_signature').attr('data-id');
-          var signatureHiddenCible = "input[data-cible='passage_mobile_"+idPassage+"_signatureBase64']";
+          var idObject = $("#"+idCanva).parents('.signature').attr('data-id');
+          var signatureHiddenCible = "input[data-cible='mobile_"+idObject+"_signatureBase64']";
           $(signatureHiddenCible).each(function(){
             if ($(this).val()) {
               signaturesPad[idCanva].fromDataURL($(this).val());

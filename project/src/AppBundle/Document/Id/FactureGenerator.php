@@ -28,24 +28,18 @@ class FactureGenerator extends AbstractIdGenerator
         $id = sprintf("%s-%s", "FACTURE", $document->getIdentifiant());
 
         $hasNumero = true;
-        if(!$document->isDevis()){
-          foreach ($document->getLignes() as $ligne) {
+        foreach ($document->getLignes() as $ligne) {
             if($ligne->getOrigineDocument()){
-              $hasNumero = boolval($ligne->getOrigineDocument()->getNbFactures());
+                $hasNumero = boolval($ligne->getOrigineDocument()->getNbFactures());
             }
-          }
         }
-        
+
         if($document->getNumeroFacture() || !$hasNumero) {
 
         	return $id;
         }
 
-        if($document->isDevis()) {
-            $this->generateNumeroDevis($dm, $document);
-        } else {
-            $this->generateNumeroFacture($dm, $document);
-        }
+        $this->generateNumeroFacture($dm, $document);
 
         return $id;
     }

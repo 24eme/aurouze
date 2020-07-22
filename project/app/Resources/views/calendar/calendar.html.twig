@@ -1,32 +1,31 @@
 {% set _menu_active = 'calendar' %}
 {% extends 'base.html.twig' %}
-
 {% block title %}Calendrier {{ technicienObj.identite }}{% endblock title %}
 
 {% block body %}
     <ol class="breadcrumb">
         <li><a href="{{ path('calendarManuel') }}">Calendrier global</a></li>
-        <li><a href="{{ path('calendar',{ 'technicien': technicien, 'date': date , 'id': ((passage) ? passage.etablissement.id : "0") }) }}">&nbsp;{{ technicienObj.identite }}</a></li>
+        <li><a href="{{ path('calendar',{ 'technicien': technicien, 'date': date , 'id': ((planifiable) ? planifiable.etablissement.id : "0") }) }}">&nbsp;{{ technicienObj.identite }}</a></li>
             {% if(mode == 'SEMAINE') %}
-            <li><a href="{{ path('calendar',{ 'technicien': technicien, 'date': date, 'mode':mode, 'id': ((passage) ? passage.etablissement.id : "0")  }) }}">&nbsp;Semaine {{ calendarTool.getLibelle() }}</a></li>
+            <li><a href="{{ path('calendar',{ 'technicien': technicien, 'date': date, 'mode':mode, 'id': ((planifiable) ? planifiable.etablissement.id : "0")  }) }}">&nbsp;Semaine {{ calendarTool.getLibelle() }}</a></li>
             {% endif %}
             {% if(mode == 'JOUR') %}
-            <li><a href="{{ path('calendar',{ 'technicien': technicien, 'date': date, 'mode':mode, 'id': ((passage) ? passage.etablissement.id : "0")  }) }}">&nbsp;{{ date | localizeddate('full', 'none') | capitalize }}</a></li>
+            <li><a href="{{ path('calendar',{ 'technicien': technicien, 'date': date, 'mode':mode, 'id': ((planifiable) ? planifiable.etablissement.id : "0")  }) }}">&nbsp;{{ date | localizeddate('full', 'none') | capitalize }}</a></li>
             {% endif %}
         {% if(mode == 'MOIS') %}
-            <li><a href="{{ path('calendar',{ 'technicien': technicien, 'date': date, 'mode':mode, 'id': ((passage) ? passage.etablissement.id : "0")  }) }}">&nbsp;{{ date | localizeddate("medium", "none", null, null, "MMMM yyyy") | capitalize }}</a></li>
+            <li><a href="{{ path('calendar',{ 'technicien': technicien, 'date': date, 'mode':mode, 'id': ((planifiable) ? planifiable.etablissement.id : "0")  }) }}">&nbsp;{{ date | localizeddate("medium", "none", null, null, "MMMM yyyy") | capitalize }}</a></li>
             {% endif %}
     </ol>
     <div class="row">
         <div class="col-sm-12">
             <ul class="nav nav-tabs nav-justified" role="tablist" style="margin: 15px 0; font-size: 13px;">
                 <li role="presentation">
-                    <a href="{{ path('calendarManuel', {'date': calendarTool.getDateDebut('Y-m-d'), 'passage': ((passage) ? passage.id : null), 'mode': calendarTool.mode }) }}" role="tab" style="color: black;"><i class="mdi mdi-apps mdi-lg"></i> Résumé</a>
+                    <a href="{{ path('calendarManuel', {'date': calendarTool.getDateDebut('Y-m-d'), 'planifiable': ((planifiable) ? planifiable.id : null), 'mode': calendarTool.mode }) }}" role="tab" style="color: black;"><i class="mdi mdi-apps mdi-lg"></i> Résumé</a>
                 </li>
                 {% set i=0 %}
                 {% for tech in techniciensOnglet %}
                     <li role="presentation"{% if tech.getId() == technicien %} class="active"{% endif %}>
-                        <a href="{{ path('calendar',{'technicien': tech.getId(), 'id': ((passage) ? passage.etablissement.id : "0"), 'passage': ((passage) ? passage.id : null), 'date': calendarTool.getDateDebut('Y-m-d'), 'mode': calendarTool.mode }) }}" role="tab" style="color: {{ tech.getCouleur() }};">
+                        <a href="{{ path('calendar',{'technicien': tech.getId(), 'id': ((planifiable) ? planifiable.etablissement.id : "0"), 'planifiable': ((planifiable) ? planifiable.id : null), 'date': calendarTool.getDateDebut('Y-m-d'), 'mode': calendarTool.mode }) }}" role="tab" style="color: {{ tech.getCouleur() }};">
                             <i class="mdi mdi-face mdi-lg"></i> <strong>{% autoescape false %}{{ tech.getIdentiteCourt() | replace({' ' : '&nbsp;'})  }}{% endautoescape %}</strong>
                         </a>
                     </li>
@@ -40,23 +39,23 @@
         <div class="col-sm-4">
         	<div class="btn-group">
                 <div class="row">
-                    <div class="col-sm-2 text-left"><a href="{{ path('calendar',{'passage': ((passage) ? passage.id : null),  'id': ((passage) ? passage.etablissement.id : "0"), 'technicien': technicienObj.id, 'date': calendarTool.getPrecedent() | date("Y-m-d"), 'mode': calendarTool.getMode() }) }}" class="btn btn-default"><span class="glyphicon glyphicon-chevron-left"></span></a></div>
+                    <div class="col-sm-2 text-left"><a href="{{ path('calendar',{'planifiable': ((planifiable) ? planifiable.id : null),  'id': ((planifiable) ? planifiable.etablissement.id : "0"), 'technicien': technicienObj.id, 'date': calendarTool.getPrecedent() | date("Y-m-d"), 'mode': calendarTool.getMode() }) }}" class="btn btn-default"><span class="glyphicon glyphicon-chevron-left"></span></a></div>
                     <div class="col-sm-8 text-center"><a href="" style="font-size: 24px; padding-bottom:0; padding-top: 0; width: " class="btn btn-link">{{ calendarTool.getLibelle() }}</a></div>
-                    <div class="col-sm-2 text-center"><a href="{{ path('calendar',{'passage': ((passage) ? passage.id : null), 'id': ((passage) ? passage.etablissement.id : "0"), 'technicien': technicienObj.id, 'date': calendarTool.getSuivant() | date("Y-m-d"), 'mode': calendarTool.getMode() }) }}" class="btn btn-default"><span class="glyphicon glyphicon-chevron-right"></span></a></div>
+                    <div class="col-sm-2 text-center"><a href="{{ path('calendar',{'planifiable': ((planifiable) ? planifiable.id : null), 'id': ((planifiable) ? planifiable.etablissement.id : "0"), 'technicien': technicienObj.id, 'date': calendarTool.getSuivant() | date("Y-m-d"), 'mode': calendarTool.getMode() }) }}" class="btn btn-default"><span class="glyphicon glyphicon-chevron-right"></span></a></div>
                 </div>
             </div>
         </div>
         <div class="col-sm-4 text-center">
-            {% if passage and not passage.rendezvous %}
+            {% if planifiable and not planifiable.rendezVous %}
                 <div id="fc-events">
-                    <div class="event" data-passage="{{ passage.id }}" data-duration="{{ passage.dureePrevisionnelle }}" data-title="{{ passage.etablissementInfos.nom }} ({{ passage.etablissementInfos.adresse.codePostal }})">
+                    <div class="event" data-planifiable="{{ planifiable.id }}" data-duration="{{ planifiable.dureePrevisionnelle }}" data-title="{{ planifiable.etablissementInfos.nom }} ({{ planifiable.etablissementInfos.adresse.codePostal }})">
                         <span class="btn btn-info">
-                            <span class="mdi mdi-today mdi-lg" aria-hidden="true"></span>&nbsp;{{ passage.etablissementInfos.nom }} <small>{{ passage.etablissementInfos.adresse.codePostal }} {{ passage.etablissementInfos.adresse.commune }}</small>
+                            <span class="mdi mdi-today mdi-lg" aria-hidden="true"></span>&nbsp;{{ planifiable.etablissementInfos.nom }} <small>{{ planifiable.etablissementInfos.adresse.codePostal }} {{ planifiable.etablissementInfos.adresse.commune }}</small>
                         </span>
                     </div>
                 </div>
                 <div class="hidden" id="retour_technicien_btn" >
-                    <a class="btn btn-sm btn-default" href="{{ path('passage')~'#filtre=["'~technicienObj.getIdentite()~'"]' }}"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;Retour aux passages de {{technicienObj.getIdentite()}}</a>
+                    <a class="btn btn-sm btn-default" href="{{ path('passage')~'#filtre=["'~technicienObj.getIdentite()~'"]' }}"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;Retour aux planifiables de {{technicienObj.getIdentite()}}</a>
                 </div>
             {% endif %}
         </div>
@@ -67,18 +66,18 @@
                     <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu">
-                    <li><a href="{{ path('passage_pdf_bons_massif', { 'dateDebut': calendarTool.dateDebut | date('Y-m-d'), 'dateFin': calendarTool.dateFin | date('Y-m-d'), 'technicien': technicienObj.id }) }}">Bons de passage</a></li>
+                    <li><a href="{{ path('passage_pdf_bons_massif', { 'dateDebut': calendarTool.dateDebut | date('Y-m-d'), 'dateFin': calendarTool.dateFin | date('Y-m-d'), 'technicien': technicienObj.id }) }}">Bons de planifiable</a></li>
                     <li><a href="{{ path('passage_pdf_missions_massif', { 'dateDebut': calendarTool.dateDebut | date('Y-m-d'), 'dateFin': calendarTool.dateFin | date('Y-m-d'), 'technicien': technicienObj.id }) }}">Fiches de suivi client</a></li>
                 </ul>
             </div>
             <div class="btn-group">
-                <a href="{{ path('calendar',{'passage': ((passage) ? passage.id : null), 'id': ((passage) ? passage.etablissement.id : "0"), 'technicien': technicienObj.id, 'date': calendarTool.getDateDebut() | date("Y-m-d"), 'mode': 'MOIS' }) }}" class="btn {% if (calendarTool.mode == "MOIS") %}active{% endif %} btn-md btn-default">
+                <a href="{{ path('calendar',{'planifiable': ((planifiable) ? planifiable.id : null), 'id': ((planifiable) ? planifiable.etablissement.id : "0"), 'technicien': technicienObj.id, 'date': calendarTool.getDateDebut() | date("Y-m-d"), 'mode': 'MOIS' }) }}" class="btn {% if (calendarTool.mode == "MOIS") %}active{% endif %} btn-md btn-default">
                     <i class="mdi mdi-view-comfy"></i> Mois
                 </a>
-                <a href="{{ path('calendar',{'passage': ((passage) ? passage.id : null), 'id': ((passage) ? passage.etablissement.id : "0"), 'technicien': technicienObj.id, 'date': calendarTool.getDateDebut() | date("Y-m-d"), 'mode': 'SEMAINE' }) }}" class="btn btn-default {% if (calendarTool.mode == "SEMAINE") %}active{% endif %}">
+                <a href="{{ path('calendar',{'planifiable': ((planifiable) ? planifiable.id : null), 'id': ((planifiable) ? planifiable.etablissement.id : "0"), 'technicien': technicienObj.id, 'date': calendarTool.getDateDebut() | date("Y-m-d"), 'mode': 'SEMAINE' }) }}" class="btn btn-default {% if (calendarTool.mode == "SEMAINE") %}active{% endif %}">
                     <i class="mdi mdi-view-week"></i> Semaine
                 </a>
-                <a href="{{ path('calendar',{'passage': ((passage) ? passage.id : null), 'id': ((passage) ? passage.etablissement.id : "0"), 'technicien': technicienObj.id, 'date': calendarTool.getDateDebut() | date("Y-m-d"), 'mode': 'JOUR' }) }}" class="btn btn-md btn-default {% if (calendarTool.mode == "JOUR") %}active{% endif %}">
+                <a href="{{ path('calendar',{'planifiable': ((planifiable) ? planifiable.id : null), 'id': ((planifiable) ? planifiable.etablissement.id : "0"), 'technicien': technicienObj.id, 'date': calendarTool.getDateDebut() | date("Y-m-d"), 'mode': 'JOUR' }) }}" class="btn btn-md btn-default {% if (calendarTool.mode == "JOUR") %}active{% endif %}">
                     <i class="mdi mdi-view-day"></i> Jour
                 </a>
             </div>
@@ -92,13 +91,13 @@
                 data-view="{{ calendarTool.getViewJs() }}"
                 data-goto-date="{{ calendarTool.getDateDebut('Y-m-d') }}"
                 data-url-populate="{{ path('calendarPopulate', {'technicien': technicien, 'date': calendarTool.getDateDebut('Y-m-d')})}}"
-                data-url-add="{{path('calendarAdd', {'passage': ((passage) ? passage.id : null), 'technicien': technicien, 'date': calendarTool.getDateDebut('Y-m-d')})}}"
+                data-url-add="{{path('calendarAdd', {'planifiable': ((planifiable) ? planifiable.id : null), 'technicien': technicien, 'date': calendarTool.getDateDebut('Y-m-d')})}}"
                 data-url-add-libre="{{path('calendarAddLibre', {'technicien': technicien})}}"
                 data-url-read="{{ path('calendarRead') }}"
-                data-url-update="{{path('calendarUpdate', {'passage': ((passage) ? passage.id : null), 'technicien': technicien, 'date': calendarTool.getDateDebut('Y-m-d')})}}"
-                data-url-prev="{{ path('calendar',{'passage': ((passage) ? passage.id : null), 'id': ((passage) ? passage.etablissement.id : "0"), 'technicien': technicien, 'date': calendarTool.getSemainePrecedente('Y-m-d')}) }}"
-                data-url-next="{{ path('calendar',{'passage': ((passage) ? passage.id : null), 'id': ((passage) ? passage.etablissement.id : "0"), 'technicien': technicien, 'date': calendarTool.getSemaineSuivante('Y-m-d')}) }}"
-                data-url-date="{{ path('calendar',{'passage': ((passage) ? passage.id : null), 'id': ((passage) ? passage.etablissement.id : "0"), 'technicien': technicien, 'date': '-d', 'mode': 'JOUR'}) }}"
+                data-url-update="{{path('calendarUpdate', {'passage': ((planifiable) ? planifiable.id : null), 'technicien': technicien, 'date': calendarTool.getDateDebut('Y-m-d')})}}"
+                data-url-prev="{{ path('calendar',{'planifiable': ((planifiable) ? planifiable.id : null), 'id': ((planifiable) ? planifiable.etablissement.id : "0"), 'technicien': technicien, 'date': calendarTool.getSemainePrecedente('Y-m-d')}) }}"
+                data-url-next="{{ path('calendar',{'planifiable': ((planifiable) ? planifiable.id : null), 'id': ((planifiable) ? planifiable.etablissement.id : "0"), 'technicien': technicien, 'date': calendarTool.getSemaineSuivante('Y-m-d')}) }}"
+                data-url-date="{{ path('calendar',{'planifiable': ((planifiable) ? planifiable.id : null), 'id': ((planifiable) ? planifiable.etablissement.id : "0"), 'technicien': technicien, 'date': '-d', 'mode': 'JOUR'}) }}"
                 >
             </div>
         </div>

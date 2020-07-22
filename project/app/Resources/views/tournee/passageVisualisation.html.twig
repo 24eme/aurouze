@@ -3,7 +3,7 @@
 <a href="#tournee_accueil" class="ui-btn ui-icon-arrow-l ui-btn-icon-left" >
       &nbsp;Retour
 </a>
-<a class="ui-btn ui-icon-check ui-btn-icon-right transmission_rapport" data-id="{{ passage.id }}" >
+<a class="ui-btn ui-icon-check ui-btn-icon-right transmission_rapport" data-id="{{ planifiable.id }}" >
     Envoyer&nbsp;
 </a>
 <div class="reloadWarning ui-bar ui-bar-b" style="display:none;">
@@ -19,47 +19,47 @@
     <div class="ui-block-a">
       <div class="ui-bar ui-bar-a" style="height:60px">
         <h2>{{ technicien.identite }}</h2><br/>
-        <h3>{{ passage.dateDebut | localizeddate("medium", "none", null, null, "d MMMM yyyy") }} {{passage.dateDebut | date("H") }}h{{passage.dateDebut | date("i") }}</h3>
+        <h3>{{ planifiable.dateDebut | localizeddate("medium", "none", null, null, "d MMMM yyyy") }} {{planifiable.dateDebut | date("H") }}h{{planifiable.dateDebut | date("i") }}</h3>
       </div>
     </div>
     <div class="ui-block-b">
       <div class="ui-bar ui-bar-a" style="height:60px">
-        <a class="passage_rapport_saisie ui-btn ui-icon-info ui-btn-icon-left" href="#passage_rapport_{{ passage.id }}">Rapport</a>
+        <a class="rapport_saisie ui-btn ui-icon-info ui-btn-icon-left" href="#rapport_{{ planifiable.id }}">Rapport</a>
       </div>
     </div>
 </div>
 
 <div class="ui-corner-all custom-corners">
   <div class="ui-bar ui-bar-a">
-    <strong>{% if passage.etablissement.societe.raisonSociale != passage.etablissementInfos.nom %}{{ passage.etablissement.societe.raisonSociale }}, {% endif %}{{ passage.etablissementInfos.nom }}</strong><br/>
-    {{ passage.etablissementInfos.adresse.adresse }}<br/>
-    {{ passage.etablissementInfos.adresse.codePostal }}&nbsp;{{ passage.etablissementInfos.adresse.commune }}
-    {% if(passage.etablissement.commentaire) %}
-        <br/><br/><span class="ui-btn ui-btn-a ui-icon-info ui-btn-icon-notext ui-btn-inline ui-shadow"></span><span style="text-decoration: underline;">Etablissement : </span><br/>{{ passage.etablissement.commentaire | nl2br}}
+    <strong>{% if planifiable.etablissement.societe.raisonSociale != planifiable.etablissementInfos.nom %}{{ planifiable.etablissement.societe.raisonSociale }}, {% endif %}{{ planifiable.etablissementInfos.nom }}</strong><br/>
+    {{ planifiable.etablissementInfos.adresse.adresse }}<br/>
+    {{ planifiable.etablissementInfos.adresse.codePostal }}&nbsp;{{ planifiable.etablissementInfos.adresse.commune }}
+    {% if(planifiable.etablissement.commentaire) %}
+        <br/><br/><span class="ui-btn ui-btn-a ui-icon-info ui-btn-icon-notext ui-btn-inline ui-shadow"></span><span style="text-decoration: underline;">Etablissement : </span><br/>{{ planifiable.etablissement.commentaire | nl2br}}
     {% endif %}
-    {% if(passage.commentaire) %}
-        <br/><br/><span class="ui-btn ui-btn-a ui-icon-info ui-btn-icon-notext ui-btn-inline ui-shadow"></span><span style="text-decoration: underline;">Informations : </span><br/>{{ passage.commentaire | nl2br}}
+    {% if(planifiable.commentaire) %}
+        <br/><br/><span class="ui-btn ui-btn-a ui-icon-info ui-btn-icon-notext ui-btn-inline ui-shadow"></span><span style="text-decoration: underline;">Informations : </span><br/>{{ planifiable.commentaire | nl2br}}
     {% endif %}
-    {% if passage.etablissementInfos.telephoneFixe or passage.etablissementInfos.telephonePortable %}
-        <br/>{% if passage.etablissementInfos.telephoneFixe %}<i class="mdi mdi-call mdi-lg"></i>&nbsp;<a href="tel:{{ passage.etablissementInfos.telephoneFixe }}">{{ passage.etablissementInfos.telephoneFixe }}</a>{% endif %}
-        {% if passage.etablissementInfos.telephonePortable %}<a href="tel:{{ passage.etablissementInfos.telephonePortable }}">{{ passage.etablissementInfos.telephonePortable }}</a>{% endif %}
+    {% if planifiable.etablissementInfos.telephoneFixe or planifiable.etablissementInfos.telephonePortable %}
+        <br/>{% if planifiable.etablissementInfos.telephoneFixe %}<i class="mdi mdi-call mdi-lg"></i>&nbsp;<a href="tel:{{ planifiable.etablissementInfos.telephoneFixe }}">{{ planifiable.etablissementInfos.telephoneFixe }}</a>{% endif %}
+        {% if planifiable.etablissementInfos.telephonePortable %}<a href="tel:{{ planifiable.etablissementInfos.telephonePortable }}">{{ planifiable.etablissementInfos.telephonePortable }}</a>{% endif %}
     {% endif %}
     <a href="tel:{{telephoneSecretariat}}">Tél Secrétariat</a>
     <br/>
-    {% if passage.techniciensWithout(technicien) | length > 0 %}
-    Autres techniciens : {{ passage.techniciensWithout(technicien) | join(', ') }}
+    {% if planifiable.techniciensWithout(technicien) | length > 0 %}
+    Autres techniciens : {{ planifiable.techniciensWithout(technicien) | join(', ') }}
     {% else %}
     <span style="font-weight: normal">Pas d'autres techniciens</span>
     {% endif %}
     <br/><br/>
-    <span><strong>Commercial : {{ passage.contrat.commercial.identite }}</strong></span>
+    <span><strong>Commercial : {{ planifiable.contrat.commercial.identite }}</strong></span>
   </div>
   <div class="ui-body ui-body-a">
     <p>
-      {{passage.libelle | capitalize }}
+      {{planifiable.libelle | capitalize }}
     </p>
     <p>
-      {% for prestation in passage.prestations %}
+      {% for prestation in planifiable.prestations %}
           {% if(prestation.wordToPicto) %}
             <span class="step size-18"><i class="mdi-{{prestation.wordToPicto}}" style="cursor: pointer;"></i></span>
           {% endif %}
@@ -68,9 +68,9 @@
     </p>
     <div class="ui-body ui-body-a ui-corner-all">
       <span style="text-decoration: underline">Nomenclature</span><br/><br/>
-      {{ passage.contrat.getHtmlNomenclature() | raw | nl2br }}
+      {{ planifiable.contrat.getHtmlNomenclature() | raw | nl2br }}
     </div>
-    {% if (passage.contrat.produits | length)  %}
+    {% if (planifiable.contrat.produits | length)  %}
     <br/>
     <div class="ui-body ui-body-a ui-corner-all">
       <span style="text-decoration: underline">Produits prévus au contrat</span><br/><br/>
@@ -83,7 +83,7 @@
               </tr>
           </thead>
       <tbody>
-          {% for produit in passage.contrat.produits  %}
+          {% for produit in planifiable.contrat.produits  %}
           <tr>
               <td>{{ produit.nom }} {% if produit.conditionnement %}<small class="text-muted">({{ produit.conditionnement }})</small>{% endif %}</td>
               <td class="text-right"> {{ produit.nbPremierPassage }} </td>
@@ -95,7 +95,7 @@
     </div>
     {% endif %}
     <p>
-      <a class="passage_rapport_saisie ui-link ui-btn ui-shadow ui-corner-all" href="#passage_rapport_{{ passage.id }}" >SAISIR LE RAPPORT</a>
+      <a class="rapport_saisie ui-link ui-btn ui-shadow ui-corner-all" href="#rapport_{{ planifiable.id }}" >SAISIR LE RAPPORT</a>
     </p>
   </div>
 </div>
@@ -106,7 +106,7 @@
     </div>
   <div class="ui-bar ui-bar-a">
     <div class="ui-grid-solo">
-      {% for attachement in passage.etablissement.attachements %}
+      {% for attachement in planifiable.etablissement.attachements %}
           {% if attachement.visibleTechnicien %}
               <div class="ui-block-a">
                   {% if attachement.isImage %}
@@ -128,7 +128,7 @@
 </div>
     <div class="ui-bar ui-bar-a">
       <p>
-        <a class="attachement-mobile-add ui-link ui-btn ui-shadow ui-corner-all" href="#attachement_add_{{ passage.id }}" >Ajouter une photo</a>
+        <a class="attachement-mobile-add ui-link ui-btn ui-shadow ui-corner-all" href="#attachement_add_{{ planifiable.id }}" >Ajouter une photo</a>
       </p>
     </div>
 </div>
