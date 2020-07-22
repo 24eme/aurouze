@@ -94,15 +94,17 @@ class DevisController extends Controller
 
             $dm->persist($devis);
             $dm->flush();
-            if(!$devis->getStatut()){
-              return $this->redirectToRoute('devis_societe', array('id' => $societe->getId()));
+
+            if ($form->get('edit')->isClicked()) {
+                return $this->redirectToRoute('devis_societe', array('id' => $societe->getId()));
+            } elseif ($form->get('plan')->isClicked()) {
+                return $this->redirectToRoute('calendar', array(
+                    'planifiable' => $devis->getId(),
+                    'date' => $devis->getDatePrevision()->format('d-m-Y'),
+                    'id' => $devis->getEtablissement()->getId(),
+                    'technicien' => $devis->getTechniciens()[0]->getId()
+                ));
             }
-            return $this->redirectToRoute('calendar', array(
-                'planifiable' => $devis->getId(),
-                'date' => $devis->getDatePrevision()->format('d-m-Y'),
-                'id' => $devis->getEtablissement()->getId(),
-                'technicien' => $devis->getTechniciens()[0]->getId()
-            ));
         }
 
         return $this->render('devis/modification.html.twig', array('form' => $form->createView(), 'produitsSuggestion' => $produitsSuggestion, 'societe' => $societe, 'devis' => $devis));
@@ -144,12 +146,17 @@ class DevisController extends Controller
             $devis->update();
             $dm->persist($devis);
             $dm->flush();
-            return $this->redirectToRoute('calendar', array(
-                'planifiable' => $devis->getId(),
-                'id' => $devis->getEtablissement()->getId(),
-                'technicien' => $devis->getTechniciens()->first()->getId(),
-                'date' => $devis->getDatePrevision()->format('d-m-Y')
-            ));
+
+            if ($form->get('edit')->isClicked()) {
+                return $this->redirectToRoute('devis_societe', array('id' => $devis->getSociete()->getId()));
+            } elseif ($form->get('plan')->isClicked()) {
+                return $this->redirectToRoute('calendar', array(
+                    'planifiable' => $devis->getId(),
+                    'id' => $devis->getEtablissement()->getId(),
+                    'technicien' => $devis->getTechniciens()->first()->getId(),
+                    'date' => $devis->getDatePrevision()->format('d-m-Y')
+                ));
+            }
         }
 
         return $this->render('devis/modification.html.twig', [

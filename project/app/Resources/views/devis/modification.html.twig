@@ -165,8 +165,8 @@
               {% endif %}
             </div>
             <div class="col-xs-4 text-right">
-                <button type="submit" class="btn btn-success">{% if not devis.numeroDevis %}Générer le devis{% else %}Modifier le devis{% endif %}</button>
-                <button type="submit" class="btn btn-info" id="generer_et_planifier" disabled="disabled" >{% if not devis.isAPlanifie %}Générer le devis et planifier{% else %}Modifier et replanifier{% endif %}</button>
+              {{ form_widget(form.edit) }}
+              {{ form_widget(form.plan) }}
             </div>
             </div>
         </div>
