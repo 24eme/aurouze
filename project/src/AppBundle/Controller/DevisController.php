@@ -33,7 +33,7 @@ class DevisController extends Controller
         $devisManager = $this->get('devis.manager');
 
         $devisEnAttenteAcceptation = $devisManager->getRepository('AppBundle:Devis')->findBy(
-            ['dateAcceptation' => null], ['dateEmission' => 'desc']
+            ['statut' => PassageManager::STATUT_A_ACCEPTER], ['dateEmission' => 'desc']
         );
 
         $devisAPlanifier = $devisManager->getRepository('AppBundle:Devis')->findBy(

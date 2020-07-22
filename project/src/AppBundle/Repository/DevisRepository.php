@@ -4,7 +4,7 @@ namespace AppBundle\Repository;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use AppBundle\Tool\RechercheTool;
-use AppBundle\Document\societe;
+use AppBundle\Document\Societe;
 use MongoDate as MongoDate;
 use AppBundle\Manager\PassageManager;
 
@@ -32,6 +32,18 @@ class DevisRepository extends DocumentRepository {
     $query = $queryBuilder->getQuery();
 
     return $query->execute();
+  }
+
+  public function findBySociete(Societe $societe, $withCanceled = false)
+  {
+    $queryBuilder = $this->createQueryBuilder('Devis');
+    $queryBuilder->field('societe')->equals($societe->getId());
+
+    if ($withCanceled === false) {
+        $queryBuilder->field('statut')->notEqual(PassageManager::STATUT_ANNULE);
+    }
+
+    return $queryBuilder->getQuery()->execute();
   }
 
   public function findToPlan() {

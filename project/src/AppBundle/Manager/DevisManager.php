@@ -28,8 +28,7 @@ class DevisManager {
     }
 
     public function findBySociete(Societe $societe) {
-
-        return $this->getRepository()->findBy(array('societe' => $societe->getId()), array('dateEmission' => 'desc'));
+        return $this->getRepository()->findBySociete($societe);
     }
 
 
