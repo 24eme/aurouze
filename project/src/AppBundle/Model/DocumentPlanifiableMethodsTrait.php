@@ -415,7 +415,7 @@ trait DocumentPlanifiableMethodsTrait
             return;
         }
 
-        if (! $this->getDateAcceptation()) {
+        if ($this->getType() === Devis::DOCUMENT_TYPE && ! $this->getDateAcceptation()) {
             $this->setStatut(PassageManager::STATUT_A_ACCEPTER);
             return;
         }
