@@ -168,7 +168,7 @@ class RendezVous {
         if(!$this->getPlanifiable()) {
             return;
         }
-        
+
         if(count(array_diff($this->getParticipantsIds(), $this->getPlanifiable()->getTechniciensIds())) > 0 || count(array_diff($this->getPlanifiable()->getTechniciensIds(), $this->getParticipantsIds())) > 0) {
             $this->getPlanifiable()->removeAllTechniciens();
 
@@ -177,7 +177,7 @@ class RendezVous {
             }
         }
 
-        $this->getPlanifiable()->setCommentaire($this->getDescription());
+        //$this->getPlanifiable()->setCommentaire($this->getDescription());
         $this->getPlanifiable()->setDateDebut($this->getDateDebut());
         $this->getPlanifiable()->setDateFin($this->getDateFin());
 
