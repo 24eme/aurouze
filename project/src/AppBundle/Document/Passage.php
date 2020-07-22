@@ -151,11 +151,6 @@ class Passage implements DocumentEtablissementInterface, DocumentSocieteInterfac
     /**
      * @MongoDB\Field(type="string")
      */
-    protected $signatureBase64;
-
-    /**
-     * @MongoDB\Field(type="string")
-     */
     protected $description;
 
     /**
