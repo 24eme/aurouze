@@ -343,8 +343,6 @@ class CalendarController extends Controller {
         $form->handleRequest($request);
 
         if (!$form->isSubmitted() || !$form->isValid()) {
-            
-
             return $this->render($template, array('rdv' => $rdv, 'form' => $form->createView(), 'service' => $request->get('service')));
         }
 
