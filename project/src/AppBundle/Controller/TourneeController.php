@@ -156,9 +156,9 @@ class TourneeController extends Controller {
            }
          }
          switch (get_class($planifiable)) {
-             case Devis::class:{
+             case Devis::class:
                return $this->postTourneeDevisRapport($request, $planifiable, $technicienObj);
-             }
+
              case Passage::class:
                  return $this->postTourneePassageRapport($request, $planifiable, $technicienObj);
          }
