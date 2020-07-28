@@ -91,9 +91,9 @@ ___
 ## Engagement d'exécution de nos prestations
 Nos prestations sont exécutées par un personnel qualifié et certifié Certibiocide. Le matériel et l'outillage sont adaptés et en quantité suffisante pour la bonne exécution des prestations mentionnées et conformes à la législation en vigueur.
 
-{% if constant('AppBundle\\Manager\\ContratManager::MOYEN_BOIS') in contrat.moyens and certification_bois and  contrat.dureeGarantie %}
+{% if constant('AppBundle\\Manager\\ContratManager::MOYEN_BOIS') in contrat.moyens and certification_bois %}
 ## Garantie
-Une clause de garantie est accordée pour une période de {{ (contrat.dureeGarantie / 12) | floor }} ans.
+Une clause de garantie est accordée pour une période de 10 ans.
 
 {% else %}
 {% if contrat.dureeGarantie %}
