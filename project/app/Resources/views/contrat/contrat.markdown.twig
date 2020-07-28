@@ -93,7 +93,7 @@ Nos prestations sont exécutées par un personnel qualifié et certifié Certibi
 
 {% if constant('AppBundle\\Manager\\ContratManager::MOYEN_BOIS') in contrat.moyens and certification_bois and  contrat.dureeGarantie %}
 ## Garantie
-Une clause de garantie est accordée pour une période de {{ (contrat.dureeGarantie / 12) | round(0, floor) }} ans.
+Une clause de garantie est accordée pour une période de {{ (contrat.dureeGarantie / 12) | round(0, 'floor') }} ans.
 
 {% else %}
 {% if contrat.dureeGarantie %}
