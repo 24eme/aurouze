@@ -21,7 +21,7 @@
             <p>
                 {% if etablissement.contactCoordonnee.telephoneFixe or etablissement.contactCoordonnee.telephoneMobile or etablissement.contactCoordonnee.libelle %} <strong>Contact : </strong>{% endif %}{{ etablissement.contactCoordonnee.telephoneFixe }}{% if etablissement.contactCoordonnee.telephoneFixe and etablissement.contactCoordonnee.telephoneMobile %} / {% endif %}{{ etablissement.contactCoordonnee.telephoneMobile }}{% if  etablissement.contactCoordonnee.libelle %} ({{ etablissement.contactCoordonnee.libelle }}){% endif %}
             </p>
-            {% if etablissement.commentaire %}
+            {% if etablissement.commentaire or etablissement.commentairePlanification %}
                 <p>
                     <strong>Commentaire de planification : </strong> <br/>{{ etablissement.commentairePlanification | nl2br }} <br/> <br/>
                     <strong>Commentaire pour les techniciens: </strong> <br/>{{ etablissement.commentaire | nl2br }} <br/>
