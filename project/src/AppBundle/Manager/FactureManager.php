@@ -161,7 +161,6 @@ public static $export_stats_libelle = array(
     public function createFromDevis(Devis $devis)
     {
         if(!$devis->getPdfNonEnvoye()){
-          var_dump($devis->getFacture()->getId()); exit;
           return null;
         }
 
