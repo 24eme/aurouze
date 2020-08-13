@@ -114,6 +114,11 @@
 
     $.initDevisForm = function() {
       var devis_produit_total = document.getElementById("devis_produit_total")
+
+      if (devis_produit_total == null) {
+        return false;
+      }
+
       var devis_produit = document.getElementById('devis_produit')
 
       var updateTotal = function (table) {
