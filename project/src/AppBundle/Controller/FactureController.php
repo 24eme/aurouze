@@ -229,6 +229,11 @@ class FactureController extends Controller
         $dm = $this->get('doctrine_mongodb')->getManager();
         $fm = $this->get('facture.manager');
         $facture = $fm->getRepository()->findOneById($factureId);
+
+        if ($facture->getDateDevis() && ! $facture->getDateFacturation()) {
+            $facture->setDateFacturation(new \DateTime());
+        }
+
         $fm->getRepository()->getClassMetadata()->idGenerator->generateNumeroFacture($dm, $facture);
         $dm->persist($facture);
         $dm->flush();
