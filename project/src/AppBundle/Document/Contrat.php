@@ -1224,8 +1224,8 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
      */
     public function addPassage(\AppBundle\Document\Etablissement $etablissement, Passage $passage) {
         $contratPassagesToSet = new ContratPassages();
-        foreach ($this->getContratPassages() as $contratPassages) {
-            if ($etablissement->getId() == $contratPassages->getEtablissement()->getId()) {
+        foreach ($this->getContratPassages() as $idNode => $contratPassages) {
+            if (($etablissement->getId() == $contratPassages->getEtablissement()->getId()) || ($etablissement->getId() == $idNode)) {
                 $contratPassagesToSet = $contratPassages;
             }
         }
@@ -1803,7 +1803,7 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
 
     public function getDateExpirationGarantie() {
 		$mois = ($this->getDureeGarantie()) ? $this->getDureeGarantie() : 0;
-    
+
     	if ($this->getDateDebut()) {
     		$date = clone $this->getDateDebut();
     	} elseif ($this->getDateAcceptation()) {
