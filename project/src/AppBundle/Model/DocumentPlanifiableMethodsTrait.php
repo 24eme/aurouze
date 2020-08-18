@@ -415,7 +415,7 @@ trait DocumentPlanifiableMethodsTrait
             return;
         }
 
-        if ($this->getType() === Devis::DOCUMENT_TYPE && ! $this->getDateAcceptation()) {
+        if ($this->getDocumentType() === Devis::DOCUMENT_TYPE && ! $this->getDateAcceptation()) {
             $this->setStatut(PassageManager::STATUT_A_ACCEPTER);
             return;
         }
@@ -496,7 +496,7 @@ trait DocumentPlanifiableMethodsTrait
         return "background: " . $colors['background'] . "; color: " . $colors['text'] . ";";
     }
 
-    public function getType() {
+    public function getDocumentType() {
         return self::DOCUMENT_TYPE;
     }
 
