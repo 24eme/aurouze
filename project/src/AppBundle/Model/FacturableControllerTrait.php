@@ -3,6 +3,7 @@
 namespace AppBundle\Model;
 
 use AppBundle\Document\LigneFacturable;
+use AppBundle\Document\Facture;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
