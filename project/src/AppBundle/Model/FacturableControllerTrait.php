@@ -109,6 +109,10 @@ trait FacturableControllerTrait
         $suffix = ($document->getNumero()) ? 'N'.$document->getNumero()
                                            : 'brouillon';
 
+        if ($document->getDocumentType() === Facture::DOCUMENT_TYPE && $document->isAvoir()) {
+            $type = 'avoir';
+        }
+
         $filename = implode('_', [
             $type,
             $document->getSociete()->getIdentifiant(),
