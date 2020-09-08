@@ -15,3 +15,6 @@ db.Facture.createIndex({"$**":"text"}, {"default_language": "french"});
 
 db.Passage.dropIndexes();
 db.Passage.createIndex({"$**":"text"}, {"default_language": "french"});
+
+db.Devis.dropIndexes();
+db.Devis.createIndex({"$**":"text"}, {"default_language": "french"});
