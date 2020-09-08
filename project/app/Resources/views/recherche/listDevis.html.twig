@@ -14,7 +14,22 @@
             {% set devis = item.doc %}
             <tr>
                 <td><a href="{{ path('devis_visualisation', {'id': devis.id })}}">n°&nbsp;{{ devis.numero }}</a></td>
-                <td><small class="text-{{ devis.statutCouleur }}">{{ devis.statutLibelle }}</small></td>
+
+                <td>
+                  {% if devis.isRealise %}
+                    <small class="text-success">
+                  {% elseif devis.isPlanifie %}
+                    <small class="text-info">
+                  {% elseif devis.isAPlanifie %}
+                    <small class="text-info">
+                  {% elseif devis.isAAccepter %}
+                    <small class="text-warning">
+                  {% elseif devis.isAnnule %}
+                    <small class="text-danger">
+                  {% endif %}
+                    {{ devis.statutLibelle }}
+                  </small>
+                </td>
                 <td><a href="{{ path('devis_societe', {'id': devis.societe.id}) }}">{{ devis.societe.raisonSociale }}</a></td>
                 <td>{% if devis.dateAcceptation %}{{ devis.dateAcceptation | localizeddate("medium", "none", null, null, "MMM yyyy") | capitalize }}{% endif %}
                     {% if devis.dateDebut %} (livraison : {{ devis.dateDebut | localizeddate("medium", "none", null, null, "MMM yyyy") | capitalize }} ){% endif %}
