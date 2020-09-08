@@ -35,7 +35,7 @@
                     {% if devis.dateDebut %} (livraison : {{ devis.dateDebut | localizeddate("medium", "none", null, null, "MMM yyyy") | capitalize }} ){% endif %}
                 </td>
                 <td>
-                  <a data-toggle="tooltip" title="{% for ligne in devis.lignes %}{{ (devis.libelle) ? devis.libelle~"\n" : "Aucun" }}{% endfor %}" href="{{ path('devis_pdf', {'document': devis.id })}}">{{ devis.lignes | length}} ligne(s)</a>
+                  <a data-toggle="tooltip" title="{% for ligne in devis.lignes %}{{ (devis.libelle) ? devis.libelle~"\n" : "Aucun" }}{% endfor %}" href="{{ path('facturable_pdf', {'document': devis.id })}}">{{ devis.lignes | length}} ligne(s)</a>
                 </td>
                 <td class="text-right">{{ "%0.2f" | format(devis.getPrixHt)  }}&nbsp;€</td>
             </tr>
