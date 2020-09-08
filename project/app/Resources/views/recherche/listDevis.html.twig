@@ -1,0 +1,29 @@
+<table class="table table-bordered table-striped table-hover">
+    <thead>
+        <tr>
+            <th class="col-xs-1">N°</th>
+            <th class="col-xs-1">statut</th>
+            <th class="col-xs-3">Société</th>
+            <th class="col-xs-2">Date Acceptation</th>
+            <th class="col-xs-3">Produits</th>
+            <th class="col-xs-1" class="text-center">Prix</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in items %}
+            {% set contrat = item.doc %}
+            <tr>
+                <td><a href="{{ path('devis_visualisation', {'id': devis.id })}}">n°&nbsp;{{ devis.numeroArchive }}</a></td>
+                <td><small class="text-{{ devis.statutCouleur }}">{{ devis.statutLibelle }}</small></td>
+                <td><a href="{{ path('devis_societe', {'id': devis.societe.id}) }}">{{ devis.societe.raisonSociale }}</a></td>
+                <td>{% if devis.dateAcceptation %}{{ devis.dateAcceptation | localizeddate("medium", "none", null, null, "MMM yyyy") | capitalize }}{% endif %}
+                    {% if devis.dateDebut %} (livraison : {{ devis.dateDebut | localizeddate("medium", "none", null, null, "MMM yyyy") | capitalize }} ){% endif %}
+                </td>
+                <td>
+                  <a data-toggle="tooltip" title="{% for ligne in devis.lignes %}{{ (devis.libelle) ? devis.libelle~"\n" : "Aucun" }}{% endfor %}" href="{{ path('devis_pdf', {'document': devis.id })}}">{{ devis.lignes | length}} ligne(s)</a>
+                </td>
+                <td class="text-right">{{ "%0.2f" | format(devis.getPrixHt)  }}&nbsp;€</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
