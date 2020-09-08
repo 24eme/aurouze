@@ -52,4 +52,25 @@ class DevisRepository extends DocumentRepository {
 
     return $q->getQuery()->execute();
   }
+
+  public function findByQuery($q)
+  {
+      $q = str_replace(",", "", $q);
+      $q = "\"".str_replace(" ", "\" \"", $q)."\"";
+      $resultSet = array();
+      $itemResultSet = $this->getDocumentManager()->getDocumentDatabase('AppBundle:Devis')->command([
+          'find' => 'Devis',
+          'filter' => ['$text' => ['$search' => $q]],
+          'projection' => ['score' => [ '$meta' => "textScore" ]],
+          'sort' => ['score' => [ '$meta' => "textScore" ]],
+          'limit' => 100
+
+      ]);
+      if (isset($itemResultSet['cursor']) && isset($itemResultSet['cursor']['firstBatch'])) {
+          foreach ($itemResultSet['cursor']['firstBatch'] as $itemResult) {
+              $resultSet[] = array("doc" => $this->uow->getOrCreateDocument('\AppBundle\Document\Devis', $itemResult), "score" => $itemResult['score']);
+          }
+      }
+      return $resultSet;
+  }
 }
