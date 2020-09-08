@@ -13,7 +13,7 @@
         {% for item in items %}
             {% set devis = item.doc %}
             <tr>
-                <td><a href="{{ path('devis_visualisation', {'id': devis.id })}}">n°&nbsp;{{ devis.numeroArchive }}</a></td>
+                <td><a href="{{ path('devis_visualisation', {'id': devis.id })}}">n°&nbsp;{{ devis.numero }}</a></td>
                 <td><small class="text-{{ devis.statutCouleur }}">{{ devis.statutLibelle }}</small></td>
                 <td><a href="{{ path('devis_societe', {'id': devis.societe.id}) }}">{{ devis.societe.raisonSociale }}</a></td>
                 <td>{% if devis.dateAcceptation %}{{ devis.dateAcceptation | localizeddate("medium", "none", null, null, "MMM yyyy") | capitalize }}{% endif %}
