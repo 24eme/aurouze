@@ -130,6 +130,11 @@ class Paiements {
         return $this;
     }
 
+
+    public function getDate() {
+        return $this->dateCreation;
+    }
+
     /**
      * Get dateCreation
      *
