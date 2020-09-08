@@ -11,7 +11,7 @@
     </thead>
     <tbody>
         {% for item in items %}
-            {% set contrat = item.doc %}
+            {% set devis = item.doc %}
             <tr>
                 <td><a href="{{ path('devis_visualisation', {'id': devis.id })}}">n°&nbsp;{{ devis.numeroArchive }}</a></td>
                 <td><small class="text-{{ devis.statutCouleur }}">{{ devis.statutLibelle }}</small></td>
