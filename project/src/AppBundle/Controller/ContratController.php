@@ -659,9 +659,10 @@ class ContratController extends Controller {
 
         $dateRecondution = new \DateTime();
         $typeContrat = null;
-        $societe = null;
+	$societe = null;
+	$commercial = null;
 
-        $formContratsAReconduire = $this->createForm(new ReconductionFiltresType(), null, array(
+        $formContratsAReconduire = $this->createForm(new ReconductionFiltresType($dm), null, array(
         		'action' => $this->generateUrl('contrats_reconduction_massive'),
         		'method' => 'post',
         ));
@@ -672,9 +673,10 @@ class ContratController extends Controller {
         	$dateRecondution = $formValues["dateRenouvellement"];
         	$typeContrat = $formValues["typeContrat"];
         	$societe = $formValues["societe"];
+        	$commercial = $formValues["commercial"];
         }
 
-        $contratsAReconduire = $cm->getRepository()->findContratsAReconduire($typeContrat, $dateRecondution, $societe);
+        $contratsAReconduire = $cm->getRepository()->findContratsAReconduire($typeContrat, $dateRecondution, $societe, $commercial);
         $formReconduction = $this->createForm(new ReconductionType($contratsAReconduire), null, array(
         		'action' => $this->generateUrl('contrats_reconduire_massivement'),
         		'method' => 'post',
