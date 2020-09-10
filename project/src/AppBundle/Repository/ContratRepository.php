@@ -179,7 +179,7 @@ class ContratRepository extends DocumentRepository {
         return null;
     }
 
-    public function findContratsAReconduire($typeContrat = null, \DateTime $date, $societe = null) {
+    public function findContratsAReconduire($typeContrat = null, \DateTime $date, $societe = null, $commercial = null) {
           $date = new \DateTime($date->format('Y-m-d')." 23:59:59");
           $q = $this->createQueryBuilder();
           if ($societe) {
@@ -190,11 +190,15 @@ class ContratRepository extends DocumentRepository {
           	$q->field('typeContrat')->equals($typeContrat);
           } else {
           	$q->field('typeContrat')->in(array_keys(ContratManager::$types_contrats_reconductibles));
-          }
+	  }
+	  if($commercial) {
+		 $q->field('commercial')->equals($commercial);
+	  }
+
           $q->field('dateFin')->lte($date);
           $q->addOr($q->expr()->field('reconduit')->equals(false))
             ->addOr($q->expr()->field('reconduit')->exists(false));
-          $q->field('statut')->notEqual(ContratManager::STATUT_EN_ATTENTE_ACCEPTATION);
+	  $q->field('statut')->notEqual(ContratManager::STATUT_EN_ATTENTE_ACCEPTATION);
           $q->sort('dateFin', 'desc');
           $query = $q->getQuery();
 

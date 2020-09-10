@@ -16,7 +16,7 @@
             </div>
             <div class="panel-body  form-horizontal">
               <div class="row">
-              	<div class="col-xs-6" id="searchable" data-type="societe" data-url="{{ path('recherche_societe')  }}" data-target="0">
+              	<div class="col-xs-4" id="searchable" data-type="societe" data-url="{{ path('recherche_societe')  }}" data-target="0">
 	            	{{ form_errors(formContratsAReconduire.societe) }}
 	            	{{ form_widget(formContratsAReconduire.societe) }}
                 </div>
@@ -28,6 +28,11 @@
 	            	{{ form_errors(formContratsAReconduire.dateRenouvellement) }}
 					{{ form_widget(formContratsAReconduire.dateRenouvellement) }}
                 </div>
+		<div class="col-xs-2">
+                        {{ form_errors(formContratsAReconduire.commercial) }}
+                	{{ form_widget(formContratsAReconduire.commercial) }}
+                </div>
+
               	<div class="col-xs-2">
 	                {{ form_widget(formContratsAReconduire.save) }}
                 </div>
