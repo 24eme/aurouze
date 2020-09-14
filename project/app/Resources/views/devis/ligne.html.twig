@@ -1,4 +1,4 @@
-<tr>
+<tr {% if document.pdfNonEnvoye is defined and document.pdfNonEnvoye is same as(false) %}class="success"{% endif %}>
   <td>{{ document.dateEmission | localizeddate('medium', 'none', null, null, 'd MMMM yyyy') }}</td>
   <td>
     <span class="glyphicon glyphicon-file"></span>
