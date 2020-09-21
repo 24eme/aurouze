@@ -104,14 +104,14 @@ class DevisType extends AbstractType
               );
               $builder->add('dateAcceptation', DateType::class, $dateAcceptationInput);
 
-              $savelabel = ($builder->getData()->getId()) ? 'Modifier' : 'Créer';
+              $savelabel = ($builder->getData()->getId()) ? 'Sauver' : 'Créer';
               $builder->add('edit', SubmitType::class, [
                   'label' => $savelabel,
                   'attr' => ['class' => 'btn btn-success']
               ]);
               $builder->add('plan', SubmitType::class, [
-                  'label' => 'Enregistrer et planifier',
-                  'attr' => ['class' => 'btn btn-info']
+                  'label' => 'Planifier',
+                  'attr' => ['class' => 'btn btn-default']
               ]);
     }
 
