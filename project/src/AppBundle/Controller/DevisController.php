@@ -174,7 +174,8 @@ class DevisController extends Controller
         $dm = $this->get('doctrine_mongodb')->getManager();
         $fm = $this->get('facture.manager');
         $appConf = $this->container->getParameter('application');
-        $facture = $fm->createFromDevis($devis);
+        $planification = boolval($request->get('planification',true));
+        $facture = $fm->createFromDevis($devis, $planification);
         $devis->setPdfNonEnvoye(false);
         $dm->persist($facture);
         $dm->flush();

@@ -158,12 +158,12 @@ public static $export_stats_libelle = array(
         return $facture;
     }
 
-    public function createFromDevis(Devis $devis)
+    public function createFromDevis(Devis $devis, $planification = true)
     {
-        if(!$devis->getPdfNonEnvoye()){
+        if(!$devis->getPdfNonEnvoye() && $planification){
           return null;
         }
-
+        
         $facture = new Facture();
         $facture->setSociete($devis->getSociete());
         $facture->setCommercial($devis->getCommercial());

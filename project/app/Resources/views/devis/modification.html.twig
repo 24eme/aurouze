@@ -166,6 +166,9 @@
             </div>
             <div class="col-xs-4 text-right">
               {{ form_widget(form.edit) }}
+              <a class="btn btn-default" href="{{ path('devis_create-facture', {'id': devis.id, 'planification' : '0'}) }}" onclick="return confirm('Êtes vous sûr de vouloir facturer directement ce devis?')">
+                <i class="glyphicon glyphicon-euro"></i>&nbsp;Facturer
+              </a>
               {{ form_widget(form.plan) }}
             </div>
             </div>
