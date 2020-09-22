@@ -75,6 +75,9 @@ class FactureController extends Controller
             $factureLigne->setQuantite(1);
             if ($contrat) {
                 $factureLigne->setLibelle($contrat->getLibelleMouvement());
+                if($contrat->getTvaReduite()){
+                  $factureLigne->setTauxTaxe(0.1);
+                }
             }
             $facture->addLigne($factureLigne);
         }
