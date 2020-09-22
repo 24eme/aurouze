@@ -33,6 +33,9 @@ class FactureGenerator extends AbstractIdGenerator
                 $hasNumero = boolval($ligne->getOrigineDocument()->getNbFactures());
             }
         }
+        if($document->isAvoir()){
+          $hasNumero = true;
+        }
 
         if($document->getNumeroFacture() || !$hasNumero) {
 
