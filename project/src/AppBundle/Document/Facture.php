@@ -254,6 +254,16 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
         }
     }
 
+    public function isFactureContratLibre(){
+        if(!$this->getContrat()){
+          return false;
+        }
+        if(!$this->getContrat()->getNbFactures()){
+          return true;
+        }
+        return false;
+    }
+
     public function getOrigines() {
         $origines = array();
         foreach ($this->getLignes() as $ligne) {
