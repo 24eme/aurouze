@@ -3,7 +3,7 @@
     {% elseif(facture.isEnRetardPaiement()) %} danger {% endif %}">
             <td>{{ ((facture.isDevis) ? facture.dateDevis : facture.dateFacturation) | localizeddate("medium", "none", null, null, "d MMMM yyyy") }} {% if(facture.numeroDevis) %} <span class="pull-right"><i class="mdi mdi-local-shipping"></i></span> {% endif %}</td>
             <td><a href="{{ path('facturable_pdf', {'document': facture.id })}}">
-                    <span class="glyphicon glyphicon-file"></span> {% if facture.isDevis %}Devis n° {{ facture.numeroDevis }}{% elseif(facture.isAvoir) %}Avoir n° {{ facture.numeroFacture }}{% elseif(facture.numeroFacture) %}Facture n° {{ facture.numeroFacture }}{% else %}Facture prévue<a class="btn btn-link btn-xs"
+                    <span class="glyphicon glyphicon-file"></span> {% if facture.isDevis %}Devis n° {{ facture.numeroDevis }}{% elseif(facture.isAvoir) %}Avoir n° {{ facture.numeroFacture }}{% elseif(facture.numeroFacture) %}Facture n° {{ facture.numeroFacture }}{% if(facture.isFactureContratLibre) %}<br/><small class="pull-right">Facture créée manuellement</small>{% endif %}{% else %}Facture prévue<a class="btn btn-link btn-xs"
                     href="{% if facture.getContrat() %}{{ path('facture_creation', {'societe': facture.societe.id,'type': 'facture', 'id': facture.id, 'contratId' : facture.getContrat().id}) }}
                           {% else %}{{ path('facture_creation', { 'societe': facture.societe.id, 'type': 'facture', 'id': facture.id })}}
                           {% endif %}"><span class="glyphicon glyphicon-pencil"></span>
@@ -75,7 +75,7 @@
                                   <li>
                                     <a onclick="return confirm('Êtes vous sûr de vouloir faire un avoir partiel remboursé par chèque sur cette facture ?')"  href="{{ path('facture_avoir', { 'id': societe.id, 'type': 'facture', 'factureId': facture.id , 'mouvement' : "0", 'remboursement': "1" })}}">Créer un avoir partiel avec remboursement par chèque</a>
                                   </li>
-                                  <li><a onclick="return confirm('Êtes vous sûr de vouloir annuler la facture et générer un avoir ?')"  href="{{ path('facture_avoir', { 'id': societe.id, 'type': 'facture', 'factureId': facture.id , 'mouvement' : "1" })}}">Annuler la facturation (donnera lieu à une nouvelle facture)</a></li>
+                                  <li><a onclick="return confirm('Êtes vous sûr de vouloir annuler la facture et générer un avoir ?')"  href="{{ path('facture_avoir', { 'id': societe.id, 'type': 'facture', 'factureId': facture.id , 'mouvement' : "1" })}}">Annuler la facturation {% if(facture.isFactureContratLibre) %}(il faudra éditer une nouvelle facture){% else %}(donnera lieu à une nouvelle facture){% endif %}</a></li>
                                 {% endif %}
                             {% endif %}
                     {% endif %}
