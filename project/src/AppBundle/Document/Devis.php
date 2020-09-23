@@ -90,6 +90,11 @@ class Devis implements DocumentSocieteInterface, DocumentPlanifiableInterface, F
      */
     protected $lignes;
 
+    /**
+     * @MongoDB\Field(type="string")
+     */
+    protected $identifiantFacture;
+
     public function __construct() {
         $this->etablissementInfos = new EtablissementInfos();
         $this->techniciens = new ArrayCollection();
@@ -355,6 +360,28 @@ class Devis implements DocumentSocieteInterface, DocumentPlanifiableInterface, F
     public function getNumeroDevis()
     {
         return $this->numeroDevis;
+    }
+
+    /**
+     * Set identifiantFacture
+     *
+     * @param string $identifiantFacture
+     * @return $this
+     */
+    public function setIdentifiantFacture($identifiantFacture)
+    {
+        $this->identifiantFacture = $identifiantFacture;
+        return $this;
+    }
+
+    /**
+     * Get identifiantFacture
+     *
+     * @return string $identifiantFacture
+     */
+    public function getIdentifiantFacture()
+    {
+        return $this->identifiantFacture;
     }
 
 

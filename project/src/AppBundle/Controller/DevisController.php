@@ -178,6 +178,7 @@ class DevisController extends Controller
         $facture = $fm->createFromDevis($devis, $planification);
         $devis->setPdfNonEnvoye(false);
         $dm->persist($facture);
+        $devis->setIdentifiantFacture($facture->getId());
         $dm->flush();
         return $this->redirectToRoute('facture_societe', array('id' => $facture->getSociete()->getId()));
     }

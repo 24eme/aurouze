@@ -261,14 +261,19 @@ class FactureController extends Controller
 
       $facture->setAvoir($avoir->getNumeroFacture());
       $dm->persist($facture);
+      $devis = $this->get('devis.manager')->getRepository()->findOneByIdentifiantFacture($factureId);
+      if($devis){
+        $devis->setIdentifiantFacture(null);
+      }
       $dm->flush();
 
       if($mouvement){
         $contrat = $facture->getContrat();
-        $contrat->restaureMouvements($facture);
-
-        $dm->persist($contrat);
-        $dm->flush();
+        if($contrat){
+          $contrat->restaureMouvements($facture);
+          $dm->persist($contrat);
+          $dm->flush();
+        }
       }
 
       return $this->redirectToRoute('facture_societe', array('id' => $societe->getId()));
