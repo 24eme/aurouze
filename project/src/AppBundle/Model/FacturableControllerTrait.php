@@ -12,12 +12,12 @@ trait FacturableControllerTrait
     /**
      * @Route("/{document}/pdf", name="facturable_pdf")
      */
-    public function pdfAction(Request $request, $documentId)
+    public function pdfAction(Request $request, $document)
     {
-        $type = strtolower(strtok($documentId, '-'));
+        $type = strtolower(strtok($document, '-'));
         $manager = $this->get($type.'.manager');
         $repository = $manager->getRepository('AppBundle:'.ucfirst($type));
-        $document = $repository->findOneById($documentId);
+        $document = $repository->findOneById($document);
 
         if (! $document instanceof FacturableInterface) {
             throw new \Exception($type." n'est pas de type FacturableInterface");
