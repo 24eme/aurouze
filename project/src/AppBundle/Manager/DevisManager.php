@@ -4,6 +4,7 @@ namespace AppBundle\Manager;
 
 use Doctrine\ODM\MongoDB\DocumentManager as DocumentManager;
 use AppBundle\Document\Devis;
+use AppBundle\Document\Facture;
 use AppBundle\Document\Societe;
 use AppBundle\Document\Adresse;
 
@@ -29,6 +30,13 @@ class DevisManager {
 
     public function findBySociete(Societe $societe) {
         return $this->getRepository()->findBySociete($societe);
+    }
+
+    public function findByFacture(Facture $facture) {
+      if(!$facture->getNumeroDevis()){
+        return null;
+      }
+      return $this->getRepository()->findOneByNumeroDevis($facture->getNumeroDevis());
     }
 
 

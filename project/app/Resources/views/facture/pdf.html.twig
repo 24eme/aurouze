@@ -140,6 +140,15 @@ Condition de réglement : {{ facture.frequencePaiementLibelle }}
 </p>
 {% endif %}
 
+
+{% if (devisLie) %}
+<p>
+  Livraison à l'adresse : <strong>{{ devisLie.etablissementInfos.adresse.adresse }}
+  {{ devisLie.etablissementInfos.adresse.codePostal }}
+  {{ devisLie.etablissementInfos.adresse.commune }}</strong>
+</p>
+{% endif %}
+
 <small>
 <p class="text-center" style="line-height: 13px;">
     <small>

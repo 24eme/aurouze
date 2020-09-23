@@ -12,15 +12,20 @@ trait FacturableControllerTrait
     /**
      * @Route("/{document}/pdf", name="facturable_pdf")
      */
-    public function pdfAction(Request $request, $document)
+    public function pdfAction(Request $request, $documentId)
     {
-        $type = strtolower(strtok($document, '-'));
+        $type = strtolower(strtok($documentId, '-'));
         $manager = $this->get($type.'.manager');
         $repository = $manager->getRepository('AppBundle:'.ucfirst($type));
-        $document = $repository->findOneById($document);
+        $document = $repository->findOneById($documentId);
 
         if (! $document instanceof FacturableInterface) {
             throw new \Exception($type." n'est pas de type FacturableInterface");
+        }
+        $devisLie = null;
+        if($type == "facture"){
+          $dm = $this->get('devis.manager');
+          $devisLie = $dm->findByFacture($document);
         }
 
         $pages = [];
@@ -98,6 +103,7 @@ trait FacturableControllerTrait
 
         $html = $this->renderView($type.'/pdf.html.twig', array(
             $type => $document,
+            'devisLie' => $devisLie,
             'pages' => $pages,
             'parameters' => $manager->getParameters(),
         ));
