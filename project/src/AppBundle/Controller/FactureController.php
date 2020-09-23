@@ -119,10 +119,8 @@ class FactureController extends Controller
         }
 
         $facture->update();
-
         if ($request->get('previsualiser')) {
-
-            return $this->pdfAction($request, $facture);
+            return $this->pdfAction($request, $facture->getId());
         }
 
         if (!$facture->getId()) {
@@ -258,7 +256,6 @@ class FactureController extends Controller
       if($remboursement){
         $avoir->setAvoirPartielRemboursementCheque(true);
       }
-
       $dm->persist($avoir);
       $dm->flush();
 
