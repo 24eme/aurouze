@@ -166,9 +166,15 @@
             </div>
             <div class="col-xs-4 text-right">
               {{ form_widget(form.edit) }}
+              {% if devis.identifiantFacture %}
+              <a class="btn btn-default" href="{{ path('facturable_pdf', {'document': devis.identifiantFacture}) }}">
+                <i class="glyphicon glyphicon-eye-open"></i>&nbsp;Voir la facture en PDF
+              </a>
+              {% else %}
               <a class="btn btn-default" href="{{ path('devis_create-facture', {'id': devis.id, 'planification' : '0'}) }}" onclick="return confirm('Êtes vous sûr de vouloir facturer directement ce devis?')">
                 <i class="glyphicon glyphicon-euro"></i>&nbsp;Facturer
               </a>
+              {% endif %}
               {{ form_widget(form.plan) }}
             </div>
             </div>
