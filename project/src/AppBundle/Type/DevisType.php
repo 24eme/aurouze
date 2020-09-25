@@ -88,6 +88,7 @@ class DevisType extends AbstractType
                 'class' => Compte::class,
                 'expanded' => false,
                 'multiple' => true,
+                'required' => false,
                 'attr' => array("class" => "select2 select2-simple", "multiple" => "multiple", "style" => "width:100%;")
             ));
 
