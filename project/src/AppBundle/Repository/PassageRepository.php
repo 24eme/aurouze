@@ -57,7 +57,7 @@ class PassageRepository extends DocumentRepository {
                 ->field('statut')->equals(PassageManager::STATUT_PLANIFIE)
                 ->field('dateFin')->lte($mongoEndDate)
                 ->field('dateDebut')->gte($mongoStartDate)
-                ->sort('dateDebut', 'asc');
+                ->sort('techniciens', 'asc');
         $query = $query->getQuery();
         return $query->execute();
     }
