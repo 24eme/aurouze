@@ -56,6 +56,7 @@
                   <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="actionButton">
+                      <li> <a href="mailto:{{ societe.contactCoordonnee.email }}?subject= Aurouze Facture n°{{facture.numeroFacture}}">Envoyer par mail</a></li>
                     {% if facture.isDevis %}
                         <li><a href="{{ path('devis_creation', { 'societe': societe.id, 'id': facture.id })}}">A déplacer Modifier le devis ???</a></li>
                         <li><a href="{{ path('facture_creation', { 'societe': societe.id, 'id': facture.id })}}">Créer la facture</a></li>
@@ -83,7 +84,7 @@
                 </div>
               {% endif %}
               {% if not facture.numeroFacture and not facture.isDevis %}
-                <a class="btn btn-default btn-xs " href="{{ path('facture_en_attente_facturer', { 'factureId': facture.id }) }}">Facturer</a>
+                <a class="btn btn-default btn-xs " onclick="return confirm('Êtes vous sûr de vouloir facturer ?')" href="{{ path('facture_en_attente_facturer', { 'factureId': facture.id }) }}">Facturer </a>
               {% endif %}
             </td>
         </tr>
