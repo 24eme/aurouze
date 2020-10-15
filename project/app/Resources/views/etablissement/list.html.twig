@@ -25,7 +25,7 @@
                 <a href="callto:{{ etablissement.contactCoordonnee.fax }}"><i class="glyphicon glyphicon-print"></i>&nbsp;{{ etablissement.contactCoordonnee.fax }}</a><br />
             {% endif %}&nbsp;
             {% if(etablissement.contactCoordonnee.email is defined and etablissement.contactCoordonnee.email)%}
-                <a href="mailto:{{ etablissement.contactCoordonnee.email }}"><i class="glyphicon glyphicon-envelope"></i>&nbsp;{{ etablissement.contactCoordonnee.email }}</a><br />
+              <i class="glyphicon glyphicon-envelope"></i>&nbsp;<a href="mailto:{{ etablissement.contactCoordonnee.email }}">{{ etablissement.contactCoordonnee.email }}</a><br />
             {% endif %}
             {% if(etablissement.contactCoordonnee.siteInternet is defined and etablissement.contactCoordonnee.siteInternet)%}
                 <a href="{{ etablissement.contactCoordonnee.siteInternet }}"><i class="glyphicon glyphicon-globe"></i>&nbsp;{{ etablissement.contactCoordonnee.siteInternet }}</a><br />
