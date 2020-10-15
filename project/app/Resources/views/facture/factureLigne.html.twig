@@ -56,7 +56,12 @@
                   <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="actionButton">
+                    {% if societe.contactCoordonnee.emailFacturation %}
+                      <li> <a href="mailto:{{ societe.contactCoordonnee.emailFacturation }}?subject= Aurouze Facture n°{{facture.numeroFacture}}&body=Bonjour">Envoyer par mail</a></li>
+                    {% else %}
                       <li> <a href="mailto:{{ societe.contactCoordonnee.email }}?subject= Aurouze Facture n°{{facture.numeroFacture}}&body=Bonjour">Envoyer par mail</a></li>
+                    {% endif %}
+
                     {% if facture.isDevis %}
                         <li><a href="{{ path('devis_creation', { 'societe': societe.id, 'id': facture.id })}}">A déplacer Modifier le devis ???</a></li>
                         <li><a href="{{ path('facture_creation', { 'societe': societe.id, 'id': facture.id })}}">Créer la facture</a></li>
