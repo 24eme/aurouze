@@ -48,7 +48,7 @@
                                 <i class="glyphicon glyphicon-print"></i>&nbsp;{{ societe.contactCoordonnee.fax }}&nbsp;
                             {% endif %}
                             {% if(societe.contactCoordonnee.email is defined and societe.contactCoordonnee.email)%}
-                                <i class="glyphicon glyphicon-envelope"></i>&nbsp;{{ societe.contactCoordonnee.email }}&nbsp;
+                                <i class="glyphicon glyphicon-envelope"></i>&nbsp;<a href="mailto:{{ societe.contactCoordonnee.email }}">{{ societe.contactCoordonnee.email }}</a>&nbsp;
                             {% endif %}
                             {% if(societe.contactCoordonnee.siteInternet is defined and societe.contactCoordonnee.siteInternet)%}
                                 <i class="glyphicon glyphicon-globe"></i>&nbsp;{{ societe.contactCoordonnee.siteInternet }}&nbsp;
