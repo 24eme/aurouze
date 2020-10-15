@@ -19,6 +19,7 @@
                 {%if(compte.contactCoordonnee.telephoneMobile is defined and compte.contactCoordonnee.telephoneMobile)%}<a href="callto:{{ compte.contactCoordonnee.telephoneMobile }}"><i class="glyphicon glyphicon-phone"></i>&nbsp;{{ compte.contactCoordonnee.telephoneMobile }}</a><br />{%endif%}
                 {%if(compte.contactCoordonnee.fax is defined and compte.contactCoordonnee.fax)%}<a href="callto:{{ compte.contactCoordonnee.fax }}"><i class="glyphicon glyphicon-print"></i>&nbsp;{{ compte.contactCoordonnee.fax }}</a><br />{%endif%}
                 {%if(compte.contactCoordonnee.email is defined and compte.contactCoordonnee.email)%}<a href="mailto:{{ compte.contactCoordonnee.email }}"><i class="glyphicon glyphicon-envelope"></i>&nbsp;{{ compte.contactCoordonnee.email }}</a><br />{%endif%}
+                {%if(compte.contactCoordonnee.emailFacturation is defined and compte.contactCoordonnee.emailFacturation)%}<a href="mailto:{{ compte.contactCoordonnee.emailFacturation }}"><i class="glyphicon glyphicon-envelope"></i>&nbsp;{{ compte.contactCoordonnee.emailFacturation }}</a><br />{%endif%}
                 {%if(compte.contactCoordonnee.siteInternet is defined and compte.contactCoordonnee.siteInternet)%}<a href="{{ compte.contactCoordonnee.siteInternet }}"><i class="glyphicon glyphicon-globe"></i>&nbsp;{{ compte.contactCoordonnee.siteInternet }}</a><br />{%endif%}&nbsp;
             {% else %}
                 <em class="text-muted">Même que la société</em>

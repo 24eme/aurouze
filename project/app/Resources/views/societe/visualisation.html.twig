@@ -36,7 +36,7 @@
                         </span>
                     </div>
                     <div class="list-group-item">
-                        {% if (societe.contactCoordonnee.telephoneFixe or societe.contactCoordonnee.telephoneMobile or societe.contactCoordonnee.fax or societe.contactCoordonnee.email or societe.contactCoordonnee.siteInternet or societe.contactCoordonnee.libelle)  %}
+                        {% if (societe.contactCoordonnee.telephoneFixe or societe.contactCoordonnee.telephoneMobile or societe.contactCoordonnee.fax or societe.contactCoordonnee.email or societe.contactCoordonnee.emailFacturation or societe.contactCoordonnee.siteInternet or societe.contactCoordonnee.libelle)  %}
                         	{% if(societe.contactCoordonnee.libelle is defined and societe.contactCoordonnee.libelle)%}{{ societe.contactCoordonnee.libelle }}&nbsp;{%endif%}
                             {% if (societe.contactCoordonnee.telephoneFixe is defined and societe.contactCoordonnee.telephoneFixe)%}
                                 <i class="glyphicon glyphicon-earphone"></i>&nbsp;{{ societe.contactCoordonnee.telephoneFixe }}&nbsp;
@@ -49,6 +49,9 @@
                             {% endif %}
                             {% if(societe.contactCoordonnee.email is defined and societe.contactCoordonnee.email)%}
                                 <i class="glyphicon glyphicon-envelope"></i>&nbsp;<a href="mailto:{{ societe.contactCoordonnee.email }}">{{ societe.contactCoordonnee.email }}</a>&nbsp;
+                            {% endif %}
+                            {% if(societe.contactCoordonnee.emailFacturation is defined and societe.contactCoordonnee.emailFacturation)%}
+                                <i class="glyphicon glyphicon-envelope"></i>&nbsp;<a href="mailto:{{ societe.contactCoordonnee.emailFacturation }}">{{ societe.contactCoordonnee.emailFacturation }}</a>&nbsp;
                             {% endif %}
                             {% if(societe.contactCoordonnee.siteInternet is defined and societe.contactCoordonnee.siteInternet)%}
                                 <i class="glyphicon glyphicon-globe"></i>&nbsp;{{ societe.contactCoordonnee.siteInternet }}&nbsp;

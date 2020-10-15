@@ -33,6 +33,14 @@ class ContactCoordonnee {
     /**
      * @MongoDB\Field(type="string")
      */
+
+     protected $emailFacturation;
+
+     /**
+      * @MongoDB\Field(type="string")
+      */
+
+
     protected $siteInternet;
 
     /**
@@ -47,6 +55,7 @@ class ContactCoordonnee {
             ($this->getTelephoneMobile() == $contactCoordonnee->getTelephoneMobile() || !$this->getTelephoneMobile()) &&
             ($this->getFax() == $contactCoordonnee->getFax() || !$this->getFax()) &&
             ($this->getEmail() == $contactCoordonnee->getEmail() || !$this->getEmail()) &&
+            ($this->getEmailFacturation() == $contactCoordonnee->getEmailFacturation() || !$this->getEmailFacturation()) &&
             ($this->getSiteInternet() == $contactCoordonnee->getSiteInternet() || !$this->getSiteInternet()) &&
             ($this->getLibelle() == $contactCoordonnee->getLibelle() || !$this->getLibelle())
         )
@@ -63,6 +72,7 @@ class ContactCoordonnee {
         $this->setTelephoneMobile($contactCoordonnee->getTelephoneMobile());
         $this->setFax($contactCoordonnee->getFax());
         $this->setEmail($contactCoordonnee->getEmail());
+        $this->setEmailFacturation($contactCoordonnee->getEmailFacturation());
         $this->setSiteInternet($contactCoordonnee->getSiteInternet());
         $this->setLibelle($contactCoordonnee->getLibelle());
     }
@@ -153,6 +163,28 @@ class ContactCoordonnee {
     public function getEmail()
     {
         return $this->email;
+    }
+
+    /**
+     * Set emailFacturation
+     *
+     * @param string $emailFacturation
+     * @return self
+     */
+    public function setEmailFacturation($emailFacturation)
+    {
+        $this->emailFacturation = $emailFacturation;
+        return $this;
+    }
+
+    /**
+     * Get $emailFacturation
+     *
+     * @return string $emailFacturation
+     */
+    public function getEmailFacturation()
+    {
+        return $this->emailFacturation;
     }
 
     /**

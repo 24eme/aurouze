@@ -27,6 +27,9 @@
             {% if(etablissement.contactCoordonnee.email is defined and etablissement.contactCoordonnee.email)%}
                 <a href="mailto:{{ etablissement.contactCoordonnee.email }}"><i class="glyphicon glyphicon-envelope"></i>&nbsp;{{ etablissement.contactCoordonnee.email }}</a><br />
             {% endif %}
+            {% if(etablissement.contactCoordonnee.emailFacturation is defined and etablissement.contactCoordonnee.emailFacturation)%}
+                <a href="mailto:{{ etablissement.contactCoordonnee.emailFacturation }}"><i class="glyphicon glyphicon-envelope"></i>&nbsp;{{ etablissement.contactCoordonnee.emailFacturation }}</a><br />
+            {% endif %}
             {% if(etablissement.contactCoordonnee.siteInternet is defined and etablissement.contactCoordonnee.siteInternet)%}
                 <a href="{{ etablissement.contactCoordonnee.siteInternet }}"><i class="glyphicon glyphicon-globe"></i>&nbsp;{{ etablissement.contactCoordonnee.siteInternet }}</a><br />
             {% endif %}
