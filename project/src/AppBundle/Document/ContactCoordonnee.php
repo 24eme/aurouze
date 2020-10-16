@@ -176,15 +176,13 @@ class ContactCoordonnee {
 
     public function setEmailFacturation($emailFacturation)
     {
-        if($emailFacturation!=null){
+        if($emailFacturation==$this->email){
+          return null;
+        }
+        else {
           $this->emailFacturation = $emailFacturation;
           return $this;
         }
-        else {
-          $this->emailFacturation = $this->email;
-          return $this;
-        }
-
     }
 
     /**
@@ -194,7 +192,8 @@ class ContactCoordonnee {
      */
     public function getEmailFacturation()
     {
-        return $this->emailFacturation;
+      $emailFacturation=preg_split("/;/",$this->emailFacturation);
+      return $emailFacturation[0];
     }
 
     /**
