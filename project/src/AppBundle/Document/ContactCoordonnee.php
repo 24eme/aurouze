@@ -162,7 +162,8 @@ class ContactCoordonnee {
      */
     public function getEmail()
     {
-        return $this->email;
+        $email=preg_split("/;/",$this->email);
+        return $email[0];
     }
 
     /**
