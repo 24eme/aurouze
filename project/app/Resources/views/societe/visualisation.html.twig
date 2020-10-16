@@ -66,6 +66,9 @@
                             <li>Code comptable : {{ societe.codeComptable }}</li>
                             {% if(societe.contactCoordonnee.emailFacturation is defined and societe.contactCoordonnee.emailFacturation)%}
                               <li><i class="glyphicon glyphicon-envelope"></i>&nbsp;Email de Facturation : <a href="mailto:{{ societe.contactCoordonnee.emailFacturation }}">{{ societe.contactCoordonnee.emailFacturation }}</a>&nbsp;</li>
+                            {% elseif(societe.contactCoordonnee.email is defined and societe.contactCoordonnee.email)%}
+                              <li><i class="glyphicon glyphicon-envelope"></i>&nbsp;Email de Facturation : <a href="mailto:{{ societe.contactCoordonnee.email}}">{{ societe.contactCoordonnee.email }}</a>&nbsp;</li>
+
                             {% endif %}
                         </ul>
                     </div>
