@@ -171,10 +171,19 @@ class ContactCoordonnee {
      * @param string $emailFacturation
      * @return self
      */
+
+
     public function setEmailFacturation($emailFacturation)
     {
-        $this->emailFacturation = $emailFacturation;
-        return $this;
+        if($emailFacturation!=null){
+          $this->emailFacturation = $emailFacturation;
+          return $this;
+        }
+        else {
+          $this->emailFacturation = $this->email;
+          return $this;
+        }
+
     }
 
     /**
