@@ -69,24 +69,7 @@
 
 {{ form_start(formRelance) }}
 
-<div class="row hide-print" {% if ((nbRelances is null) or (nbRelances == -1)) %} readonly="readonly" disabled="disabled" style="opacity:0.5;" {% endif %} >
-    <div class="col-xs-3 pull-right">
-      <div class="input-group">
-          <span class="input-group-btn">
-						{% if ((nbRelances is null) or (nbRelances == -1)) %}
-						<div class="input-group">
-          		<span class="input-group-btn">
-						      <a class="btn-loading btn btn-success pull-right btn" href="#">Relancer</a>
-							</span>
-      			</div>
-						{% else %}
-            {{ form_widget(formRelance.relancer,  {'attr': {'class': 'btn-loading btn btn-success pull-right', 'data-loading-text': "Relances en cours de génération..."}}) }}
-						{% endif %}
-						</span>
-      </div>
-    </div>
-</div>
-<br/>
+
 <div class="row">
 	{% if commercial %}<h3 class="show-print">Clients {{ commercial.identite }}</h3>{% endif %}
 	{% for factureEnRetard in facturesEnRetard %}
