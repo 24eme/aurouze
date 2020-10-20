@@ -2,7 +2,7 @@
     {% elseif(facture.isRedressee()) %} warning
     {% elseif(facture.isEnRetardPaiement()) %} danger {% endif %}">
             <td>{{ ((facture.isDevis) ? facture.dateDevis : facture.dateFacturation) | localizeddate("medium", "none", null, null, "d MMMM yyyy") }} {% if(facture.numeroDevis) %} <span class="pull-right"><i class="mdi mdi-local-shipping"></i></span> {% endif %}</td>
-            <td><a href="{{ path('facturable_pdf', {'document': facture.id })}}">
+            <td><a href="{{ path('facturable_pdf', {'document': facture.id ,'key': facture.getSecretKey()})}}">
                     <span class="glyphicon glyphicon-file"></span> {% if facture.isDevis %}Devis n° {{ facture.numeroDevis }}{% elseif(facture.isAvoir) %}Avoir n° {{ facture.numeroFacture }}{% elseif(facture.numeroFacture) %}Facture n° {{ facture.numeroFacture }}{% if(facture.isFactureContratLibre) %}<br/><small class="pull-right">Facture créée manuellement</small>{% endif %}{% else %}Facture prévue<a class="btn btn-link btn-xs"
                     href="{% if facture.getContrat() %}{{ path('facture_creation', {'societe': facture.societe.id,'type': 'facture', 'id': facture.id, 'contratId' : facture.getContrat().id}) }}
                           {% else %}{{ path('facture_creation', { 'societe': facture.societe.id, 'type': 'facture', 'id': facture.id })}}
@@ -12,7 +12,7 @@
 
             </td>
             <td>
-                <a data-toggle="tooltip" title="{% for ligne in facture.lignes %}{{ (ligne.libelle) ? ligne.libelle~"\n" : "Aucun" }}{% endfor %}" href="{{ path('facturable_pdf', {'document': facture.id })}}">{{ facture.lignes | length}} ligne(s)</a>
+                <a data-toggle="tooltip" title="{% for ligne in facture.lignes %}{{ (ligne.libelle) ? ligne.libelle~"\n" : "Aucun" }}{% endfor %}" href="{{ path('facturable_pdf', {'document': facture.id ,'key': facture.getSecretKey() })}}">{{ facture.lignes | length}} ligne(s)</a>
                 {% for origine in facture.origines %}
                   - <a data-toggle="tooltip" title="{% for etab in origine.etablissements %}{{ etab }}<br/>{% endfor %}"
                       href="{{ path('contrat_visualisation', {'id': origine.id })}}">Contrat n° {{ origine.numeroArchive }}</a>
