@@ -6,6 +6,7 @@ use AppBundle\Document\LigneFacturable;
 use AppBundle\Document\Facture;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 trait FacturableControllerTrait
 {
@@ -143,7 +144,7 @@ trait FacturableControllerTrait
             );
       }
         else{
-            throw $this->createNotFoundException();
+            throw new NotFoundHttpException();
         }
     }
 
