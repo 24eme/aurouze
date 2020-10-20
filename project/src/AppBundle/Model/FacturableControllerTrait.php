@@ -128,7 +128,6 @@ trait FacturableControllerTrait
                 $document->getDateEmission()->format('Ymd'),
                 $document->getNumero(),
                 $document->getSecretKey(),
-                hash ('sha256' , $document->getId().$this->getSecretKey()),
                 $suffix
             ]);
             $filename .= '.pdf';
