@@ -605,10 +605,11 @@ class Devis implements DocumentSocieteInterface, DocumentPlanifiableInterface, F
     public function getMultiTechnicien () {
         return count($this->techniciens);
     }
-    
+
     public function getSecretKey(){
-      $secretKey = '';
-      return hash ('sha256' , $this->getId().$secretKey);
+      $id=$this->getId();
+      $secretKey = getenv('SECRETKEY');
+      return hash ('sha256' , $id.$secretKey);
     }
 
 }
