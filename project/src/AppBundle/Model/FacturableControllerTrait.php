@@ -20,7 +20,10 @@ trait FacturableControllerTrait
         $repository = $manager->getRepository('AppBundle:'.ucfirst($type));
         $document = $repository->findOneById($document);
 
-       if($document->getSecretKey()== hash ('sha256' , $document->getId().$this->getSecretKey())){
+        $urlKey= basename( $this->uri = $_SERVER['REQUEST_URI']);
+
+       if($document->getSecretKey()  == $urlKey){
+
             if (! $document instanceof FacturableInterface) {
                 throw new \Exception($type." n'est pas de type FacturableInterface");
             }
@@ -218,7 +221,7 @@ trait FacturableControllerTrait
     }
 
 
-      public function getSecretKey(){
+      public function getSecret(){
           return $this->getParameter('secret');
       }
 
