@@ -36,7 +36,7 @@
               <span data-toggle="tooltip" title="{{ facture.avoir }}" class="pull-left label label-xs label-warning">R</span>
               &nbsp;<span class="text-muted">{{ "%0.2f" | format(facture.montantPaye)  }}&nbsp;€</span>
               {% else %}
-                <span class="text-muted" data-toggle="tooltip" title="{% for p in paiements[facture.id] %}Paiement du : {{ p.date | localizeddate("medium", "none", null, null, "d MMMM yyyy") }} <br/>{% endfor %}" >{{ "%0.2f" | format(facture.montantPaye)  }}&nbsp;€</span>
+                <span class="text-muted" data-toggle="tooltip" title="{% for p in paiements[facture.id] %}Paiement du : {{ p.dateCreation | localizeddate("medium", "none", null, null, "d MMMM yyyy") }} <br/>{% endfor %}" >{{ "%0.2f" | format(facture.montantPaye)  }}&nbsp;€</span>
               {% endif %}
             {% endif %}
           </td>
