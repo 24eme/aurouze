@@ -219,12 +219,5 @@ trait FacturableControllerTrait
 
     public function getPdfGenerationOptions() {
         return array('disable-smart-shrinking' => null, 'encoding' => 'utf-8', 'margin-left' => 3, 'margin-right' => 3, 'margin-top' => 4, 'margin-bottom' => 4);
-    }
-
-
-      public function getSecret(){
-          return $this->getParameter('secret');
-      }
-
-
+    } 
 }
