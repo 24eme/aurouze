@@ -39,6 +39,12 @@ class AppKernel extends Kernel
         $loader->load($this->getRootDir().'/config/config_'.$this->getEnvironment().'.yml');
     }
 
+    protected function initializeContainer()
+    {
+      parent::initializeContainer();
+      putenv("SECRETKEY=".$this->container->getParameter('secret'));
+    }
+
     protected function buildContainer()
     {
         $container = parent::buildContainer();

@@ -2,7 +2,7 @@
     {% elseif(facture.isRedressee()) %} warning
     {% elseif(facture.isEnRetardPaiement()) %} danger {% endif %}">
             <td>{{ ((facture.isDevis) ? facture.dateDevis : facture.dateFacturation) | localizeddate("medium", "none", null, null, "d MMMM yyyy") }} {% if(facture.numeroDevis) %} <span class="pull-right"><i class="mdi mdi-local-shipping"></i></span> {% endif %}</td>
-            <td><a href="{{ path('facturable_pdf', {'document': facture.id })}}">
+            <td><a href="{{ path('facturable_pdf', {'document': facture.id ,'key': facture.getSecretKey()})}}">
                     <span class="glyphicon glyphicon-file"></span> {% if facture.isDevis %}Devis n° {{ facture.numeroDevis }}{% elseif(facture.isAvoir) %}Avoir n° {{ facture.numeroFacture }}{% elseif(facture.numeroFacture) %}Facture n° {{ facture.numeroFacture }}{% if(facture.isFactureContratLibre) %}<br/><small class="pull-right">Facture créée manuellement</small>{% endif %}{% else %}Facture prévue<a class="btn btn-link btn-xs"
                     href="{% if facture.getContrat() %}{{ path('facture_creation', {'societe': facture.societe.id,'type': 'facture', 'id': facture.id, 'contratId' : facture.getContrat().id}) }}
                           {% else %}{{ path('facture_creation', { 'societe': facture.societe.id, 'type': 'facture', 'id': facture.id })}}
@@ -12,7 +12,7 @@
 
             </td>
             <td>
-                <a data-toggle="tooltip" title="{% for ligne in facture.lignes %}{{ (ligne.libelle) ? ligne.libelle~"\n" : "Aucun" }}{% endfor %}" href="{{ path('facturable_pdf', {'document': facture.id })}}">{{ facture.lignes | length}} ligne(s)</a>
+                <a data-toggle="tooltip" title="{% for ligne in facture.lignes %}{{ (ligne.libelle) ? ligne.libelle~"\n" : "Aucun" }}{% endfor %}" href="{{ path('facturable_pdf', {'document': facture.id ,'key': facture.getSecretKey() })}}">{{ facture.lignes | length}} ligne(s)</a>
                 {% for origine in facture.origines %}
                   - <a data-toggle="tooltip" title="{% for etab in origine.etablissements %}{{ etab }}<br/>{% endfor %}"
                       href="{{ path('contrat_visualisation', {'id': origine.id })}}">Contrat n° {{ origine.numeroArchive }}</a>
@@ -56,6 +56,11 @@
                   <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="actionButton">
+                    {% if societe.contactCoordonnee.emailFacturation %}
+                      <li><a href="mailto:{{ societe.contactCoordonnee.emailFacturation }}?subject= Aurouze Facture n°{{facture.numeroFacture}}&body=Bonjour,%0A%0AVeuillez trouver votre facture dans le lien suivant:%0A{{ app.request.schemeAndHttpHost }}{{ path('facturable_pdf', {'document': facture.id ,'key': facture.getSecretKey()})}}%0A%0ACordialement,">Envoyer par mail<span>  <i class="glyphicon glyphicon-envelope"></i></span></a></li>
+                    {% else %}
+                      <li><a href="mailto:{{ societe.contactCoordonnee.email }}?subject= Aurouze Facture n°{{facture.numeroFacture}}&body=Bonjour,%0A%0AVeuillez trouver votre facture dans le lien suivant:%0A{{ app.request.schemeAndHttpHost }}{{ path('facturable_pdf', {'document': facture.id ,'key': facture.getSecretKey()})}}%0A%0ACordialement,">Envoyer par mail<span>  <i class="glyphicon glyphicon-envelope"></i></span></a></li>
+                    {% endif %}
                     {% if facture.isDevis %}
                         <li><a href="{{ path('devis_creation', { 'societe': societe.id, 'id': facture.id })}}">A déplacer Modifier le devis ???</a></li>
                         <li><a href="{{ path('facture_creation', { 'societe': societe.id, 'id': facture.id })}}">Créer la facture</a></li>
@@ -83,7 +88,7 @@
                 </div>
               {% endif %}
               {% if not facture.numeroFacture and not facture.isDevis %}
-                <a class="btn btn-default btn-xs " href="{{ path('facture_en_attente_facturer', { 'factureId': facture.id }) }}">Facturer</a>
+                <a class="btn btn-default btn-xs " onclick="return confirm('Êtes vous sûr de vouloir facturer ?')" href="{{ path('facture_en_attente_facturer', { 'factureId': facture.id }) }}">Facturer </a>
               {% endif %}
             </td>
         </tr>

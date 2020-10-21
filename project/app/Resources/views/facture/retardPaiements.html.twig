@@ -133,7 +133,7 @@
 	                            {% endif %}
 							</td>
               <td>
-								<a href="{{ path('facturable_pdf', {'document': factureEnRetard.id })}}"><span class="glyphicon glyphicon-file"></span>&nbsp;Facture n° {{ factureEnRetard.numeroFacture }}</a>
+								<a href="{{ path('facturable_pdf', {'document': factureEnRetard.id, 'key': factureEnRetard.getSecretKey() })}}"><span class="glyphicon glyphicon-file"></span>&nbsp;Facture n° {{ factureEnRetard.numeroFacture }}</a>
 								{% if(factureEnRetard.isRedressee()) %}
 								&nbsp;<span data-toggle="tooltip" title="{{ factureEnRetard.avoir }}" class="label label-xs label-warning">R</span>
 								{% endif %}

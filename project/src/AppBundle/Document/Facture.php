@@ -171,6 +171,7 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
      */
     protected $inPrelevement;
 
+
     public function __construct() {
         $this->lignes = new \Doctrine\Common\Collections\ArrayCollection();
         $this->emetteur = new Soussigne();
@@ -1242,6 +1243,14 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
     public function getNumero()
     {
         return $this->getNumeroFacture();
+
     }
+
+    public function getSecretKey(){
+      $id=$this->getId();
+      $secretKey = getenv('SECRETKEY');
+      return hash ('sha256' , $id.$secretKey);
+    }
+
 
 }
