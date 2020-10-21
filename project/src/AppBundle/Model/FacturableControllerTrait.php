@@ -11,7 +11,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 trait FacturableControllerTrait
 {
     /**
-     * @Route("/{document}/pdf/{key}", name="facturable_pdf")
+     * @Route("/public/{document}/pdf/{key}", name="facturable_pdf")
      */
     public function pdfAction(Request $request, $document)
     {
