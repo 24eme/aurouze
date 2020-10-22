@@ -169,10 +169,11 @@ class FactureController extends Controller
         $factures = $fm->findBySociete($societe);
         $hasDevis = $fm->hasDevisSociete($societe);
         $mouvements = $fm->getMouvementsBySociete($societe);
+        $solde = $fm->getSolde($societe);
 
         $exportSocieteForm = $this->createExportSocieteForm($societe);
 
-        return $this->render('facture/societe.html.twig', array('societe' => $societe, 'mouvements' => $mouvements,'hasDevis' => $hasDevis,  'factures' => $factures, 'exportSocieteForm' => $exportSocieteForm->createView()));
+        return $this->render('facture/societe.html.twig', array('societe' => $societe, 'mouvements' => $mouvements,'hasDevis' => $hasDevis,  'factures' => $factures, 'exportSocieteForm' => $exportSocieteForm->createView(), 'solde' => $solde));
     }
 
     /**
