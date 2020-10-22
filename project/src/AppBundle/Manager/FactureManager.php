@@ -163,7 +163,7 @@ public static $export_stats_libelle = array(
         if(!$devis->getPdfNonEnvoye() && $planification){
           return null;
         }
-        
+
         $facture = new Facture();
         $facture->setSociete($devis->getSociete());
         $facture->setCommercial($devis->getCommercial());
@@ -223,6 +223,13 @@ public static $export_stats_libelle = array(
     public function getMouvements() {
 
         return $this->mm->getMouvements(true, false);
+    }
+
+    public function getSolde(Societe $societe) {
+        $montantFacure = $this->getRepository()->getMontantFacture($societe);
+        $montantPaye = $this->dm->getRepository('AppBundle:Paiements')->getMontantPaye($societe);
+
+        return round($montantPaye - $montantFacure,2);
     }
 
     public function getStatsForCsv($dateDebut = null, $dateFin = null, $commercialFiltre = null){

@@ -67,7 +67,7 @@ class FactureRepository extends DocumentRepository {
 
         $q = $this->createQueryBuilder();
 
-        $q->field('dateFacturation')->gte($dateDebut)->lte($dateFin)->sort('dateFacturation', 'asc');        
+        $q->field('dateFacturation')->gte($dateDebut)->lte($dateFin)->sort('dateFacturation', 'asc');
         $q->addAnd($q->expr()->field('numeroFacture')->notEqual(null));
         $query = $q->getQuery();
 
@@ -178,6 +178,19 @@ class FactureRepository extends DocumentRepository {
         }
 
         return $factures;
+    }
+
+    public function getMontantFacture($societe) {
+        $command = array();
+        $command['aggregate'] = "Facture";
+        $command['pipeline'] = array(
+            array('$match' => array('societe' => $societe->getId(), "numeroFacture" => array('$ne' => null ))),
+            array('$group' => array('_id' => 'somme_montant_facture', 'montantTTC' => array('$sum' => '$montantTTC')))
+        );
+        $db = $this->getDocumentManager()->getDocumentDatabase(\AppBundle\Document\Facture::class);
+        $resultat = $db->command($command);
+
+        return $resultat['result'][0]['montantTTC'];
     }
 
     public function findRetardDePaiementBySociete(Societe $societe, $nbJourSeuil = 0){
