@@ -131,7 +131,6 @@ trait FacturableControllerTrait
                 $document->getSociete()->getIdentifiant(),
                 $document->getDateEmission()->format('Ymd'),
                 $document->getNumero(),
-                $document->getSecretKey(),
                 $suffix
             ]);
             $filename .= '.pdf';
