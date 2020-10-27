@@ -137,6 +137,10 @@
 								{% if(factureEnRetard.isRedressee()) %}
 								&nbsp;<span data-toggle="tooltip" title="{{ factureEnRetard.avoir }}" class="label label-xs label-warning">R</span>
 								{% endif %}
+                <br/>
+                {% for contrat in factureEnRetard.lignes %}
+                  <small>lié au <a href="{{ path('contrat_visualisation', {'id': contrat.origineDocument.id}) }}">contrat {{ contrat.origineDocument.numeroArchive }}</a></small><br/>
+                {% endfor %}
 							</td>
               <td class="text-center">
 								<span class="text-right">{{ "%0.2f" | format(factureEnRetard.montantTTC)  }}&nbsp;€</span>&nbsp;/&nbsp;<span class="text-left">{{ "%0.2f" | format(factureEnRetard.montantPaye)  }}&nbsp;€</span>
