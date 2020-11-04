@@ -559,13 +559,23 @@ public static $export_stats_libelle = array(
         foreach ($facturesObjs as $facture) {
               if($facture->isAvoir() && $facture->getOrigineAvoir()){
                   $factureOrigine = $facture->getOrigineAvoir();
-                  $facturesArray[$factureOrigine->getId()] = new \stdClass();
-                  $facturesArray[$factureOrigine->getId()]->facture = $factureOrigine;
-                  $facturesArray[$factureOrigine->getId()]->row = $this->buildFactureSocieteLigne($factureOrigine,$debit,$credit);
+                  if (! array_key_exists($factureOrigine->getId(), $facturesArray)) {
+                      $facturesArray[$factureOrigine->getId()] = new \stdClass();
+                      $facturesArray[$factureOrigine->getId()]->facture = $factureOrigine;
+                      $facturesArray[$factureOrigine->getId()]->row = $this->buildFactureSocieteLigne($factureOrigine);
+
+                      $debit += str_replace(',', '.', $facturesArray[$factureOrigine->getId()]->row[self::EXPORT_SOCIETE_DEBIT]);
+                      $credit += str_replace(',', '.', $facturesArray[$factureOrigine->getId()]->row[self::EXPORT_SOCIETE_CREDIT]);
+                  }
               }
               $facturesArray[$facture->getId()] = new \stdClass();
               $facturesArray[$facture->getId()]->facture = $facture;
-              $facturesArray[$facture->getId()]->row = $this->buildFactureSocieteLigne($facture,$debit,$credit);
+              $facturesArray[$facture->getId()]->row = $this->buildFactureSocieteLigne($facture);
+
+              $debit += (float) str_replace(',', '.', $facturesArray[$facture->getId()]->row[self::EXPORT_SOCIETE_DEBIT]);
+              if(strpos($facturesArray[$facture->getId()]->row[self::EXPORT_SOCIETE_CREDIT], '-') !== 0) {
+                  $credit += (float) str_replace(',', '.', $facturesArray[$facture->getId()]->row[self::EXPORT_SOCIETE_CREDIT]);
+              }
         }
 
         $facturesArray["za"] = new \stdClass();
@@ -578,7 +588,7 @@ public static $export_stats_libelle = array(
         return $facturesArray;
     }
 
-    public function buildFactureSocieteLigne($facture,&$debit,&$credit){
+    public function buildFactureSocieteLigne($facture){
       $factureLigne = array();
       foreach ($facture->getPaiements() as $paiements) {
             foreach ($paiements->getPaiement() as $paiement) {
@@ -601,8 +611,6 @@ public static $export_stats_libelle = array(
               }else{
                 $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] =  $paiement->getMoyenPaiementLibelle();
               }
-              $debit += $facture->getMontantTTC();
-              $credit += $paiement->getMontant();
             }
           }
         }
@@ -621,8 +629,6 @@ public static $export_stats_libelle = array(
           $factureLigne[self::EXPORT_SOCIETE_DEBIT] =  number_format($facture->getMontantTTC(), 2, ",", "");
           $factureLigne[self::EXPORT_SOCIETE_CREDIT] =  ($facture->isAvoir())? number_format($facture->getMontantTTC() , 2, ",", "") : "0";
           $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] = ($facture->getAvoirPartielRemboursementCheque())? "Remboursement par chèque le ".$facture->getDateFacturation()->format('d/m/Y') : "-";
-          $debit += $facture->getMontantTTC();
-          $credit += ($facture->isAvoir())? $facture->getMontantTTC() : 0;
         }
       return $factureLigne;
     }
