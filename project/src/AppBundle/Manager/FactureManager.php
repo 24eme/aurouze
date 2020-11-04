@@ -564,8 +564,8 @@ public static $export_stats_libelle = array(
                       $facturesArray[$factureOrigine->getId()]->facture = $factureOrigine;
                       $facturesArray[$factureOrigine->getId()]->row = $this->buildFactureSocieteLigne($factureOrigine);
 
-                      $debit += $facturesArray[$factureOrigine->getId()]->row[self::EXPORT_SOCIETE_DEBIT];
-                      $credit += $facturesArray[$factureOrigine->getId()]->row[self::EXPORT_SOCIETE_CREDIT];
+                      $debit += str_replace(',', '.', $facturesArray[$factureOrigine->getId()]->row[self::EXPORT_SOCIETE_DEBIT]);
+                      $credit += str_replace(',', '.', $facturesArray[$factureOrigine->getId()]->row[self::EXPORT_SOCIETE_CREDIT]);
                   }
               }
               $facturesArray[$facture->getId()] = new \stdClass();
