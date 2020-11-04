@@ -95,6 +95,11 @@ class Devis implements DocumentSocieteInterface, DocumentPlanifiableInterface, F
      */
     protected $identifiantFacture;
 
+    /**
+     * @MongoDB\Field(type="string")
+     */
+    protected $numeroCommande;
+
     public function __construct() {
         $this->etablissementInfos = new EtablissementInfos();
         $this->techniciens = new ArrayCollection();
@@ -384,6 +389,27 @@ class Devis implements DocumentSocieteInterface, DocumentPlanifiableInterface, F
         return $this->identifiantFacture;
     }
 
+    /**
+     * Set numeroCommande
+     *
+     * @param string $numeroCommande
+     * @return $this
+     */
+    public function setNumeroCommande($numeroCommande)
+    {
+        $this->numeroCommande = $numeroCommande;
+        return $this;
+    }
+
+    /**
+     * Get numeroCommande
+     *
+     * @return string $numeroCommande
+     */
+    public function getNumeroCommande()
+    {
+        return $this->numeroCommande;
+    }
 
     /**
      * Add ligne
