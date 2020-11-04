@@ -26,7 +26,9 @@ parameters:
 
     knp_snappy_pdfbinary: xvfb-run wkhtmltopdf
     knp_snappy_imagebinary: xvfb-run wkhtmltoimage
-    
+    email_subject: 'Sujet Facture n°'
+    email_message: |-
+
     banque:
         creditorId: 'XXXXXXXXXXX'
         creditorName: 'ETABLISSEMENTS XXXX XXXXXXXXX'
