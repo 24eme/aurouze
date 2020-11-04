@@ -12,6 +12,7 @@
 
     {{ include('societe/choixForm.html.twig', {'urlTarget': path('facture_societe', {'id': '_id_'})}) }}
 
+    <h3>Solde du client : <span class="text-{% if (solde == 0) %}success{% elseif (solde < 0) %}danger{% else %}warning{% endif %}">{{ "%0.2f" | format(solde) }} €</span></h3>
     <h3>
         Mouvements à facturer
         <div class="col-xs-8 pull-right text-right">
@@ -114,14 +115,6 @@
               {{ include('facture/factureLigne.html.twig', {'facture': facture, 'societe' : societe}) }}
               {% endif %}
             {% endfor %}
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td class="text-right"><strong>Total :</strong></td>
-            <td class="text-right"><strong>{{ "%0.2f" | format(totalRestant) }}&nbsp;€</strong></td>
-            <td></td>
         </tbody>
       </table>
 

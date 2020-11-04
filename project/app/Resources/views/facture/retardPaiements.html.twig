@@ -69,24 +69,7 @@
 
 {{ form_start(formRelance) }}
 
-<div class="row hide-print" {% if ((nbRelances is null) or (nbRelances == -1)) %} readonly="readonly" disabled="disabled" style="opacity:0.5;" {% endif %} >
-    <div class="col-xs-3 pull-right">
-      <div class="input-group">
-          <span class="input-group-btn">
-						{% if ((nbRelances is null) or (nbRelances == -1)) %}
-						<div class="input-group">
-          		<span class="input-group-btn">
-						      <a class="btn-loading btn btn-success pull-right btn" href="#">Relancer</a>
-							</span>
-      			</div>
-						{% else %}
-            {{ form_widget(formRelance.relancer,  {'attr': {'class': 'btn-loading btn btn-success pull-right', 'data-loading-text': "Relances en cours de génération..."}}) }}
-						{% endif %}
-						</span>
-      </div>
-    </div>
-</div>
-<br/>
+
 <div class="row">
 	{% if commercial %}<h3 class="show-print">Clients {{ commercial.identite }}</h3>{% endif %}
 	{% for factureEnRetard in facturesEnRetard %}
@@ -150,10 +133,14 @@
 	                            {% endif %}
 							</td>
               <td>
-								<a href="{{ path('facturable_pdf', {'document': factureEnRetard.id })}}"><span class="glyphicon glyphicon-file"></span>&nbsp;Facture n° {{ factureEnRetard.numeroFacture }}</a>
+								<a href="{{ path('facturable_pdf', {'document': factureEnRetard.id, 'key': factureEnRetard.getSecretKey() })}}"><span class="glyphicon glyphicon-file"></span>&nbsp;Facture n° {{ factureEnRetard.numeroFacture }}</a>
 								{% if(factureEnRetard.isRedressee()) %}
 								&nbsp;<span data-toggle="tooltip" title="{{ factureEnRetard.avoir }}" class="label label-xs label-warning">R</span>
 								{% endif %}
+                <br/>
+                {% for contrat in factureEnRetard.lignes %}
+                  <small>lié au <a href="{{ path('contrat_visualisation', {'id': contrat.origineDocument.id}) }}">contrat {{ contrat.origineDocument.numeroArchive }}</a></small><br/>
+                {% endfor %}
 							</td>
               <td class="text-center">
 								<span class="text-right">{{ "%0.2f" | format(factureEnRetard.montantTTC)  }}&nbsp;€</span>&nbsp;/&nbsp;<span class="text-left">{{ "%0.2f" | format(factureEnRetard.montantPaye)  }}&nbsp;€</span>

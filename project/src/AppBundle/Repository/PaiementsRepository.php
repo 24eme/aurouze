@@ -26,6 +26,20 @@ class PaiementsRepository extends DocumentRepository {
                         ->execute();
     }
 
+    public function getMontantPaye($societe) {
+        $command = array();
+        $command['aggregate'] = "Paiements";
+        $command['pipeline'] = array(
+            array('$unwind' => '$paiement'),
+            array('$match' => array('paiement.facture' => new \MongoRegex('/^FACTURE-' . $societe->getIdentifiant() . '.*/i'))),
+            array('$group' => array('_id' => 'somme_montant_paye', 'montant' => array('$sum' => '$paiement.montant')))
+        );
+        $db = $this->getDocumentManager()->getDocumentDatabase(\AppBundle\Document\Paiements::class);
+        $resultat = $db->command($command);
+
+        return $resultat['result'][0]['montant'];
+    }
+
     public function getBySociete(Societe $societe) {
         return $this->createQueryBuilder()
                         ->field('paiement.facture')->equals(new \MongoRegex('/^FACTURE-' . $societe->getIdentifiant() . '.*/i'))

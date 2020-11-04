@@ -19,6 +19,7 @@ class ContactCoordonneeType extends AbstractType {
                 ->add('telephoneMobile', TextType::class, array('label' => 'Tél. Mobile :','required' => false, 'empty_data'  => null))
                 ->add('fax', TextType::class, array('label' => 'Fax :','required' => false, 'empty_data'  => null))
                 ->add('email', TextType::class, array('label' => 'Email :','required' => false, 'empty_data'  => null))
+                ->add('emailFacturation', TextType::class,array('label'=>'Email de Facturation (si différent) : ','required'=>false,'empty_data'=>null))
                 ->add('siteInternet', TextType::class, array('label' => 'Site internet :','required' => false, 'empty_data'  => null))
                 ->add('libelle', TextType::class, array('label' => 'Libelle :','required' => false, 'empty_data'  => null));
     }

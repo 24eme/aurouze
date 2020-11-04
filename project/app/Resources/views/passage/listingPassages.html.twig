@@ -1,5 +1,45 @@
 {% for passage in passages %}
-<div class="list-group-item">
+<div class="list-group-item show-print" style="border: none !important;">
+  <div class="col-xs-12">
+    {{ passage.libelle }} - {{ passage.etablissement.nom }}
+  </div>
+
+  <div class="col-xs-6">
+    <span>
+      {% if passage.APlanifie %}
+      prévu le {{ passage.datePrevision | localizeddate("medium", "none", null, null, "d MMMM yyyy") | capitalize }}
+      {% elseif passage.isAnnule %}
+      ({{ passage.datePrevision | localizeddate("medium", "none", null, null, "d MMMM yyyy") | capitalize }})
+      {% else %}
+      {{ passage.dateDebut| localizeddate('full', 'none') | capitalize }}
+      {% endif %}
+      {% if passage.duree %} à {{passage.dateDebut | date("H") }}h{{passage.dateDebut | date("i") }}{% endif %}
+    </span>
+    <br/>
+    <small>{{ passage.etablissementInfos.adresse.adresse }} - {{ passage.etablissementInfos.adresse.commune }} ({{ passage.etablissementInfos.adresse.codePostal }})</small>
+  </div>
+
+  <div class="col-xs-6">
+    <span>Technicien : </span>
+    <ul>
+    {% for technicien in passage.techniciens %}
+      <li>{{ technicien.identite }}</li>
+    {% endfor %}
+    </ul>
+    <br/>
+
+    <span>Prestation : </span>
+    <ul>
+    {% for prestation in passage.prestations %}
+      <li>{{ prestation.nomToString }}</li>
+    {% endfor %}
+    </ul>
+  </div>
+
+  <hr class="text-centered" width="50%">
+</div>
+
+<div class="list-group-item hide-print">
 	<a name="{{ passage.id }}"></a>
 	<div class="row">
 		<div class="col-xs-2">

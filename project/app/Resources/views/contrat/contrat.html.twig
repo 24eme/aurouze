@@ -254,6 +254,8 @@
                 <th class="text-right">Date</th>
                 <th class="text-center">Facture</th>
                 <th class="text-right">Montant HT</th>
+                <th class="text-right">TVA</th>
+                <th class="text-right">Montant TTC</th>
             </tr>
         </thead>
         <tbody>
@@ -263,15 +265,21 @@
         </tr>
         {% endif %}
         {% set total=0 %}
+        {% set totalTTC=0 %}
+        {% set i=1 %}
         {% for facture in factures %}
             {% for mouvement in facture.lignes %}
                 <tr>
                     <td>{% if mouvement.quantite < 0 %}{{ mouvement.libelle|replace({'Facture': 'Avoir'}) }}{% else %}{{ mouvement.libelle }}{% endif %}</td>
                     <td class="text-right">{{ facture.dateFacturation | localizeddate("medium", "none", null, null, "d MMM yyyy") }}</td>
-                    <td class="text-center"><a href="{{ path('facturable_pdf', {'document': facture.id })}}"><span class="glyphicon glyphicon-file"></span>&nbsp;{{ facture.numeroFacture }}</a></td>
+                    <td class="text-center"><a href="{{ path('facturable_pdf', {'document': facture.id ,'key': facture.getSecretKey()})}}"><span class="glyphicon glyphicon-file"></span>&nbsp;{{ facture.numeroFacture }}</a></td>
                     {% set montant = mouvement.montantHT * mouvement.quantite %}
+                    {% set montantTTC = montant + (montant * mouvement.tauxTaxe) %}
                     {% set total = total + montant %}
+                    {% set totalTTC = totalTTC + montantTTC %}
                     <td class="text-right">{{ "%0.2f" | format(montant) }} €</td>
+                    <td class="text-right">{{ "%0.2f" | format(mouvement.tauxTaxe * 100) }} €</td>
+                    <td class="text-right">{{ "%0.2f" | format(montantTTC) }} €</td>
                 </tr>
             {% endfor %}
         {% endfor %}
@@ -283,6 +291,8 @@
                 {% set montant = mouvement.prixUnitaire %}
                 {% set total = total + montant %}
                 <td class="text-right">{{ "%0.2f" | format(montant) }} €</td>
+                <td class="text-right"></td>
+                <td class="text-right"></td>
             </tr>
         {% endfor %}
         </tbody>
@@ -294,6 +304,8 @@
                 <td class="text-right"></td>
                 <td class="text-center"><a onclick="return confirm('Etes vous sûr de forcer la genération d\'un mouvement de facture directement (sans le faire via un passage) ?');" href="{{ path('contrat_generation_mouvement', {'id': contrat.id})}}">Générer un mouvement</a></td>
                 <td class="text-right">{{ "%0.2f" | format(mouvement.prixUnitaire) }} €</td>
+                <td class="text-right"></td>
+                <td class="text-right"></td>
             </tr>
         </tfoot>
         {% endif %}
@@ -304,6 +316,8 @@
             <td class="text-right"></td>
             <td class="text-center"><a onclick="return confirm('Etes vous sûr de vouloir préparer une facture qui sera à envoyer plus tard ? ');" href="{{ path('facture_creation', {'societe': contrat.societe.id,'type': 'facture', 'contratId' : contrat.id})}}">Préparer une facture</a></td>
             <td class="text-right"></td>
+            <td class="text-right"></td>
+            <td class="text-right"></td>
           </tr>
         </tfoot>
         {% endif %}
@@ -311,6 +325,8 @@
         <td></td>
         <td></td>
         <td class="text-right">{{ "%0.2f" | format(total) }} €</td>
+        <td></td>
+        <td class="text-right">{{ "%0.2f" | format(totalTTC) }} €</td>
     </table>
 </div>
 {% endif %}

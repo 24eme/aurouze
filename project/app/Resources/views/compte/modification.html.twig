@@ -76,34 +76,39 @@
                         {{ form_row(form.sameContact) }}
                     </div>
                 </div>
-                <div class="panel-body col-xs-offset-2 collapse{% if not compte.sameContact %} in{% endif %}" id="collapseContact">
-                    <div class="row">
-                        <div class="col-xs-4">
-                            {{ form_row(form.contactCoordonnee.telephoneFixe) }}
-                        </div>
-                        <div class="col-xs-6">
-                            {{ form_row(form.contactCoordonnee.email) }}
-                        </div>
+            <div class="panel-body col-xs-offset-2 collapse{% if not compte.sameContact %} in{% endif %}" id="collapseContact">
+                <div class="row">
+                    <div class="col-xs-4">
+                        {{ form_row(form.contactCoordonnee.telephoneFixe) }}
                     </div>
-                    <div class="row">
-                        <div class="col-xs-4">
-                            {{ form_row(form.contactCoordonnee.telephoneMobile) }}
-                        </div>
-                        <div class="col-xs-6">
-                            {{ form_row(form.contactCoordonnee.siteInternet) }}
-                        </div>
+                    <div class="col-xs-6">
+                        {{ form_row(form.contactCoordonnee.email) }}
                     </div>
-                    <div class="row">
-                        <div class="col-xs-4">
-                            {{ form_row(form.contactCoordonnee.fax) }}
-                        </div>
-                        <div class="col-xs-6">
-                            {{ form_row(form.contactCoordonnee.libelle) }}
-                        </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-4">
+                        {{ form_row(form.contactCoordonnee.telephoneMobile) }}
+                    </div>
+                    <div class="col-xs-6">
+                        {{ form_row(form.contactCoordonnee.emailFacturation) }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-4">
+                        {{ form_row(form.contactCoordonnee.siteInternet) }}
+                    </div>
+                    <div class="col-xs-6">
+                    {{ form_row(form.contactCoordonnee.fax) }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-10">
+                        {{ form_row(form.contactCoordonnee.libelle) }}
                     </div>
                 </div>
             </div>
         </div>
+
         <div class="row">
             <div class="col-xs-12">
                 {{ form_widget(form.save) }}
