@@ -135,6 +135,10 @@ class DevisController extends Controller
 
         $produitsSuggestion = $this->getProduitsSuggestion($cm->getConfiguration()->getProduits());
 
+        $factureManager = $this->get('facture.manager');
+
+        $hasFacture = count($factureManager->getRepository('AppBundle:Facture')->findBy(['numeroDevis' => $devis->getNumeroDevis()]));
+
         $form = $this->createForm(new DevisType($dm, $cm, $devis->getSociete(), $appConf['commercial']), $devis, array(
             'action' => "",
             'method' => 'POST',
@@ -160,6 +164,7 @@ class DevisController extends Controller
         }
 
         return $this->render('devis/modification.html.twig', [
+            'hasFacture' => $hasFacture,
             'devis' => $devis,
             'form' => $form->createView(),
             'produitsSuggestion' => $produitsSuggestion
