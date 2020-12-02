@@ -33,4 +33,23 @@
 
 	{{ include('contrat/contratTableau.html.twig', {'contrats': contratsFactureAEditer }) }}
 
+	<h3>Devis comportant des factures non éditées</h3>
+
+	<table class="table table-bordered table-striped">
+		<thead>
+			<tr>
+				<th class="col-xs-2">Date</th>
+				<th class="col-xs-2">Document</th>
+				<th class="col-xs-3">Contenu</th>
+				<th class="col-xs-1 text-right">Montant TTC</th>
+				<th>Action</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for devis in devisAFacturer %}
+				{{ include('devis/ligne.html.twig', {'document': devis}) }}
+			{% endfor %}
+		</tbody>
+	</table>
+
 {% endblock %}

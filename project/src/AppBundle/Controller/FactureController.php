@@ -8,6 +8,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Manager\FactureManager;
+use AppBundle\Manager\DevisManager;
+use AppBundle\Manager\PassageManager;
 use AppBundle\Model\FacturableControllerTrait;
 use AppBundle\Document\Facture;
 use AppBundle\Document\LigneFacturable;
@@ -39,9 +41,11 @@ class FactureController extends Controller
         $dm = $this->get('doctrine_mongodb')->getManager();
         $contratManager = $this->get('contrat.manager');
         $factureManager = $this->get('facture.manager');
+        $devisManager = $this->get('devis.manager');
         $contratsFactureAEditer = $contratManager->getRepository()->findContratWithFactureAFacturer(50);
         $facturesEnAttente = $factureManager->getRepository()->findBy(array('numeroFacture' => null, 'numeroDevis' => null), array('dateFacturation' => 'desc'));
-        return $this->render('facture/index.html.twig',array('contratsFactureAEditer' => $contratsFactureAEditer, 'facturesEnAttente' => $facturesEnAttente));
+        $devisAFacturer = $devisManager->getRepository('AppBundle:Devis')->findBy(['statut' => PassageManager::STATUT_REALISE, 'pdfNonEnvoye' => true], ['dateEmission' => 'desc']);
+        return $this->render('facture/index.html.twig',array('contratsFactureAEditer' => $contratsFactureAEditer, 'facturesEnAttente' => $facturesEnAttente, 'devisAFacturer' => $devisAFacturer));
     }
 
     /**
