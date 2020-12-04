@@ -36,7 +36,7 @@ class PaiementsRepository extends DocumentRepository {
       );
       $db = $this->getDocumentManager()->getDocumentDatabase(\AppBundle\Document\Paiements::class);
       $resultat = $db->command($command);
-      return $resultat['result'][0]['montant'];
+      return (isset($resultat['result'][0]))? $resultat['result'][0]['montant'] : 0;
     }
 
     public function getBySociete(Societe $societe) {
