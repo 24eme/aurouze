@@ -22,6 +22,14 @@ class FactureRepository extends DocumentRepository {
                         ->execute();
     }
 
+    public function retrieveAll()
+    {
+      $qb = $this->createQueryBuilder();
+      $qb->hydrate(false);
+      $query = $qb->getQuery();
+      return iterator_to_array($query->execute());
+    }
+
     public function findByTerms($queryString, $filter = false, $withCloture = false) {
         $terms = explode(" ", trim(preg_replace("/[ ]+/", " ", $queryString)));
         $results = null;
