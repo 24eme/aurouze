@@ -190,7 +190,7 @@ class FactureRepository extends DocumentRepository {
         $db = $this->getDocumentManager()->getDocumentDatabase(\AppBundle\Document\Facture::class);
         $resultat = $db->command($command);
 
-        return $resultat['result'][0]['montantTTC'];
+        return (isset($resultat['result'][0]))? $resultat['result'][0]['montantTTC'] : 0;
     }
 
     public function findRetardDePaiementBySociete(Societe $societe, $nbJourSeuil = 0){

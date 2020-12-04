@@ -54,9 +54,7 @@ class PaiementsController extends Controller {
     public function modificationAction(Request $request, $paiements) {
 
         $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $facturesIds = $paiements->getFacturesArrayIds();
-        $facturesArray = $paiements->getFacturesArray();
+        $oldFactures = $paiements->getFacturesArray();
         $form = $this->createForm(new PaiementsType($this->container, $dm), $paiements, array(
             'action' => $this->generateUrl('paiements_modification', array('id' => $paiements->getId())),
             'method' => 'POST',
@@ -64,25 +62,30 @@ class PaiementsController extends Controller {
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $paiements = $form->getData();
-
-            $dm->persist($paiements);
             $dm->flush();
-
-            $facturesIds = array_merge($facturesIds,$paiements->getFacturesArrayIds());
-
-            array_unique($facturesIds);
-
-            foreach ($facturesIds as $factureId) {
-               $facture = $dm->getRepository('AppBundle:Facture')->findOneById($factureId);
-               $facture->updateMontantPaye();
-               $dm->persist($facture);
-               $dm->flush();
-            }
+            $this->updateFactureByPaiements($oldFactures, $paiements);
 
             return $this->redirectToRoute('paiements_modification', array('id' => $paiements->getId()));
         }
 
-        return $this->render('paiements/modification.html.twig', array('paiements' => $paiements, 'form' => $form->createView(), 'facturesArray' => $facturesArray));
+        return $this->render('paiements/modification.html.twig', array('paiements' => $paiements, 'form' => $form->createView(), 'facturesArray' => $paiements->getFacturesArray()));
+    }
+
+    protected function updateFactureByPaiements($oldFactures, $paiements)
+    {
+      $dm = $this->get('doctrine_mongodb')->getManager();
+      $factures = $paiements->getFacturesArray();
+      $traitees = array();
+      foreach ($factures as $facture) {
+        $facture->updateMontantPaye();
+        $traitees[] = $facture->getId();
+      }
+      foreach ($oldFactures as $facture) {
+        if (!in_array($facture->getId(), $traitees)) {
+          $facture->updateMontantPaye();
+        }
+      }
+      $dm->flush();
     }
 
     /**
@@ -92,7 +95,7 @@ class PaiementsController extends Controller {
     public function paiementsModificationLigneAction(Request $request, $paiements) {
 
       $dm = $this->get('doctrine_mongodb')->getManager();
-
+      $oldFactures = $paiements->getFacturesArray();
       if ($request->isXmlHttpRequest()) {
         $cpt = 0;
         $idLigne = $request->request->get('idLigne');
@@ -105,9 +108,8 @@ class PaiementsController extends Controller {
             $paiement->setFacture($f);
             $paiement->setDatePaiement(\DateTime::createFromFormat('d/m/Y',$request->request->get('date_paiement')));
             $paiement->setMontant($request->request->get('montant'));
-            $dm->persist($paiements);
-            $f->updateMontantPaye();
             $dm->flush();
+            $this->updateFactureByPaiements($oldFactures, $paiements);
             return new Response(json_encode(array("success" => true)));
           }
           $cpt++;
@@ -122,12 +124,10 @@ class PaiementsController extends Controller {
         $paiement->setDatePaiement(\DateTime::createFromFormat('d/m/Y',$request->request->get('date_paiement')));
         $paiement->setMontant($request->request->get('montant'));
         $paiements->addPaiement($paiement);
-        $dm->persist($paiements);
-        $f->updateMontantPaye();
         $dm->flush();
+        $this->updateFactureByPaiements($oldFactures, $paiements);
         return new Response(json_encode(array("success" => true)));
       }
-
       return new Response(json_encode(array("success" => false)));
     }
 
@@ -139,6 +139,7 @@ class PaiementsController extends Controller {
         $dm = $this->get('doctrine_mongodb')->getManager();
         $paiements = new Paiements($this->get('doctrine_mongodb')->getManager());
 
+        $oldFactures = $paiements->getFacturesArray();
         $paiements->setPrelevement(false);
 
         $form = $this->createForm(new PaiementsType($this->container, $dm), $paiements, array(
@@ -148,21 +149,9 @@ class PaiementsController extends Controller {
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $paiements = $form->getData();
-
             $dm->persist($paiements);
             $dm->flush();
-
-            $facturesIds = array_merge($facturesIds,$paiements->getFacturesArrayIds());
-
-            array_unique($facturesIds);
-
-            foreach ($facturesIds as $factureId) {
-               $facture = $dm->getRepository('AppBundle:Facture')->findOneById($factureId);
-               $facture->updateMontantPaye();
-               $dm->persist($facture);
-               $dm->flush();
-            }
-
+            $this->updateFactureByPaiements($oldFactures, $paiements);
             return $this->redirectToRoute('paiements_modification', array('id' => $paiements->getId()));
         }
 
@@ -330,6 +319,7 @@ class PaiementsController extends Controller {
         $paiements->setDateCreation($date);
         $paiements->setPrelevement(true);
         $paiements->setImprime(false);
+        $oldFactures = $paiements->getFacturesArray();
 
         $societesInFirstPrev = array();
 
@@ -347,17 +337,13 @@ class PaiementsController extends Controller {
                 $societesInFirstPrev[$facture->getSociete()->getId()] = $facture->getSociete();
             }
         }
-
-
         $paiements->setXmlbase64($prelevement->getXml());
-
-
         foreach ($societesInFirstPrev as $key => $societe) {
             $societe->getSepa()->setFirst(false);
         }
-
         $dm->persist($paiements);
         $dm->flush();
+        $this->updateFactureByPaiements($oldFactures, $paiements);
         return $paiements;
     }
 
