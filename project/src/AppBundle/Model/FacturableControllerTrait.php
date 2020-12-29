@@ -91,7 +91,7 @@ trait FacturableControllerTrait
                 }
 
                 // La ligne tient sur la page
-                if(($nbCurrentLigne + $nbLigneParLigneFacture[$key]) < $nbLigneParPage[$nbCurrentPage]) {
+                if(($nbCurrentLigne + $nbLigneParLigneFacture[$key]) <= $nbLigneParPage[$nbCurrentPage]) {
 
                     $pages[$nbCurrentPage][] = $ligne;
                     continue;
