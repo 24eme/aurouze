@@ -122,7 +122,9 @@
               <td><small>{{ factureEnRetard.dateFacturation | localizeddate("medium", "none", null, null, "d MMM yyyy") | capitalize }}</small></td>
               <td>
 								<small><a href="{{ path('facture_societe', {'id': factureEnRetard.societe.id }) }}">{{ factureEnRetard.societe.raisonSociale }}</a></small>
-								{% if factureEnRetard.societe.contactCoordonnee.email %}
+                {% if factureEnRetard.societe.contactCoordonnee.emailFacturation %}
+                  <br /><small><a href="mailto:{{ factureEnRetard.societe.contactCoordonnee.emailFacturation }}">{{ factureEnRetard.societe.contactCoordonnee.emailFacturation }}</a></small>
+								{% elseif factureEnRetard.societe.contactCoordonnee.email %}
 									<br /><small><a href="mailto:{{ factureEnRetard.societe.contactCoordonnee.email }}">{{ factureEnRetard.societe.contactCoordonnee.email }}</a></small>
 								{% endif %}
 								{% if (factureEnRetard.societe.contactCoordonnee.telephoneFixe is defined and factureEnRetard.societe.contactCoordonnee.telephoneFixe)%}
