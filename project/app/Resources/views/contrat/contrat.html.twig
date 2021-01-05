@@ -246,7 +246,7 @@
 
 {% if(factureMode is defined) %}
 <div class="panel panel-default">
-    <div class="panel-heading"><h3 class="panel-title">Factures {% if contrat.nbFactures == 0 %}à créer manuellement car <strong>non rattachées aux passages</strong>{% endif %}</h3></div>
+<div class="panel-heading"><h3 class="panel-title">Factures {% if contrat.nbFactures == 0 %}à créer manuellement car <strong>non rattachées aux passages</strong>{% endif %}</h3></div>
     <table class="table table-bordered table-condensed table-stripped">
         <thead>
             <tr>
@@ -273,12 +273,12 @@
                     <td>{% if mouvement.quantite < 0 %}{{ mouvement.libelle|replace({'Facture': 'Avoir'}) }}{% else %}{{ mouvement.libelle }}{% endif %}</td>
                     <td class="text-right">{{ facture.dateFacturation | localizeddate("medium", "none", null, null, "d MMM yyyy") }}</td>
                     <td class="text-center"><a href="{{ path('facturable_pdf', {'document': facture.id ,'key': facture.getSecretKey()})}}"><span class="glyphicon glyphicon-file"></span>&nbsp;{{ facture.numeroFacture }}</a></td>
-                    {% set montant = mouvement.montantHT * mouvement.quantite %}
+                    {% set montant = mouvement.montantHT %}
                     {% set montantTTC = montant + (montant * mouvement.tauxTaxe) %}
                     {% set total = total + montant %}
                     {% set totalTTC = totalTTC + montantTTC %}
                     <td class="text-right">{{ "%0.2f" | format(montant) }} €</td>
-                    <td class="text-right">{{ "%0.2f" | format(mouvement.tauxTaxe * 100) }} €</td>
+                    <td class="text-right">{{ "%0.2f" | format(mouvement.tauxTaxe * 100) }} %</td>
                     <td class="text-right">{{ "%0.2f" | format(montantTTC) }} €</td>
                 </tr>
             {% endfor %}
