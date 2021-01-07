@@ -161,9 +161,12 @@ class ContratPassages {
     	return $produits;
     }
 
-    public function getNbPassagesRealises() {
+    public function getNbPassagesRealises($exclude_garanti = false) {
         $realises = 0;
         foreach ($this->getPassages() as $passage) {
+            if($exclude_garanti && ($passage->isGarantie() || $passage->isControle())){
+              continue;
+            }
             $realises+=($passage->isRealise());
         }
         return $realises;
