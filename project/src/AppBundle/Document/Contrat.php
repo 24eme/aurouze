@@ -1938,7 +1938,7 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
       if(!$this->getContratPassages()->first()){
         return array('pca' => '0', 'ratioFacture' => '0', 'ratioActivite' => '0');
       }
-      $nbPassagesEff = $this->getContratPassages()->first()->getNbPassagesRealisesOuAnnule(true);
+      $nbPassagesEff = $this->getContratPassages()->first()->getNbPassagesRealises(true);
       $nbPassageTotal = $this->getNbPassages();
       $nbPassageRestant = $nbPassageTotal - $nbPassagesEff;
       $ratioEffectue = (!$nbPassageTotal)? "0" : (floatval($nbPassagesEff) / floatval($nbPassageTotal));
