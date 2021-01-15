@@ -1012,7 +1012,7 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
         return $sommeMontantPayeCalcule;
     }
 
-    public function genererAvoir(){
+    public function genererAvoir($df){
         $avoir = clone $this;
         $avoir->removeNumeroFacture();
         $avoir->setCloture(true);
@@ -1025,7 +1025,7 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
             $ligne->setQuantite(-1 * $ligne->getQuantite());
         }
         $avoir->setDateEmission(new \DateTime());
-        $avoir->setDateFacturation(new \DateTime());
+        $avoir->setDateFacturation($df);
         $avoir->setDateLimitePaiement($avoir->calculDateLimitePaiement());
         return $avoir;
     }

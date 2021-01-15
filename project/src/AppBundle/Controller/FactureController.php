@@ -74,6 +74,8 @@ class FactureController extends Controller
 
         if (!isset($facture)) {
             $facture = $fm->createVierge($societe);
+            $df = ($this->container->getParameter('date_facturation'))? new \DateTime($this->container->getParameter('date_facturation')) : new \DateTime();
+            $facture->setDateFacturation($df);
             $factureLigne = new LigneFacturable();
             $factureLigne->setTauxTaxe(0.2);
             $factureLigne->setQuantite(1);
@@ -102,7 +104,8 @@ class FactureController extends Controller
         }
 
         if (! $facture->getDateFacturation()) {
-            $facture->setDateFacturation(new \DateTime());
+            $df = ($this->container->getParameter('date_facturation'))? new \DateTime($this->container->getParameter('date_facturation')) : new \DateTime();
+            $facture->setDateFacturation($df);
         }
 
         $produitsSuggestion = array();
@@ -187,12 +190,18 @@ class FactureController extends Controller
     public function societeGenerationAction(Request $request, Societe $societe) {
         $fm = $this->get('facture.manager');
         $dm = $this->get('doctrine_mongodb')->getManager();
-        $date = \DateTime::createFromFormat('d/m/Y', $request->get('dateFacturation', date('d/m/Y')));
+
+        if ($this->container->getParameter('date_facturation')) {
+          $date = new \DateTime($this->container->getParameter('date_facturation'));
+        } else {
+          $date = \DateTime::createFromFormat('d/m/Y', $request->get('dateFacturation', date('d/m/Y')));
+        }
 
         $mouvements = $fm->getMouvementsBySociete($societe);
 
+
         foreach($mouvements as $mouvement) {
-            $facture = $fm->create($societe, array($mouvement), new \DateTime());
+            $facture = $fm->create($societe, array($mouvement), $date);
             $facture->setDateFacturation($date);
             $contrat =  $facture->getContrat();
             if($contrat && $contrat->isBonbleu()){
@@ -237,7 +246,8 @@ class FactureController extends Controller
         $facture = $fm->getRepository()->findOneById($factureId);
 
         if ($facture->getDateDevis() && ! $facture->getDateFacturation()) {
-            $facture->setDateFacturation(new \DateTime());
+          $df = ($this->container->getParameter('date_facturation'))? new \DateTime($this->container->getParameter('date_facturation')) : new \DateTime();
+          $facture->setDateFacturation($df);
         }
 
         $fm->getRepository()->getClassMetadata()->idGenerator->generateNumeroFacture($dm, $facture);
@@ -257,7 +267,8 @@ class FactureController extends Controller
       $dm = $this->get('doctrine_mongodb')->getManager();
 
       $facture = $this->get('facture.manager')->getRepository()->findOneById($factureId);
-      $avoir = $facture->genererAvoir();
+      $df = ($this->container->getParameter('date_facturation'))? new \DateTime($this->container->getParameter('date_facturation')) : new \DateTime();
+      $avoir = $facture->genererAvoir($df);
       if($remboursement){
         $avoir->setAvoirPartielRemboursementCheque(true);
       }

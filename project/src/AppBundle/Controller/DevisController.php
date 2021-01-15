@@ -181,6 +181,8 @@ class DevisController extends Controller
         $appConf = $this->container->getParameter('application');
         $planification = boolval($request->get('planification',true));
         $facture = $fm->createFromDevis($devis, $planification);
+        $df = ($this->container->getParameter('date_facturation'))? new \DateTime($this->container->getParameter('date_facturation')) : new \DateTime();
+        $facture->setDateFacturation($df);
         $devis->setPdfNonEnvoye(false);
         $dm->persist($facture);
         $devis->setIdentifiantFacture($facture->getId());
