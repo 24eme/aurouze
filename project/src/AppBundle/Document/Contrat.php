@@ -1092,6 +1092,12 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
         if ($pa == $pb) {
             $paDate = ($a->getDateDebut()) ? $a->getDateDebut() : $a->getDateCreation();
             $pbDate = ($b->getDateDebut()) ? $b->getDateDebut() : $b->getDateCreation();
+            if(!$paDate) {
+                return +1;
+            }
+            if(!$pbDate) {
+                return -1;
+            }
             if ($paDate->format('Ymd') == $pbDate->format('Ymd')) {
                 return 0;
             } else {
