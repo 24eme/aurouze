@@ -141,8 +141,10 @@
 								{% endif %}
                 <br/>
                 {% for contrat in factureEnRetard.lignes %}
+									{% if contrat.origineDocument is not null %}
                   <small>lié au <a href="{{ path('contrat_visualisation', {'id': contrat.origineDocument.id}) }}">contrat {{ contrat.origineDocument.numeroArchive }}</a></small><br/>
-                {% endfor %}
+									{% endif %}
+								{% endfor %}
 							</td>
               <td class="text-center">
 								<span class="text-right">{{ "%0.2f" | format(factureEnRetard.montantTTC)  }}&nbsp;€</span>&nbsp;/&nbsp;<span class="text-left">{{ "%0.2f" | format(factureEnRetard.montantPaye)  }}&nbsp;€</span>
