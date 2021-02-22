@@ -2,6 +2,7 @@
 namespace AppBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @MongoDB\EmbeddedDocument
@@ -35,6 +36,7 @@ class LigneFacturable {
 
     /**
      * @MongoDB\Field(type="float")
+     * @Assert\GreaterThanOrEqual(0)
      */
     protected $montantHT;
 
