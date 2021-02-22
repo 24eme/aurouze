@@ -16,7 +16,7 @@
 
     <div class="row" style="margin-top: 10px; height: 130px;">
         <div class="col-xs-8">
-            <h3 style="margin-top: 0;"><i style="cursor: default;" class="mdi mdi-{{ etablissement.icon }} mdi-lg" title="{{ etablissement.type }}" data-toggle="tooltip" ></i> {{ etablissement.nom }} <small class="text-muted">({{ etablissement.raisonSociale }})</small></h3>
+          <h3 style="margin-top: 0;"><i style="cursor: default;" class="mdi mdi-{{ etablissement.icon }} mdi-lg" title="{{ etablissement.type }}" data-toggle="tooltip" ></i> {{ etablissement.nom }} <small class="text-muted">({{ etablissement.raisonSociale }})</small>{% if(etablissement.siret) %} <small class="text-muted">(Siret : {{ etablissement.siret }})</small>{% endif %}</h3>
             <p class="lead">{{ etablissement.adresse.adresse }} {{ etablissement.adresse.codePostal }} {{ etablissement.adresse.commune }}</p>
             <p>
                 {% if etablissement.contactCoordonnee.telephoneFixe or etablissement.contactCoordonnee.telephoneMobile or etablissement.contactCoordonnee.libelle %} <strong>Contact : </strong>{% endif %}{{ etablissement.contactCoordonnee.telephoneFixe }}{% if etablissement.contactCoordonnee.telephoneFixe and etablissement.contactCoordonnee.telephoneMobile %} / {% endif %}{{ etablissement.contactCoordonnee.telephoneMobile }}{% if  etablissement.contactCoordonnee.libelle %} ({{ etablissement.contactCoordonnee.libelle }}){% endif %}

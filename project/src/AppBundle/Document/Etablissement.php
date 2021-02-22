@@ -40,6 +40,11 @@ class Etablissement implements DocumentSocieteInterface, EtablissementInfosInter
     protected $nom;
 
     /**
+     * @MongoDB\Field(type="string")
+     */
+    protected $siret;
+
+    /**
      * @MongoDB\EmbedOne(targetDocument="Adresse")
      */
     protected $adresse;
@@ -265,6 +270,28 @@ class Etablissement implements DocumentSocieteInterface, EtablissementInfosInter
             return $this->getSociete()->getRaisonSociale() . ' - ' . $this->nom;
         }
         return $this->nom;
+    }
+
+    /**
+     * Get siret
+     *
+     * @return string $siret
+     */
+    public function getSiret()
+    {
+        return $this->siret;
+    }
+
+    /**
+     * Set siret
+     *
+     * @param string $siret le siret
+     * @return $this
+     */
+    public function setSiret($siret)
+    {
+        $this->siret = $siret;
+        return $this;
     }
 
     /**
