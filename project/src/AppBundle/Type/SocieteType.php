@@ -47,7 +47,8 @@ class SocieteType extends AbstractType {
                 ->add('save', SubmitType::class, array('label' => 'Enregistrer', "attr" => array("class" => "btn btn-success pull-right")))
                 ->add('adresse', AdresseType::class, array('data_class' => 'AppBundle\Document\Adresse'))
                 ->add('contactCoordonnee', ContactCoordonneeType::class, array('data_class' => 'AppBundle\Document\ContactCoordonnee'))
-                ->add('sepa', SepaType::class, array('data_class' => 'AppBundle\Document\Sepa'));
+                ->add('sepa', SepaType::class, array('data_class' => 'AppBundle\Document\Sepa'))
+                ->add('siret', TextType::class, ['label' => 'Siret :', 'required' => false]);
         if ($this->isNew) {
             $builder->add('generer', CheckboxType::class, array('label' => 'Générer l\'établissement lié, à partir des données de la société', 'required' => false, 'empty_data' => null, 'mapped' => false, 'data' => false));
         }
