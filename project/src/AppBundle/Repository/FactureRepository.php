@@ -131,21 +131,13 @@ class FactureRepository extends DocumentRepository {
     	return $resultSet;
     }
 
-    public function findFactureRetardDePaiement($dateFactureBasse = null, $dateFactureHaute = null, $nbRelance = null, $societe = null, $commercial = null){
-      $today = new \DateTime();
+    private function makeBaseFactureRetardDePaiement($nbRelance = null, $societe = null)
+    {
       $q = $this->createQueryBuilder();
       $q->field('numeroFacture')->notEqual(null);
       $q->field('cloture')->equals(false);
       $q->field('montantTTC')->gt(0.0);
-      //$q->field('montantAPayer')->gt(0.0);
       $q->field('avoir')->equals(null);
-      $q->field('dateLimitePaiement')->lte($today);
-      if($dateFactureBasse){
-        $q->field('dateFacturation')->gte($dateFactureBasse);
-      }
-      if($dateFactureHaute){
-        $q->field('dateFacturation')->lte($dateFactureHaute);
-      }
       if(!is_null($nbRelance)){
         if($nbRelance > 2){
           $q->field('nbRelance')->gte($nbRelance);
@@ -165,27 +157,51 @@ class FactureRepository extends DocumentRepository {
         	$q->field('societe')->equals($societe);
       	}
         $q->sort('dateFacturation', 'desc')->sort('societe', 'asc');
-        $query = $q->getQuery();
-        $results = $query->execute();
-        $factures = array();
-        foreach($results as $facture) {
+        return $q;
+    }
+
+    public function findFactureRetardDePaiement($dateFactureBasse = null, $dateFactureHaute = null, $nbRelance = null, $societe = null, $commercial = null){
+      $today = new \DateTime();
+
+      // Factures
+      $qF = $this->makeBaseFactureRetardDePaiement($nbRelance, $societe);
+      $qF->field('dateLimitePaiement')->lte($today);
+      if($dateFactureBasse){
+        $qF->field('dateFacturation')->gte($dateFactureBasse);
+      }
+      if($dateFactureHaute){
+        $qF->field('dateFacturation')->lte($dateFactureHaute);
+      }
+      $resultsFacture = $qF->getQuery()->execute();
+
+      // Devis
+
+      $today->modify("-30 days");
+      $qD = $this->makeBaseFactureRetardDePaiement($nbRelance, $societe);
+      $qD->field('numeroDevis')->notEqual(null);
+      $qD->field('dateFacturation')->lt($today);
+      $resultsDevis = $qD->getQuery()->execute();
+
+      $results = array_merge($resultsFacture->toArray(), $resultsDevis->toArray());
+
+
+        $retards = array();
+        foreach($results as $retard) {
         	if ($commercial) {
-        		if (!$facture->getContrat()) {
-        			continue;
-        		} else {
-        			if (!$facture->getContrat()->getCommercial()) {
+            if ($retard->getContrat()) {
+              if (!$retard->getContrat()->getCommercial()) {
         				continue;
         			} else {
-        				if ($facture->getContrat()->getCommercial()->getId() != $commercial->getId()) {
+                if ($retard->getContrat()->getCommercial()->getId() != $commercial->getId()) {
         					continue;
         				}
         			}
         		}
         	}
-            $factures[$facture->getId()] = $facture;
+          $retards[$retard->getDateFacturation()->format("YmdHis").$retard->getId()] = $retard;
         }
 
-        return $factures;
+        return $retards;
     }
 
     public function getMontantFacture($societe) {
@@ -202,17 +218,7 @@ class FactureRepository extends DocumentRepository {
     }
 
     public function findRetardDePaiementBySociete(Societe $societe, $nbJourSeuil = 0){
-      $jour = new \DateTime();
-      $jour->modify("-".$nbJourSeuil." days");
-      $q = $this->createQueryBuilder();
-      $q->field('numeroFacture')->notEqual(null);
-      $q->field('societe')->equals($societe->getId());
-      $q->field('cloture')->equals(false);
-      $q->field('montantTTC')->gt(0.0);
-      $q->field('avoir')->equals(null);
-      $q->field('dateLimitePaiement')->lt($jour)->sort('dateFacturation', 'asc');
-      $query = $q->getQuery();
-      return $query->execute();
+      return $this->findFactureRetardDePaiement(null, null, null, $societe, null);
     }
 
 }
