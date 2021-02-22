@@ -48,6 +48,11 @@ class Societe implements InterlocuteurInterface {
     /**
      * @MongoDB\Field(type="string")
      */
+    protected $siret;
+
+    /**
+     * @MongoDB\Field(type="string")
+     */
     protected $codeComptable;
 
     /**
@@ -269,6 +274,28 @@ class Societe implements InterlocuteurInterface {
      */
     public function getType() {
         return $this->type;
+    }
+
+    /**
+     * Get Siret
+     *
+     * @return string $siret
+     */
+    public function getSiret()
+    {
+        return $this->siret;
+    }
+
+    /**
+     * Set Siret
+     *
+     * @param string $siret Le siret
+     * @return $this
+     */
+    public function setSiret($siret)
+    {
+        $this->siret = $siret;
+        return $this;
     }
 
     /**
