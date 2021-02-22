@@ -158,3 +158,19 @@
         {{ form_end(form) }}
     </div>
 {% endblock %}
+{% block javascripts %}
+    <script type="text/javascript">
+    $("form").submit(function() {
+      var ok = true;
+      $("input.prix-unitaire").each(function() {
+        if ($(this).val() < 0) {
+          ok = false;
+        }
+      });
+      if (!ok) {
+        alert("Le Prix Unitaire doit être un nombre positif");
+        return false;
+      }
+    });
+    </script>
+{% endblock %}
