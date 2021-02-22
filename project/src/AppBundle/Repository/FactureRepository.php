@@ -198,11 +198,7 @@ class FactureRepository extends DocumentRepository {
         			}
         		}
         	}
-          $date = $retard->getDateFacturation();
-          if(!$date && $retard->getDateDevis()){
-            $date = $retard->getDateDevis();
-          }
-          $retards[$date->format("Ymd")] = $retard;
+          $retards[$retard->getDateFacturation()->format("YmdHis").$retard->getId()] = $retard;
         }
 
         return $retards;
