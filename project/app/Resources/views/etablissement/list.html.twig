@@ -9,7 +9,12 @@
     <tbody>
         {% for etablissement in etablissements %}
         <tr>
-            <td><i class="mdi mdi-{{ etablissement.icon }} mdi-lg"></i> <a href="{{ path('passage_etablissement', {'id': etablissement.id }) }}">{{ etablissement.getNom(false) }}</a> {% if(modifLink is defined and modifLink) %}<a class="btn btn-xs btn-default pull-right" href="{{ path('etablissement_modification', {'societe': societe.id, 'id': etablissement.id }) }}"><span class="glyphicon glyphicon-pencil"></span></a>{% endif %}</td>
+            <td>
+              <i class="mdi mdi-{{ etablissement.icon }} mdi-lg"></i> <a href="{{ path('passage_etablissement', {'id': etablissement.id }) }}">{{ etablissement.getNom(false) }}</a> {% if(modifLink is defined and modifLink) %}<a class="btn btn-xs btn-default pull-right" href="{{ path('etablissement_modification', {'societe': societe.id, 'id': etablissement.id }) }}"><span class="glyphicon glyphicon-pencil"></span></a>{% endif %}
+              {% if(etablissement.siret) %}
+                <br/><span class="text-muted">({{ etablissement.siret }})</span>
+              {% endif %}
+            </td>
             <td>{{ etablissement.adresse.adresse }}</td>
             <td>{{ etablissement.adresse.codePostal }} {{ etablissement.adresse.commune }}</td>
             <td>

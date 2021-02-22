@@ -27,6 +27,7 @@ fos_elastica:
                 type: {type: string}
                 commentaire: {type: string}
                 actif: {type: boolean}
+                siret: {type: string}
               persistence:
                 driver: mongodb
                 model: AppBundle\Document\Etablissement
