@@ -185,23 +185,27 @@ class FactureRepository extends DocumentRepository {
       $results = array_merge($resultsFacture->toArray(), $resultsDevis->toArray());
 
 
-        $factures = array();
-        foreach($results as $facture) {
+        $retards = array();
+        foreach($results as $retard) {
         	if ($commercial) {
-        		if ($facture->getContrat()) {
-        			if (!$facture->getContrat()->getCommercial()) {
+            if ($retard->getContrat()) {
+              if (!$retard->getContrat()->getCommercial()) {
         				continue;
         			} else {
-        				if ($facture->getContrat()->getCommercial()->getId() != $commercial->getId()) {
+                if ($retard->getContrat()->getCommercial()->getId() != $commercial->getId()) {
         					continue;
         				}
         			}
         		}
         	}
-          $factures[$facture->getId()] = $facture;
+          $date = $retard->getDateFacturation();
+          if(!$date && $retard->getDateDevis()){
+            $date = $retard->getDateDevis();
+          }
+          $retards[$date->format("Ymd")] = $retard;
         }
 
-        return $factures;
+        return $retards;
     }
 
     public function getMontantFacture($societe) {
