@@ -200,7 +200,7 @@ class FactureRepository extends DocumentRepository {
         	}
           $retards[$retard->getDateFacturation()->format("YmdHis").$retard->getId()] = $retard;
         }
-
+        krsort($retards);
         return $retards;
     }
 
