@@ -176,10 +176,16 @@ class FactureRepository extends DocumentRepository {
 
       // Devis
 
-      $today->modify("-30 days");
+     // $today->modify("-30 days");
       $qD = $this->makeBaseFactureRetardDePaiement($nbRelance, $societe);
       $qD->field('numeroDevis')->notEqual(null);
-      $qD->field('dateFacturation')->lt($today);
+      if($dateFactureBasse){
+        $qD->field('dateFacturation')->gte($dateFactureBasse);
+      }
+      if($dateFactureHaute){
+        $qD->field('dateFacturation')->lte($dateFactureHaute);
+      }
+      //$qD->field('dateFacturation')->lt($today);
       $resultsDevis = $qD->getQuery()->execute();
 
       $results = array_merge($resultsFacture->toArray(), $resultsDevis->toArray());
@@ -196,7 +202,9 @@ class FactureRepository extends DocumentRepository {
         					continue;
         				}
         			}
-        		}
+        		}elseif($retard->getCommercial() && $retard->getCommercial()->getId() != $commercial->getId()){
+              continue;
+            }
         	}
           $retards[$retard->getDateFacturation()->format("YmdHis").$retard->getId()] = $retard;
         }
