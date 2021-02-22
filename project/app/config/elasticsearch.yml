@@ -15,6 +15,7 @@ fos_elastica:
                 type: {type: string}
                 codeComptable: {type: string}
                 actif: {type: boolean}
+                siret: {type: string}
               persistence:
                 driver: mongodb
                 model: AppBundle\Document\Societe
