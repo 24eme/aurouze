@@ -110,6 +110,15 @@ class ContratType extends AbstractType {
                     return $duration[0] * 60 + $duration[1];
                 }));
 
+                $builder->add('frequencePaiement', ChoiceType::class, array(
+                		'label' => 'Fréquence de paiement* : ',
+                		'choices' => $this->getFrequences(),
+                		'expanded' => false,
+                		'multiple' => false,
+                		'required' => true,
+                		'attr' => array("class" => "select2 select2-simple"),
+                ));
+
                 $builder->add('dateCreation', DateType::class, array(
             	"attr" => array('data-date-format' => 'dd/mm/yyyy', 'class' => 'input-inline datepicker', 'data-provide' => 'datepicker'),
             'widget' => 'single_text',
