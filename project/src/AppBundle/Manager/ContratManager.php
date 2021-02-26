@@ -183,7 +183,7 @@ class ContratManager implements MouvementManagerInterface {
         $contrat->setDureePassage(60);
         $contrat->setNbFactures(1);
         $contrat->setDureeGarantie(0);
-        $contrat->setFrequencePaiement(self::FREQUENCE_RECEPTION);
+        $contrat->setFrequencePaiement($etablissement->getSociete()->getFrequencePaiement());
         $contrat->setTvaReduite(false);
 
         return $contrat;
