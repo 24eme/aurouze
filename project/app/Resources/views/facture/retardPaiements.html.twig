@@ -121,6 +121,11 @@
               {{factureEnRetard.isDevis }}
               <td><small>{{ factureEnRetard.dateFacturation | localizeddate("medium", "none", null, null, "d MMM yyyy") | capitalize }}</small></td>
               <td>
+								{% if factureEnRetard.societe.sepa and factureEnRetard.societe.sepa.actif %}
+							<small class="pull-left" style="padding-top: 1px; padding-right: 3px; font-size: 75%;" data-toggle="tooltip" title="{{ factureEnRetard.societe.sepa.iban }} <br/> {{ factureEnRetard.societe.sepa.bic }} <br/> {{ factureEnRetard.societe.sepa.rum }} <br/> ({{ factureEnRetard.societe.sepa.date | date("d/m/Y") }}) <br/> {% if factureEnRetard.societe.sepa.first %}Premier prélèvement{% else %}Prélèvements récurrents{% endif %}">
+										<label class="label label-xs label-primary" style="cursor:pointer;">SEPA</label>
+								</small>
+								{% endif %}
 								<small><a href="{{ path('facture_societe', {'id': factureEnRetard.societe.id }) }}">{{ factureEnRetard.societe.raisonSociale }}</a></small>
                 {% if factureEnRetard.societe.contactCoordonnee.emailFacturation %}
                   <br /><small><a href="mailto:{{ factureEnRetard.societe.contactCoordonnee.emailFacturation }}">{{ factureEnRetard.societe.contactCoordonnee.emailFacturation }}</a></small>
