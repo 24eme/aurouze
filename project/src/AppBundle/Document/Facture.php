@@ -1023,6 +1023,7 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
         $avoir->setMontantTTC(-1 * $avoir->getMontantTTC());
         foreach($avoir->getLignes() as $ligne) {
             $ligne->setQuantite(-1 * $ligne->getQuantite());
+            $ligne->setLibelle(preg_replace("/^Facture [0-9]+\/[0-9]+ -/", "Avoir sur", $ligne->getLibelle()));
         }
         $avoir->setDateEmission(new \DateTime());
         $avoir->setDateFacturation($df);
