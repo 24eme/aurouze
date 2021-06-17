@@ -56,26 +56,31 @@ protected $xml;
 
 
     public function addTransferts($date){
-        foreach ($this->factures as $key => $facture) {
-            $idPrelevement = $this->createPrelevementId($facture,$date);
-            $isFirst = $facture->getSociete()->isFirstPrelevement();
-            $seqType = ($isFirst)? PaymentInformation::S_FIRST : PaymentInformation::S_RECURRING;
+      $tabPmtfInf = [];
+      foreach( $this->factures as $key => $facture){
+        $d = $facture->getPrelevementDate();
+        $tabPmtfInf[$d->format('YmdHis')][] = $facture;
+      }
+
+      $seqType = PaymentInformation::S_RECURRING;
+      foreach($tabPmtfInf as $d => $tabFactures){
+        $this->directDebit->addPaymentInfo($d, array(
+            'id'                    => $d,
+            'dueDate'               => $tabPmtfInf[$d][0]->getPrelevementDate(), //recuperer la premiere facture de la date prise
+            'creditorName'          => $this->creditorName,
+            'creditorAccountIBAN'   => $this->creditorAccountIBAN,
+            'creditorAgentBIC'      => $this->creditorAgentBIC,
+            'seqType'               => $seqType,
+            'creditorId'            => $this->creditorId,
+            'localInstrumentCode'   => 'CORE'
+        ));
+
+        foreach ($tabFactures as $key => $facture) {
 
 
-            $dueDate = $facture->getPrelevementDate();
-            $facture->setInPrelevement($dueDate);
-            $this->directDebit->addPaymentInfo($idPrelevement, array(
-                'id'                    => $idPrelevement,
-                'dueDate'               => $dueDate,
-                'creditorName'          => $this->creditorName,
-                'creditorAccountIBAN'   => $this->creditorAccountIBAN,
-                'creditorAgentBIC'      => $this->creditorAgentBIC,
-                'seqType'               => $seqType,
-                'creditorId'            => $this->creditorId,
-                'localInstrumentCode'   => 'CORE'
-            ));
+            $facture->setInPrelevement($d);
 
-            $this->directDebit->addTransfer($idPrelevement, array(
+            $this->directDebit->addTransfer($d, array(
                 'amount'                => ''.intval($facture->getMontantAPayer()*100),
                 'debtorIban'            => str_ireplace(" ","",$facture->getSepa()->getIban()),
                 'debtorBic'             => str_ireplace(" ","",$facture->getSepa()->getBic()),
@@ -86,10 +91,12 @@ protected $xml;
                 'endToEndId'            => 'Aurouze Facture'
             ));
         }
+      }
+
     }
 
     public function createPrelevementId($facture, $date){
-        return $facture->getNumeroFacture().'_'.$date->format('Ymd-His');
+        return $facture->getNumeroFacture().'_'.$date->format('YmdHis');
     }
 
 
