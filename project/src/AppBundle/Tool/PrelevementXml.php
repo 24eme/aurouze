@@ -77,8 +77,7 @@ protected $xml;
 
         foreach ($tabFactures as $key => $facture) {
 
-
-            $facture->setInPrelevement($d);
+            $facture->setInPrelevement($facture->getPrelevementDate());
 
             $this->directDebit->addTransfer($d, array(
                 'amount'                => ''.intval($facture->getMontantAPayer()*100),
