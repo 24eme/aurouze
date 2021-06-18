@@ -76,7 +76,8 @@
                                             <i class="mdi mdi-{{ passage.etablissementInfos.icon }} mdi-lg"></i>
                                             <strong>{{ passage.etablissementInfos.nom|capitalize }}</strong>
                                             <small>{{ passage.etablissementInfos.adresse.codePostal }} {{ passage.etablissementInfos.adresse.commune }}</small>
-                                            {% if passage.type is constant('AppBundle\\Document\\Devis::DOCUMENT_TYPE') %}
+
+                                            {% if passage.getDocumentType() is constant('AppBundle\\Document\\Devis::DOCUMENT_TYPE') %}
                                               <i class="pull-right mdi mdi-local-shipping mdi-lg"></i>
                                             {% endif %}
                                         </div>
@@ -127,7 +128,7 @@
                                               </span>
                                             {% endif %}
                                         </div>
-                                        {% if passage.type is not constant('AppBundle\\Document\\Devis::DOCUMENT_TYPE') %}
+                                        {% if passage.getDocumentType() is not constant('AppBundle\\Document\\Devis::DOCUMENT_TYPE') %}
                                           <div data-url="{{ path('ajax_more_infos_passage', {'passage': passage.id }) }}"></div>
                                           <button type="button" class="btn-more-info btn btn-block btn-secondary"><i class="mdi mdi-lg mdi-vertical-align-bottom"></i> Plus d'informations</button>
                                         {% endif %}
