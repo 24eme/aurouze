@@ -552,7 +552,7 @@ class ContratManager implements MouvementManagerInterface {
     	$contrats = $this->getRepository()->exportAccepteOrResilieByDates($dateDebut,$dateFin);
     	$csv = array();
     	$cpt = 0;
-      $csv["AAAaaa_0_0000000000"] = array("Commercial","Client","Contacts", "Com.", "Num.", "Type", "Presta.", "Statut","Montant HT", "Facturé HT", "% Facturé", "Nb Passages prévus dans le contrat"," Nb Passages effectués", "Durée du contrat en mois", "Date de début", "Date de fin", "Date d'acceptation");
+      $csv["AAAaaa_0_0000000000"] = array("Commercial","Client","Contacts", "Com.", "Num.", "Type", "Presta.", "Statut","Montant HT", "Facturé HT", "% Facturé", "Nb Passages prévus dans le contrat","Nb Passages effectués", "Durée du contrat en mois", "Date de début", "Date de fin", "Date d'acceptation");
     	foreach ($contrats as $contrat) {
     		if($contrat->getCommercial()){
     			$commercialContrat = $contrat->getCommercial();
