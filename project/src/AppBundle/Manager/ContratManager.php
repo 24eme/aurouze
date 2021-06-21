@@ -552,7 +552,7 @@ class ContratManager implements MouvementManagerInterface {
     	$contrats = $this->getRepository()->exportAccepteOrResilieByDates($dateDebut,$dateFin);
     	$csv = array();
     	$cpt = 0;
-    	$csv["AAAaaa_0_0000000000"] = array("Commercial","Client","Contacts", "Com.", "Num.", "Type", "Presta.", "Statut","Montant HT", "Facturé HT", "% Facturé");
+      $csv["AAAaaa_0_0000000000"] = array("Commercial","Client","Contacts", "Com.", "Num.", "Type", "Presta.", "Statut","Montant HT", "Facturé HT", "% Facturé", "Nb Passages prévus dans le contrat"," Nb Passages effectués", "Durée du contrat en mois", "Date de début", "Date de fin", "Date d'acceptation");
     	foreach ($contrats as $contrat) {
     		if($contrat->getCommercial()){
     			$commercialContrat = $contrat->getCommercial();
@@ -593,6 +593,12 @@ class ContratManager implements MouvementManagerInterface {
     			$arr_ligne[] = number_format($contrat->getPrixHT(), 2, ',', '');
     			$arr_ligne[] = number_format($contrat->getPrixFactures(), 2, ',', '');
     			$arr_ligne[] = ($contrat->getPrixHT() > 0)? round((100 * $contrat->getPrixFactures() / $contrat->getPrixHT())) : 0;
+          $arr_ligne[] = $contrat->getNbPassages();
+          $arr_ligne[] = $contrat->getContratPassages()->first()->getNbPassagesRealises(true);
+          $arr_ligne[] = $contrat->getDuree();
+          $arr_ligne[] = $contrat->getDateDebut()->format('m/Y');
+          $arr_ligne[] = $contrat->getDateFin()->format('m/Y');
+          $arr_ligne[] = $contrat->getDateAcceptation()->format('m/Y');
     			$csv[$key] = $arr_ligne;
     			$csv[$keyTotal][0] = $identite;
     			$csv[$keyTotal][1] = "TOTAL";
@@ -621,6 +627,12 @@ class ContratManager implements MouvementManagerInterface {
     			$arr_ligne[] = number_format($contrat->getPrixHT(), 2, ',', '');
     			$arr_ligne[] = number_format($contrat->getPrixFactures(), 2, ',', '');
     			$arr_ligne[] = ($contrat->getPrixHT() > 0)? round((100 * $contrat->getPrixFactures() / $contrat->getPrixHT())) : 0;
+          $arr_ligne[] = $contrat->getNbPassages();
+          $arr_ligne[] = $contrat->getContratPassages()->first()->getNbPassagesRealises(true);;
+          $arr_ligne[] = $contrat->getDuree();
+          $arr_ligne[] = $contrat->getDateDebut()->format('m/Y');
+          $arr_ligne[] = $contrat->getDateFin()->format('m/Y');
+          $arr_ligne[] = $contrat->getDateAcceptation()->format('m/Y');
     			$csv[$key] = $arr_ligne;
     			$csv[$keyTotal][0] = "Pas de commercial";
     			$csv[$keyTotal][1] = "TOTAL";

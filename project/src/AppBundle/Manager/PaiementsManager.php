@@ -121,7 +121,7 @@ class PaiementsManager {
       public static $types_exports = array(self::TYPE_EXPORT_FACTURES => array("libelle" =>  "Export des factures","picto" =>  "glyphicon glyphicon-eur", "pdf" =>  false),
     self::TYPE_EXPORT_PAIEMENTS => array("libelle" =>  "Export des paiements", "picto" =>  "glyphicon glyphicon-th-list", "pdf" =>  false),
     self::TYPE_EXPORT_STATS  => array("libelle" =>  "Export Chiffre d'affaire", "picto" =>  "glyphicon glyphicon-stats", "pdf" =>  true),
-    self::TYPE_EXPORT_CONTRATS  => array("libelle" =>  "Export Contrats par commercial", "picto" =>  "glyphicon glyphicon-list-alt", "pdf" =>  true),
+    self::TYPE_EXPORT_CONTRATS  => array("libelle" =>  "Export Contrats", "picto" =>  "glyphicon glyphicon-list-alt", "pdf" =>  true),
     self::TYPE_EXPORT_PCA  => array("libelle" =>  "Export PCA", "picto" =>  "glyphicon glyphicon-send", "pdf" =>  false),
     self::TYPE_EXPORT_DETAIL_CA  => array("libelle" =>  "Détail CA par commercial", "picto" =>  "glyphicon glyphicon-user", "pdf" =>  true),
     self::TYPE_EXPORT_DETAIL_CA_PRESTA  => array("libelle" =>  "Détail CA par prestation", "picto" =>  "glyphicon glyphicon-tree-conifer", "pdf" =>  true),
