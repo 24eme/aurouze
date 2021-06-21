@@ -708,7 +708,8 @@ class ContratController extends Controller {
 
         	$cm = $this->get('contrat.manager');
 
-        	$statsForCommerciaux = $cm->getStatsForCommerciauxForCsv($dateDebut,$dateFin,$commercial);
+          $statsForCommerciaux = $cm->getStatsForCommerciauxForCsv(false,$dateDebut,$dateFin,$commercial);
+          $statsForCommerciauxPdf = $cm->getStatsForCommerciauxForCsv(true,$dateDebut,$dateFin,$commercial);
 
         	if(!$pdf){
         		$filename = sprintf("export_contrats_commerciaux_du_%s_au_%s.csv", $dateDebut->format("Y-m-d"),$dateFin->format("Y-m-d"));
@@ -731,7 +732,7 @@ class ContratController extends Controller {
         		return $response;
         	}else{
         		$html = $this->renderView('contrat/pdfStatsCommerciaux.html.twig', array(
-        				'statsForCommerciaux' => $statsForCommerciaux,
+        				'statsForCommerciaux' => $statsForCommerciauxPdf,
         				'dateDebut' => $dateDebut,
         				'dateFin' => $dateFin
         		));
