@@ -552,7 +552,7 @@ class ContratManager implements MouvementManagerInterface {
     	$contrats = $this->getRepository()->exportAccepteOrResilieByDates($dateDebut,$dateFin);
     	$csv = array();
     	$cpt = 0;
-    	$csv["AAAaaa_0_0000000000"] = array("Commercial","Client","Contacts", "Com.", "Num.", "Type", "Presta.", "Statut","Montant HT", "Facturé HT", "% Facturé");
+      $csv["AAAaaa_0_0000000000"] = array("Commercial","Client","Contacts", "Com.", "Num.", "Type", "Presta.", "Statut","Montant HT", "Facturé HT", "% Facturé", "Nb Passages");
     	foreach ($contrats as $contrat) {
     		if($contrat->getCommercial()){
     			$commercialContrat = $contrat->getCommercial();
@@ -593,6 +593,7 @@ class ContratManager implements MouvementManagerInterface {
     			$arr_ligne[] = number_format($contrat->getPrixHT(), 2, ',', '');
     			$arr_ligne[] = number_format($contrat->getPrixFactures(), 2, ',', '');
     			$arr_ligne[] = ($contrat->getPrixHT() > 0)? round((100 * $contrat->getPrixFactures() / $contrat->getPrixHT())) : 0;
+          $arr_ligne[] = $contrat->getNbPassages();
     			$csv[$key] = $arr_ligne;
     			$csv[$keyTotal][0] = $identite;
     			$csv[$keyTotal][1] = "TOTAL";
@@ -621,6 +622,7 @@ class ContratManager implements MouvementManagerInterface {
     			$arr_ligne[] = number_format($contrat->getPrixHT(), 2, ',', '');
     			$arr_ligne[] = number_format($contrat->getPrixFactures(), 2, ',', '');
     			$arr_ligne[] = ($contrat->getPrixHT() > 0)? round((100 * $contrat->getPrixFactures() / $contrat->getPrixHT())) : 0;
+          $arr_ligne[] = $contrat->getNbPassages();
     			$csv[$key] = $arr_ligne;
     			$csv[$keyTotal][0] = "Pas de commercial";
     			$csv[$keyTotal][1] = "TOTAL";
