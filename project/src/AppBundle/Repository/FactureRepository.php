@@ -85,7 +85,7 @@ class FactureRepository extends DocumentRepository {
     public function exportByPrelevements($clients) {
 
         $date = new \DateTime();
-        $date->modify("-1 year");
+        $date->modify("-2 year");
 
     	$q = $this->createQueryBuilder();
     	$q->addAnd($q->expr()->field('societe')->in($clients));
