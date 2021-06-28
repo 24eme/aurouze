@@ -95,7 +95,6 @@ class FactureRepository extends DocumentRepository {
         $q->addAnd($q->expr()->field('inPrelevement')->equals(null));
         $q->addAnd($q->expr()->field('dateEmission')->gt($date));
         $q->addAnd($q->expr()->field('numeroFacture')->notEqual(null));
-        $q->addAnd($q->expr()->field('numeroDevis')->equals(null));
 
     	$query = $q->getQuery();
     	return $query->execute();
