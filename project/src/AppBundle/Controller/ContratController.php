@@ -508,7 +508,7 @@ class ContratController extends Controller {
         $dm = $this->get('doctrine_mongodb')->getManager();
         $cm = $this->get('contrat.manager');
 
-        if (in_array($contrat->status, [ContratManager::STATUT_BROUILLON, ContratManager::STATUT_EN_ATTENTE_ACCEPTATION])) {
+        if (in_array($contrat->statut, [ContratManager::STATUT_BROUILLON, ContratManager::STATUT_EN_ATTENTE_ACCEPTATION])) {
             $contrat->setMarkdown($this->renderView('contrat/contrat.markdown.twig', array('contrat' => $contrat, 'contratManager' => $cm)));
             $dm->persist($contrat);
             $dm->flush();
