@@ -7,8 +7,9 @@
 
 	<ol class="breadcrumb hidden-print">
 		<li><a href="{{ path('passage_erreurs') }}">Passages en erreurs</a></li>
+    <li class="pull-right"><span onclick="print()" style="cursor: pointer">Imprimer la liste</span></li>
 	</ol>
-	
+
 	{{ include('passage/listingPassages.html.twig', { 'passages': passages }) }}
 
 {% endblock %}
