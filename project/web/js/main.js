@@ -45,6 +45,7 @@
         $.initPaiementsAutoSave();
         $.initCommentairesPlanif();
         $.initDevisForm();
+        $.initAutocompleteAdresse();
     });
 
     $.initClickInputAddon = function(){
@@ -1083,6 +1084,29 @@
           window.location.href = url;
         });
 
+    }
+
+
+    $.initAutocompleteAdresse = function () {
+        $("#societe_edition_adresse_adresse").autocomplete({
+        source: function (request, response) {
+          $.ajax({
+              url: "https://api-adresse.data.gouv.fr/search/?q="+$("input[name='societe_edition[adresse][adresse]']").val(),
+              data: { q: request.term },
+              dataType: "json",
+              success: function (data) {
+                  response($.map(data.features, function (item) {
+                      return { label: item.properties.label, value: item.properties.name, postcode: item.properties.postcode, city :item.properties.city};
+                  }));
+              }
+          });
+        },
+
+        select: function(event, ui) {
+            $('#societe_edition_adresse_codePostal').val(ui.item.postcode);
+            $("#societe_edition_adresse_commune").val(ui.item.city);
+        }
+        });
     }
 
 }
