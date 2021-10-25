@@ -9,7 +9,9 @@ use Symfony\Component\Debug\Debug;
 // read http://symfony.com/doc/current/book/installation.html#configuration-and-setup for more information
 //umask(0000);
 umask(0002);
-
+if ($argv[1] == 'cache:clear' && $_SERVER['USER'] != 'www-data') {
+       die("clear:cache doit être lancé en sudo -u www-data\n");
+}
 set_time_limit(0);
 
 /**
