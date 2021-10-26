@@ -118,7 +118,7 @@
         <div class="text-center">
         Le service Comptabilité Client
         <br/>
-        PARIS le {% if relance and relance.dateRelance %} {{ relance.dateRelance | localizeddate("medium", "none", null, null,  "dd/MM/yyyy") }} {% else %} {{ "now" | localizeddate("medium", "none", null, null,  "dd/MM/yyyy") }} {% endif %}
+        PARIS le {{ "now" | localizeddate("medium", "none", null, null,  "dd/MM/yyyy") }}
         </div>
       </div>
 </div>
