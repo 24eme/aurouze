@@ -1080,7 +1080,7 @@ class Passage implements DocumentEtablissementInterface, DocumentSocieteInterfac
      * @return int $multiTechnicien
      */
     public function getMultiTechnicien() {
-        return $this->multiTechnicien;
+        return $this->getContrat()->getMultiTechnicien();
     }
 
     public static function triPerHourPrecedente($p_0, $p_1) {

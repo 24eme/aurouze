@@ -40,6 +40,7 @@
                         Date d'acceptation : <strong>{% if(contrat.getDateAcceptation()) %}{{ contrat.getDateAcceptation()|date("d/m/Y") }}{% endif %}</strong><br /><br />
                         Durée d'un passage : <strong>{{ contrat.getHumanDureePassage() }}</strong><br /><br />
                         Commercial : <strong>{{ contrat.getCommercial().getIdentite() }}</strong><br />
+                        Nombre de technicien : <strong>{% if contrat.getMultiTechnicien() > 1 %} {{ contrat.getMultiTechnicien() }} {% else %}Non défini{% endif %}</strong><br />
                         Technicien : <strong>{% if contrat.getTechnicien() %}{{ contrat.getTechnicien().getIdentite() }}{% else %}Non défini{% endif %}</strong><br />
                     </div>
                 </div>
