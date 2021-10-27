@@ -897,6 +897,14 @@
                 }
             });
 
+            $('#liste_passage .mdi-zoom-in').click(function () {
+                var marker = markers[$(this).parent().parent().parent().attr('id')];
+                if(typeof marker != 'undefined' && marker){
+                  map.setZoomAround(marker._latlng,16);
+                  map.panTo(marker._latlng);
+                }
+            });
+
             if(hasHistoryRewrite){
               map.on('moveend', function(){
                 var center = map.getCenter();
