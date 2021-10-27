@@ -853,15 +853,10 @@
             var refreshListFromMapBounds = function(){
               var filtre = window.location.hash;
               if(!filtre){
-                var excludeListNoMarkers = (map.getZoom() > 11);
                 $('div#liste_passage div.panel').each(function(){
                     var hasMarker = markers[$(this).attr('id')] != undefined ;
                     if(!hasMarker){
-                      if(excludeListNoMarkers){
                         $(this).hide();
-                      }else{
-                        $(this).show();
-                      }
                     }
                 });
                 for (var id in markers) {
