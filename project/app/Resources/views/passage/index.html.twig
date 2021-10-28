@@ -76,7 +76,9 @@
                                             <i class="mdi mdi-{{ passage.etablissementInfos.icon }} mdi-lg"></i>
                                             <strong>{{ passage.etablissementInfos.nom|capitalize }}</strong>
                                             <small>{{ passage.etablissementInfos.adresse.codePostal }} {{ passage.etablissementInfos.adresse.commune }}</small>
-                                            <i class="mdi mdi-zoom-in mdi-lg"></i>
+                                            {% if passage.etablissementInfos.adresse.coordonnees.lat and passage.etablissementInfos.adresse.coordonnees.lon %}
+                                              <i class="mdi mdi-zoom-in mdi-lg"></i>
+                                            {% endif %}
                                             {% if passage.getDocumentType() is constant('AppBundle\\Document\\Devis::DOCUMENT_TYPE') %}
                                               <i class="pull-right mdi mdi-local-shipping mdi-lg"></i>
                                             {% endif %}

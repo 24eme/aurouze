@@ -856,7 +856,10 @@
                 $('div#liste_passage div.panel').each(function(){
                     var hasMarker = markers[$(this).attr('id')] != undefined ;
                     if(!hasMarker){
-                        $(this).hide();
+                      $(this).hide();
+                    }
+                    else{
+                      $(this).show();
                     }
                 });
                 for (var id in markers) {
@@ -900,7 +903,12 @@
             $('#liste_passage .mdi-zoom-in').click(function () {
                 var marker = markers[$(this).parent().parent().parent().attr('id')];
                 if(typeof marker != 'undefined' && marker){
-                  map.setZoomAround(marker._latlng,16);
+
+                  if(document.location.hash != ""){
+                    document.location.hash = "";
+                  }
+                  map.setZoomAround(marker._latlng,15);
+                  refreshListFromMapBounds();
                   map.panTo(marker._latlng);
                 }
             });
