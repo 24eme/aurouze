@@ -812,6 +812,8 @@
                                     if (hoverTimeout) {
                                         clearTimeout(hoverTimeout);
                                     }
+                                    e.target.bindPopup("<b>"+e.target.feature.properties.nom+"</b>").openPopup();
+
                                     hoverTimeout = setTimeout(function () {
                                         $('#liste_passage .panel').blur();
                                         var element = $('#' + e.target.feature.properties._id);
@@ -822,6 +824,7 @@
                                     }, 400);
                                 });
                                 layer.on('mouseout', function (e) {
+                                    map.closePopup();
                                     if (hoverTimeout) {
                                         clearTimeout(hoverTimeout);
                                     }
@@ -903,13 +906,12 @@
             $('#liste_passage .mdi-zoom-in').click(function () {
                 var marker = markers[$(this).parent().parent().parent().attr('id')];
                 if(typeof marker != 'undefined' && marker){
-
                   if(document.location.hash != ""){
                     document.location.hash = "";
                   }
                   map.setZoomAround(marker._latlng,15);
-                  refreshListFromMapBounds();
                   map.panTo(marker._latlng);
+                  marker.bindPopup("<b>"+marker.feature.properties.nom+"</b>").openPopup();
                 }
             });
 
