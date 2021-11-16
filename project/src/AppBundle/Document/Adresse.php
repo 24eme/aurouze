@@ -202,4 +202,13 @@ class Adresse {
 
         return sprintf("%s, %s %s", $this->getAdresse(), $this->getCodePostal(), $this->getCommune());
     }
+
+    public function getLat(){
+      return $this->getCoordonnees()->getLat();
+    }
+
+    public function setLat($lat){
+      $this->getCoordonnees()->setLat($lat);
+      return $this;
+    }
 }
