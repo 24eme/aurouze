@@ -1110,7 +1110,7 @@
               dataType: "json",
               success: function (data) {
                   response($.map(data.features, function (item) {
-                      return { label: item.properties.label, value: item.properties.name, postcode: item.properties.postcode, city :item.properties.city, lat: item.geometry.coordinates[1], long:item.geometry.coordinates[0]};
+                      return { label : item.properties.label, value : item.properties.name, postcode : item.properties.postcode, city : item.properties.city, lat : item.geometry.coordinates[1], lon : item.geometry.coordinates[0]};
                   }));
               }
           });
@@ -1120,9 +1120,7 @@
             $('#societe_edition_adresse_codePostal').val(ui.item.postcode);
             $("#societe_edition_adresse_commune").val(ui.item.city);
             $("#societe_edition_adresse_lat").val(ui.item.lat);
-            $("#societe_edition_adresse_long").val(ui.item.long);
-            // console.log(ui.item.lat);
-            // console.log(ui.item.long);
+            $("#societe_edition_adresse_lon").val(ui.item.lon);
         }
         });
     }

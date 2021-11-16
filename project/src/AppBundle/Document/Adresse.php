@@ -211,4 +211,13 @@ class Adresse {
       $this->getCoordonnees()->setLat($lat);
       return $this;
     }
+
+    public function getLon(){
+      return $this->getCoordonnees()->getLon();
+    }
+
+    public function setLon($lon){
+      $this->getCoordonnees()->setLon($lon);
+      return $this;
+    }
 }
