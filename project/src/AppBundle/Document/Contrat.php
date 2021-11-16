@@ -2122,4 +2122,16 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
         $m = round(($duree/60 - $h) * 60);
         return sprintf("%02dh%02d", $h, $m);
     }
+
+    public function getEtablissementsWithoutPassages(){
+      $etablissementsSansPassages = array();
+      foreach($this->getContratPassages() as $contratPassage){
+        if(count($contratPassage->getPassages()) < 1){
+          $etablissementsSansPassages[] = $contratPassage->getEtablissement()->getId();
+        }
+      }
+      return $etablissementsSansPassages;
+    }
+
+
 }

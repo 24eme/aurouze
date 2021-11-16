@@ -46,6 +46,7 @@
         $.initCommentairesPlanif();
         $.initDevisForm();
         $.initAutocompleteAdresse();
+        $.initBloquerDeselectionEtablissementWithPassage();
     });
 
     $.initClickInputAddon = function(){
@@ -1120,6 +1121,16 @@
             $("#societe_edition_adresse_commune").val(ui.item.city);
         }
         });
+    }
+
+
+    $.initBloquerDeselectionEtablissementWithPassage = function(){
+         $('.select2').on('select2:unselecting', function(e){
+             if ($(e.params.args.data.element).attr('locked')) {
+                e.preventDefault();
+                alert("Ne peut pas être supprimé car l'établissement a des passages.");
+            }
+           });
     }
 
 }
