@@ -947,6 +947,7 @@
                     }
 
                 });
+                refreshListFromMapBounds();
             });
         }
     }
