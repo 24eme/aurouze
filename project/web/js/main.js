@@ -922,11 +922,14 @@
                 var hash = window.location.hash;
                 history.pushState(null, null, "?lat="+center.lat+"&lon="+center.lng+"&zoom="+ map.getZoom()+hash);
                 refreshListFromMapBounds();
+                console.log("DANS HISTORY");
               });
             }
 
 
             $(window).on('hashchange', function () {
+                map.closePopup();
+                var visibleMarkers = [];
                 $('#liste_passage .panel').each(function () {
                     if (!$(this).is(':visible')) {
                         var marker = markers[$(this).attr('id')];
@@ -943,10 +946,15 @@
                           $(marker._icon).removeClass('hidden');
                           $(marker._shadow).removeClass('hidden');
                           marker.setZIndexOffset(900);
+                          visibleMarkers.push(marker._latlng);
                         }
                     }
 
                 });
+                if(document.location.hash !=""){
+                  var bounds = new L.LatLngBounds(visibleMarkers);
+                  map.fitBounds(bounds);
+                }
                 refreshListFromMapBounds();
             });
         }
