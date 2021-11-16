@@ -1123,8 +1123,29 @@
             $("#societe_edition_adresse_lon").val(ui.item.lon);
         }
         });
-    }
 
+        $("#etablissement_adresse_adresse").autocomplete({
+        source: function (request, response) {
+          $.ajax({
+              url: "https://api-adresse.data.gouv.fr/search/?q="+$("input[name='etablissement_[adresse][adresse]']").val(),
+              data: { q: request.term },
+              dataType: "json",
+              success: function (data) {
+                  response($.map(data.features, function (item) {
+                      return { label : item.properties.label, value : item.properties.name, postcode : item.properties.postcode, city : item.properties.city, lat : item.geometry.coordinates[1], lon : item.geometry.coordinates[0]};
+                  }));
+              }
+          });
+        },
+
+        select: function(event, ui) {
+            $('#etablissement_adresse_codePostal').val(ui.item.postcode);
+            $("#etablissement_adresse_commune").val(ui.item.city);
+            $("#etablissement_adresse_lat").val(ui.item.lat);
+            $("#etablissement_adresse_lon").val(ui.item.lon);
+        }
+        });
+    }
 
     $.initBloquerDeselectionEtablissementWithPassage = function(){
          $('.select2').select2({tags: true, templateSelection : function (tag, container){
