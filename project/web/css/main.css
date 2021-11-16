@@ -172,6 +172,10 @@ body {
     margin-right: 10px;
 }
 
+.locked .select2-selection__choice__remove{
+  display: none!important;
+}
+
 @media (min-width: 768px) and (max-width: 991px) {
     #navbar .navbar-nav > li > a {
         padding-left: 10px;
