@@ -47,6 +47,7 @@
         $.initDevisForm();
         $.initAutocompleteAdresse();
         $.initBloquerDeselectionEtablissementWithPassage();
+        $.initMapForAdresse();
     });
 
     $.initClickInputAddon = function(){
@@ -922,7 +923,6 @@
                 var hash = window.location.hash;
                 history.pushState(null, null, "?lat="+center.lat+"&lon="+center.lng+"&zoom="+ map.getZoom()+hash);
                 refreshListFromMapBounds();
-                console.log("DANS HISTORY");
               });
             }
 
@@ -1130,6 +1130,7 @@
             $("#societe_edition_adresse_commune").val(ui.item.city);
             $("#societe_edition_adresse_lat").val(ui.item.lat);
             $("#societe_edition_adresse_lon").val(ui.item.lon);
+            $("#societe_edition_adresse_adresse").click();
         }
         });
 
@@ -1170,6 +1171,72 @@
               e.preventDefault();
           }
         });
+    }
+
+
+    $.initMapForAdresse = function(){
+      if ($('#mapForLatLng').length) {
+        var lat = 48.8593829;
+        var lon = 2.347227;
+        if($('#societe_edition_adresse_lat').val()){
+          lat=$('#societe_edition_adresse_lat').val();
+        }
+        if($('#societe_edition_adresse_lon').val()){
+          lon=$('#societe_edition_adresse_lon').val()
+        }
+        var map = L.map('mapForLatLng').setView([lat, lon], 13);
+        var marker = L.marker([lat,lon]).addTo(map);
+        var latlon = new L.LatLng(lat, lon);
+        marker.setLatLng(latlon);
+        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        map.on('dblclick', onMapClick);
+
+        $("#societe_edition_adresse_adresse").bind("propertychange change click keyup input paste",changeMarkerPlace);
+        $("#societe_edition_adresse_lat").bind("propertychange change click keyup input paste",changeMarkerPlace);
+        $("#societe_edition_adresse_lon").bind("propertychange change click keyup input paste",changeMarkerPlace);
+
+        function changeMarkerPlace(){
+          var lat = 48.8593829;
+          var lon = 2.347227;
+          if($("#societe_edition_adresse_lat").val()){
+            lat = $("#societe_edition_adresse_lat").val();
+          }
+          if($("#societe_edition_adresse_lon").val()){
+            lon = $("#societe_edition_adresse_lon").val();
+          }
+          map.eachLayer((layer) => {
+            if(layer._latlng){
+              map.removeLayer(layer);
+            }
+          });
+          var marker = L.marker([lat,lon]).addTo(map);
+          map.addLayer(marker);
+          map.setZoomAround(marker._latlng,13);
+          map.panTo(marker._latlng);
+        }
+
+        function onMapClick(e) {
+          map.eachLayer((layer) => {
+            if(layer._latlng){
+              map.removeLayer(layer);
+            }
+          });
+          marker = new L.marker(e.latlng, {draggable:'true'});
+          marker.on('dragend', function(event){
+            var marker = event.target;
+            var position = marker.getLatLng();
+            marker.setLatLng(new L.LatLng(position.lat, position.lng),{draggable:'true'});
+            $("#societe_edition_adresse_lat").val(marker._latlng.lat);
+            $("#societe_edition_adresse_lon").val(marker._latlng.lng);
+          });
+          map.addLayer(marker);
+          $("#societe_edition_adresse_lat").val(marker._latlng.lat);
+          $("#societe_edition_adresse_lon").val(marker._latlng.lng);
+        };
+      }
     }
 
 }
