@@ -826,7 +826,6 @@
                                     }, 400);
                                 });
                                 layer.on('mouseout', function (e) {
-                                    map.closePopup();
                                     if (hoverTimeout) {
                                         clearTimeout(hoverTimeout);
                                     }
@@ -928,7 +927,9 @@
 
 
             $(window).on('hashchange', function () {
-                map.closePopup();
+                if(document.location.hash != ""){
+                  map.closePopup();
+                }
                 var visibleMarkers = [];
                 $('#liste_passage .panel').each(function () {
                     if (!$(this).is(':visible')) {
