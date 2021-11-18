@@ -168,4 +168,17 @@ class SocieteRepository extends DocumentRepository {
         return $this->findBy(array('frequencePaiement' => $value));
     }
 
+    public function getIdsByQuery($q, $inactif = false, $limit = 100){
+       $ids = array();
+       $itemsQuery = $this->findByQuery($q, $inactif, $limit);
+       $itemsTerms = $this->findByTerms($q, $inactif, $limit, true);
+       $items = array_merge($itemsQuery,$itemsTerms);
+       foreach ($items as $item) {
+         $obj = $item["doc"];
+         $ids[] = $obj->getId();
+       }
+       return $ids;
+     }
+
+
 }

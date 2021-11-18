@@ -57,13 +57,6 @@
                 {% if(app.request.get('societe')) %}
                   {% set retard = facture_manager.getRetardDePaiementBySociete(app.request.get('societe')) | length %}
                 {% endif %}
-                {% set nbDocuments = 0 %}
-                {% if(app.request.get('societe')) %}
-                  {% set nbDocuments = attachement_manager.getAttachementsBySociete(app.request.get('societe')) | length %}
-                {% endif %}
-                {% if(app.request.get('etablissement')) %}
-                  {% set nbDocuments = attachement_manager.getAttachementsByEtablissement(app.request.get('etablissement')) | length %}
-                {% endif %}
                 <div id="navbar" class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
                         <li class="{%if (_menu_active == 'societe') %}active{% endif %}"><a href="{% if(app.request.get('societe') and _menu_active != 'societe') %}{{ path('societe_visualisation', { id: app.request.get('societe').id }) }}{% else %}{{ path('societe') }}{% endif %}">Société</a>
@@ -82,7 +75,7 @@
                       {{ path('factures_retard_societe',{ id : app.request.get('societe').id }) }}
                       {% else %}  {{ path('factures_retard') }}{% endif %}"></span>Retard{% if(retard > 0) %}&nbsp;<span class="badge badge-danger">{{ retard }}</span>{% endif %}</a></li>
                         <li class="{%if (_menu_active == 'attachements') %}active{% endif %}"><a href="{% if(app.request.get('etablissement') and _menu_active != 'attachements') %}{{ path('attachements_entite', { id: app.request.get('etablissement').id }) }}{% elseif(app.request.get('societe') and _menu_active != 'attachements') %}{{ path('attachements_entite', { id: app.request.get('societe').id }) }}{% else %}{{ path('attachements_last') }}{% endif %}">
-                          Documents&nbsp;{% if(nbDocuments > 0) %}&nbsp;<span class="badge badge-muted">{{ nbDocuments }}</span>{% endif %}
+                          Documents
                       </a></li>
                     </ul>
 

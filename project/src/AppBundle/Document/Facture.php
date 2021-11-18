@@ -421,7 +421,15 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
      * @return date $datePaiement
      */
     public function getDatePaiement() {
-        return $this->datePaiement;
+        $date = null;
+        foreach ($this->getPaiements() as $paiements) {
+          foreach ($paiements->getPaiement() as $paiement) {
+              if ($paiement->getFacture()->getId() == $this->getId()) {
+                $date = $paiement->getDatePaiement();
+              }
+          }
+        }
+        return $date->format('d/m/Y');
     }
 
     /**

@@ -172,6 +172,10 @@ body {
     margin-right: 10px;
 }
 
+.locked .select2-selection__choice__remove{
+  display: none!important;
+}
+
 @media (min-width: 768px) and (max-width: 991px) {
     #navbar .navbar-nav > li > a {
         padding-left: 10px;
@@ -311,6 +315,21 @@ body {
     color: #bbb;
     text-decoration: none;
     cursor: pointer;
+}
+
+.ui-autocomplete {
+    position: absolute;
+    padding: 0;
+    list-style: none;
+    background-color: white;
+    border: 2px solid #ddd;
+}
+.ui-autocomplete > li {
+  padding: 2px 20px;
+}
+.ui-autocomplete > li.ui-state-focus {
+  background-color: #337ab7;
+  color:white;
 }
 
 /* 100% Image Width on Smaller Screens */

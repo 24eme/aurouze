@@ -48,7 +48,7 @@ class ReconductionFiltresType extends AbstractType {
 		$builder->add('commercial', DocumentType::class, array(
 			            	'choices' => array_merge(array("" => ""), $this->getCommerciaux()),
 					'class' => 'AppBundle\Document\Compte',
-					'multiple' => false,
+					'multiple' => true,
 					'required' => false,
 					'attr' => array("class" => "select2 select2-simple", "data-placeholder" => "Commercial")));
 

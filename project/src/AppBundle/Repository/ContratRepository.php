@@ -191,9 +191,14 @@ class ContratRepository extends DocumentRepository {
           } else {
           	$q->field('typeContrat')->in(array_keys(ContratManager::$types_contrats_reconductibles));
 	  }
+
 	  if($commercial) {
-		 $q->field('commercial')->equals($commercial);
-	  }
+      $commerciauxIds=array();
+      foreach($commercial->getValues() as $commercial){
+        $commerciauxIds[] = $commercial->getId();
+      }
+      $q->field('commercial')->in($commerciauxIds);
+   }
 
           $q->field('dateFin')->lte($date);
           $q->addOr($q->expr()->field('reconduit')->equals(false))

@@ -508,9 +508,11 @@ class ContratController extends Controller {
         $dm = $this->get('doctrine_mongodb')->getManager();
         $cm = $this->get('contrat.manager');
 
-        $contrat->setMarkdown($this->renderView('contrat/contrat.markdown.twig', array('contrat' => $contrat, 'contratManager' => $cm)));
-        $dm->persist($contrat);
-        $dm->flush();
+        if (in_array($contrat->getStatut(), [ContratManager::STATUT_BROUILLON, ContratManager::STATUT_EN_ATTENTE_ACCEPTATION])) {
+            $contrat->setMarkdown($this->renderView('contrat/contrat.markdown.twig', array('contrat' => $contrat, 'contratManager' => $cm)));
+            $dm->persist($contrat);
+            $dm->flush();
+        }
 
         $header = $this->renderView('contrat/pdf-header.html.twig', array(
             'contrat' => $contrat
@@ -673,9 +675,10 @@ class ContratController extends Controller {
         	$dateRecondution = $formValues["dateRenouvellement"];
         	$typeContrat = $formValues["typeContrat"];
         	$societe = $formValues["societe"];
-        	$commercial = $formValues["commercial"];
+          if(count($formValues["commercial"])>0){
+            $commercial = $formValues["commercial"];
+          }
         }
-
         $contratsAReconduire = $cm->getRepository()->findContratsAReconduire($typeContrat, $dateRecondution, $societe, $commercial);
         $formReconduction = $this->createForm(new ReconductionType($contratsAReconduire), null, array(
         		'action' => $this->generateUrl('contrats_reconduire_massivement'),
@@ -708,7 +711,8 @@ class ContratController extends Controller {
 
         	$cm = $this->get('contrat.manager');
 
-        	$statsForCommerciaux = $cm->getStatsForCommerciauxForCsv($dateDebut,$dateFin,$commercial);
+          $statsForCommerciaux = $cm->getStatsForCommerciauxForCsv(false,$dateDebut,$dateFin,$commercial);
+          $statsForCommerciauxPdf = $cm->getStatsForCommerciauxForCsv(true,$dateDebut,$dateFin,$commercial);
 
         	if(!$pdf){
         		$filename = sprintf("export_contrats_commerciaux_du_%s_au_%s.csv", $dateDebut->format("Y-m-d"),$dateFin->format("Y-m-d"));
@@ -731,7 +735,7 @@ class ContratController extends Controller {
         		return $response;
         	}else{
         		$html = $this->renderView('contrat/pdfStatsCommerciaux.html.twig', array(
-        				'statsForCommerciaux' => $statsForCommerciaux,
+        				'statsForCommerciaux' => $statsForCommerciauxPdf,
         				'dateDebut' => $dateDebut,
         				'dateFin' => $dateFin
         		));
