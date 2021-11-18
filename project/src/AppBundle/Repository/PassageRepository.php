@@ -235,6 +235,18 @@ class PassageRepository extends DocumentRepository {
           }
           $result[$moisAnnee]->nb = $result[$moisAnnee]->nb + 1;
       }
+      foreach ($devis as $d) {
+          $moisAnnee = $d->getDatePrevision()->format('Ym');
+          if (!array_key_exists($moisAnnee, $result)) {
+              $result[$moisAnnee] = new \stdClass();
+              $result[$moisAnnee]->nb = 0;
+              $result[$moisAnnee]->date = $d->getDatePrevision();
+          }
+          if($datePlusOnemonth > $d->getDatePrevision()){
+            $result['courant']->nb = $result['courant']->nb + 1;
+          }
+          $result[$moisAnnee]->nb = $result[$moisAnnee]->nb + 1;
+      }
       return $result;
     }
 
