@@ -137,7 +137,7 @@ class DevisController extends Controller
 
         $factureManager = $this->get('facture.manager');
 
-        $facture = ($devis->getIdentifiantFacture())? $factureManager->getRepository('AppBundle:Facture')->find($devis->getIdentifiantFacture()) : null;
+        $facture = current($factureManager->getRepository('AppBundle:Facture')->findBy(['numeroDevis' => $devis->getNumeroDevis()]));
 
         $form = $this->createForm(new DevisType($dm, $cm, $devis->getSociete(), $appConf['commercial']), $devis, array(
             'action' => "",
