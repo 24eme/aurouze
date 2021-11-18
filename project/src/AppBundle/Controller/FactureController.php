@@ -44,7 +44,14 @@ class FactureController extends Controller
         $devisManager = $this->get('devis.manager');
         $contratsFactureAEditer = $contratManager->getRepository()->findContratWithFactureAFacturer(50);
         $facturesEnAttente = $factureManager->getRepository()->findBy(array('numeroFacture' => null, 'numeroDevis' => null), array('dateFacturation' => 'desc'));
-        $devisAFacturer = $devisManager->getRepository('AppBundle:Devis')->findBy(['statut' => PassageManager::STATUT_REALISE, 'pdfNonEnvoye' => true], ['dateEmission' => 'desc']);
+
+        $factures = $factureManager->getRepository()->findBy(['numeroDevis' => ['$ne' => null]]);
+        $numeros = array();
+        foreach($factures as $facture) {
+            $numeros[] = $facture->getNumeroDevis();
+        }
+
+        $devisAFacturer = $devisManager->getRepository('AppBundle:Devis')->findBy(['numeroDevis' => ['$nin' => $numeros]], ['dateEmission' => 'desc']);
         return $this->render('facture/index.html.twig',array('contratsFactureAEditer' => $contratsFactureAEditer, 'facturesEnAttente' => $facturesEnAttente, 'devisAFacturer' => $devisAFacturer));
     }
 
