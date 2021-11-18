@@ -216,21 +216,9 @@ class PassageRepository extends DocumentRepository {
       $datePlusOnemonth = clone $date;
       $datePlusOnemonth->modify("+1 month");
 
-      $mongoEndDate = new MongoDate(strtotime($dateFin->format('Y-m-d')));
+      $passages = $this->findToPlan($secteur, null, $dateFin);
+      $devis = $this->dm->getRepository('AppBundle:Devis')->findToPlan($secteur, null, $dateFin);
 
-      $q = $this->createQueryBuilder();
-
-      $q->field('statut')->equals(PassageManager::STATUT_A_PLANIFIER)
-              ->field('datePrevision')->lte($mongoEndDate);
-      $regex = $this->getRegexForSeineEtMarne();
-      if ($secteur == EtablissementManager::SECTEUR_PARIS) {
-         $q->addAnd($q->expr()->field('etablissementInfos.adresse.codePostal')->operator('$not', new \MongoRegex($regex)));
-     } elseif($secteur == EtablissementManager::SECTEUR_SEINE_ET_MARNE) {
-         $q->addAnd($q->expr()->field('etablissementInfos.adresse.codePostal')->equals(new \MongoRegex($regex)));
-      }
-      $query = $q->sort('datePrevision', 'asc')->getQuery();
-
-      $passages = $query->execute();
       $result = array();
       $result['courant'] = new \stdClass();
       $result['courant']->date = $date;
