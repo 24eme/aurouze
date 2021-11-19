@@ -51,7 +51,7 @@ class FactureController extends Controller
             $numeros[] = $facture->getNumeroDevis();
         }
 
-        $devisAFacturer = $devisManager->getRepository('AppBundle:Devis')->findBy(['numeroDevis' => ['$nin' => $numeros]], ['dateEmission' => 'desc']);
+        $devisAFacturer = $devisManager->getRepository('AppBundle:Devis')->findBy(['numeroDevis' => ['$nin' => $numeros], 'dateAcceptation' => ['$ne' => null]], ['dateEmission' => 'desc']);
         return $this->render('facture/index.html.twig',array('contratsFactureAEditer' => $contratsFactureAEditer, 'facturesEnAttente' => $facturesEnAttente, 'devisAFacturer' => $devisAFacturer));
     }
 
