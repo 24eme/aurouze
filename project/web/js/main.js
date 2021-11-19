@@ -1162,7 +1162,7 @@
     $.initBloquerDeselectionEtablissementWithPassage = function(){
          $('.select2').select2({tags: true, templateSelection : function (tag, container){
            var $option = $('.select2 option[value="'+tag.id+'"]');
-           if($option[1] && $option[1].getAttribute("locked")){
+           if($option[0].getAttribute("locked") || $option[1] && $option[1].getAttribute("locked")){
              $(container).addClass('locked');
              tag.locked = true;
            }
