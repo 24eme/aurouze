@@ -9,7 +9,7 @@
                       href="{{ path('contrat_visualisation', {'id': origine.id })}}">Contrat n° {{ origine.numeroArchive }}</a>
                 {% endfor %}
             </td>
-						<td class="col-xs-1">{{ facture.societe.raisonSociale}}  {% if facture.societe.getSepa and facture.societe.getSepa.actif  %}<i class ="mdi mdi-autorenew mdi-lg pull-right" title="Prélèvement automatique"></i>{% endif %}</td>
+						<td class="col-xs-1">{{ facture.societe.raisonSociale}}</td>
             <td class="text-right">{{ "%0.2f" | format(facture.montantHT)  }}&nbsp;€</td>
             <td class="text-right">{{ "%0.2f" | format(facture.montantTTC)  }}&nbsp;€</td>
 
