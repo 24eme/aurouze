@@ -11,7 +11,7 @@
 	{{ include('societe/choixForm.html.twig', {'urlTarget': path('facture_societe', {'id': '_id_'}), 'autofocus': true }) }}
 
 {% if facturesEnAttente | length %}
-	<h3>Liste des Factures <strong>en attente</strong></h3>
+	<h3>Prévisionnel des factures</h3>
 	<table class="table table-bordered table-striped">
 			<thead>
 					<tr>
@@ -29,11 +29,11 @@
 			</tbody>
 		</table>
 {% endif %}
-  	<h3>Contrats comportant des factures non éditées</h3>
+	<h3>Contrats pouvant être facturés</h3>
 
 	{{ include('contrat/contratTableau.html.twig', {'contrats': contratsFactureAEditer }) }}
 
-	<h3>Devis comportant des factures non éditées</h3>
+	<h3>Devis pouvant être édités</h3>
 
 	<table class="table table-bordered table-striped">
 		<thead>
