@@ -45,6 +45,9 @@
         $.initPaiementsAutoSave();
         $.initCommentairesPlanif();
         $.initDevisForm();
+        $.initAutocompleteAdresse();
+        $.initBloquerDeselectionEtablissementWithPassage();
+        $.initMapForAdresse();
     });
 
     $.initClickInputAddon = function(){
@@ -811,6 +814,8 @@
                                     if (hoverTimeout) {
                                         clearTimeout(hoverTimeout);
                                     }
+                                    e.target.bindPopup("<b>"+e.target.feature.properties.nom+"</b>").openPopup();
+
                                     hoverTimeout = setTimeout(function () {
                                         $('#liste_passage .panel').blur();
                                         var element = $('#' + e.target.feature.properties._id);
@@ -852,15 +857,13 @@
             var refreshListFromMapBounds = function(){
               var filtre = window.location.hash;
               if(!filtre){
-                var excludeListNoMarkers = (map.getZoom() > 11);
                 $('div#liste_passage div.panel').each(function(){
                     var hasMarker = markers[$(this).attr('id')] != undefined ;
                     if(!hasMarker){
-                      if(excludeListNoMarkers){
-                        $(this).hide();
-                      }else{
-                        $(this).show();
-                      }
+                      $(this).hide();
+                    }
+                    else{
+                      $(this).show();
                     }
                 });
                 for (var id in markers) {
@@ -901,6 +904,18 @@
                 }
             });
 
+            $('#liste_passage .mdi-zoom-in').click(function () {
+                var marker = markers[$(this).parent().parent().parent().attr('id')];
+                if(typeof marker != 'undefined' && marker){
+                  if(document.location.hash != ""){
+                    document.location.hash = "";
+                  }
+                  map.setZoomAround(marker._latlng,15);
+                  map.panTo(marker._latlng);
+                  marker.bindPopup("<b>"+marker.feature.properties.nom+"</b>").openPopup();
+                }
+            });
+
             if(hasHistoryRewrite){
               map.on('moveend', function(){
                 var center = map.getCenter();
@@ -912,6 +927,10 @@
 
 
             $(window).on('hashchange', function () {
+                if(document.location.hash != ""){
+                  map.closePopup();
+                }
+                var visibleMarkers = [];
                 $('#liste_passage .panel').each(function () {
                     if (!$(this).is(':visible')) {
                         var marker = markers[$(this).attr('id')];
@@ -928,10 +947,16 @@
                           $(marker._icon).removeClass('hidden');
                           $(marker._shadow).removeClass('hidden');
                           marker.setZIndexOffset(900);
+                          visibleMarkers.push(marker._latlng);
                         }
                     }
 
                 });
+                if(document.location.hash !=""){
+                  var bounds = new L.LatLngBounds(visibleMarkers);
+                  map.fitBounds(bounds);
+                }
+                refreshListFromMapBounds();
             });
         }
     }
@@ -1082,6 +1107,211 @@
           var url = $(this).attr('data-url')+"?service="+encodeURIComponent(window.location.href);
           window.location.href = url;
         });
+
+    }
+
+
+    $.initAutocompleteAdresse = function () {
+        $("#societe_edition_adresse_adresse").autocomplete({
+        source: function (request, response) {
+          $.ajax({
+              url: "https://api-adresse.data.gouv.fr/search/?q="+$("input[name='societe_edition[adresse][adresse]']").val(),
+              data: { q: request.term },
+              dataType: "json",
+              success: function (data) {
+                  response($.map(data.features, function (item) {
+                      return { label : item.properties.label, value : item.properties.name, postcode : item.properties.postcode, city : item.properties.city, lat : item.geometry.coordinates[1], lon : item.geometry.coordinates[0]};
+                  }));
+              }
+          });
+        },
+
+        select: function(event, ui) {
+            $('#societe_edition_adresse_codePostal').val(ui.item.postcode);
+            $("#societe_edition_adresse_commune").val(ui.item.city);
+            $("#societe_edition_adresse_lat").val(ui.item.lat);
+            $("#societe_edition_adresse_lon").val(ui.item.lon);
+            $("#societe_edition_adresse_adresse").click();
+        }
+        });
+
+        $("#etablissement_adresse_adresse").autocomplete({
+        source: function (request, response) {
+          $.ajax({
+              url: "https://api-adresse.data.gouv.fr/search/?q="+$("input[name='etablissement_[adresse][adresse]']").val(),
+              data: { q: request.term },
+              dataType: "json",
+              success: function (data) {
+                  response($.map(data.features, function (item) {
+                      return { label : item.properties.label, value : item.properties.name, postcode : item.properties.postcode, city : item.properties.city, lat : item.geometry.coordinates[1], lon : item.geometry.coordinates[0]};
+                  }));
+              }
+          });
+        },
+
+        select: function(event, ui) {
+            $('#etablissement_adresse_codePostal').val(ui.item.postcode);
+            $("#etablissement_adresse_commune").val(ui.item.city);
+            $("#etablissement_adresse_lat").val(ui.item.lat);
+            $("#etablissement_adresse_lon").val(ui.item.lon);
+            $("#etablissement_adresse_adresse").click();
+        }
+        });
+    }
+
+    $.initBloquerDeselectionEtablissementWithPassage = function(){
+         $('.select2').select2({tags: true, templateSelection : function (tag, container){
+           var $option = $('.select2 option[value="'+tag.id+'"]');
+           if($option[0].getAttribute("locked") || $option[1] && $option[1].getAttribute("locked")){
+             $(container).addClass('locked');
+             tag.locked = true;
+           }
+           return tag.text;
+          },
+        }).on('select2:unselecting', function(e){
+           if ($(e.params.args.data.element).attr('locked')) {
+              e.preventDefault();
+          }
+        });
+    }
+
+
+    $.initMapForAdresse = function(){
+      if ($('#mapForLatLng').length) {
+        var lat = 48.8593829;
+        var lon = 2.347227;
+        if($('#societe_edition_adresse_lat').val()){
+          lat=$('#societe_edition_adresse_lat').val();
+        }
+        if($('#societe_edition_adresse_lon').val()){
+          lon=$('#societe_edition_adresse_lon').val()
+        }
+        var map = L.map('mapForLatLng').setView([lat, lon], 13);
+        var marker = L.marker([lat,lon]).addTo(map);
+        var latlon = new L.LatLng(lat, lon);
+        marker.setLatLng(latlon);
+        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        map.on('dblclick', onMapClick);
+
+        $("#societe_edition_adresse_adresse").bind("propertychange change click keyup input paste",changeMarkerPlace);
+        $("#societe_edition_adresse_lat").bind("propertychange change click keyup input paste",changeMarkerPlace);
+        $("#societe_edition_adresse_lon").bind("propertychange change click keyup input paste",changeMarkerPlace);
+
+        function changeMarkerPlace(){
+          var lat = 48.8593829;
+          var lon = 2.347227;
+          if($("#societe_edition_adresse_lat").val()){
+            lat = $("#societe_edition_adresse_lat").val();
+          }
+          if($("#societe_edition_adresse_lon").val()){
+            lon = $("#societe_edition_adresse_lon").val();
+          }
+          map.eachLayer((layer) => {
+            if(layer._latlng){
+              map.removeLayer(layer);
+            }
+          });
+          var marker = L.marker([lat,lon]).addTo(map);
+          map.addLayer(marker);
+          map.setZoomAround(marker._latlng,13);
+          map.panTo(marker._latlng);
+        }
+
+        function onMapClick(e) {
+          map.eachLayer((layer) => {
+            if(layer._latlng){
+              map.removeLayer(layer);
+            }
+          });
+          marker = new L.marker(e.latlng, {draggable:'true'});
+          marker.on('dragend', function(event){
+            var marker = event.target;
+            var position = marker.getLatLng();
+            marker.setLatLng(new L.LatLng(position.lat, position.lng),{draggable:'true'});
+            $("#societe_edition_adresse_lat").val(marker._latlng.lat);
+            $("#societe_edition_adresse_lon").val(marker._latlng.lng);
+          });
+          map.addLayer(marker);
+          $("#societe_edition_adresse_lat").val(marker._latlng.lat);
+          $("#societe_edition_adresse_lon").val(marker._latlng.lng);
+        };
+      }
+
+      if($('#mapForLatLngEtablissement').length){
+
+        var lat = 48.8593829;
+        var lon = 2.347227;
+        if($('#etablissement_adresse_lat').val()){
+          lat=$('#etablissement_adresse_lat').val();
+        }
+        if($('#etablissement_adresse_lon').val()){
+          lon=$('#etablissement_adresse_lon').val()
+        }
+        var map = L.map('mapForLatLngEtablissement').setView([lat, lon], 13);
+        var marker = L.marker([lat,lon]).addTo(map);
+        var latlon = new L.LatLng(lat, lon);
+        marker.setLatLng(latlon);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        map.on('dblclick', onMapClick);
+
+        const resizeObserver = new ResizeObserver(() => {
+          map.invalidateSize();
+        });
+        const mapDiv = document.getElementById("mapForLatLngEtablissement");
+        resizeObserver.observe(mapDiv);
+
+        function onMapClick(e) {
+          map.eachLayer((layer) => {
+            if(layer._latlng){
+              map.removeLayer(layer);
+            }
+          });
+          marker = new L.marker(e.latlng, {draggable:'true'});
+          marker.on('dragend', function(event){
+            var marker = event.target;
+            var position = marker.getLatLng();
+            marker.setLatLng(new L.LatLng(position.lat, position.lng),{draggable:'true'});
+            $("#etablissement_adresse_lat").val(marker._latlng.lat);
+            $("#etablissement_adresse_lon").val(marker._latlng.lng);
+          });
+          map.addLayer(marker);
+          $("#etablissement_adresse_lat").val(marker._latlng.lat);
+          $("#etablissement_adresse_lon").val(marker._latlng.lng);
+        };
+
+        $("#etablissement_adresse_adresse").bind("propertychange change click keyup input paste",changeMarkerPlace);
+        $("#etablissement_adresse_lat").bind("propertychange change click keyup input paste",changeMarkerPlace);
+        $("#etablissement_adresse_lon").bind("propertychange change click keyup input paste",changeMarkerPlace);
+
+
+        function changeMarkerPlace(){
+          var lat = 48.8593829;
+          var lon = 2.347227;
+          if($("#etablissement_adresse_lat").val()){
+            lat = $("#etablissement_adresse_lat").val();
+          }
+          if($("#etablissement_adresse_lon").val()){
+            lon = $("#etablissement_adresse_lon").val();
+          }
+          map.eachLayer((layer) => {
+            if(layer._latlng){
+              map.removeLayer(layer);
+            }
+          });
+          var marker = L.marker([lat,lon]).addTo(map);
+          map.addLayer(marker);
+          map.setZoomAround(marker._latlng,13);
+          map.panTo(marker._latlng);
+        }
+
+      }
+
 
     }
 

@@ -6,6 +6,8 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+
 
 class AdresseType extends AbstractType {
 
@@ -17,7 +19,9 @@ class AdresseType extends AbstractType {
         $builder
                 ->add('adresse', TextType::class, array('label' => 'Adresse :', 'required' => false, 'empty_data'  => null))
                 ->add('codePostal', TextType::class, array('label' => 'Code postal :', 'required' => false, 'empty_data'  => null))
-                ->add('commune', TextType::class, array('label' => 'Ville :', 'required' => false, 'empty_data'  => null));
+                ->add('commune', TextType::class, array('label' => 'Ville :', 'required' => false, 'empty_data'  => null))
+                ->add('lat',HiddenType::class, array('label' => 'Lat :', 'required' => false, 'empty_data'  => null))
+                ->add('lon',HiddenType::class, array('label' => 'Lon :', 'required' => false, 'empty_data'  => null));
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver) {

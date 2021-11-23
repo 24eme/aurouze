@@ -76,7 +76,9 @@
                                             <i class="mdi mdi-{{ passage.etablissementInfos.icon }} mdi-lg"></i>
                                             <strong>{{ passage.etablissementInfos.nom|capitalize }}</strong>
                                             <small>{{ passage.etablissementInfos.adresse.codePostal }} {{ passage.etablissementInfos.adresse.commune }}</small>
-
+                                            {% if passage.etablissementInfos.adresse.coordonnees.lat and passage.etablissementInfos.adresse.coordonnees.lon %}
+                                              <i class="mdi mdi-zoom-in mdi-lg pull-right" style="cursor: pointer"></i>
+                                            {% endif %}
                                             {% if passage.getDocumentType() is constant('AppBundle\\Document\\Devis::DOCUMENT_TYPE') %}
                                               <i class="pull-right mdi mdi-local-shipping mdi-lg"></i>
                                             {% endif %}
@@ -112,15 +114,6 @@
                                                 <i class="mdi mdi-date-range mdi-lg"></i>
                                                 {{ passage.datePrevision | localizeddate("medium", "none", null, null, "MMM yyyy") | capitalize }}
                                             </a>
-                                            <span class="small pull-right">
-                                                {% if passage.datePrecedente %}
-                                                    Préc.&nbsp;le&nbsp;{{ passage.datePrecedente | localizeddate("medium", "none", null, null, "dd/MM/yyyy") | capitalize }}&nbsp;à&nbsp;{{ passage.datePrecedente | date("H") }}h{{ passage.datePrecedente | date("i") }}
-                                                {% endif %}
-
-                                                {% if passage.dureePrecedente %}
-                                                    <i title="Durée" class="mdi mdi-schedule mdi-lg"></i>{{ passage.dureePrecedente }}
-                                                {% endif %}
-                                            </span>
                                             {% if passage.etablissementInfos.mauvaisPayeur %}
                                               <span class="small pull-right alert alert-danger" style="padding:5px;">
                                                 <i class="mdi mdi-lg mdi-money-off"></i>

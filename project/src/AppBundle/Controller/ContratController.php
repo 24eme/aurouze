@@ -675,9 +675,10 @@ class ContratController extends Controller {
         	$dateRecondution = $formValues["dateRenouvellement"];
         	$typeContrat = $formValues["typeContrat"];
         	$societe = $formValues["societe"];
-        	$commercial = $formValues["commercial"];
+          if(count($formValues["commercial"])>0){
+            $commercial = $formValues["commercial"];
+          }
         }
-
         $contratsAReconduire = $cm->getRepository()->findContratsAReconduire($typeContrat, $dateRecondution, $societe, $commercial);
         $formReconduction = $this->createForm(new ReconductionType($contratsAReconduire), null, array(
         		'action' => $this->generateUrl('contrats_reconduire_massivement'),

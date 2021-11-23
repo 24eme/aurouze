@@ -63,15 +63,25 @@ class ContratType extends AbstractType {
 
         $builder->get('devisInterlocuteur')->addModelTransformer(new InterlocuteurTransformer($this->container->get('interlocuteur.manager')));
 
+        $etablissementsSansPassages = $builder->getData()->getEtablissementsWithoutPassages();
+
         $builder->add('etablissements', ChoiceType::class, array('label' => 'Lieux de passage* : ',
             'choices' => $this->getEtablissements($builder),
             'expanded' => false,
             'multiple' => true,
-            'disabled' => !$builder->getData()->isModifiable(),
+            'required' => false,
+            'choice_attr' => function($value) use ($builder,$etablissementsSansPassages) {
+              $emptyPassage = true;
+              if(!$builder->getData()->isModifiableBis()){
+                $emptyPassage = in_array($value,$etablissementsSansPassages);
+              }
+              return $emptyPassage ? [] : ["locked" => "locked"];
+        },
             'attr' => array("class" => "select2 select2-simple", "multiple" => "multiple"),
         ));
 
         $builder->get('etablissements')->addModelTransformer(new EtablissementsTransformer($this->dm, $builder->getData()->getSociete()));
+
 
         $builder->add('prestations', CollectionType::class, array(
             'entry_type' => new PrestationType($this->dm),
@@ -153,7 +163,12 @@ class ContratType extends AbstractType {
     }
 
     public function getEtablissements($builder) {
-        $etablissements = $this->dm->getRepository('AppBundle:Etablissement')->findAllOrderedByIdentifiantSociete($builder->getData()->getSociete());
+        if(!$builder->getData()->isModifiableBis()){
+          $etablissements = $builder->getData()->getEtablissements();
+        }
+        else{
+          $etablissements = $this->dm->getRepository('AppBundle:Etablissement')->findAllOrderedByIdentifiantSociete($builder->getData()->getSociete());
+        }
         $etablissementsArray = array();
         foreach ($etablissements as $etablissement) {
             $etablissementsArray[$etablissement->getId()] = $etablissement->getIntitule();

@@ -1,9 +1,10 @@
-<tr class="{% if(facture.paye or facture.isAvoir) %} success
-    {% elseif(facture.isRedressee()) %} warning
-    {% elseif(facture.isEnRetardPaiement()) %} danger {% endif %}">
+<tr class="{% if(facture.numeroFacture and facture.paye or facture.isAvoir) %} success
+    {% elseif(facture.numeroFacture and facture.isRedressee()) %} warning
+  {% elseif(facture.numeroFacture and facture.isEnRetardPaiement()) %} danger
+{% endif %}">
             <td>{{ ((facture.isDevis) ? facture.dateDevis : facture.dateFacturation) | localizeddate("medium", "none", null, null, "d MMMM yyyy") }} {% if(facture.numeroDevis) %} <span class="pull-right"><i class="mdi mdi-local-shipping"></i></span> {% endif %}</td>
             <td><a href="{{ path('facturable_pdf', {'document': facture.id ,'key': facture.getSecretKey()})}}">
-                    <span class="glyphicon glyphicon-file"></span> {% if facture.isDevis %}Devis n° {{ facture.numeroDevis }}{% elseif(facture.isAvoir) %}Avoir n° {{ facture.numeroFacture }}{% elseif(facture.numeroFacture) %}Facture n° {{ facture.numeroFacture }}{% if(facture.isFactureContratLibre) %}<br/><small class="pull-right">Facture créée manuellement</small>{% endif %}{% else %}Facture prévue<a class="btn btn-link btn-xs"
+          <span class="glyphicon glyphicon-file"></span> {% if facture.isDevis %}Devis n° {{ facture.numeroDevis }}{% elseif(facture.isAvoir) %}Avoir n° {{ facture.numeroFacture }}{% elseif(facture.numeroFacture) %}Facture n° {{ facture.numeroFacture }}{% if(facture.isFactureContratLibre) %}<br/><small class="pull-right">Facture créée manuellement</small>{% endif %}{% else %}Voir le brouillon<a class="btn btn-link btn-xs"
                     href="{% if facture.getContrat() %}{{ path('facture_creation', {'societe': facture.societe.id,'type': 'facture', 'id': facture.id, 'contratId' : facture.getContrat().id}) }}
                           {% else %}{{ path('facture_creation', { 'societe': facture.societe.id, 'type': 'facture', 'id': facture.id })}}
                           {% endif %}"><span class="glyphicon glyphicon-pencil"></span>
@@ -21,8 +22,8 @@
                   &nbsp;<a href="{{ path("factures_retard_societe", { 'id' : facture.societe.id }) }}"><span style="cursor: pointer;" data-toggle="tooltip" title="{{ facture.relanceCommentaire }}" class="pull-right label label-xs label-danger"><span class="glyphicon glyphicon-info-sign"></span></span></a>
                 {% endif %}
             </td>
-            <td class="col-xs-1">{{ facture.dateLimitePaiement | localizeddate("short", "none", null, null, "dd/MM/Y")  }}</td>
-            <td class="text-right">{{ "%0.2f" | format(facture.montantTTC)  }}&nbsp;€</td>
+          <td class="col-xs-1">{% if facture.numeroFacture %}{{ facture.dateLimitePaiement | localizeddate("short", "none", null, null, "dd/MM/Y")  }} {% endif %}</td>
+          <td class="text-right">{% if not facture.isDevis and not (facture.paye or facture.isAvoir or facture.isRedressee) and facture.numeroFacture and facture.societe.getSepa and facture.societe.getSepa.actif  %}<i class ="mdi mdi-autorenew mdi-lg pull-left" title="Prélèvement automatique"></i>{% endif %}{{ "%0.2f" | format(facture.montantTTC)  }}&nbsp;€</td>
             <td class="text-right {% if facture.isDevis %}active{% endif %}">
             {% if facture.isFacture %}
               {% if(facture.isAvoir) %}
@@ -36,6 +37,8 @@
               {% elseif(facture.isRedressee) %}
                 <span data-toggle="tooltip" title="{{ facture.avoir }}" class="pull-left label label-xs label-warning">R</span>
                 &nbsp;<span class="text-muted">{{ "%0.2f" | format(facture.montantPaye)  }}&nbsp;€</span>
+              {% elseif not(facture.numeroFacture) %}
+                <span class="text-muted"></span>
               {% else %}
                 <span class="text-muted">{{ "%0.2f" | format(facture.montantPaye)  }}&nbsp;€</span>
               {% endif %}
@@ -43,9 +46,20 @@
           </td>
           <td class="col-xs-1 text-right">
             {% if not facture.isAvoir %}
-              {% if facture.montantAPayer < 0 %}<span class="label label-info" data-toggle="tooltip" title="Trop perçu {{ "%0.2f" | format(facture.montantAPayer*-1) }} €">{% endif %}
-                <span class="{% if facture.montantAPayer >= 0 %}text-muted{% endif %}">{{ "%0.2f" | format(facture.montantAPayer) }}&nbsp;€</span>
-              {% if facture.montantAPayer < 0 %}</span>{% endif %}
+
+              {% if facture.numeroFacture %}
+                {% if facture.montantAPayer < 0 %}
+                  <span class="label label-info" data-toggle="tooltip" title="Trop perçu {{ "%0.2f" | format(facture.montantAPayer*-1) }} €">
+                {% endif %}
+                  <span class="
+                {% if facture.montantAPayer >= 0 %}text-muted
+                {% endif %}">{{ "%0.2f" | format(facture.montantAPayer) }}&nbsp;€
+                </span>
+                {% if facture.montantAPayer < 0 %}</span>
+                {% endif %}
+              {% else %}
+                <span class="text-muted"></span>
+              {% endif %}
             {% endif %}
           </td>
             <td class="text-left">
@@ -88,7 +102,7 @@
                 </div>
               {% endif %}
               {% if not facture.numeroFacture and not facture.isDevis %}
-                <a class="btn btn-default btn-xs " onclick="return confirm('Êtes vous sûr de vouloir facturer ?')" href="{{ path('facture_en_attente_facturer', { 'factureId': facture.id }) }}">Facturer </a>
+                <a class="btn btn-default btn-xs " onclick="return confirm('Êtes vous sûr de vouloir facturer ?')" href="{{ path('facture_en_attente_facturer', { 'factureId': facture.id }) }}"> Créer la facture </a>
               {% endif %}
             </td>
         </tr>

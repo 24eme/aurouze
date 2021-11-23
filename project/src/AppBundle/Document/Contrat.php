@@ -1442,6 +1442,29 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
         return false;
     }
 
+    public function isModifiableBis() {
+
+        if($this->hasMouvements()) {
+
+            return false;
+        }
+
+        if ($this->isEnAttenteAcceptation() || $this->isBrouillon()) {
+            return true;
+        }
+        if ($this->isEnCours()) {
+            foreach ($this->getContratPassages() as $contratPassage) {
+                foreach ($contratPassage->getPassages() as $p) {
+                    if ($p->isAPlanifie() || $p->isPlanifie() || $p->isRealise() || $p->isAnnule()) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
     public function isAnnulable() {
         return (($this->isEnCours()  || $this->isFini()) && !$this->isAnnule());
     }
@@ -2122,4 +2145,16 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
         $m = round(($duree/60 - $h) * 60);
         return sprintf("%02dh%02d", $h, $m);
     }
+
+    public function getEtablissementsWithoutPassages(){
+      $etablissementsSansPassages = array();
+      foreach($this->getContratPassages() as $contratPassage){
+        if(count($contratPassage->getPassages()) < 1){
+          $etablissementsSansPassages[] = $contratPassage->getEtablissement()->getId();
+        }
+      }
+      return $etablissementsSansPassages;
+    }
+
+
 }

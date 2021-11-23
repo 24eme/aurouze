@@ -179,8 +179,15 @@ Condition de réglement : {{ facture.frequencePaiementLibelle }}
             <p>
             <span class="lead" style="font-size: 15px;">Montant {% if facture.isFacture %}dû{% endif %} : {{ facture.montantTTC|number_format(2, ',', ' ')  }}&nbsp;€</span><br />
             {% if facture.isFacture %}
-            <small>{% if facture.sepa and facture.sepa.actif %}Cette facture passera automatiquement en prélèvement le : {% else %}Date limite de règlement : {% endif %}{{ facture.dateLimitePaiement|date("d/m/Y") }}</small>
+            <small>
+            {% if facture.cloture  %}
+                Cette facture a été réglée le : {{ facture.getDatePaiement() }}
+            {% else %}
+              {% if facture.sepa and facture.sepa.actif %}Cette facture passera automatiquement en prélèvement le : {% else %}Date limite de règlement : {% endif %}{{ facture.dateLimitePaiement|date("d/m/Y") }}
             {% endif %}
+            </small>
+          {% endif %}
+
             </p>
         </div>
     </div>

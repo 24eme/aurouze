@@ -557,6 +557,9 @@ public static $export_stats_libelle = array(
         $debit = 0;
         $credit = 0;
         foreach ($facturesObjs as $facture) {
+              if( ! $facture->getNumeroFacture()){
+                continue;
+              }
               if($facture->isAvoir() && $facture->getOrigineAvoir()){
                   $factureOrigine = $facture->getOrigineAvoir();
                   if (! array_key_exists($factureOrigine->getId(), $facturesArray)) {

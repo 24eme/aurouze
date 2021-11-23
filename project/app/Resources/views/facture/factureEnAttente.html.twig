@@ -9,7 +9,7 @@
                       href="{{ path('contrat_visualisation', {'id': origine.id })}}">Contrat n° {{ origine.numeroArchive }}</a>
                 {% endfor %}
             </td>
-            <td class="col-xs-1">{{ facture.societe.raisonSociale}}</td>
+						<td class="col-xs-1">{{ facture.societe.raisonSociale}}</td>
             <td class="text-right">{{ "%0.2f" | format(facture.montantHT)  }}&nbsp;€</td>
             <td class="text-right">{{ "%0.2f" | format(facture.montantTTC)  }}&nbsp;€</td>
 

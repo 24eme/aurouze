@@ -84,7 +84,6 @@ class SocieteController extends Controller {
     			 $etablissement->setNom($societe->getRaisonSociale());
     			 $etablissement->setType($societe->getType());
     			 $etablissement->setCommentaire($societe->getCommentaire());
-           $this->get('etablissement.manager')->getOSMAdresse()->calculCoordonnees($etablissement->getAdresse());
     			 $dm->persist($etablissement);
     			 $dm->flush();
     		} elseif (!$societe->getActif()) {
