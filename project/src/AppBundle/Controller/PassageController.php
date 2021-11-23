@@ -111,7 +111,7 @@ class PassageController extends Controller
         $passages = null;
         $moisPassagesArray = $passageManager->getNbPassagesToPlanPerMonth($secteur, clone $dateFinAll);
         $passages = $passageManager->getRepository()->findToPlan($secteur, $dateDebut, clone $dateFin)->toArray();
-        $devis = $devisManager->getRepository()->findToPlan()->toArray();
+        $devis = $devisManager->getRepository()->findToPlan($secteur, $dateDebut, clone $dateFin)->toArray();
 
         foreach ($devis as $key => $d) {
             $passages[] = $d;

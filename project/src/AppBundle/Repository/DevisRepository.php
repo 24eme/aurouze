@@ -6,6 +6,7 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
 use AppBundle\Tool\RechercheTool;
 use AppBundle\Document\Societe;
 use MongoDate as MongoDate;
+use AppBundle\Manager\EtablissementManager;
 use AppBundle\Manager\PassageManager;
 
 /**
@@ -46,11 +47,29 @@ class DevisRepository extends DocumentRepository {
     return $queryBuilder->getQuery()->execute();
   }
 
-  public function findToPlan() {
-    $q = $this->createQueryBuilder();
-    $q->field('statut')->equals(PassageManager::STATUT_A_PLANIFIER);
+  public function findToPlan($secteur = EtablissementManager::SECTEUR_PARIS, \DateTime $dateDebut = null, \DateTime $dateFin) {
+      $date = new \DateTime();
+      $mongoEndDate = new MongoDate(strtotime($dateFin->format('Y-m-d')));
 
-    return $q->getQuery()->execute();
+      $q = $this->createQueryBuilder();
+      $q->field('statut')->equals(PassageManager::STATUT_A_PLANIFIER)
+              ->field('datePrevision')->lte($mongoEndDate);
+
+      if($dateDebut){
+        $mongoStartDate = new MongoDate(strtotime($dateDebut->format('Y-m-d')));
+        $q->field('datePrevision')->gte($mongoStartDate);
+
+      }
+
+      $regex = $this->getRegexForSeineEtMarne();
+      if ($secteur == EtablissementManager::SECTEUR_PARIS) {
+         $q->addAnd($q->expr()->field('etablissementInfos.adresse.codePostal')->operator('$not', new \MongoRegex($regex)));
+      } elseif($secteur == EtablissementManager::SECTEUR_SEINE_ET_MARNE) {
+         $q->addAnd($q->expr()->field('etablissementInfos.adresse.codePostal')->equals(new \MongoRegex($regex)));
+      }
+      $query = $q->sort('etablissementInfos.adresse.codePostal', 'asc')->getQuery();
+
+      return $query->execute();
   }
 
   public function findByQuery($q)
@@ -72,5 +91,19 @@ class DevisRepository extends DocumentRepository {
           }
       }
       return $resultSet;
+  }
+
+  private function getRegexForSeineEtMarne(){
+    $dpts = EtablissementManager::$secteurs_departements[EtablissementManager::SECTEUR_SEINE_ET_MARNE];
+    $regex = '';
+    $dptReg = '';
+    foreach ($dpts as $i => $dpt) {
+        $dptReg .= $dpt;
+        if ($i < count($dpts) - 1) {
+            $dptReg .= '|';
+        }
+    }
+    $regex .= '/^(' . $dptReg . ')/i';
+    return $regex;
   }
 }
