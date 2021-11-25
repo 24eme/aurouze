@@ -42,7 +42,8 @@ class PassageController extends Controller
         $contrat = $passage->getContrat();
         $societe = $contrat->getSociete();
         $facture = $this->get('facture.manager');
-        $lastPassage = $dm->getRepository('AppBundle:Passage')->findLastPassage($etablissement, $passage);
+        $lastPassages = $dm->getRepository('AppBundle:Passage')->findLastPassages($etablissement, $passage);
+        $solde = $facture->getSolde($societe);
 
         return $this->render('passage/infossupplementaires.html.twig',
             [
@@ -50,7 +51,8 @@ class PassageController extends Controller
                 'etablissement' => $etablissement,
                 'contrat' => $contrat,
                 'societe' => $societe,
-                'lastPassage' => $lastPassage
+                'lastPassages' => $lastPassages,
+                'solde' => $solde
             ]
         );
     }
