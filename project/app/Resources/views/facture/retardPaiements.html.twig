@@ -50,9 +50,9 @@
 						<br/>
 						<div class="row">
 							<div class="col-xs-6">
-								{{ form_label(formFacturesARelancer.commercial) }}
-							{{ form_errors(formFacturesARelancer.commercial) }}
-							{{ form_widget(formFacturesARelancer.commercial) }}
+								{{ form_label(formFacturesARelancer.commerciaux) }}
+							{{ form_errors(formFacturesARelancer.commerciaux) }}
+							{{ form_widget(formFacturesARelancer.commerciaux) }}
 							</div>
 							<div class="col-xs-6 text-right">
 								<label class="control-label">&nbsp;</label><br />
@@ -71,7 +71,6 @@
 
 
 <div class="row">
-	{% if commercial %}<h3 class="show-print">Clients {{ commercial.identite }}</h3>{% endif %}
 	{% for factureEnRetard in facturesEnRetard %}
     	<div class="row show-print">
         	<div class="col-sm-3">
