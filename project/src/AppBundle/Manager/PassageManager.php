@@ -113,10 +113,11 @@ class PassageManager
 
 
     public function delete(Passage $passage){
-      if ($passage->isAPlanifie()) {
-          $this->dm->remove($passage);
-          $this->dm->flush();
+      if (! $passage->isAPlanifie()) {
+        return;
       }
+      $this->dm->remove($passage);
+      $this->dm->flush();
     }
 
     public function getRepository() {

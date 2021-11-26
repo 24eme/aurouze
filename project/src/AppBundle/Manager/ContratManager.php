@@ -246,14 +246,16 @@ class ContratManager implements MouvementManagerInterface {
       }
 
       foreach($contrat->getContratPassages() as $cp){
-        if(!in_array($cp->getEtablissement()->getId(),$etablissementsIds)){
-          foreach($cp->getPassages() as $passage){
-              if($passage->isAPlanifie()){
-                $contrat->removePassage($passage);
-                $this->dm->remove($passage);
-                $this->dm->flush();
-              }
-          }
+        if(in_array($cp->getEtablissement()->getId(),$etablissementsIds)){
+          continue;
+        }
+        foreach($cp->getPassages() as $passage){
+            if(! $passage->isAPlanifie()){
+              continue;
+            }
+            $contrat->removePassage($passage);
+            $this->dm->remove($passage);
+            $this->dm->flush();
         }
       }
     }
