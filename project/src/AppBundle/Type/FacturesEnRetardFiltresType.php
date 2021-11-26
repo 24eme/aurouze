@@ -57,15 +57,15 @@ class FacturesEnRetardFiltresType extends AbstractType {
                 		'format' => 'dd/MM/yyyy',
 		));
     $commerciaux = $this->dm->getRepository('AppBundle:Compte')->findAllUtilisateursCommercial();
-    $builder->add('commercial', DocumentType::class, array(
+    $builder->add('commerciaux', DocumentType::class, array(
                 'required' => false,
                 "choices" => array_merge(array('' => ''), $commerciaux),
-                'label' => 'Commercial :',
+                'label' => 'Commerciaux :',
                 'class' => 'AppBundle\Document\Compte',
                 'expanded' => false,
-                'multiple' => false,
-                "attr" => array("class" => "select2 select2-simple", "data-placeholder" => "Séléctionner un commercial", "style"=> "width:100%;")));
-        
+                'multiple' => true,
+                "attr" => array("class" => "select2 select2-simple", "data-placeholder" => "Séléctionner les commerciaux", "style"=> "width:100%;")));
+
 		$builder->add('societe', TextType::class, array("required" => false, "attr" => array("class" => "typeahead form-control", "placeholder" => (isset($options['data']) && isset($options['data']['societe']) && $options['data']['societe']->getIntitule()) ? $options['data']['societe']->getIntitule() : "Rechercher une société")));
 		$builder->add('save', SubmitType::class, array('label' => 'Filtrer', "attr" => array("class" => "btn btn-success pull-right")));
 	}

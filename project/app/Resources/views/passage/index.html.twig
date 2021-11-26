@@ -114,12 +114,6 @@
                                                 <i class="mdi mdi-date-range mdi-lg"></i>
                                                 {{ passage.datePrevision | localizeddate("medium", "none", null, null, "MMM yyyy") | capitalize }}
                                             </a>
-                                            {% if passage.etablissementInfos.mauvaisPayeur %}
-                                              <span class="small pull-right alert alert-danger" style="padding:5px;">
-                                                <i class="mdi mdi-lg mdi-money-off"></i>
-                                                <strong>Attention !</strong> Mauvais payeur
-                                              </span>
-                                            {% endif %}
                                         </div>
                                         {% if passage.getDocumentType() is not constant('AppBundle\\Document\\Devis::DOCUMENT_TYPE') %}
                                           <div data-url="{{ path('ajax_more_infos_passage', {'passage': passage.id }) }}"></div>

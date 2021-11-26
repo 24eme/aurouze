@@ -159,7 +159,7 @@ class FactureRepository extends DocumentRepository {
         return $q;
     }
 
-    public function findFactureRetardDePaiement($dateFactureBasse = null, $dateFactureHaute = null, $nbRelance = null, $societe = null, $commercial = null){
+    public function findFactureRetardDePaiement($dateFactureBasse = null, $dateFactureHaute = null, $nbRelance = null, $societe = null, $commerciaux = null){
       $today = new \DateTime();
 
       // Factures
@@ -188,20 +188,24 @@ class FactureRepository extends DocumentRepository {
       $resultsDevis = $qD->getQuery()->execute();
 
       $results = array_merge($resultsFacture->toArray(), $resultsDevis->toArray());
-
-
         $retards = array();
         foreach($results as $retard) {
-        	if ($commercial) {
+          if ($commerciaux) {
+
+            $commerciauxIds=array();
+            foreach($commerciaux as $c){
+              $commerciauxIds[]=$c->getId();
+            }
+
             if ($retard->getContrat()) {
               if (!$retard->getContrat()->getCommercial()) {
         				continue;
         			} else {
-                if ($retard->getContrat()->getCommercial()->getId() != $commercial->getId()) {
+                if ( !in_array($retard->getContrat()->getCommercial()->getId(),$commerciauxIds)){
         					continue;
         				}
         			}
-        		}elseif($retard->getCommercial() && $retard->getCommercial()->getId() != $commercial->getId()){
+            }elseif($retard->getCommercial() && !in_array($retard->getCommercial()->getId(),$commerciauxIds)){
               continue;
             }
         	}

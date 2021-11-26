@@ -49,10 +49,10 @@
 						data-toggle="tooltip"
 						class="badge {% if(passage.isGarantie) %}badge-warning{% elseif(passage.isControle)%}badge-warning{% else %}badge-default{% endif %} {% if(passage.mouvementDeclenchable) %}badge-inverse{% endif %} btn-xs">{{
 						passage.getNumeroPassage() }}</span>
-						
-				
+
+
 				{% if (passage.isAPlanifie and origine is defined and origine == "contrat") %}
-					<a class="btn btn-link btn-xs" href="{{ path('passage_suppression', {'id': passage.id}) }}" onclick="return confirm('Confirmez-vous la suppression de ce passe ?')"><span class="glyphicon glyphicon-remove"></span></a>
+					<a class="btn btn-link btn-xs" href="{{ path('passage_suppression', {'id': passage.id}) }}" onclick="return confirm('Confirmez-vous la suppression de ce passage ?')"><span class="glyphicon glyphicon-remove"></span></a>
 				{% endif %}
 				</div>
 				<div class="col-xs-9">

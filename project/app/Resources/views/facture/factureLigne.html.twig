@@ -10,7 +10,13 @@
                           {% endif %}"><span class="glyphicon glyphicon-pencil"></span>
                 </a>
         {% endif %}</a>
-
+        {% if facture.isFacture %}
+          {% if(facture.isAvoir and facture.origineAvoir ) %}
+          <small> <a href="{{ path('facturable_pdf', {'document': facture.origineAvoir.id ,'key': facture.origineAvoir.getSecretKey()})}}"><br><i class ="mdi mdi-subdirectory-arrow-right mdi-lg"></i> Facture N°{{ facture.origineAvoir.numeroFacture}}</a></small>
+          {% elseif(facture.isRedressee)%}
+            <br><small><i class ="mdi mdi-subdirectory-arrow-right mdi-lg"></i>Avoir N°{{ facture.avoir}} </small>
+          {% endif %}
+        {% endif %}
             </td>
             <td>
                 <a data-toggle="tooltip" title="{% for ligne in facture.lignes %}{{ (ligne.libelle) ? ligne.libelle~"\n" : "Aucun" }}{% endfor %}" href="{{ path('facturable_pdf', {'document': facture.id ,'key': facture.getSecretKey() })}}">{{ facture.lignes | length}} ligne(s)</a>
@@ -28,15 +34,10 @@
             {% if facture.isFacture %}
               {% if(facture.isAvoir) %}
                 {% if(facture.getAvoirPartielRemboursementCheque()) %}
-                  <span data-toggle="tooltip" title="Avoir sur facture {{ facture.origineAvoir.numeroFacture }} avec remboursement par chèque" class="pull-left label label-xs label-danger">C</span>&nbsp;
                   <span class="text-muted">{{ "%0.2f" | format(facture.montantTTC)  }}&nbsp;€</span>
-                {% else %}
-                  <span data-toggle="tooltip" title="Avoir{% if(facture.origineAvoir) %} {{ facture.origineAvoir.numeroFacture }}{% endif %}" class="pull-left label label-xs label-warning">A</span>&nbsp;
-                  <span class="text-muted">-</span>
                 {% endif %}
               {% elseif(facture.isRedressee) %}
-                <span data-toggle="tooltip" title="{{ facture.avoir }}" class="pull-left label label-xs label-warning">R</span>
-                &nbsp;<span class="text-muted">{{ "%0.2f" | format(facture.montantPaye)  }}&nbsp;€</span>
+                <span class="text-muted">{{ "%0.2f" | format(facture.montantPaye)  }}&nbsp;€</span>
               {% elseif not(facture.numeroFacture) %}
                 <span class="text-muted"></span>
               {% else %}

@@ -871,7 +871,7 @@ class FactureController extends Controller
       $dateFactureBasse = null;
       $dateFactureHaute = null;
       $nbRelances = null;
-      $commercial = null;
+      $commerciaux = null;
       $formFacturesEnRetard = $this->createForm(new FacturesEnRetardFiltresType($this->container, $this->get('doctrine_mongodb')->getManager()), null, array(
           'action' => $this->generateUrl('factures_retard'),
           'method' => 'post',
@@ -884,10 +884,10 @@ class FactureController extends Controller
         $dateFactureHaute = $formValues["dateFactureHaute"];
         $nbRelances = intval($formValues["nbRelances"]) -1;
         $societe = $formValues["societe"];
-        $commercial = $formValues["commercial"];
+        $commerciaux = $formValues["commerciaux"];
 
       }
-      $facturesEnRetard = $fm->getRepository()->findFactureRetardDePaiement($dateFactureBasse, $dateFactureHaute, $nbRelances, $societe, $commercial);
+      $facturesEnRetard = $fm->getRepository()->findFactureRetardDePaiement($dateFactureBasse, $dateFactureHaute, $nbRelances, $societe, $commerciaux);
 
       $formRelance = $this->createForm(new RelanceType($facturesEnRetard), null, array(
           'action' => $this->generateUrl('factures_relance_massive'),
@@ -895,7 +895,7 @@ class FactureController extends Controller
       ));
 
       return $this->render('facture/retardPaiements.html.twig', array('facturesEnRetard' => $facturesEnRetard, "formRelance" => $formRelance->createView(), 'nbRelances' => $nbRelances, 'pdf' => $pdf,
-      'formFacturesARelancer' => $formFacturesEnRetard->createView(), 'commercial' => $commercial));
+      'formFacturesARelancer' => $formFacturesEnRetard->createView(), 'commerciaux' => $commerciaux));
     }
 
 

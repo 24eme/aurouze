@@ -111,6 +111,15 @@ class PassageManager
         return $passage;
     }
 
+
+    public function delete(Passage $passage){
+      if (! $passage->isAPlanifie()) {
+        return;
+      }
+      $this->dm->remove($passage);
+      $this->dm->flush();
+    }
+
     public function getRepository() {
 
         return $this->dm->getRepository('AppBundle:Passage');
