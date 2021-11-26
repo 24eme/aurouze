@@ -1160,19 +1160,12 @@
     }
 
     $.initBloquerDeselectionEtablissementWithPassage = function(){
-         $('.select2').select2({tags: true, templateSelection : function (tag, container){
-           var $option = $('.select2 option[value="'+tag.id+'"]');
-           if($option[0].getAttribute("locked") || $option[1] && $option[1].getAttribute("locked")){
-             $(container).addClass('locked');
-             tag.locked = true;
-           }
-           return tag.text;
-          },
-        }).on('select2:unselecting', function(e){
-           if ($(e.params.args.data.element).attr('locked')) {
-              e.preventDefault();
-          }
-        });
+         $('.select2').on('select2:unselecting', function(e){
+             if ($(e.params.args.data.element).attr('locked')) {
+                e.preventDefault();
+                alert("Ne peut pas être supprimé car l'établissement a des passages.");
+            }
+           });
     }
 
 
