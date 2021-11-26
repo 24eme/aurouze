@@ -72,7 +72,7 @@ class ContratType extends AbstractType {
             'required' => false,
             'choice_attr' => function($value) use ($builder,$etablissementsSansPassages) {
               $emptyPassage = true;
-              if(!$builder->getData()->isModifiableBis()){
+              if(!$builder->getData()->isModifiable()){
                 $emptyPassage = in_array($value,$etablissementsSansPassages);
               }
               return $emptyPassage ? [] : ["locked" => "locked"];
@@ -172,7 +172,7 @@ class ContratType extends AbstractType {
     }
 
     public function getEtablissements($builder) {
-        if(!$builder->getData()->isModifiableBis()){
+        if($builder->getData()->isEnCours()){
           $etablissements = $builder->getData()->getEtablissements();
         }
         else{
