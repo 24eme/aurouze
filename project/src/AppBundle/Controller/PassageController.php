@@ -231,13 +231,10 @@ class PassageController extends Controller
      * @ParamConverter("passage", class="AppBundle:Passage")
      */
     public function suppressionAction(Request $request, Passage $passage) {
-        $dm = $this->get('doctrine_mongodb')->getManager();
         $contrat = $passage->getContrat();
-        if ($passage->isAPlanifie()) {
-            $contrat->removePassage($passage);
-            $dm->remove($passage);
-            $dm->flush();
-        }
+        $contrat->removePassage($passage);
+        $pm = $this->get('passage.manager');
+        $pm->delete($passage);
         return $this->redirectToRoute('contrat_visualisation', array('id' => $contrat->getId()));
     }
 
