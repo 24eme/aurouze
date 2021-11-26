@@ -1180,16 +1180,23 @@
       if ($('#mapForLatLng').length) {
         var lat = 48.8593829;
         var lon = 2.347227;
+        var notIdentifie = true;
+
         if($('#societe_edition_adresse_lat').val()){
           lat=$('#societe_edition_adresse_lat').val();
+          var notIdentifie = false;
         }
         if($('#societe_edition_adresse_lon').val()){
-          lon=$('#societe_edition_adresse_lon').val()
+          lon=$('#societe_edition_adresse_lon').val();
+          var notIdentifie = false;
         }
         var map = L.map('mapForLatLng').setView([lat, lon], 13);
         var marker = L.marker([lat,lon]).addTo(map);
         var latlon = new L.LatLng(lat, lon);
         marker.setLatLng(latlon);
+        if(notIdentifie==true){
+          marker.bindPopup("<small> Déplacez moi </small>").openPopup();
+        }
         L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
@@ -1203,11 +1210,15 @@
         function changeMarkerPlace(){
           var lat = 48.8593829;
           var lon = 2.347227;
+          var notIdentifie = true;
+
           if($("#societe_edition_adresse_lat").val()){
             lat = $("#societe_edition_adresse_lat").val();
+            var notIdentifie = false;
           }
           if($("#societe_edition_adresse_lon").val()){
             lon = $("#societe_edition_adresse_lon").val();
+            var notIdentifie = false;
           }
           map.eachLayer((layer) => {
             if(layer._latlng){
@@ -1215,6 +1226,9 @@
             }
           });
           var marker = L.marker([lat,lon]).addTo(map);
+          if(notIdentifie==true){
+            marker.bindPopup("<small> Déplacez moi </small>").openPopup();
+          }
           map.addLayer(marker);
           map.setZoomAround(marker._latlng,13);
           map.panTo(marker._latlng);
@@ -1244,16 +1258,25 @@
 
         var lat = 48.8593829;
         var lon = 2.347227;
+        var notIdentifie = true;
+
         if($('#etablissement_adresse_lat').val()){
           lat=$('#etablissement_adresse_lat').val();
+          notIdentifie = false;
         }
         if($('#etablissement_adresse_lon').val()){
           lon=$('#etablissement_adresse_lon').val()
+          notIdentifie = false;
         }
         var map = L.map('mapForLatLngEtablissement').setView([lat, lon], 13);
         var marker = L.marker([lat,lon]).addTo(map);
         var latlon = new L.LatLng(lat, lon);
         marker.setLatLng(latlon);
+
+        if(notIdentifie==true){
+          marker.bindPopup("<small> Déplacez moi </small>").openPopup();
+        }
+
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
@@ -1293,18 +1316,27 @@
         function changeMarkerPlace(){
           var lat = 48.8593829;
           var lon = 2.347227;
+          var notIdentifie = true;
+
           if($("#etablissement_adresse_lat").val()){
             lat = $("#etablissement_adresse_lat").val();
+            var notIdentifie = false;
           }
           if($("#etablissement_adresse_lon").val()){
             lon = $("#etablissement_adresse_lon").val();
+            var notIdentifie = false;
           }
+
           map.eachLayer((layer) => {
             if(layer._latlng){
               map.removeLayer(layer);
             }
           });
           var marker = L.marker([lat,lon]).addTo(map);
+
+          if(notIdentifie==true){
+            marker.bindPopup("<small> Déplacez moi </small>").openPopup();
+          }
           map.addLayer(marker);
           map.setZoomAround(marker._latlng,13);
           map.panTo(marker._latlng);
