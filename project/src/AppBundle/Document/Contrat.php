@@ -1151,7 +1151,7 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
      *
      * @param AppBundle\Document\Etablissement $etablissement
      */
-    public function removeEtablissement(\AppBundle\Document\Etablissement $etablissement) {
+    public function removeEtablissement(Etablissement $etablissement) {
         $this->etablissements->removeElement($etablissement);
     }
 

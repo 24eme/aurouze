@@ -237,6 +237,27 @@ class ContratManager implements MouvementManagerInterface {
         $contrat->reInitContratPassages();
     }
 
+
+    public function removeAllPassagesAPlanifierWhenEtablissementIsDeleted($contrat){
+      $etablissements = $contrat->getEtablissements();
+      $etablissementsIds = array();
+      foreach($etablissements as $etablissement){
+        $etablissementsIds[]=$etablissement->getId();
+      }
+
+      foreach($contrat->getContratPassages() as $cp){
+        if(!in_array($cp->getEtablissement()->getId(),$etablissementsIds)){
+          foreach($cp->getPassages() as $passage){
+              if($passage->isAPlanifie()){
+                $contrat->removePassage($passage);
+                $this->dm->remove($passage);
+                $this->dm->flush();
+              }
+          }
+        }
+      }
+    }
+
     public function updateInfosPassagePrecedent($contrat, $etablissement = null) {
         $passagesByEtablissement = $this->getPassagesByNumeroArchiveContrat($contrat, true);
         foreach($passagesByEtablissement as $etablissementId => $passages) {
