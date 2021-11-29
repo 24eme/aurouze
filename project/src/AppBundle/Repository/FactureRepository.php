@@ -201,7 +201,7 @@ class FactureRepository extends DocumentRepository {
               if (!$retard->getContrat()->getCommercial()) {
         				continue;
         			} else {
-                if ( !in_array($retard->getContrat()->getCommercial()->getId(),$commerciauxIds)){
+                if (count($commerciauxIds) > 0 && !in_array($retard->getContrat()->getCommercial()->getId(),$commerciauxIds)){
         					continue;
         				}
         			}
