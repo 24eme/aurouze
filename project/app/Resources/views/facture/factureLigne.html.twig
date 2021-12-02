@@ -34,13 +34,10 @@
             {% if facture.isFacture %}
               {% if(facture.isAvoir) %}
                 {% if(facture.getAvoirPartielRemboursementCheque()) %}
-                  <span data-toggle="tooltip" title="Avoir sur facture {{ facture.origineAvoir.numeroFacture }} avec remboursement par chèque" class="pull-left label label-xs label-danger">C</span>
                   <span class="text-muted">{{ "%0.2f" | format(facture.montantTTC)  }}&nbsp;€</span>
-                {% else %}
-                  <span data-toggle="tooltip" title="Avoir{% if(facture.origineAvoir) %} {{ facture.origineAvoir.numeroFacture }}{% endif %}" class="pull-left label label-xs label-warning">A</span>
+                  <span title="Remboursé par chèque" style="cursor: help" class="pull-right label label-xs label-info">Chq</span>
                 {% endif %}
               {% elseif(facture.isRedressee) %}
-                <span data-toggle="tooltip" title="{{ facture.avoir }}" class="pull-left label label-xs label-warning">R</span>
                 <span class="text-muted">{{ "%0.2f" | format(facture.montantPaye)  }}&nbsp;€</span>
               {% elseif not(facture.numeroFacture) %}
                 <span class="text-muted"></span>
