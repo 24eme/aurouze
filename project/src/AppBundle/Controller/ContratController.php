@@ -188,6 +188,9 @@ class ContratController extends Controller {
                 $dm->persist($contrat);
             }
             $dm->flush();
+
+            $contratManager->removeAllPassagesAPlanifierWhenEtablissementIsDeleted($contrat);
+
             return $this->redirectToRoute('contrat_acceptation', array('id' => $contrat->getId()));
         }
         return $this->render('contrat/modification.html.twig', array('contrat' => $contrat, 'form' => $form->createView(), 'societe' => $contrat->getSociete()));

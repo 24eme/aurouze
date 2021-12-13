@@ -42,7 +42,8 @@ class PassageController extends Controller
         $contrat = $passage->getContrat();
         $societe = $contrat->getSociete();
         $facture = $this->get('facture.manager');
-        $lastPassage = $dm->getRepository('AppBundle:Passage')->findLastPassage($etablissement, $passage);
+        $lastPassages = $dm->getRepository('AppBundle:Passage')->findLastPassages($etablissement, $passage);
+        $solde = $facture->getSolde($societe);
 
         return $this->render('passage/infossupplementaires.html.twig',
             [
@@ -50,7 +51,8 @@ class PassageController extends Controller
                 'etablissement' => $etablissement,
                 'contrat' => $contrat,
                 'societe' => $societe,
-                'lastPassage' => $lastPassage
+                'lastPassages' => $lastPassages,
+                'solde' => $solde
             ]
         );
     }
@@ -229,13 +231,10 @@ class PassageController extends Controller
      * @ParamConverter("passage", class="AppBundle:Passage")
      */
     public function suppressionAction(Request $request, Passage $passage) {
-        $dm = $this->get('doctrine_mongodb')->getManager();
         $contrat = $passage->getContrat();
-        if ($passage->isAPlanifie()) {
-            $contrat->removePassage($passage);
-            $dm->remove($passage);
-            $dm->flush();
-        }
+        $contrat->removePassage($passage);
+        $pm = $this->get('passage.manager');
+        $pm->delete($passage);
         return $this->redirectToRoute('contrat_visualisation', array('id' => $contrat->getId()));
     }
 
