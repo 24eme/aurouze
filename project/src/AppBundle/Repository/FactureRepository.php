@@ -161,6 +161,13 @@ class FactureRepository extends DocumentRepository {
 
     public function findFactureRetardDePaiement($dateFactureBasse = null, $dateFactureHaute = null, $nbRelance = null, $societe = null, $commercial = null){
       $today = new \DateTime();
+      if ($dateFactureBasse) {
+          $dateFactureBasse = new \DateTime($dateFactureBasse);
+      }
+      if ($dateFactureHaute) {
+          $dateFactureHaute = new \DateTime($dateFactureHaute);
+          $dateFactureHaute->modify('+1 day');
+      }
 
       // Factures
       $qF = $this->makeBaseFactureRetardDePaiement($nbRelance, $societe);
