@@ -47,6 +47,7 @@
         $.initDevisForm();
         $.initAutocompleteAdresse();
         $.initMapForAdresse();
+        $.initHighLight();
     });
 
     $.initClickInputAddon = function(){
@@ -1329,5 +1330,15 @@
 
     }
 
+    $.initHighLight = function(){
+      $(".highlight").mouseover(function(e){
+        document.getElementById(this.dataset.id).style.border = "2px solid red";
+      });
+
+      $(".highlight").mouseout(function(e){
+        document.getElementById(this.dataset.id).style.border = "none";
+      });
+
+    }
 }
 )(jQuery);
