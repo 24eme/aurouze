@@ -238,6 +238,12 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
      */
     protected $auditPassage;
 
+    /**
+     * @MongoDB\Field(type="string")
+     */
+    protected $zone;
+
+
     public function __construct() {
         $this->etablissements = new ArrayCollection();
         $this->prestations = new ArrayCollection();
@@ -747,6 +753,32 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
      */
     public function getAuditPassage() {
         return $this->auditPassage;
+    }
+
+    /**
+     * Get zone
+     *
+     * @return string $zone
+     */
+    public function getZone(){
+      return $this->zone;
+    }
+
+
+    /**
+     * Set zone
+     *
+     * @param string $commercialSeineEtMarne
+     * @return self
+     */
+    public function setZone($commercialSeineEtMarne){
+      if($this->getCommercial()->getNom() == $commercialSeineEtMarne){
+        $this->zone = "77";
+      }
+      else{
+        $this->zone = "75";
+      }
+      return $this;
     }
 
     public function updateObject() {

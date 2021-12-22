@@ -201,7 +201,7 @@ class PassageController extends Controller
 
         $passage = $this->get('passage.manager')->create($etablissement, $contrat);
         $passage->setDatePrevision(new \DateTime());
-
+        $passage->setZone($contrat);
         $form = $this->createForm(new PassageCreationType($dm), $passage, array(
             'action' => $this->generateUrl('passage_creation', array('id_etablissement' => $etablissement->getId(), 'id_contrat' => $contrat->getId())),
             'method' => 'POST',

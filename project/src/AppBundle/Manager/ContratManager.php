@@ -326,6 +326,9 @@ class ContratManager implements MouvementManagerInterface {
                 $passage->setMultiTechnicien($contrat->getMultiTechnicien());
 
                 $passage->setContrat($contrat);
+                if($contrat->getZone()){
+                  $passage->setZone($contrat);
+                }
                 $passage->setTypePassage(PassageManager::TYPE_PASSAGE_CONTRAT);
                 foreach ($passageInfos->prestations as $prestationPrevu) {
                     $prestationObj = new Prestation();
