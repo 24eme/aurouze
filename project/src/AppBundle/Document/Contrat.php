@@ -238,6 +238,12 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
      */
     protected $auditPassage;
 
+    /**
+     * @MongoDB\Field(type="string")
+     */
+    protected $zone;
+
+
     public function __construct() {
         $this->etablissements = new ArrayCollection();
         $this->prestations = new ArrayCollection();
@@ -747,6 +753,39 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
      */
     public function getAuditPassage() {
         return $this->auditPassage;
+    }
+
+    /**
+     * Get zone
+     *
+     * @return string $zone
+     */
+    public function getZone(){
+      return $this->zone;
+    }
+
+
+    /**
+     * Set zone
+     *
+     * @param string $commercialSeineEtMarne
+     * @return self
+     */
+    public function setZone($commercialSeineEtMarne){
+      if($this->getCommercial()->getNom() == $commercialSeineEtMarne){
+        $this->zone = "77";
+      }
+      else{
+        $this->zone = "75";
+      }
+
+      foreach($this->getContratPassages() as $cp){
+        foreach($cp->getPassages() as $passage){
+          $passage->setZone($this->getZone());
+        }
+      }
+
+      return $this;
     }
 
     public function updateObject() {
@@ -2131,6 +2170,56 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
         }
       }
       return $etablissementsSansPassages;
+    }
+
+
+    public function isEnCoursStatutLibelle(){
+      if($this->getStatutLibelle() == "En cours (réalisé)" || $this->getStatutLibelle() == ContratManager::$statuts_libelles[ContratManager::STATUT_EN_COURS]){
+        return true;
+      }
+      return false;
+    }
+
+    public function isAVenirStatutLibelle(){
+      if($this->getStatutLibelle() == "A venir" ){
+        return true;
+      }
+      return false;
+    }
+
+    public function isEnAttenteStatutLibelle(){
+      if($this->getStatutLibelle() == ContratManager::$statuts_libelles[ContratManager::STATUT_EN_ATTENTE_ACCEPTATION]){
+        return true;
+      }
+      return false;
+    }
+
+    public function isBrouillonStatutLibelle(){
+      if($this->getStatutLibelle() == ContratManager::$statuts_libelles[ContratManager::STATUT_BROUILLON]){
+        return true;
+      }
+      return false;
+    }
+
+    public function isTermineStatutLibelle(){
+      if($this->getStatutLibelle() == ContratManager::$statuts_libelles[ContratManager::STATUT_FINI]){
+        return true;
+      }
+      return false;
+    }
+
+    public function isResilieStatutLibelle(){
+      if($this->getStatutLibelle() == ContratManager::$statuts_libelles[ContratManager::STATUT_RESILIE]){
+        return true;
+      }
+      return false;
+    }
+
+    public function isAnnuleStatutLibelle(){
+      if($this->getStatutLibelle() == ContratManager::$statuts_libelles[ContratManager::STATUT_ANNULE]){
+        return true;
+      }
+      return false;
     }
 
 

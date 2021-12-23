@@ -176,10 +176,13 @@ class ContratController extends Controller {
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $contrat = $form->getData();
+
             if(!$contrat->getStatut() || $contrat->isBrouillon()) {
                 $contrat->setStatut(ContratManager::STATUT_EN_ATTENTE_ACCEPTATION);
             }
-
+            if($this->container->getParameter("commercial_seine_et_marne")){
+              $contrat->setZone($this->container->getParameter("commercial_seine_et_marne"));
+            }
             $contrat->updateObject();
             $contrat->updatePrestations($dm);
             $contrat->updateProduits($dm);

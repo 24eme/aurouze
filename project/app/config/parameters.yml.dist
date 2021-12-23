@@ -49,6 +49,7 @@ parameters:
         nom : 'Nom du mail'
         numero : '00000000'
         replyemail : "emailReplyTransmission@dns.fr"
+    commercial_seine_et_marne: "nom_commercial"
     facture:
         emetteur:
             nom: ""
