@@ -327,7 +327,7 @@ class ContratManager implements MouvementManagerInterface {
 
                 $passage->setContrat($contrat);
                 if($contrat->getZone()){
-                  $passage->setZone($contrat);
+                  $passage->setZone($contrat->getZone());
                 }
                 $passage->setTypePassage(PassageManager::TYPE_PASSAGE_CONTRAT);
                 foreach ($passageInfos->prestations as $prestationPrevu) {

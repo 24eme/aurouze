@@ -778,6 +778,13 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
       else{
         $this->zone = "75";
       }
+
+      foreach($this->getContratPassages() as $cp){
+        foreach($cp->getPassages() as $passage){
+          $passage->setZone($this->getZone());
+        }
+      }
+
       return $this;
     }
 

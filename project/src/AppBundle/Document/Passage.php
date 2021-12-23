@@ -1101,13 +1101,13 @@ class Passage implements DocumentEtablissementInterface, DocumentSocieteInterfac
     /**
      * Set zone
      *
-     * @param AppBundle\Document\Contrat $contrat
+     * @param string $zone
      * @return self
      */
 
-    public function setZone(\AppBundle\Document\Contrat $contrat){
-        $this->zone = $contrat->getZone();
-        return $this;
+    public function setZone($zone){
+      $this->zone = $zone;
+      return $this;
     }
 
     public static function triPerHourPrecedente($p_0, $p_1) {
