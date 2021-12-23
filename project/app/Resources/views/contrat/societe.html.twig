@@ -14,9 +14,8 @@
 
 
     <h3>Liste des contrats de la société {{ societe.raisonSociale }} <a style="margin-bottom: 10px;" href="{{ path('contrat_creation', {'id': societe.getId()}) }}" class="btn btn-sm btn-default pull-right"><strong><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>&nbsp;Créer un nouveau contrat</strong></a></h3>
-
-
-    <h3>En cours</h3>
+    <br>
+    <h3>Liste des contrats <strong>en cours </strong></h3>
     <table  class="table table-bordered">
       <thead>
           <tr>
@@ -32,7 +31,7 @@
       </thead>
       {% for contrat in contrats %}
 
-      {% if contrat.statutLibelle == "En cours (réalisé)" or contrat.statutLibelle == 'En cours' %}
+      {% if contrat.isEnCoursStatutLibelle %}
       <tr class="{{ contrat.statutCouleur }}">
           <td><small class="text-{{ contrat.statutCouleur }}">{{ contrat.statutLibelle }}</small></td>
           <td><small>{{ contrat.typeContratLibelle }}</small></td>
@@ -72,8 +71,7 @@
     </table>
 
 
-    <h3>A venir/En attente/Brouillon</h3>
-
+    <h3>Liste des contrats <strong>à venir/en attente/brouillon </strong></h3>
     <table  class="table table-bordered">
       <thead>
           <tr>
@@ -88,7 +86,7 @@
           </tr>
       </thead>
       {% for contrat in contrats %}
-        {% if contrat.statutLibelle == "A venir"  or contrat.statutLibelle == "En attente" or contrat.statutLibelle == 'Brouillon' %}
+        {% if contrat.isAVenirStatutLibelle  or contrat.isEnAttenteStatutLibelle or contrat.isBrouillonStatutLibelle %}
         <tr class="{{ contrat.statutCouleur }}">
             <td><small class="text-{{ contrat.statutCouleur }}">{{ contrat.statutLibelle }}</small></td>
             <td><small>{{ contrat.typeContratLibelle }}</small></td>
@@ -124,8 +122,7 @@
       {% endfor %}
     </table>
 
-    <h3>Terminés/Résiliés/Annulés</h3>
-
+    <h3>Liste des contrats <strong>terminés/résiliés/annulés</strong></h3>
     <table  class="table table-bordered">
       <thead>
           <tr>
@@ -140,7 +137,7 @@
           </tr>
       </thead>
         {% for contrat in contrats %}
-          {% if contrat.statutLibelle == 'Terminé' or contrat.statutLibelle == 'Résilié' or contrat.statutLibelle == 'Annulé' %}
+          {% if contrat.isTermineStatutLibelle or contrat.isResilieStatutLibelle or contrat.isAnnuleStatutLibelle %}
           <tr class="{{ contrat.statutCouleur }}">
               <td><small class="text-{{ contrat.statutCouleur }}">{{ contrat.statutLibelle }}</small></td>
               <td><small>{{ contrat.typeContratLibelle }}</small></td>

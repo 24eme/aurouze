@@ -2166,4 +2166,54 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
     }
 
 
+    public function isEnCoursStatutLibelle(){
+      if($this->getStatutLibelle() == "En cours (réalisé)" || $this->getStatutLibelle() == ContratManager::$statuts_libelles[ContratManager::STATUT_EN_COURS]){
+        return true;
+      }
+      return false;
+    }
+
+    public function isAVenirStatutLibelle(){
+      if($this->getStatutLibelle() == "A venir" ){
+        return true;
+      }
+      return false;
+    }
+
+    public function isEnAttenteStatutLibelle(){
+      if($this->getStatutLibelle() == ContratManager::$statuts_libelles[ContratManager::STATUT_EN_ATTENTE_ACCEPTATION]){
+        return true;
+      }
+      return false;
+    }
+
+    public function isBrouillonStatutLibelle(){
+      if($this->getStatutLibelle() == ContratManager::$statuts_libelles[ContratManager::STATUT_BROUILLON]){
+        return true;
+      }
+      return false;
+    }
+
+    public function isTermineStatutLibelle(){
+      if($this->getStatutLibelle() == ContratManager::$statuts_libelles[ContratManager::STATUT_FINI]){
+        return true;
+      }
+      return false;
+    }
+
+    public function isResilieStatutLibelle(){
+      if($this->getStatutLibelle() == ContratManager::$statuts_libelles[ContratManager::STATUT_RESILIE]){
+        return true;
+      }
+      return false;
+    }
+
+    public function isAnnuleStatutLibelle(){
+      if($this->getStatutLibelle() == ContratManager::$statuts_libelles[ContratManager::STATUT_ANNULE]){
+        return true;
+      }
+      return false;
+    }
+
+
 }
