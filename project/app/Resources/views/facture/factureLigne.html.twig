@@ -21,7 +21,7 @@
           {% if(facture.isAvoir and facture.origineAvoir ) %}
           <small class="highlight" data-id="{{facture.origineAvoir.id}}"> <a href="{{ path('facturable_pdf', {'document': facture.origineAvoir.id ,'key': facture.origineAvoir.getSecretKey()})}}"><br><i class ="mdi mdi-subdirectory-arrow-right mdi-lg"></i> Facture n°{{ facture.origineAvoir.numeroFacture}}</a></small>
           {% elseif(facture.isRedressee)%}
-            <br><small class="highlight" data-id ="{{facture.avoir}}"><i class ="mdi mdi-subdirectory-arrow-right mdi-lg"></i>Avoir n°{{ facture.avoir}} </small>
+            <br><small style="cursor:pointer"class="highlight" data-id ="{{facture.avoir}}"><i class ="mdi mdi-subdirectory-arrow-right mdi-lg"></i>Avoir n°{{ facture.avoir}} </small>
           {% endif %}
         {% endif %}
             </td>
