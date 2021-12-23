@@ -1332,7 +1332,7 @@
 
     $.initHighLight = function(){
       $(".highlight").mouseover(function(e){
-        document.getElementById(this.dataset.id).style.border = "2px solid red";
+        document.getElementById(this.dataset.id).style.border = "3px dashed  darkblue";
       });
 
       $(".highlight").mouseout(function(e){
