@@ -94,7 +94,13 @@ class SocieteType extends AbstractType {
     }
 
     public function getProvenances() {
-        return $this->dm->getRepository('AppBundle:Configuration')->findConfiguration()->getProvenances()->toArray();
+        $config = $this->dm->getRepository('AppBundle:Configuration')->findConfiguration();
+        if(!$config) {
+
+            return array();
+        }
+
+        return $config->getProvenances()->toArray();
     }
 
     public function getTags() {
