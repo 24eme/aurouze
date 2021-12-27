@@ -1,20 +1,27 @@
-<tr class="{% if(facture.numeroFacture and facture.paye or facture.isAvoir) %} success
+<tr  id="{% if facture.isAvoir %}{{facture.numeroFacture}}{% else %}{{facture.id}}{% endif %}" class="{% if(facture.numeroFacture and facture.paye or facture.isAvoir) %} success
     {% elseif(facture.numeroFacture and facture.isRedressee()) %} warning
   {% elseif(facture.numeroFacture and facture.isEnRetardPaiement()) %} danger
 {% endif %}">
             <td>{{ ((facture.isDevis) ? facture.dateDevis : facture.dateFacturation) | localizeddate("medium", "none", null, null, "d MMMM yyyy") }} {% if(facture.numeroDevis) %} <span class="pull-right"><i class="mdi mdi-local-shipping"></i></span> {% endif %}</td>
             <td><a href="{{ path('facturable_pdf', {'document': facture.id ,'key': facture.getSecretKey()})}}">
-          <span class="glyphicon glyphicon-file"></span> {% if facture.isDevis %}Devis n° {{ facture.numeroDevis }}{% elseif(facture.isAvoir) %}Avoir n° {{ facture.numeroFacture }}{% elseif(facture.numeroFacture) %}Facture n° {{ facture.numeroFacture }}{% if(facture.isFactureContratLibre) %}<br/><small class="pull-right">Facture créée manuellement</small>{% endif %}{% else %}Voir le brouillon<a class="btn btn-link btn-xs"
-                    href="{% if facture.getContrat() %}{{ path('facture_creation', {'societe': facture.societe.id,'type': 'facture', 'id': facture.id, 'contratId' : facture.getContrat().id}) }}
-                          {% else %}{{ path('facture_creation', { 'societe': facture.societe.id, 'type': 'facture', 'id': facture.id })}}
-                          {% endif %}"><span class="glyphicon glyphicon-pencil"></span>
+          <span class="glyphicon glyphicon-file"></span> {% if facture.isDevis %}Devis n° {{ facture.numeroDevis }}
+                                                         {% elseif(facture.isAvoir) %}Avoir n° {{ facture.numeroFacture }}
+                                                         {% elseif(facture.numeroFacture) %}Facture n° {{ facture.numeroFacture }}
+                                                            {% if(facture.isFactureContratLibre) %}<br/><small class="pull-right">Facture créée manuellement</small>{% endif %}
+                                                         {% else %}Voir le brouillon
+                                                           <a class="btn btn-link btn-xs"
+                                                              href="{% if facture.getContrat() %}{{ path('facture_creation', {'societe': facture.societe.id,'type': 'facture', 'id': facture.id, 'contratId' : facture.getContrat().id}) }}
+                                                            {% else %}{{ path('facture_creation', { 'societe': facture.societe.id, 'type': 'facture', 'id': facture.id })}}
+                                                            {% endif %}"><span class="glyphicon glyphicon-pencil"></span>
+
+                                                           </a>
+                                                         {% endif %}
                 </a>
-        {% endif %}</a>
         {% if facture.isFacture %}
           {% if(facture.isAvoir and facture.origineAvoir ) %}
-          <small> <a href="{{ path('facturable_pdf', {'document': facture.origineAvoir.id ,'key': facture.origineAvoir.getSecretKey()})}}"><br><i class ="mdi mdi-subdirectory-arrow-right mdi-lg"></i> Facture N°{{ facture.origineAvoir.numeroFacture}}</a></small>
+          <small class="highlight" data-id="{{facture.origineAvoir.id}}"> <a href="{{ path('facturable_pdf', {'document': facture.origineAvoir.id ,'key': facture.origineAvoir.getSecretKey()})}}"><br><i class ="mdi mdi-subdirectory-arrow-right mdi-lg"></i> Facture n°{{ facture.origineAvoir.numeroFacture}}</a></small>
           {% elseif(facture.isRedressee)%}
-            <br><small><i class ="mdi mdi-subdirectory-arrow-right mdi-lg"></i>Avoir N°{{ facture.avoir}} </small>
+            <br><small style="cursor:pointer"class="highlight" data-id ="{{facture.avoir}}"><i class ="mdi mdi-subdirectory-arrow-right mdi-lg"></i>Avoir n°{{ facture.avoir}} </small>
           {% endif %}
         {% endif %}
             </td>
@@ -35,6 +42,7 @@
               {% if(facture.isAvoir) %}
                 {% if(facture.getAvoirPartielRemboursementCheque()) %}
                   <span class="text-muted">{{ "%0.2f" | format(facture.montantTTC)  }}&nbsp;€</span>
+                  <span title="Remboursé par chèque" style="cursor: help" class="pull-right label label-xs label-info">Chq</span>
                 {% endif %}
               {% elseif(facture.isRedressee) %}
                 <span class="text-muted">{{ "%0.2f" | format(facture.montantPaye)  }}&nbsp;€</span>

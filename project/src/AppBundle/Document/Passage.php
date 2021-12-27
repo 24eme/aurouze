@@ -163,6 +163,12 @@ class Passage implements DocumentEtablissementInterface, DocumentSocieteInterfac
      */
     protected $multiTechnicien;
 
+    /**
+     * @MongoDB\Field(type="string")
+     */
+    protected $zone;
+
+
     public function __construct() {
         $this->etablissementInfos = new EtablissementInfos();
         $this->prestations = new ArrayCollection();
@@ -1081,6 +1087,27 @@ class Passage implements DocumentEtablissementInterface, DocumentSocieteInterfac
      */
     public function getMultiTechnicien() {
         return $this->getContrat()->getMultiTechnicien();
+    }
+
+    /**
+     * Get zone
+     *
+     * @return string $zone
+     */
+    public function getZone(){
+      return $this->zone;
+    }
+
+    /**
+     * Set zone
+     *
+     * @param string $zone
+     * @return self
+     */
+
+    public function setZone($zone){
+      $this->zone = $zone;
+      return $this;
     }
 
     public static function triPerHourPrecedente($p_0, $p_1) {
