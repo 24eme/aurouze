@@ -107,7 +107,7 @@ class SocieteCsvImporter extends CsvFile {
         if(trim($ligne[self::CSV_ADRESSE_COMMENTAIRE]) && $ligne[self::CSV_COMMENTAIRE] != $ligne[self::CSV_ADRESSE_COMMENTAIRE]) {
             $societe->setCommentaire($societe->getCommentaire()."\n".$ligne[self::CSV_ADRESSE_COMMENTAIRE]);
         }
-        $societe->setSousTraitant(!($ligne[self::CSV_SOUS_TRAITANT]));
+        $societe->setSousTraitant(boolval($ligne[self::CSV_SOUS_TRAITANT]));
 
         $adresse = new Adresse();
 
