@@ -18,6 +18,7 @@ use AppBundle\Document\CompteInfos;
 use AppBundle\Document\Produit;
 use AppBundle\Document\Compte;
 use AppBundle\Document\Etablissement;
+use AppBundle\Document\Prestation;
 use Symfony\Component\Console\Output\OutputInterface;
 use AppBundle\Manager\ContratManager;
 use AppBundle\Manager\PassageManager;
@@ -49,9 +50,10 @@ class ContratCsvImporter {
     const CSV_ADRESSE_NOM = 6;
     const CSV_ADRESSE_CODE_POSTAL = 7;
     const CSV_ADRESSE_COMMUNE = 8;
+    const CSV_PRESTATION = 9;
     const CSV_PRIXHT = 10;
-    const CSV_TVA = 11;
-    const CSV_NB_PASSAGES = 12;
+    const CSV_TVA = 12;
+    const CSV_NB_PASSAGES = 13;
 
     const CSV_ID_COMMERCIAL = 2;
     const CSV_ID_TECHNICIEN = 3;
@@ -220,14 +222,24 @@ class ContratCsvImporter {
             $contrat->setTypeContrat(ContratManager::TYPE_CONTRAT_RECONDUCTION_TACITE);
             $contrat->setNomenclature(str_replace('#', "\n", $data[self::CSV_NOMENCLATURE]));
             $contrat->setPrixHt($data[self::CSV_PRIXHT]);
-            $contrat->setNbPassages($data[self::CSV_NB_PASSAGES]*1);
             $contrat->setIdentifiantReprise($data[self::CSV_ID_CONTRAT]);
             $contrat->setNumeroArchive($data[self::CSV_ID_CONTRAT]);
             $contrat->setReconduit(false);
             $contrat->setNomenclature(str_replace('#', "\n", $data[self::CSV_NOMENCLATURE]));
-            $this->dm->persist($contrat);
+            if($data[self::CSV_TVA] == 10) {
+                $contrat->setTvaReduite(true);
+            }
+            $prestation = new Prestation();
+            $prestation->setIdentifiant($data[self::CSV_PRESTATION]);
+            $prestation->setNom($data[self::CSV_PRESTATION]);
+            $prestation->setNbPassages((int) $data[self::CSV_NB_PASSAGES] * 1);
+            $contrat->addPrestation($prestation);
 
-            //$this->cm->generateAllPassagesForContrat($contrat);
+            $contrat->setNbPassages((int) $data[self::CSV_NB_PASSAGES] * 1);
+
+            $this->dm->persist($contrat);
+            $this->dm->flush();
+            $this->cm->generateAllPassagesForContrat($contrat);
 
             /*if ($data[self::CSV_DATE_RESILIATION]) {
                 $contrat->setDateResiliation(new \DateTime($data[self::CSV_DATE_RESILIATION]));
