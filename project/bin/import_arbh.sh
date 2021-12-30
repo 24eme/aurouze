@@ -9,15 +9,15 @@ cat $DATA_DIR/AHRB\ F_COMPTET.csv | awk -F ";" '{ print $1 ";;;" $3 ";" $10 ";" 
 
 cat $DATA_DIR/Factures.txt | sed 's/AHRB/@/' | tr "\n" "#" | tr "@" "\n" | sed -r 's/^.+N° intracommunautaire :FR85443936497##([^#]+)#/\1/' | sed -r 's/#.+NUMERO//' | sed 's/##DATE##/;/' | grep "contrat n" | sed -r 's/#.+contrat n[°\ ?a-z#]*([0-9A-Z\/]+).+/;\1/' > $DATA_DIR/factures_contrats.csv
 
-cat /tmp/ahrb/factures_contrats.csv | awk -F ';' '{ print "s|^[^;]*;([^;]*);" $3 ";|" $1 ";;" $3 ";|" }' | sed 's/&/\\\&/' | sort | uniq > /tmp/ahrb/societes_contrats.sed
+cat /tmp/ahrb/factures_contrats.csv | awk -F ';' '{ print "s|(^[^;]*);([^;]*);" $3 ";|" $1 ";\\1;" $3 ";|" }' | sed 's/&/\\\&/' | sort | uniq > /tmp/ahrb/societes_contrats.sed
 
 cat /tmp/ahrb/societes_contrats_ajustement.sed >> /tmp/ahrb/societes_contrats.sed
 
-xlsx2csv -d ";" /tmp/ahrb/GESTION\ DES\ CONTRATS\ AHRB\ 2021.xlsx | grep -v "^;" | sed -r -f /tmp/ahrb/societes_contrats.sed > /tmp/ahrb/contrats.csv
+xlsx2csv -d ";" /tmp/ahrb/GESTION\ DES\ CONTRATS\ AHRB\ 2021.xlsx | grep -v "^;" | sed -r 's/^([^;]*);[^;]*;/\1;\1;/' | sed -r -f /tmp/ahrb/societes_contrats.sed > /tmp/ahrb/contrats.csv
 
-echo  -e "\nImport des sociétés"
+echo "Import des sociétés"
 #echo "0;0;1;ARBH;16 RUE ANTOINE LAURENT LAVOISIER;;77480;BRAY SUR SEINE;1;;;;;;;;1;Jan 12 2012 12:02:10:327PM;1;;;;1;ARBH;;0;;1;;1;;;;Jan 12 2012 12:02:09:843PM;;;;0" >> $DATA_DIR/societes.csv
-#php5 app/console importer:csv societe.importer $DATA_DIR/societes.csv -vvv --no-debug
+php5 app/console importer:csv societe.importer $DATA_DIR/societes.csv -vvv --no-debug
 
-echo  -e "\nImport des contrats"
+echo "Import des contrats"
 php5 app/console importer:csv contrat.importer $DATA_DIR/contrats.csv -vvv --no-debug

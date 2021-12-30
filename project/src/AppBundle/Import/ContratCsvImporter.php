@@ -17,6 +17,7 @@ use AppBundle\Document\Contrat;
 use AppBundle\Document\CompteInfos;
 use AppBundle\Document\Produit;
 use AppBundle\Document\Compte;
+use AppBundle\Document\Etablissement;
 use Symfony\Component\Console\Output\OutputInterface;
 use AppBundle\Manager\ContratManager;
 use AppBundle\Manager\PassageManager;
@@ -40,23 +41,28 @@ class ContratCsvImporter {
 
     //const CSV_ID_CONTRAT = 0;
     const CSV_ID_SOCIETE = 0;
+    const CSV_NOM = 1;
+    const CSV_ID_CONTRAT = 2;
+    const CSV_NOMENCLATURE = 3;
     const CSV_ADRESSE_NUMERO = 4;
     const CSV_ADRESSE_RUE = 5;
     const CSV_ADRESSE_NOM = 6;
     const CSV_ADRESSE_CODE_POSTAL = 7;
     const CSV_ADRESSE_COMMUNE = 8;
+    const CSV_PRIXHT = 10;
+    const CSV_TVA = 11;
+    const CSV_NB_PASSAGES = 12;
+
     const CSV_ID_COMMERCIAL = 2;
     const CSV_ID_TECHNICIEN = 3;
     const CSV_TYPE_CONTRAT = 4;
     const CSV_TYPE_PRESTATION = 5;
-    const CSV_NOMENCLATURE = 6;
     const CSV_DATE_CREATION = 7;
     const CSV_DATE_ACCEPTATION = 8;
     const CSV_DATE_DEBUT = 9;
     const CSV_DUREE = 10;
     const CSV_GARANTIE = 11;
 
-    const CSV_PRIXHT = 12;
     const CSV_ARCHIVAGE = 13;
     const CSV_TVA_REDUITE = 14;
     const CSV_DATE_RESILIATION = 15;
@@ -170,136 +176,65 @@ class ContratCsvImporter {
 
     public function import($file, OutputInterface $output) {
         $csvFile = new CsvFile($file,1,true);
-
         // $progress = new ProgressBar($output, 100);
         // $progress->start();
 
         $csv = $csvFile->getCsv();
-        //$configuration = $this->dm->getRepository('AppBundle:Configuration')->findConfiguration();
-        //$produitsArray = $configuration->getProduitsArray();
-
 
         $i = 0;
         $cptTotal = 0;
+        $etablissements = array();
         foreach ($csv as $data) {
             $societe = $this->findSociete($data);
             if(!$societe) {
                 $output->writeln(sprintf("<error>La societe %s n'a pas été trouvé</error>", $data[self::CSV_ID_SOCIETE]));
                 continue;
             }
-            //echo $data[self::CSV_ID_SOCIETE].":".count($societes)."\n";
-            continue;
-
-            if(trim($data[self::CSV_ID_SOCIETEOLDADRESSEID])){
-              $societe = $this->sm->getRepository()->findOneBy(array('identifiantAdresseReprise' => $data[self::CSV_ID_SOCIETEOLDADRESSEID]));
-            }
-
-            $contrat = $this->cm->getRepository()->findOneBy(array('identifiantReprise', $data[self::CSV_ID_CONTRAT]));
-
-            if (!$contrat) {
-                $contrat = new Contrat();
+            $keyEtablissement = $data[self::CSV_NOM].trim($data[self::CSV_ADRESSE_NUMERO])." ".trim($data[self::CSV_ADRESSE_RUE])." ".trim($data[self::CSV_ADRESSE_NOM]).trim($data[self::CSV_ADRESSE_CODE_POSTAL]);
+            if(!isset($etablissements[$keyEtablissement])) {
+                $etablissement = new Etablissement();
+                $etablissement->setSociete($societe);
+                $etablissement->setNom($data[self::CSV_NOM]);
+                $etablissement->setAdresse($etablissement->getAdresse());
+                $etablissement->getAdresse()->setAdresse(trim($data[self::CSV_ADRESSE_NUMERO])." ".trim($data[self::CSV_ADRESSE_RUE])." ".trim($data[self::CSV_ADRESSE_NOM]));
+                $etablissement->getAdresse()->setCodePostal(trim($data[self::CSV_ADRESSE_CODE_POSTAL]));
+                $etablissement->getAdresse()->setCommune(trim($data[self::CSV_ADRESSE_COMMUNE]));
+                $etablissements[$keyEtablissement] = $etablissement;
+                $this->dm->persist($etablissement);
             } else {
-                $output->writeln(sprintf("<error>Le contrat : %s existe déjà en base?</error>", $data[self::CSV_ID_CONTRAT]));
+                $etablissement = $etablissements[$keyEtablissement];
             }
 
-            $contrat->setDateCreation(new \DateTime($data[self::CSV_DATE_CREATION]));
-            $contrat->setDateCreationAuto(new \DateTime($data[self::CSV_DATE_CREATION]));
+            $contrat = new Contrat();
             $contrat->setSociete($societe);
-            $contrat->setTvaReduite(boolval($data[self::CSV_TVA_REDUITE]));
-            if(isset(ContratManager::$types_contrat_import_index[$data[self::CSV_TYPE_CONTRAT]])){
-              $type_contrat = ContratManager::$types_contrat_import_index[$data[self::CSV_TYPE_CONTRAT]];
-            }else{
-              $output->writeln(sprintf("\n<comment> %s : Le type de contrat %s n'existe pas dans la liste des types de contrats :[ %s ]</comment>",$data[self::CSV_ID_CONTRAT], $data[self::CSV_TYPE_CONTRAT], implode(",",ContratManager::$types_contrat_import_index)));
-              $type_contrat = ContratManager::TYPE_CONTRAT_PONCTUEL;
-            }
-            $contrat->setTypeContrat($type_contrat);
-            $contrat->setReconduit(false);
-
-            if ($data[self::CSV_DATE_DEBUT]) {
-                $contrat->setDateDebut(new \DateTime($data[self::CSV_DATE_DEBUT]));
-            }
-
-            if($data[self::CSV_DATE_ACCEPTATION]){
-                $contrat->setDateAcceptation(new \DateTime($data[self::CSV_DATE_ACCEPTATION]));
-                $contrat->setStatut(ContratManager::STATUT_EN_COURS);
-            }else{
-                $contrat->setStatut(ContratManager::STATUT_EN_ATTENTE_ACCEPTATION);
-            }
-
-            if (!preg_match("/^[0-9+]+$/", $data[self::CSV_DUREE])) {
-                $output->writeln(sprintf("\n<comment>La durée du contrat %s n'est pas correct : %s</comment>", $data[self::CSV_ID_CONTRAT], $data[self::CSV_DUREE]));
-                $contrat->setDuree(1);
-
-            }else{
-              $contrat->setDuree($data[self::CSV_DUREE]);
-            }
-
-            $contrat->setDureeGarantie($data[self::CSV_GARANTIE]);
-            if($contrat->getDateDebut()){
-              $dateFin = clone $contrat->getDateDebut();
-              $dateFin->modify("+ " . $contrat->getDuree() . " month");
-              $contrat->setDateFin($dateFin);
-            }
+            $contrat->addEtablissement($etablissement);
+            $contrat->setDateAcceptation(new \DateTime('2022-01-01'));
+            $contrat->setDateCreation(new \DateTime('2022-01-01'));
+            $contrat->setDateCreationAuto(new \DateTime('2022-01-01'));
+            $contrat->setDateDebut(new \DateTime('2022-01-01'));
+            $contrat->setDuree(12);
+            $dateFin = clone $contrat->getDateDebut();
+            $dateFin->modify("+ " . $contrat->getDuree() . " month - 1 second");
+            $contrat->setDateFin($dateFin);
+            $contrat->setStatut(ContratManager::STATUT_EN_COURS);
+            $contrat->setTypeContrat(ContratManager::TYPE_CONTRAT_RECONDUCTION_TACITE);
             $contrat->setNomenclature(str_replace('#', "\n", $data[self::CSV_NOMENCLATURE]));
             $contrat->setPrixHt($data[self::CSV_PRIXHT]);
+            $contrat->setNbPassages($data[self::CSV_NB_PASSAGES]*1);
             $contrat->setIdentifiantReprise($data[self::CSV_ID_CONTRAT]);
-            if(is_integer($data[self::CSV_ARCHIVAGE])) {
-                $contrat->setNumeroArchive(0);
-            }
-            $contrat->setNumeroArchive($data[self::CSV_ARCHIVAGE]);
+            $contrat->setNumeroArchive($data[self::CSV_ID_CONTRAT]);
+            $contrat->setReconduit(false);
+            $contrat->setNomenclature(str_replace('#', "\n", $data[self::CSV_NOMENCLATURE]));
+            $this->dm->persist($contrat);
 
-            if ($data[self::CSV_ID_COMMERCIAL]) {
-                $commercial = $this->um->getRepository()->findOneByIdentifiantReprise($data[self::CSV_ID_COMMERCIAL]);
-                if ($commercial) {
-                    $contrat->setCommercial($commercial);
-                }
-            }
+            //$this->cm->generateAllPassagesForContrat($contrat);
 
-            if ($data[self::CSV_ID_TECHNICIEN]) {
-                $technicien = $this->um->getRepository()->findOneByIdentifiantReprise($data[self::CSV_ID_TECHNICIEN]);
-               if ($technicien) {
-                    $contrat->setTechnicien($technicien);
-                }
-            }
-
-            if ($data[self::CSV_DATE_RESILIATION]) {
+            /*if ($data[self::CSV_DATE_RESILIATION]) {
                 $contrat->setDateResiliation(new \DateTime($data[self::CSV_DATE_RESILIATION]));
                 $contrat->setStatut(ContratManager::STATUT_RESILIE);
-            }
-
-            $produits = explode('#', $data[self::CSV_PRODUITS]);
-            foreach ($produits as $produitStr) {
-                if ($produitStr) {
-                    $produitdetail = explode('~', $produitStr);
-                    $produitQte = 0;
-                    $produitLib = $produitdetail[0];
-                    if (count($produitdetail) > 1) {
-                        $produitQte = $produitdetail[1];
-                    }
-                    if ($produitLib) {
-                        $produitToAdd = clone $produitsArray[strtoupper(Transliterator::urlize($produitLib))];
-                        $produitToAdd->setNbTotalContrat(0);
-                        $produitToAdd->setNbTotalContrat($produitQte);
-                        $contrat->addProduit($produitToAdd);
-                    }
-                }
-            }
-            $this->dm->persist($contrat);
-            $i++;
-            $cptTotal++;
-            if ($cptTotal % (count($csv) / 100) == 0) {
-                $progress->advance();
-            }
-            if ($i >= 1000) {
-                $this->dm->flush();
-                $this->dm->clear();
-                gc_collect_cycles();
-                $i = 0;
-          }
+            }*/
         }
-
         $this->dm->flush();
-        //$progress->finish();
     }
 
 }
