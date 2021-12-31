@@ -17,6 +17,8 @@ use AppBundle\Document\Contrat;
 use AppBundle\Document\CompteInfos;
 use AppBundle\Document\Produit;
 use AppBundle\Document\Compte;
+use AppBundle\Document\Etablissement;
+use AppBundle\Document\Prestation;
 use Symfony\Component\Console\Output\OutputInterface;
 use AppBundle\Manager\ContratManager;
 use AppBundle\Manager\PassageManager;
@@ -36,28 +38,24 @@ class ContratCsvImporter {
     protected $em;
     protected $sm;
     protected $um;
+    protected $societes;
 
-    const CSV_ID_CONTRAT = 0;
-    const CSV_ID_SOCIETE = 1;
-    const CSV_ID_COMMERCIAL = 2;
-    const CSV_ID_TECHNICIEN = 3;
-    const CSV_TYPE_CONTRAT = 4;
-    const CSV_TYPE_PRESTATION = 5;
-    const CSV_NOMENCLATURE = 6;
-    const CSV_DATE_CREATION = 7;
-    const CSV_DATE_ACCEPTATION = 8;
-    const CSV_DATE_DEBUT = 9;
-    const CSV_DUREE = 10;
-    const CSV_GARANTIE = 11;
-
-    const CSV_PRIXHT = 12;
-    const CSV_ARCHIVAGE = 13;
-    const CSV_TVA_REDUITE = 14;
-    const CSV_DATE_RESILIATION = 15;
-    const CSV_ID_SOCIETEOLDADRESSEID = 16;
-    const CSV_PRODUITS = 17;
-    const CSV_NOM_COMMERCIAL = 18;
-    const CSV_NOM_TECHNICIEN = 19;
+    //const CSV_ID_CONTRAT = 0;
+    const CSV_ID_SOCIETE = 0;
+    const CSV_NOM = 1;
+    const CSV_ID_CONTRAT = 2;
+    const CSV_NOMENCLATURE = 3;
+    const CSV_ADRESSE_NUMERO = 4;
+    const CSV_ADRESSE_RUE = 5;
+    const CSV_ADRESSE_NOM = 6;
+    const CSV_ADRESSE_CODE_POSTAL = 7;
+    const CSV_ADRESSE_COMMUNE = 8;
+    const CSV_PRESTATION = 9;
+    const CSV_PRIXHT = 10;
+    const CSV_PRIXHT_UNITAIRE = 11;
+    const CSV_TVA = 12;
+    const CSV_NB_PASSAGES = 13;
+    const CSV_PASSAGE_JANVIER = 14;
 
     public function __construct(DocumentManager $dm, ContratManager $cm, PassageManager $pm, EtablissementManager $em, SocieteManager $sm, CompteManager $um) {
         $this->dm = $dm;
@@ -66,140 +64,213 @@ class ContratCsvImporter {
         $this->em = $em;
         $this->sm = $sm;
         $this->um = $um;
+        $this->societes = $this->sm->getRepository()->findAll();
+    }
+
+    public function findSociete($data) {
+        $replaceWord = array(" ", "mme.", "m.", "mr", "mlle", "mme", "madame", "monsieur", "mademoiselle", ".", "-", "'", '"', 'earl', 'sarl', ',', '&', 'sas', 'ets', 'sdc');
+        $raisonSocialeData = str_replace($replaceWord, "", strtolower(preg_replace("/\(.+\)/", "", $data[self::CSV_ID_SOCIETE])));
+        $adresseData = str_replace($replaceWord, "", strtolower($data[self::CSV_ADRESSE_NUMERO].$data[self::CSV_ADRESSE_RUE].$data[self::CSV_ADRESSE_NOM].$data[self::CSV_ADRESSE_CODE_POSTAL].$data[self::CSV_ADRESSE_COMMUNE]));
+        $adresseShortData = str_replace($replaceWord, "", strtolower($data[self::CSV_ADRESSE_CODE_POSTAL].$data[self::CSV_ADRESSE_COMMUNE]));
+        $societes = $this->societes;
+        $societesFind = array();
+        foreach($societes as $societe) {
+            $codeComptableSociete = str_replace($replaceWord, "", strtolower(preg_replace("/\(.+\)/", "", $societe->getCodeComptable())));
+
+            if($raisonSocialeData == $codeComptableSociete) {
+                $societesFind[] = $societe;
+            }
+        }
+
+        if(count($societesFind) == 1) {
+
+            return current($societesFind);
+        }
+
+        if(count($societesFind) > 1) {
+            $societes = $societesFind;
+        }
+
+        $societesFind = array();
+        foreach($societes as $societe) {
+            $raisonSocialeSociete = str_replace($replaceWord, "", strtolower(preg_replace("/\(.+\)/", "", $societe->getRaisonSociale())));
+
+            if($raisonSocialeData == $raisonSocialeSociete) {
+                $societesFind[] = $societe;
+            }
+        }
+
+        if(count($societesFind) == 1) {
+
+            return current($societesFind);
+        }
+
+        if(count($societesFind) > 1) {
+            $societes = $societesFind;
+        }
+
+        $societesFind = array();
+        foreach($societes as $societe) {
+            if(trim($data[self::CSV_ADRESSE_CODE_POSTAL]) == trim($societe->getAdresse()->getCodePostal())) {
+                $societesFind[] = $societe;
+            }
+        }
+
+        if(count($societesFind) == 1) {
+
+            return current($societesFind);
+        }
+
+        if(count($societesFind) > 1) {
+            $societes = $societesFind;
+        }
+
+        $societesFind = array();
+        foreach($societes as $societe) {
+            $adresseShortSociete = str_replace($replaceWord, "", strtolower($societe->getAdresse()->getCodePostal().$societe->getAdresse()->getCommune()));
+
+            if($adresseShortData == $adresseShortSociete) {
+                $societesFind[] = $societe;
+            }
+        }
+
+        if(count($societesFind) == 1) {
+
+            return current($societesFind);
+        }
+
+        if(count($societesFind) > 1) {
+            $societes = $societesFind;
+        }
+
+        $societesFind = array();
+        foreach($societes as $societe) {
+            $adresseSociete = str_replace($replaceWord, "", strtolower($societe->getAdresse()->getAdresse().$societe->getAdresse()->getCodePostal().$societe->getAdresse()->getCommune()));
+
+            if($adresseData == $adresseSociete) {
+                $societesFind[] = $societe;
+            }
+        }
+
+        if(count($societesFind) == 1) {
+
+            return current($societesFind);
+        }
+
+        return null;
     }
 
     public function import($file, OutputInterface $output) {
         $csvFile = new CsvFile($file,1,true);
+        // $progress = new ProgressBar($output, 100);
+        // $progress->start();
 
-        $progress = new ProgressBar($output, 100);
-        $progress->start();
+        $societeMere = $this->dm->getRepository('AppBundle:Societe')->findOneByRaisonSociale("AHRB");
+        $commercial = new Compte($societeMere);
+        $commercial->setNom("Commercial");
+        $commercial->setPrenom("Commercial");
+        $this->dm->persist($commercial);
+        $this->dm->flush();
 
         $csv = $csvFile->getCsv();
-        $configuration = $this->dm->getRepository('AppBundle:Configuration')->findConfiguration();
-        $produitsArray = $configuration->getProduitsArray();
-
 
         $i = 0;
         $cptTotal = 0;
+        $etablissements = array();
         foreach ($csv as $data) {
-            $societe = null;
-            if(trim($data[self::CSV_ID_SOCIETEOLDADRESSEID])){
-              $societe = $this->sm->getRepository()->findOneBy(array('identifiantAdresseReprise' => $data[self::CSV_ID_SOCIETEOLDADRESSEID]));
-            }
-            if (!$societe && trim($data[self::CSV_ID_SOCIETE])) {
-              $societe = $this->sm->getRepository()->findOneBy(array('identifiantReprise' => $data[self::CSV_ID_SOCIETE]));
-            }
-            if (!$societe) {
-                $output->writeln(sprintf("<error>La societe %s n'existe pas</error>", $data[self::CSV_ID_SOCIETE]));
+            $societe = $this->findSociete($data);
+            if(!$societe) {
+                $output->writeln(sprintf("<error>La societe %s n'a pas été trouvé</error>", $data[self::CSV_ID_SOCIETE]));
                 continue;
             }
-
-            $contrat = $this->cm->getRepository()->findOneBy(array('identifiantReprise', $data[self::CSV_ID_CONTRAT]));
-
-            if (!$contrat) {
-                $contrat = new Contrat();
+            $keyEtablissement = $data[self::CSV_NOM].trim($data[self::CSV_ADRESSE_NUMERO])." ".trim($data[self::CSV_ADRESSE_RUE])." ".trim($data[self::CSV_ADRESSE_NOM]).trim($data[self::CSV_ADRESSE_CODE_POSTAL]);
+            if(!isset($etablissements[$keyEtablissement])) {
+                $etablissement = new Etablissement();
+                $etablissement->setSociete($societe);
+                $etablissement->setNom($data[self::CSV_NOM]);
+                $etablissement->setAdresse($etablissement->getAdresse());
+                $etablissement->getAdresse()->setAdresse(trim($data[self::CSV_ADRESSE_NUMERO])." ".trim($data[self::CSV_ADRESSE_RUE])." ".trim($data[self::CSV_ADRESSE_NOM]));
+                $etablissement->getAdresse()->setCodePostal(trim($data[self::CSV_ADRESSE_CODE_POSTAL]));
+                $etablissement->getAdresse()->setCommune(trim($data[self::CSV_ADRESSE_COMMUNE]));
+                $etablissements[$keyEtablissement] = $etablissement;
+                $this->dm->persist($etablissement);
             } else {
-                $output->writeln(sprintf("<error>Le contrat : %s existe déjà en base?</error>", $data[self::CSV_ID_CONTRAT]));
+                $etablissement = $etablissements[$keyEtablissement];
             }
 
-            $contrat->setDateCreation(new \DateTime($data[self::CSV_DATE_CREATION]));
-            $contrat->setDateCreationAuto(new \DateTime($data[self::CSV_DATE_CREATION]));
+            $contrat = new Contrat();
             $contrat->setSociete($societe);
-            $contrat->setTvaReduite(boolval($data[self::CSV_TVA_REDUITE]));
-            if(isset(ContratManager::$types_contrat_import_index[$data[self::CSV_TYPE_CONTRAT]])){
-              $type_contrat = ContratManager::$types_contrat_import_index[$data[self::CSV_TYPE_CONTRAT]];
-            }else{
-              $output->writeln(sprintf("\n<comment> %s : Le type de contrat %s n'existe pas dans la liste des types de contrats :[ %s ]</comment>",$data[self::CSV_ID_CONTRAT], $data[self::CSV_TYPE_CONTRAT], implode(",",ContratManager::$types_contrat_import_index)));
-              $type_contrat = ContratManager::TYPE_CONTRAT_PONCTUEL;
-            }
-            $contrat->setTypeContrat($type_contrat);
-            $contrat->setReconduit(false);
-
-            if ($data[self::CSV_DATE_DEBUT]) {
-                $contrat->setDateDebut(new \DateTime($data[self::CSV_DATE_DEBUT]));
-            }
-
-            if($data[self::CSV_DATE_ACCEPTATION]){
-                $contrat->setDateAcceptation(new \DateTime($data[self::CSV_DATE_ACCEPTATION]));
-                $contrat->setStatut(ContratManager::STATUT_EN_COURS);
-            }else{
-                $contrat->setStatut(ContratManager::STATUT_EN_ATTENTE_ACCEPTATION);
-            }
-
-            if (!preg_match("/^[0-9+]+$/", $data[self::CSV_DUREE])) {
-                $output->writeln(sprintf("\n<comment>La durée du contrat %s n'est pas correct : %s</comment>", $data[self::CSV_ID_CONTRAT], $data[self::CSV_DUREE]));
-                $contrat->setDuree(1);
-
-            }else{
-              $contrat->setDuree($data[self::CSV_DUREE]);
-            }
-
-            $contrat->setDureeGarantie($data[self::CSV_GARANTIE]);
-            if($contrat->getDateDebut()){
-              $dateFin = clone $contrat->getDateDebut();
-              $dateFin->modify("+ " . $contrat->getDuree() . " month");
-              $contrat->setDateFin($dateFin);
-            }
+            $contrat->addEtablissement($etablissement);
+            $contrat->setDateAcceptation(new \DateTime('2022-01-01'));
+            $contrat->setDateCreation(new \DateTime('2022-01-01'));
+            $contrat->setDateCreationAuto(new \DateTime('2022-01-01'));
+            $contrat->setDateDebut(new \DateTime('2022-01-01'));
+            $contrat->setDuree(12);
+            $dateFin = clone $contrat->getDateDebut();
+            $dateFin->modify("+ " . $contrat->getDuree() . " month - 1 second");
+            $contrat->setDateFin($dateFin);
+            $contrat->setStatut(ContratManager::STATUT_EN_COURS);
+            $contrat->setTypeContrat(ContratManager::TYPE_CONTRAT_RECONDUCTION_TACITE);
             $contrat->setNomenclature(str_replace('#', "\n", $data[self::CSV_NOMENCLATURE]));
-            $contrat->setPrixHt($data[self::CSV_PRIXHT]);
+            $contrat->setPrixHt($data[self::CSV_PRIXHT_UNITAIRE] * $data[self::CSV_NB_PASSAGES]);
+            if(!$contrat->getPrixHt()) {
+                $contrat->setPrixHt($data[self::CSV_PRIXHT]*1);
+            }
+            if(round($data[self::CSV_PRIXHT_UNITAIRE] * $data[self::CSV_NB_PASSAGES],2) != $data[self::CSV_PRIXHT]*1) {
+                $output->writeln(sprintf("Le prix unitaire et total ne concorde pas %s contre %s : contrat n°%s", $data[self::CSV_PRIXHT_UNITAIRE] * $data[self::CSV_NB_PASSAGES], $data[self::CSV_PRIXHT], $data[self::CSV_ID_CONTRAT]));
+            }
+            if(!$contrat->getPrixHt()) {
+                $output->writeln(sprintf("<error>Pas de prix pour ce contrat : contrat n°%s</error>", $data[self::CSV_ID_CONTRAT]));
+            }
             $contrat->setIdentifiantReprise($data[self::CSV_ID_CONTRAT]);
-            if(is_integer($data[self::CSV_ARCHIVAGE])) {
-                $contrat->setNumeroArchive(0);
+            $contrat->setNumeroArchive($data[self::CSV_ID_CONTRAT]);
+            $contrat->setReconduit(false);
+            $contrat->setNomenclature(str_replace('#', "\n", $data[self::CSV_NOMENCLATURE]));
+            if($data[self::CSV_TVA] == 10) {
+                $contrat->setTvaReduite(true);
             }
-            $contrat->setNumeroArchive($data[self::CSV_ARCHIVAGE]);
+            $contrat->setNbFactures((int) $data[self::CSV_NB_PASSAGES] * 1);
+            $contrat->setFrequencePaiement(ContratManager::FREQUENCE_30J);
+            $prestation = new Prestation();
+            $prestation->setIdentifiant($data[self::CSV_PRESTATION]);
+            $prestation->setNom($data[self::CSV_PRESTATION]);
+            $prestation->setNbPassages((int) $data[self::CSV_NB_PASSAGES] * 1);
+            $contrat->addPrestation($prestation);
 
-            if ($data[self::CSV_ID_COMMERCIAL]) {
-                $commercial = $this->um->getRepository()->findOneByIdentifiantReprise($data[self::CSV_ID_COMMERCIAL]);
-                if ($commercial) {
-                    $contrat->setCommercial($commercial);
+            $contrat->setNbPassages((int) $data[self::CSV_NB_PASSAGES] * 1);
+            $contrat->setCommercial($commercial);
+
+            $this->dm->persist($contrat);
+            $this->dm->flush();
+            $this->cm->generateAllPassagesForContrat($contrat);
+
+            $datesPassages = array();
+            for($i=0; $i <= 11;$i++) {
+                if(trim($data[self::CSV_PASSAGE_JANVIER + $i])) {
+                    $datesPassages[] = new \DateTime("01-".($i+1)."-2022");
                 }
             }
-
-            if ($data[self::CSV_ID_TECHNICIEN]) {
-                $technicien = $this->um->getRepository()->findOneByIdentifiantReprise($data[self::CSV_ID_TECHNICIEN]);
-               if ($technicien) {
-                    $contrat->setTechnicien($technicien);
+            foreach($contrat->getPassages($etablissement) as $passage) {
+                if(!array_key_exists(0, $datesPassages)) {
+                    $output->writeln(sprintf("<error>Il y a moins de date que de passages : contrat n°%s</error>", $data[self::CSV_ID_CONTRAT]));
                 }
+                $passage->setDatePrevision($datesPassages[0]);
+                $passage->setDateDebut($passage->getDatePrevision());
+                unset($datesPassages[0]);
+                $datesPassages = array_values($datesPassages);
             }
 
-            if ($data[self::CSV_DATE_RESILIATION]) {
+            if(count($datesPassages) > 0) {
+                $output->writeln(sprintf("<error>Il y a plus de dates que de passages : contrat n°%s</error>", $data[self::CSV_ID_CONTRAT]));
+            }
+            $this->dm->flush();
+
+            /*if ($data[self::CSV_DATE_RESILIATION]) {
                 $contrat->setDateResiliation(new \DateTime($data[self::CSV_DATE_RESILIATION]));
                 $contrat->setStatut(ContratManager::STATUT_RESILIE);
-            }
-
-            $produits = explode('#', $data[self::CSV_PRODUITS]);
-            foreach ($produits as $produitStr) {
-                if ($produitStr) {
-                    $produitdetail = explode('~', $produitStr);
-                    $produitQte = 0;
-                    $produitLib = $produitdetail[0];
-                    if (count($produitdetail) > 1) {
-                        $produitQte = $produitdetail[1];
-                    }
-                    if ($produitLib) {
-                        $produitToAdd = clone $produitsArray[strtoupper(Transliterator::urlize($produitLib))];
-                        $produitToAdd->setNbTotalContrat(0);
-                        $produitToAdd->setNbTotalContrat($produitQte);
-                        $contrat->addProduit($produitToAdd);
-                    }
-                }
-            }
-            $this->dm->persist($contrat);
-            $i++;
-            $cptTotal++;
-            if ($cptTotal % (count($csv) / 100) == 0) {
-                $progress->advance();
-            }
-            if ($i >= 1000) {
-                $this->dm->flush();
-                $this->dm->clear();
-                gc_collect_cycles();
-                $i = 0;
-          }
+            }*/
         }
-
         $this->dm->flush();
-        $progress->finish();
     }
 
 }
