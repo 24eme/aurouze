@@ -25,7 +25,7 @@ use Symfony\Component\Console\Helper\ProgressBar;
 use AppBundle\Document\Facture;
 use AppBundle\Document\LigneFacturable;
 
-class FactureCsvImporter {
+class FactureContratCsvImporter {
 
     protected $dm;
     protected $sm;
