@@ -82,6 +82,11 @@ class SocieteCsvImporter extends CsvFile {
             return;
         }
 
+        if($ligne[self::CSV_ID_SOCIETE] == "CT_Num") {
+
+            return;
+        }
+
         $societe = new Societe();
 
         $societe->setIdentifiantReprise(trim($ligne[self::CSV_ID_SOCIETE]));
