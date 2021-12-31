@@ -91,7 +91,7 @@ services:
 
     facture.importer:
         class: AppBundle\Import\FactureCsvImporter
-        arguments: [@doctrine_mongodb.odm.default_document_manager, @facture.manager, @societe.manager, @contrat.manager]
+        arguments: [@doctrine_mongodb.odm.default_document_manager, @facture.manager, @societe.manager]
 
     devis.manager:
         class: AppBundle\Manager\DevisManager
