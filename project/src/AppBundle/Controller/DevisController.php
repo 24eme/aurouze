@@ -79,10 +79,6 @@ class DevisController extends Controller
         }
         $devis->setCommercial($commercial);
 
-        if($this->container->getParameter("commercial_seine_et_marne")){
-          $devis->setZone($this->container->getParameter("commercial_seine_et_marne"));
-        }
-
         $produitsSuggestion = $this->getProduitsSuggestion($cm->getConfiguration()->getProduits());
 
         $form = $this->createForm(new DevisType($dm, $cm, $societe,  $appConf['commercial']), $devis, array(
@@ -95,7 +91,9 @@ class DevisController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
 
             $devis->update();
-
+            if($this->container->getParameter("commercial_seine_et_marne")){
+              $devis->setZone($this->container->getParameter("commercial_seine_et_marne"));
+            }
             $dm->persist($devis);
             $dm->flush();
 
