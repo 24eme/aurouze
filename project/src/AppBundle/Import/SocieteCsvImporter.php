@@ -27,26 +27,26 @@ class SocieteCsvImporter extends CsvFile {
     const CSV_ID_SOCIETE = 0;
     const CSV_ID_ADRESSE_HISTORIQUE = 1;
     const CSV_TYPE_ADRESSE = 2;
-    const CSV_ADRESSE_LIBELLE_1 = 3;
-    const CSV_ADRESSE_SOCIETE_1 = 4;
-    const CSV_ADRESSE_SOCIETE_2 = 5;
-    const CSV_CP = 6;
-    const CSV_VILLE = 7;
-    const CSV_PAYS = 8;
-    const CSV_TEL_FIXE = 9;
-    const CSV_TEL_MOBILE = 10;
-    const CSV_FAX = 11;
-    const CSV_SITE_WEB = 12;
-    const CSV_EMAIL = 13;
-    const CSV_ADRESSE_COMMENTAIRE = 14;
-    const CSV_TYPE_SOCIETE = 27;
-    const CSV_RAISON_SOCIALE = 23;
-
-    const CSV_SOUS_TRAITANT = 22;
-
-    const CSV_COMMENTAIRE = 26;
-
-    const CSV_CODE_COMPTABLE = 31;
+    const CSV_RAISON_SOCIALE = 3;
+    const CSV_ADRESSE_LIBELLE_1 = 4;
+    const CSV_ADRESSE_SOCIETE_1 = 5;
+    const CSV_ADRESSE_SOCIETE_2 = 6;
+    const CSV_CP = 7;
+    const CSV_VILLE = 8;
+    const CSV_PAYS = 9;
+    const CSV_TEL_FIXE = 10;
+    const CSV_TEL_MOBILE = 11;
+    const CSV_FAX = 12;
+    const CSV_SITE_WEB = 13;
+    const CSV_EMAIL = 14;
+    const CSV_CODE_COMPTABLE = 15;
+    const CSV_SIRET = 16;
+    const CSV_NUM_ACCISES = 17;
+    const CSV_CODE_APE = 18;
+    const CSV_TYPE_SOCIETE = 19;
+    const CSV_SOUS_TRAITANT = 20;
+    const CSV_ADRESSE_COMMENTAIRE = 21;
+    const CSV_COMMENTAIRE = 22;
 
     public function __construct(DocumentManager $dm) {
         $this->dm = $dm;
@@ -77,21 +77,29 @@ class SocieteCsvImporter extends CsvFile {
     }
 
     public function createFromImport($ligne) {
-        if(!is_numeric($ligne[self::CSV_ID_SOCIETE])) {
+        if(!$ligne[self::CSV_ID_SOCIETE]) {
+
+            return;
+        }
+
+        if($ligne[self::CSV_ID_SOCIETE] == "CT_Num") {
 
             return;
         }
 
         $societe = new Societe();
 
-        $societe->setIdentifiantReprise($ligne[self::CSV_ID_SOCIETE]);
+        $societe->setIdentifiantReprise(trim($ligne[self::CSV_ID_SOCIETE]));
 
-        $societe->setIdentifiantAdresseReprise($ligne[self::CSV_ID_ADRESSE_HISTORIQUE]);
+        if($ligne[self::CSV_ID_ADRESSE_HISTORIQUE]) {
+            $societe->setIdentifiantAdresseReprise($ligne[self::CSV_ID_ADRESSE_HISTORIQUE]);
+        }
 
         $raisonSociale = $this->createRaisonSociale($ligne[self::CSV_RAISON_SOCIALE],$ligne[self::CSV_ADRESSE_LIBELLE_1]);
 
         $societe->setRaisonSociale($raisonSociale);
-        $societe->setCodeComptable($ligne[self::CSV_CODE_COMPTABLE]);
+        $societe->setCodeComptable(trim($ligne[self::CSV_CODE_COMPTABLE]));
+        $societe->setSiret(trim($ligne[self::CSV_SIRET]));
         $societe->setCommentaire(null);
         $ligne[self::CSV_COMMENTAIRE] = str_replace('"', "", $ligne[self::CSV_COMMENTAIRE]);
         $ligne[self::CSV_ADRESSE_COMMENTAIRE] = str_replace('"', "", $ligne[self::CSV_COMMENTAIRE]);
@@ -104,7 +112,7 @@ class SocieteCsvImporter extends CsvFile {
         if(trim($ligne[self::CSV_ADRESSE_COMMENTAIRE]) && $ligne[self::CSV_COMMENTAIRE] != $ligne[self::CSV_ADRESSE_COMMENTAIRE]) {
             $societe->setCommentaire($societe->getCommentaire()."\n".$ligne[self::CSV_ADRESSE_COMMENTAIRE]);
         }
-        $societe->setSousTraitant(!($ligne[self::CSV_SOUS_TRAITANT]));
+        $societe->setSousTraitant(boolval($ligne[self::CSV_SOUS_TRAITANT]));
 
         $adresse = new Adresse();
 
@@ -117,11 +125,11 @@ class SocieteCsvImporter extends CsvFile {
         $societe->setAdresse($adresse);
 
         $contactCoordonnee = new ContactCoordonnee();
-        $contactCoordonnee->setTelephoneFixe($ligne[self::CSV_TEL_FIXE]);
-        $contactCoordonnee->setTelephoneMobile($ligne[self::CSV_TEL_MOBILE]);
-        $contactCoordonnee->setFax($ligne[self::CSV_FAX]);
-        $contactCoordonnee->setSiteInternet($ligne[self::CSV_SITE_WEB]);
-        $contactCoordonnee->setEmail($ligne[self::CSV_EMAIL]);
+        $contactCoordonnee->setTelephoneFixe(trim($ligne[self::CSV_TEL_FIXE]));
+        $contactCoordonnee->setTelephoneMobile(trim($ligne[self::CSV_TEL_MOBILE]));
+        $contactCoordonnee->setFax(trim($ligne[self::CSV_FAX]));
+        $contactCoordonnee->setSiteInternet(trim($ligne[self::CSV_SITE_WEB]));
+        $contactCoordonnee->setEmail(trim($ligne[self::CSV_EMAIL]));
 
 
          $societe->setContactCoordonnee($contactCoordonnee);
