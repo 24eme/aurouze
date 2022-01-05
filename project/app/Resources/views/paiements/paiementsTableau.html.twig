@@ -1,63 +1,33 @@
 {% if paiementsDocs|length > 0 %}
-    {% for paiements in paiementsDocs %}
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                <th class="col-xs-3 text-right">
-                    {% if(not paiements.isImprime) %}
-                        <a class="btn btn-xs btn-warning btn" href="{{ path('paiements_modification', {'id': paiements.id })}}"><span class="glyphicon glyphicon-pencil"></span></a>
-                    {% else %}
-                        <a class="btn btn-xs btn-default" href="{{ path('paiements_export_banque', {'id': paiements.id }) }}">
-                            <span class="glyphicon glyphicon-print"></span>&nbsp;{% if(paiements.isRemiseEspece) %}Espèce{% else %}{{ paiements.nbPaiementUniqueParMoyen }} chèq.{% endif %}
-                        </a>
-                    {% endif %}
-                </th>
-                <th class="col-xs-2">{{ paiements.dateCreation | localizeddate("medium", "none", null, null, "d MMM yyyy") }}</th>
-                 <th class="col-xs-5">
-                  <span class="label {% if not paiements.isAllSaisis() %}label-warning{% else %}label-default{% endif %}">
-                    {% if not paiements.isAllSaisis() %}<span class="glyphicon glyphicon-warning-sign"></span>&nbsp;{% endif %}
-                    {{ paiements.getNbPaiementsSaisis() }}/{{ paiements.paiement | length }} facture{% if paiements.paiement | length > 1 %}s{% endif %} saisie{% if paiements.paiement | length > 1 %}s{% endif %}
-                  </span>
-                </th>
-                <th class="col-xs-2 text-right">{{ paiements.getMontantTotal | number_format(2, ',', ' ') }}&nbsp;€</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for regKey, reglement in paiements.aggregatePaiements %}
-            <tr class="active tr-collapse" data-show=".show_{{ paiements.id }}_{{ regKey }}" data-hide=".hide_{{ paiements.id }}_{{ regKey }}">
-                <td><span class="glyphicon glyphicon-chevron-down"></span>&nbsp;{{ reglement.libelle }} ({{ reglement.items | length }})</td>
-                <td>
-                  {{ reglement.factures }} facture{% if reglement.factures > 1 %}s{% endif %}
-                </td>
-                <td>
-                  {% if prelevement %}<a href="{{ path('paiements_prelevement_remise_fichier',{ id : paiements.id })}}" class="btn btn-default btn-xs"><strong>Fichier à transmettre à la banque</strong></a>{% endif %}
-                </td>
-                <td class="text-right">{{ reglement.montant | number_format(2, ',', ' ') }}&nbsp;€</td>
-            </tr>
-            {% for libKey, libelle in reglement.items %}
-            <tr style="display: none;" class="hide_{{ paiements.id }}_{{ regKey }} show_{{ paiements.id }}_{{ regKey }} tr-collapse" data-show=".{{ paiements.id }}_{{ regKey }}_{{ libKey }}" data-hide=".{{ paiements.id }}_{{ regKey }}_{{ libKey }}">
-                <td></td>
-                <td></td>
-                <td><span class="glyphicon glyphicon-chevron-down"></span>&nbsp;<strong>{{ libelle.libelle }}</strong> <small>{{ libelle.factures }} facture{% if libelle.factures > 1 %}s{% endif %}</small></td>
-                <td class="text-right">{{ libelle.montant | number_format(2, ',', ' ') }}&nbsp;€</td>
-            </tr>
-            {% for paiement in libelle.items %}
-            <tr style="display: none;" class="hide_{{ paiements.id }}_{{ regKey }} {{ paiements.id }}_{{ regKey }}_{{ libKey }}">
-                <td></td>
-                <td></td>
-                <td>
-                    <small>
-                    <a title="Voir la société" href="{{ path('societe_visualisation', {'id': paiement.facture.societe.id })}}">{% if paiement.facture.societe.raisonSociale | length > 40 %}{{ paiement.facture.societe.raisonSociale | slice(0, 40)~"..." }}{%else%}{{ paiement.facture.societe.raisonSociale }}{% endif %}</a> Facture n°<a href="{{ path('facturable_pdf', {'document': paiement.facture.id , 'key': paiement.facture.getSecretKey()})}}">{{ paiement.facture.numeroFacture }}</a>
-                    </small>
-                </td>
-                <td class="text-right">{{ paiement.montant | number_format(2, ',', ' ')}}&nbsp;€</td>
-            </tr>
-            {% endfor %}
-            {% endfor %}
-        {% endfor %}
-        </tbody>
-    </table>
-    {% endfor %}
-    {% else %}
-    <p class="bg-warning text-center" style="padding: 10px;"><i>Aucune campagne de {% if prelevement %}prélèvement{% else %}paiement{% endif %} pour la période <strong>{{ periode }}</strong></i></p>
-    {% endif %}
+<table class="table table-bordered table-striped">
+  <thead>
+  <tr>
+    <th class="col-xs-1">Date</th>
+    <th class="col-xs-3">Type</th>
+    <th class="col-xs-2"></th>
+    <th class="col-xs-1">Montant total</th>
+    <th class="col-xs-1 text-center">Détail</th>
+  </tr>
+  </thead>
+
+{% for paiements in paiementsDocs %}
+{% for regKey, reglement in paiements.aggregatePaiements %}
+  <tr>
+    <td>{{ paiements.dateCreation | localizeddate("medium", "none", null, null, "d MMM yyyy") }}</td>
+    <td>{{ reglement.libelle }} ({{ reglement.items | length }})</td>
+  <td>{{ reglement.factures }} facture{% if reglement.factures > 1 %}s{% endif %}
+    {% if paiements.prelevement %}
+    <span class="label {% if not paiements.isAllSaisis() %}label-warning{% else %}label-default{% endif %}">
+          {% if not paiements.isAllSaisis() %}<span class="glyphicon glyphicon-warning-sign"></span>&nbsp;{% endif %}
+          {{ paiements.getNbPaiementsSaisis() }}/{{ paiements.paiement | length }} facture{% if paiements.paiement | length > 1 %}s{% endif %} saisie{% if paiements.paiement | length > 1 %}s{% endif %}
+    </span>
+      {% endif %}
+
+    </td>
+    <td class="text-right">{{ reglement.montant | number_format(2, ',', ' ') }}&nbsp;€</td>
+    <td class="text-center"><a href="{{ path('paiements_details',{ 'type' : regKey ,'date': paiements.dateCreation | localizeddate("medium", "none", null, null, "dMMyyyy")}) }}"><i class ="mdi mdi-remove-red-eye mdi-lg"></i></a></td>
+  </tr>
+{% endfor %}
+{% endfor %}
+</table>
+{% endif %}

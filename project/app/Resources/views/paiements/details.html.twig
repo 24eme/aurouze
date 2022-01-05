@@ -1,0 +1,36 @@
+{% set _menu_active = 'paiements' %}
+{% extends 'base.html.twig' %}
+{% block title %}Campagnes de paiements{% endblock title %}
+{% block body %}
+
+{% if paiements|length > 0 %}
+
+<h3 class="text-center">Paiements du {{(paiements | first).dateCreation| localizeddate("medium", "none", null, null, "d MMM yyyy") }} par {{ type }}</h3>
+<br>
+<table class="table table-bordered table-striped ">
+   <thead>
+       <tr>
+           <th class="col-xs-3">Libelle</th>
+           <th class="col-xs-3">Etablissement</th>
+           <th class="col-xs-2">N° Facture</th>
+           <th class="col-xs-1">Montant</th>
+       </tr>
+   </thead>
+  {% for paiement in paiements %}
+    {% for regKey, reglement in paiement.aggregatePaiements %}
+    {% for libKey, libelle in reglement.items %}
+    {% for p in libelle.items %}
+
+        <tr>
+          <td>{{ libelle.libelle }} </td>
+          <td><a title="Voir la société" href="{{ path('societe_visualisation', {'id': p.facture.societe.id })}}">{% if p.facture.societe.raisonSociale | length > 40 %}{{ p.facture.societe.raisonSociale | slice(0, 40)~"..." }}{%else%}{{ p.facture.societe.raisonSociale }}{% endif %}</a></td>
+          <td> Facture n°<a href="{{ path('facturable_pdf', {'document': p.facture.id , 'key': p.facture.getSecretKey()})}}">{{ p.facture.numeroFacture }}</a></td>
+          <td>{{ libelle.montant | number_format(2, ',', ' ') }}</td>
+       </tr>
+     {% endfor %}
+     {% endfor %}
+    {% endfor %}
+  {% endfor %}
+</table>
+{% endif %}
+{% endblock %}
