@@ -7,6 +7,7 @@
     <th class="col-xs-2"></th>
     <th class="col-xs-1">Montant total</th>
     <th class="col-xs-1 text-center">Détail</th>
+    <th class="col-xs-1 text-center">Actions</th>
   </tr>
   </thead>
 
@@ -17,15 +18,27 @@
     <td>{{ reglement.libelle }} ({{ reglement.items | length }})</td>
   <td>{{ reglement.factures }} facture{% if reglement.factures > 1 %}s{% endif %}
     {% if paiements.prelevement %}
-    <span class="label {% if not paiements.isAllSaisis() %}label-warning{% else %}label-default{% endif %}">
+    <span class="pull-right label {% if not paiements.isAllSaisis() %}label-warning{% else %}label-default{% endif %}">
           {% if not paiements.isAllSaisis() %}<span class="glyphicon glyphicon-warning-sign"></span>&nbsp;{% endif %}
           {{ paiements.getNbPaiementsSaisis() }}/{{ paiements.paiement | length }} facture{% if paiements.paiement | length > 1 %}s{% endif %} saisie{% if paiements.paiement | length > 1 %}s{% endif %}
     </span>
       {% endif %}
 
     </td>
+
     <td class="text-right">{{ reglement.montant | number_format(2, ',', ' ') }}&nbsp;€</td>
-    <td class="text-center"><a href="{{ path('paiements_details',{ 'type' : regKey ,'date': paiements.dateCreation | localizeddate("medium", "none", null, null, "dMMyyyy")}) }}"><i class ="mdi mdi-remove-red-eye mdi-lg"></i></a></td>
+    <td class="text-center"><a href="{{ path('paiements_details',{ 'type' : regKey ,'date': paiements.dateCreation | localizeddate("medium", "none", null, null, "ddMMyyyy")}) }}"><i class ="mdi mdi-remove-red-eye mdi-lg"></i></a></td>
+    <td class="text-center">
+    {% if(not paiements.isImprime) %}
+        <a class="btn btn-xs btn-warning btn" href="{{ path('paiements_modification', {'id': paiements.id })}}"><span class="glyphicon glyphicon-pencil"></span></a>
+    {% else %}
+        <a class="btn btn-xs btn-default" href="{{ path('paiements_export_banque', {'id': paiements.id }) }}">
+            <span class="glyphicon glyphicon-print"></span>&nbsp;{% if(paiements.isRemiseEspece) %}Espèce{% else %}{{ paiements.nbPaiementUniqueParMoyen }} chèq.{% endif %}
+        </a>
+    {% endif %}
+
+
+    </td>
   </tr>
 {% endfor %}
 {% endfor %}
