@@ -59,7 +59,7 @@ class PaiementsRepository extends DocumentRepository {
         return $query->execute();
     }
 
-    public function findByDateAndType(String $date, String $type){
+    public function findByDateAndType($date,$type){
       if (!preg_match('/^([0-9]{2})([0-9]{2})([0-9]{4})$/', $date, $items)) {
        return array();
       }
