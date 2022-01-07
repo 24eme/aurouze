@@ -11,38 +11,50 @@
 <div id="wrapper">
     <h2>Paiements de {{ societe.raisonSociale }}</h2>
     {% if paiementsDocs|length > 0 %}
-      {% for paiements in paiementsDocs %}
       <table class="table table-bordered table-striped ">
         <br>
-        <div style="border :2px solid #ddd; padding: 0 10px;">
-          <h4><strong> {{ paiements.dateCreation | localizeddate("medium", "none", null, null, "d MMM yyyy") }}</strong>- Règlement de {{ paiements.paiementBySociete(societe) | length }} facture{% if paiements.paiementBySociete(societe)| length > 1 %}s{% endif %}
-          <strong class="pull-right">Total = {{ paiements.getTotalBySociete(societe) | number_format(2, ',', ' ') }}&nbsp;€</strong></h4>
-        </div>
         <thead>
             <tr>
-            <th class="col-xs-3">Type</th>
+            <th class="col-xs-2">Date</th>
+            <th class="col-xs-2">Type</th>
             <th class="col-xs-3">Libelle</th>
             <th class="col-xs-3">Facture</th>
             <th class="col-xs-1">Montant</th>
+            <th class="col-xs-2">Total</th>
             </tr>
         </thead>
         <tbody>
+          {% for paiements in paiementsDocs %}
+          {% set date = null %}
           {% for regKey, reglement in paiements.aggregatePaiements(societe) %}
             {% for libKey, libelle in reglement.items %}
                 {% for paiement in libelle.items %}
                 <tr>
+                  <td>
+                    {% if paiements.dateCreation != date %}
+                      <strong>{{ paiements.dateCreation | localizeddate("medium", "none", null, null, "d MMM yyyy") }}</strong>
+                    {% endif %}
+                  </td>
                   <td>{{ reglement.libelle }}</td>
                   <td>{{ libelle.libelle }}</td>
-                  <td>Facture n°<a href="{{ path('facturable_pdf', {'document': paiement.facture.id , 'key': paiement.facture.getSecretKey()})}}">{{ paiement.facture.numeroFacture }}</a></td>
+                  <td><a href="{{ path('facturable_pdf', {'document': paiement.facture.id , 'key': paiement.facture.getSecretKey()})}}">Facture n° {{ paiement.facture.numeroFacture }}</a></td>
                   <td class="text-right">{{ paiement.montant | number_format(2, ',', ' ') }}&nbsp;€</td>
+                  <td class="text-right">
+                  {% if paiements.dateCreation != date %}
+                    <strong>{{ paiements.getTotalBySociete(societe) | number_format(2, ',', ' ') }}&nbsp;€</strong>
+                  {% endif %}
+
+                  </td>
+                  {% set  date = paiements.dateCreation %}
                 </tr>
             {% endfor %}
+          {% endfor %}
           {% endfor %}
           {% endfor %}
         </tbody>
 
        </table>
-      {% endfor %}
+
 		{% endif %}
 </div>
 {% endblock %}
