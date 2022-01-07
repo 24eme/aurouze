@@ -3,55 +3,46 @@
 {% block title %}Liste des paiements de {{ societe.raisonSociale }}{% endblock title %}
 
 {% block body %}
-    <ol class="breadcrumb">
-        <li><a href="{{ path('paiements_liste') }}">Paiements</a></li>
-        <li><a href="{{ path('paiements_societe',{ 'id' : societe.id }) }}">&nbsp;{{ societe.raisonSociale }}&nbsp;<small>{{societe.adresse.intitule }}</small></a></li>
-    </ol>
+<ol class="breadcrumb">
+    <li><a href="{{ path('paiements_liste') }}">Paiements</a></li>
+    <li><a href="{{ path('paiements_societe',{ 'id' : societe.id }) }}">&nbsp;{{ societe.raisonSociale }}&nbsp;<small>{{societe.adresse.intitule }}</small></a></li>
+</ol>
 
-    <div id="wrapper">
-        <h2>Paiements de {{ societe.raisonSociale }}</h2>
-
+<div id="wrapper">
+    <h2>Paiements de {{ societe.raisonSociale }}</h2>
     {% if paiementsDocs|length > 0 %}
-    	{% for paiements in paiementsDocs %}
-    	<table class="table table-hover">
-            <thead>
+      {% for paiements in paiementsDocs %}
+      <table class="table table-bordered table-striped ">
+        <br>
+        <div style="border :3px solid #ddd">
+          <h4><strong> {{ paiements.dateCreation | localizeddate("medium", "none", null, null, "d MMM yyyy") }}</strong>- Règlement de {{ paiements.paiementBySociete(societe) | length }} facture{% if paiements.paiementBySociete(societe)| length > 1 %}s{% endif %}
+          <strong class="pull-right">Total = {{ paiements.getTotalBySociete(societe) | number_format(2, ',', ' ') }}&nbsp;€</strong></h4>
+        </div>
+        <thead>
+            <tr>
+            <th class="col-xs-3">Type</th>
+            <th class="col-xs-3">Libelle</th>
+            <th class="col-xs-3">Facture</th>
+            <th class="col-xs-1">Montant</th>
+            </tr>
+        </thead>
+        <tbody>
+          {% for regKey, reglement in paiements.aggregatePaiements(societe) %}
+            {% for libKey, libelle in reglement.items %}
+                {% for paiement in libelle.items %}
                 <tr>
-                	<th class="col-xs-2 text-right"></th>
-                	<th class="col-xs-9">{{ paiements.dateCreation | localizeddate("medium", "none", null, null, "d MMM yyyy") }} - Règlement de {{ paiements.paiementBySociete(societe) | length }} facture{% if paiements.paiement | length > 1 %}s{% endif %}</th>
-                	<th class="col-xs-2 text-right">{{ paiements.getTotalBySociete(societe) | number_format(2, ',', ' ') }}&nbsp;€</th>
+                  <td>{{ reglement.libelle }}</td>
+                  <td>{{ libelle.libelle }}</td>
+                  <td>Facture n°<a href="{{ path('facturable_pdf', {'document': paiement.facture.id , 'key': paiement.facture.getSecretKey()})}}">{{ paiement.facture.numeroFacture }}</a></td>
+                  <td class="text-right">{{ paiement.montant | number_format(2, ',', ' ') }}&nbsp;€</td>
                 </tr>
-            </thead>
-            <tbody>
-            {% for regKey, reglement in paiements.aggregatePaiements(societe) %}
-            	<tr class="active tr-collapse" data-show=".show_{{ paiements.id }}_{{ regKey }}" data-hide=".hide_{{ paiements.id }}_{{ regKey }}">
-            		<td><span class="glyphicon glyphicon-chevron-down"></span>&nbsp;{{ reglement.libelle }} ({{ reglement.items | length }})</td>
-            		<td>{{ reglement.factures }} facture{% if reglement.factures > 1 %}s{% endif %}</td>
-            		<td class="text-right">{{ reglement.montant | number_format(2, ',', ' ') }}&nbsp;€</td>
-            	</tr>
-            	{% for libKey, libelle in reglement.items %}
-            	<tr style="display: none;" class="hide_{{ paiements.id }}_{{ regKey }} show_{{ paiements.id }}_{{ regKey }} tr-collapse" data-show=".{{ paiements.id }}_{{ regKey }}_{{ libKey }}" data-hide=".{{ paiements.id }}_{{ regKey }}_{{ libKey }}">
-            		<td></td>
-            		<td><span class="glyphicon glyphicon-chevron-down"></span>&nbsp;<strong>{{ libelle.libelle }}</strong> <small>{{ libelle.factures }} facture{% if libelle.factures > 1 %}s{% endif %}</small></td>
-            		<td class="text-right">{{ libelle.montant | number_format(2, ',', ' ') }}&nbsp;€</td>
-            	</tr>
-            	{% for paiement in libelle.items %}
-            	<tr style="display: none;" class="hide_{{ paiements.id }}_{{ regKey }} {{ paiements.id }}_{{ regKey }}_{{ libKey }}">
-            		<td></td>
-            		<td>
-            			<small>
-            			<a title="Voir la société" href="{{ path('societe_visualisation', {'id': paiement.facture.societe.id })}}">{% if paiement.facture.societe.raisonSociale | length > 40 %}{{ paiement.facture.societe.raisonSociale | slice(0, 40)~"..." }}{%else%}{{ paiement.facture.societe.raisonSociale }}{% endif %}</a> Facture n°<a href="{{ path('facturable_pdf', {'document': paiement.facture.id , 'key': paiement.facture.getSecretKey()})}}">{{ paiement.facture.numeroFacture }}</a>
-                    	</small>
-                    </td>
-            		<td class="text-right">{{ paiement.montant | number_format(2, ',', ' ')}}&nbsp;€</td>
-            	</tr>
-            	{% endfor %}
-            	{% endfor %}
             {% endfor %}
-            </tbody>
-		</table>
-		{% endfor %}
-		{% else %}
-		<p class="bg-warning text-center" style="padding: 10px;"><i>Aucune campagne de paiement pour la société <strong>{{ societe.raisonSociale }}</strong></i></p>
+          {% endfor %}
+          {% endfor %}
+        </tbody>
+
+       </table>
+      {% endfor %}
 		{% endif %}
-    </div>
+</div>
 {% endblock %}
