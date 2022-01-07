@@ -33,6 +33,8 @@
                   <td>
                     {% if paiements.dateCreation != date %}
                       <strong>{{ paiements.dateCreation | localizeddate("medium", "none", null, null, "d MMM yyyy") }}</strong>
+                    {% else %}
+                      <span class="text-muted">{{ paiements.dateCreation | localizeddate("medium", "none", null, null, "d MMM yyyy") }}</span>
                     {% endif %}
                   </td>
                   <td>{{ reglement.libelle }}</td>
@@ -42,8 +44,9 @@
                   <td class="text-right">
                   {% if paiements.dateCreation != date %}
                     <strong>{{ paiements.getTotalBySociete(societe) | number_format(2, ',', ' ') }}&nbsp;€</strong>
+                  {% else %}
+                    <span class="text-muted">{{ paiements.getTotalBySociete(societe) | number_format(2, ',', ' ') }}&nbsp;€</span>
                   {% endif %}
-
                   </td>
                   {% set  date = paiements.dateCreation %}
                 </tr>
