@@ -14,7 +14,7 @@
       {% for paiements in paiementsDocs %}
       <table class="table table-bordered table-striped ">
         <br>
-        <div style="border :3px solid #ddd">
+        <div style="border :2px solid #ddd; padding: 0 10px;">
           <h4><strong> {{ paiements.dateCreation | localizeddate("medium", "none", null, null, "d MMM yyyy") }}</strong>- Règlement de {{ paiements.paiementBySociete(societe) | length }} facture{% if paiements.paiementBySociete(societe)| length > 1 %}s{% endif %}
           <strong class="pull-right">Total = {{ paiements.getTotalBySociete(societe) | number_format(2, ',', ' ') }}&nbsp;€</strong></h4>
         </div>
