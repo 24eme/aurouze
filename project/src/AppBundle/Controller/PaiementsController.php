@@ -36,6 +36,16 @@ class PaiementsController extends Controller {
     }
 
     /**
+     * @Route("/paiements/details/{type}/{date}", name="paiements_details")
+     */
+    public function detailsAction(Request $request) {
+        $type  = $request->get('type');
+        $date  = $request->get('date');
+        $paiements =  $this->get('paiements.manager')->getRepository()->findByDateAndType($date,$type);
+        return $this->render('paiements/details.html.twig', array('paiements' => $paiements,'type'=>$type));
+    }
+
+    /**
      * @Route("/paiements/societe/{id}", name="paiements_societe")
      * @ParamConverter("societe", class="AppBundle:Societe")
      */

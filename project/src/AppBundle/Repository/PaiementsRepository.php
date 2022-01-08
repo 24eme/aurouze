@@ -59,6 +59,27 @@ class PaiementsRepository extends DocumentRepository {
         return $query->execute();
     }
 
+    public function findByDateAndType($date,$type){
+      if (!preg_match('/^([0-9]{2})([0-9]{2})([0-9]{4})$/', $date, $items)) {
+       return array();
+      }
+
+      $datePaiement = new \DateTime($items[3].'-'.$items[2].'-'.$items[1]);
+
+      $nextDay = new \DateTime($items[3].'-'.$items[2].'-'.$items[1]);
+      date_add($nextDay, date_interval_create_from_date_string('1 day'));
+
+
+       $q = $this->createQueryBuilder();
+       $q->field('dateCreation')->gte($datePaiement);
+       $q->field('dateCreation')->lt($nextDay);
+
+       $q->field('paiement.moyenPaiement')->equals($type);
+
+       $query = $q->getQuery();
+
+       return $query->execute();
+    }
 
     public function findByDatePaiementsDebutFin(\DateTime $dateDebut,\DateTime $dateFin) {
 

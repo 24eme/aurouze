@@ -100,6 +100,12 @@ class Devis implements DocumentSocieteInterface, DocumentPlanifiableInterface, F
      */
     protected $numeroCommande;
 
+    /**
+     * @MongoDB\Field(type="string")
+     */
+    protected $zone;
+
+
     public function __construct() {
         $this->etablissementInfos = new EtablissementInfos();
         $this->techniciens = new ArrayCollection();
@@ -636,6 +642,32 @@ class Devis implements DocumentSocieteInterface, DocumentPlanifiableInterface, F
       $id=$this->getId();
       $secretKey = getenv('SECRETKEY');
       return hash ('sha256' , $id.$secretKey);
+    }
+
+    /**
+     * Get zone
+     *
+     * @return string $zone
+     */
+    public function getZone(){
+      return $this->zone;
+    }
+
+    /**
+     * Set zone
+     *
+     * @param string $zone
+     * @return self
+     */
+
+    public function setZone($commercialSeineEtMarne){
+      if($this->getCommercial()->getNom() == $commercialSeineEtMarne){
+        $this->zone = "77";
+      }
+      else{
+        $this->zone = "75";
+      }
+      return $this;
     }
 
 }
