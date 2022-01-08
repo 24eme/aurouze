@@ -6,9 +6,10 @@ SYMFODIR=$(pwd);
 DATA_DIR=$TMP;
 
 echo "AHRB;;;AHRB;;16 RUE ANTOINE LAURENT LAVOISIER;;77480;BRAY SUR SEINE;FRANCE;01 47 90 76 23;;;;;AHRB;44393649700025;FR85443936497;8129A" > $DATA_DIR/societes.csv
-cat $DATA_DIR/AHRB\ F_COMPTET.csv | awk -F ";" '{ print $1 ";;;" $3 ";" $10 ";" $11 ";" $12 ";" $13 ";" $15 ";" $17 ";" $68 ";;" $69 ";" $71 ";" $70 ";" $1 ";" $24 ";" $23 ";" $22 ";;;;"  }' >> $DATA_DIR/societes.csv
+cat $DATA_DIR/F_COMPTET.csv | awk -F ";" '{ print $1 ";;;" $3 ";" $10 ";" $11 ";" $12 ";" $13 ";" $15 ";" $17 ";" $68 ";;" $69 ";" $71 ";" $70 ";" $1 ";" $24 ";" $23 ";" $22 ";;;;"  }' >> $DATA_DIR/societes.csv
 
-cat $DATA_DIR/AHRB\ F_DOCLIGNE.csv > $DATA_DIR/factures.csv
+cat $DATA_DIR/F_DOCLIGNE.csv > $DATA_DIR/factures.csv
+cat $DATA_DIR/F_CREGLEMENT.csv > $DATA_DIR/reglements.csv
 
 cat $DATA_DIR/Factures.txt | sed 's/AHRB/@/' | tr "\n" "#" | tr "@" "\n" | sed -r 's/^.+N° intracommunautaire :FR85443936497##([^#]+)#/\1/' | sed -r 's/#.+NUMERO//' | sed 's/##DATE##/;/' | grep "contrat n" | sed -r 's/#.+contrat n[°\ ?a-z#]*([0-9A-Z\/]+).+/;\1/' > $DATA_DIR/factures_contrats.csv
 
@@ -23,6 +24,9 @@ php5 app/console importer:csv societe.importer $DATA_DIR/societes.csv -vvv --no-
 
 echo "Import des factures"
 php5 app/console importer:csv facture.importer $DATA_DIR/factures.csv -vvv --no-debug
+
+echo "Import des paiements"
+php5 app/console importer:csv paiements.importer $DATA_DIR/reglements.csv -vvv --no-debug
 
 echo "Import des contrats"
 php5 app/console importer:csv contrat.importer $DATA_DIR/contrats.csv -vvv --no-debug
