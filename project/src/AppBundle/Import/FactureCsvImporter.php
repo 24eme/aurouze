@@ -122,8 +122,15 @@ class FactureCsvImporter {
         }*/
 
         $facture->update();
-        $facture->updateRestantAPayer();
 
+        try {
+            $facture->getTva();
+            $facture->setMontantTaxe(round($facture->getMontantHT() * $facture->getTva(), 2));
+            $facture->setMontantTTC(round($facture->getMontantHT() + $facture->getMontantTaxe(), 2));
+        } catch(\Exception $e) {
+        }
+
+        $facture->updateRestantAPayer();
         $this->dm->persist($facture);
 
         return $facture;
