@@ -8,7 +8,9 @@ DATA_DIR=$TMP;
 echo "AHRB;;;AHRB;;16 RUE ANTOINE LAURENT LAVOISIER;;77480;BRAY SUR SEINE;FRANCE;01 47 90 76 23;;;;;AHRB;44393649700025;FR85443936497;8129A" > $DATA_DIR/societes.csv
 cat $DATA_DIR/F_COMPTET.csv | awk -F ";" '{ print $1 ";;;" $3 ";" $10 ";" $11 ";" $12 ";" $13 ";" $15 ";" $17 ";" $68 ";;" $69 ";" $71 ";" $70 ";" $1 ";" $24 ";" $23 ";" $22 ";;;;"  }' >> $DATA_DIR/societes.csv
 
-cat $DATA_DIR/F_DOCLIGNE.csv > $DATA_DIR/factures.csv
+cat $DATA_DIR/F_DOCLIGNE.csv | tr -d "\r" | sort -t ";" -k 49,49 > $DATA_DIR/F_DOCLIGNE.csv.sort
+cat $DATA_DIR/F_DOCLIGNETEXT.csv | tr -d "\r" | sort -t ";" -k 1,1 > $DATA_DIR/F_DOCLIGNETEXT.csv.sort
+join -t ";" -a 1 -1 49 -2 1 $DATA_DIR/F_DOCLIGNE.csv.sort $DATA_DIR/F_DOCLIGNETEXT.csv.sort | sort -t ";" -k 6,6 > $DATA_DIR/factures.csv
 cat $DATA_DIR/F_CREGLEMENT.csv | sed 's|6986 A 6988|6986/6987/6988|' | sed 's|7868 A 7871|7868/7869/7870/7871|' > $DATA_DIR/reglements.csv
 
 cat $DATA_DIR/Factures.txt | sed 's/AHRB/@/' | tr "\n" "#" | tr "@" "\n" | sed -r 's/^.+N° intracommunautaire :FR85443936497##([^#]+)#/\1/' | sed -r 's/#.+NUMERO//' | sed 's/##DATE##/;/' | grep "contrat n" | sed -r 's/#.+contrat n[°\ ?a-z#]*([0-9A-Z\/]+).+/;\1/' > $DATA_DIR/factures_contrats.csv

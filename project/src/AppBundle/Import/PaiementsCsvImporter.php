@@ -146,9 +146,11 @@ class PaiementsCsvImporter {
                     $facture = $facturePrecedente;
                 }
 
-                $paiement = $this->createPaiement($data, $facture, round($montant, 2));
-                $paiements->addPaiement($paiement);
-                $montant = 0;
+                if($facture) {
+                    $paiement = $this->createPaiement($data, $facture, round($montant, 2));
+                    $paiements->addPaiement($paiement);
+                    $montant = 0;
+                }
             }
 
             if(round($montant, 2) != 0) {

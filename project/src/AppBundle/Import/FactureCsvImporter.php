@@ -27,13 +27,14 @@ class FactureCsvImporter {
     protected $sm;
     protected $fm;
 
-    const CSV_SOCIETE_ID = 2;
-    const CSV_FACTURE_ID = 4;
-    const CSV_DATE = 10;
-    const CSV_LIBELLE = 21;
-    const CSV_QUANTITE = 22;
-    const CSV_PRIX_UNITAIRE = 33;
-    const CSV_TAUX_TAXE = 35;
+    const CSV_SOCIETE_ID = 3;
+    const CSV_FACTURE_ID = 5;
+    const CSV_DATE = 11;
+    const CSV_LIBELLE = 22;
+    const CSV_QUANTITE = 23;
+    const CSV_PRIX_UNITAIRE = 34;
+    const CSV_TAUX_TAXE = 36;
+    const CSV_TEXT = 114;
 
     public function __construct(DocumentManager $dm, FactureManager $fm, SocieteManager $sm) {
         $this->dm = $dm;
@@ -111,9 +112,14 @@ class FactureCsvImporter {
             $factureLigne->setQuantite($ligne[self::CSV_QUANTITE]);
             $factureLigne->setPrixUnitaire($ligne[self::CSV_PRIX_UNITAIRE]);
             $factureLigne->setTauxTaxe($ligne[self::CSV_TAUX_TAXE]/100);
+            if(isset($ligne[self::CSV_TEXT])) {
+                $factureLigne->setLibelle($factureLigne->getLibelle()." - ".$ligne[self::CSV_TEXT]);
+            }
 
             $facture->addLigne($factureLigne);
         }
+
+
 
         //$facture->setDescription(preg_replace('/^".*"$/', "", str_replace('#', "\n", $ligne[self::CSV_DESCRIPTION])));
         //$facture->facturerMouvements();
