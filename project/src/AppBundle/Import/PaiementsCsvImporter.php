@@ -28,6 +28,7 @@ class PaiementsCsvImporter {
     protected $dm;
     protected $pm;
     protected $fm;
+    protected $factures;
     protected $debug = false;
 
     const CSV_REGLEMENT_ID = 0;
@@ -90,25 +91,15 @@ class PaiementsCsvImporter {
                     $facturesNonTrouves[] = $numeroFacture;
                     continue;
                 }
-                $fCache = $this->dm->getUnitOfWork()->tryGetById($facture->getId(), $this->pm->getRepository()->getClassMetadata());
-                if($fCache) {
-                    $facture = $fCache;
-                }
-                $paiement = $this->createPaiement($data);
-                $paiement->setFacture($facture);
-                $paiement->setMontant($facture->getMontantTTC());
-                $montant -= $paiement->getMontant();
+                $paiement = $this->createPaiement($data, $facture, $facture->getMontantTTC());
                 $paiements->addPaiement($paiement);
-
-                $facture->setMontantPaye($facture->getMontantPaye() + $paiement->getMontant());
-                $facture->updateRestantAPayer();
-                $factures[$facture->getId()] = $facture;
+                $montant -= $paiement->getMontant();
             }
 
             if($paiement && !count($facturesNonTrouves) && round($montant, 2) != 0) {
                 //$output->writeln(sprintf("<comment>Le paiement est différent de celui des factures trouvés : %s</comment>", $data[self::CSV_REGLEMENT_ID].";".$data[self::CSV_LIBELLE].";".round($montant, 2)." € restant"));
                 $paiement->setMontant(round($paiement->getMontant() + round($montant, 2), 2));
-                $facture = $factures[$paiement->getFacture()->getId()];
+                $facture = $this->factures[$paiement->getFacture()->getId()];
                 $facture->setMontantPaye($facture->getMontantPaye() + round($montant, 2));
                 $facture->updateRestantAPayer();
                 $montant = 0;
@@ -117,16 +108,9 @@ class PaiementsCsvImporter {
             if(round($montant, 2) != 0) {
                 $facture = $this->findFacture($societe, $data, round($montant, 2));
                 if($facture) {
-                    //$output->writeln(sprintf("<info>Facture trouvé : %s</info>", $data[self::CSV_REGLEMENT_ID].";".$data[self::CSV_LIBELLE].";".round($montant, 2)." € restant;".$facture->getId().";".$facture->getNumeroFacture().";".$facture->getDateFacturation()->format('Y-m-d').";".$facture->getMontantTTC()));
-                    $paiement = $this->createPaiement($data);
-                    $paiement->setFacture($facture);
-                    $paiement->setMontant(round($montant, 2));
+                    $paiement = $this->createPaiement($data, $facture, round($montant, 2));
                     $paiements->addPaiement($paiement);
-
-                    $facture->setMontantPaye($facture->getMontantPaye() + round($montant, 2));
-                    $facture->updateRestantAPayer();
-                    $factures[$facture->getId()] = $facture;
-                    $montant -= round($montant, 2);
+                    $montant = 0;
                 }
             }
 
@@ -140,15 +124,9 @@ class PaiementsCsvImporter {
                     if($fCache) {
                         $facture = $fCache;
                     }
-                    $paiement = $this->createPaiement($data);
-                    $paiement->setFacture($facture);
-                    $paiement->setMontant($facture->getMontantTTC());
-                    $montant -= $paiement->getMontant();
+                    $paiement = $this->createPaiement($data, $facture, $facture->getMontantTTC());
                     $paiements->addPaiement($paiement);
-
-                    $facture->setMontantPaye($facture->getMontantPaye() + $paiement->getMontant());
-                    $facture->updateRestantAPayer();
-                    $factures[$facture->getId()] = $facture;
+                    $montant -= $paiement->getMontant();
                 }
             }
 
@@ -168,15 +146,9 @@ class PaiementsCsvImporter {
                     $facture = $facturePrecedente;
                 }
 
-                $paiement = $this->createPaiement($data);
-                $paiement->setFacture($facture);
-                $paiement->setMontant($facture->getMontantTTC());
-                $montant -= $paiement->getMontant();
+                $paiement = $this->createPaiement($data, $facture, round($montant, 2));
                 $paiements->addPaiement($paiement);
-
-                $facture->setMontantPaye($facture->getMontantPaye() + $paiement->getMontant());
-                $facture->updateRestantAPayer();
-                $factures[$facture->getId()] = $facture;
+                $montant = 0;
             }
 
             if(round($montant, 2) != 0) {
@@ -184,31 +156,44 @@ class PaiementsCsvImporter {
                 echo implode(";", $data)."\n";
             }
 
-
-
             $i++;
 
             if ($i >= 1000) {
-                /*$this->dm->flush();
-                foreach($factures as $f) {
+                $this->dm->flush();
+                foreach($this->factures as $f) {
                     $f->updateMontantPaye();
                     $f->updateRestantAPayer();
-                    $f->preUpdate();
                 }
                 $this->dm->flush();
                 $this->dm->clear();
-                $factures = array();*/
+                $this->factures = array();
                 $i = 0;
             }
         }
-        /*$this->dm->flush();
-        foreach($factures as $f) {
+        $this->dm->flush();
+        foreach($this->factures as $f) {
             $f->updateMontantPaye();
             $f->updateRestantAPayer();
-            $f->preUpdate();
         }
         $this->dm->flush();
-        $this->dm->clear();*/
+        $this->dm->clear();
+
+        foreach($this->sm->getRepository()->findAll() as $societe) {
+            $solde = $this->fm->getSolde($societe);
+            if($solde != 0) {
+
+                continue;
+            }
+            $factures = $this->fm->getRepository()->findBy(array('societe' => $societe->getId()));
+            foreach($factures as $facture) {
+                if($facture->isCloture()) {
+                    continue;
+                }
+                $facture->cloturer();
+            }
+        }
+        $this->dm->flush();
+        $this->dm->clear();
     }
 
     protected function findFacture($societe, $data, $montant) {
@@ -228,7 +213,12 @@ class PaiementsCsvImporter {
         return null;
     }
 
-    protected function createPaiement($data) {
+    protected function createPaiement($data, $facture, $montant) {
+        $fCache = $this->dm->getUnitOfWork()->tryGetById($facture->getId(), $this->pm->getRepository()->getClassMetadata());
+        if($fCache) {
+            $facture = $fCache;
+        }
+
         $paiement = new Paiement();
 
         $paiement->setIdentifiantReprise($data[self::CSV_REGLEMENT_ID]);
@@ -243,6 +233,12 @@ class PaiementsCsvImporter {
         $paiement->setMoyenPaiement($moyens[$data[self::CSV_MOYEN_PAIEMENT]]);
         $paiement->setTypeReglement(PaiementsManager::TYPE_REGLEMENT_FACTURE);
         $paiement->setVersementComptable(true);
+        $paiement->setFacture($facture);
+        $paiement->setMontant($montant);
+        $facture->setMontantPaye($facture->getMontantPaye() + $paiement->getMontant());
+        $facture->updateRestantAPayer();
+
+        $this->factures[$facture->getId()] = $facture;
 
         return $paiement;
     }
