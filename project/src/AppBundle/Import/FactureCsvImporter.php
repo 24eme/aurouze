@@ -58,10 +58,12 @@ class FactureCsvImporter {
                 $currentIdFacture = $data[self::CSV_FACTURE_ID];
             }
 
-            if(!isset($bufferText[$data[self::CSV_FACTURE_ID]] ) && isset($data[self::CSV_TEXT])) {
+            if(!isset($bufferText[$data[self::CSV_FACTURE_ID]] ) && isset($data[self::CSV_TEXT]) && $data[self::CSV_TEXT]) {
                 $bufferText[$data[self::CSV_FACTURE_ID]] = "";
+            } elseif(isset($data[self::CSV_TEXT]) && $data[self::CSV_TEXT]) {
+                $bufferText[$data[self::CSV_FACTURE_ID]] .= " — ";
             }
-            if(isset($data[self::CSV_TEXT])) {
+            if(isset($data[self::CSV_TEXT]) && $data[self::CSV_TEXT]) {
                 $bufferText[$data[self::CSV_FACTURE_ID]] .= $data[self::CSV_TEXT];
             }
 
@@ -121,7 +123,7 @@ class FactureCsvImporter {
             $factureLigne->setPrixUnitaire($ligne[self::CSV_PRIX_UNITAIRE]);
             $factureLigne->setTauxTaxe($ligne[self::CSV_TAUX_TAXE]/100);
             if(isset($bufferText[$ligne[self::CSV_FACTURE_ID]])) {
-                $factureLigne->setLibelle($factureLigne->getLibelle()." - ".$bufferText[$ligne[self::CSV_FACTURE_ID]]);
+                $factureLigne->setLibelle($factureLigne->getLibelle()." — ".$bufferText[$ligne[self::CSV_FACTURE_ID]]);
             }
 
             $facture->addLigne($factureLigne);
