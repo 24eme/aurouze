@@ -50,11 +50,19 @@ class FactureCsvImporter {
         $i = 0;
 
         $lignes = array();
+        $bufferText = array();
         $currentIdFacture = null;
 
         foreach ($csv as $data) {
             if(is_null($currentIdFacture)) {
                 $currentIdFacture = $data[self::CSV_FACTURE_ID];
+            }
+
+            if(!isset($bufferText[$data[self::CSV_FACTURE_ID]] ) && isset($data[self::CSV_TEXT])) {
+                $bufferText[$data[self::CSV_FACTURE_ID]] = "";
+            }
+            if(isset($data[self::CSV_TEXT])) {
+                $bufferText[$data[self::CSV_FACTURE_ID]] .= $data[self::CSV_TEXT];
             }
 
             if($data[self::CSV_QUANTITE]*1 == 0) {
@@ -67,7 +75,7 @@ class FactureCsvImporter {
                 continue;
             }
 
-            $facture = $this->importFacture($lignes, $output);
+            $facture = $this->importFacture($lignes, $output, $bufferText);
 
             $i++;
 
@@ -82,12 +90,12 @@ class FactureCsvImporter {
             $lignes[] = $data;
         }
 
-        $this->importFacture($lignes, $output);
+        $this->importFacture($lignes, $output, $bufferText);
 
         $this->dm->flush();
     }
 
-    public function importFacture($lignes, $output) {
+    public function importFacture($lignes, $output, $bufferText) {
         if(!count($lignes)) {
 
             return;
@@ -112,14 +120,12 @@ class FactureCsvImporter {
             $factureLigne->setQuantite($ligne[self::CSV_QUANTITE]);
             $factureLigne->setPrixUnitaire($ligne[self::CSV_PRIX_UNITAIRE]);
             $factureLigne->setTauxTaxe($ligne[self::CSV_TAUX_TAXE]/100);
-            if(isset($ligne[self::CSV_TEXT])) {
-                $factureLigne->setLibelle($factureLigne->getLibelle()." - ".$ligne[self::CSV_TEXT]);
+            if(isset($bufferText[$ligne[self::CSV_FACTURE_ID]])) {
+                $factureLigne->setLibelle($factureLigne->getLibelle()." - ".$bufferText[$ligne[self::CSV_FACTURE_ID]]);
             }
 
             $facture->addLigne($factureLigne);
         }
-
-
 
         //$facture->setDescription(preg_replace('/^".*"$/', "", str_replace('#', "\n", $ligne[self::CSV_DESCRIPTION])));
         //$facture->facturerMouvements();
