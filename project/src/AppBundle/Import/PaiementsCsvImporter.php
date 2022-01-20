@@ -76,6 +76,7 @@ class PaiementsCsvImporter {
             }
             if (!$paiements) {
                 $paiements = $this->pm->createByDateCreation(new \DateTime($data[self::CSV_PAIEMENT_DATE]));
+                $paiements->setIdentifiant($paiements->getDateCreation()->format('Ymd'));
                 $this->dm->persist($paiements);
             }
 
@@ -182,12 +183,21 @@ class PaiementsCsvImporter {
 
         foreach($this->sm->getRepository()->findAll() as $societe) {
             $solde = $this->fm->getSolde($societe);
+            $factures = $this->fm->getRepository()->findBy(array('societe' => $societe->getId()));
             if($solde != 0) {
-
+                foreach($factures as $facture) {
+                    if($facture->getDateFacturation()->format('Y') >= "2020" ) {
+                        continue;
+                    }
+                    $facture->cloturer();
+                }
                 continue;
             }
-            $factures = $this->fm->getRepository()->findBy(array('societe' => $societe->getId()));
             foreach($factures as $facture) {
+                if($facture->getDateFacturation()->format('Y') < "2020" ) {
+                    $facture->cloturer();
+                    continue;
+                }
                 if($facture->isCloture()) {
                     continue;
                 }
