@@ -27,13 +27,14 @@ class FactureCsvImporter {
     protected $sm;
     protected $fm;
 
-    const CSV_SOCIETE_ID = 2;
-    const CSV_FACTURE_ID = 4;
-    const CSV_DATE = 10;
-    const CSV_LIBELLE = 21;
-    const CSV_QUANTITE = 22;
-    const CSV_PRIX_UNITAIRE = 33;
-    const CSV_TAUX_TAXE = 35;
+    const CSV_SOCIETE_ID = 3;
+    const CSV_FACTURE_ID = 5;
+    const CSV_DATE = 11;
+    const CSV_LIBELLE = 22;
+    const CSV_QUANTITE = 23;
+    const CSV_PRIX_UNITAIRE = 34;
+    const CSV_TAUX_TAXE = 36;
+    const CSV_TEXT = 114;
 
     public function __construct(DocumentManager $dm, FactureManager $fm, SocieteManager $sm) {
         $this->dm = $dm;
@@ -49,11 +50,21 @@ class FactureCsvImporter {
         $i = 0;
 
         $lignes = array();
+        $bufferText = array();
         $currentIdFacture = null;
 
         foreach ($csv as $data) {
             if(is_null($currentIdFacture)) {
                 $currentIdFacture = $data[self::CSV_FACTURE_ID];
+            }
+
+            if(!isset($bufferText[$data[self::CSV_FACTURE_ID]] ) && isset($data[self::CSV_TEXT]) && $data[self::CSV_TEXT]) {
+                $bufferText[$data[self::CSV_FACTURE_ID]] = "";
+            } elseif(isset($data[self::CSV_TEXT]) && $data[self::CSV_TEXT]) {
+                $bufferText[$data[self::CSV_FACTURE_ID]] .= " — ";
+            }
+            if(isset($data[self::CSV_TEXT]) && $data[self::CSV_TEXT]) {
+                $bufferText[$data[self::CSV_FACTURE_ID]] .= $data[self::CSV_TEXT];
             }
 
             if($data[self::CSV_QUANTITE]*1 == 0) {
@@ -66,7 +77,7 @@ class FactureCsvImporter {
                 continue;
             }
 
-            $facture = $this->importFacture($lignes, $output);
+            $facture = $this->importFacture($lignes, $output, $bufferText);
 
             $i++;
 
@@ -81,12 +92,12 @@ class FactureCsvImporter {
             $lignes[] = $data;
         }
 
-        $this->importFacture($lignes, $output);
+        $this->importFacture($lignes, $output, $bufferText);
 
         $this->dm->flush();
     }
 
-    public function importFacture($lignes, $output) {
+    public function importFacture($lignes, $output, $bufferText) {
         if(!count($lignes)) {
 
             return;
@@ -111,6 +122,9 @@ class FactureCsvImporter {
             $factureLigne->setQuantite($ligne[self::CSV_QUANTITE]);
             $factureLigne->setPrixUnitaire($ligne[self::CSV_PRIX_UNITAIRE]);
             $factureLigne->setTauxTaxe($ligne[self::CSV_TAUX_TAXE]/100);
+            if(isset($bufferText[$ligne[self::CSV_FACTURE_ID]])) {
+                $factureLigne->setLibelle($factureLigne->getLibelle()." — ".$bufferText[$ligne[self::CSV_FACTURE_ID]]);
+            }
 
             $facture->addLigne($factureLigne);
         }
@@ -122,8 +136,15 @@ class FactureCsvImporter {
         }*/
 
         $facture->update();
-        $facture->updateRestantAPayer();
 
+        try {
+            $facture->getTva();
+            $facture->setMontantTaxe(round($facture->getMontantHT() * $facture->getTva(), 2));
+            $facture->setMontantTTC(round($facture->getMontantHT() + $facture->getMontantTaxe(), 2));
+        } catch(\Exception $e) {
+        }
+
+        $facture->updateRestantAPayer();
         $this->dm->persist($facture);
 
         return $facture;

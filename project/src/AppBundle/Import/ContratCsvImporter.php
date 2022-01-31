@@ -51,11 +51,12 @@ class ContratCsvImporter {
     const CSV_ADRESSE_CODE_POSTAL = 7;
     const CSV_ADRESSE_COMMUNE = 8;
     const CSV_PRESTATION = 9;
-    const CSV_PRIXHT = 10;
-    const CSV_PRIXHT_UNITAIRE = 11;
-    const CSV_TVA = 12;
-    const CSV_NB_PASSAGES = 13;
-    const CSV_PASSAGE_JANVIER = 14;
+    const CSV_PRESTATION_CONFIG = 10;
+    const CSV_PRIXHT = 11;
+    const CSV_PRIXHT_UNITAIRE = 12;
+    const CSV_TVA = 13;
+    const CSV_NB_PASSAGES = 14;
+    const CSV_PASSAGE_JANVIER = 15;
 
     public function __construct(DocumentManager $dm, ContratManager $cm, PassageManager $pm, EtablissementManager $em, SocieteManager $sm, CompteManager $um) {
         $this->dm = $dm;
@@ -162,8 +163,7 @@ class ContratCsvImporter {
 
     public function import($file, OutputInterface $output) {
         $csvFile = new CsvFile($file,1,true);
-        // $progress = new ProgressBar($output, 100);
-        // $progress->start();
+        $configuration = $this->dm->getRepository('AppBundle:Configuration')->findConfiguration();
 
         $societeMere = $this->dm->getRepository('AppBundle:Societe')->findOneByRaisonSociale("AHRB");
         $commercial = new Compte($societeMere);
@@ -216,6 +216,7 @@ class ContratCsvImporter {
             if(!$contrat->getPrixHt()) {
                 $contrat->setPrixHt($data[self::CSV_PRIXHT]*1);
             }
+            $contrat->setFrequencePaiement($societe->getFrequencePaiement());
             if(round($data[self::CSV_PRIXHT_UNITAIRE] * $data[self::CSV_NB_PASSAGES],2) != $data[self::CSV_PRIXHT]*1) {
                 $output->writeln(sprintf("Le prix unitaire et total ne concorde pas %s contre %s : contrat n°%s", $data[self::CSV_PRIXHT_UNITAIRE] * $data[self::CSV_NB_PASSAGES], $data[self::CSV_PRIXHT], $data[self::CSV_ID_CONTRAT]));
             }
@@ -225,17 +226,22 @@ class ContratCsvImporter {
             $contrat->setIdentifiantReprise($data[self::CSV_ID_CONTRAT]);
             $contrat->setNumeroArchive($data[self::CSV_ID_CONTRAT]);
             $contrat->setReconduit(false);
-            $contrat->setNomenclature(str_replace('#', "\n", $data[self::CSV_NOMENCLATURE]));
+            $contrat->setNomenclature($data[self::CSV_PRESTATION]."\n\n".str_replace('#', "\n", $data[self::CSV_NOMENCLATURE]));
             if($data[self::CSV_TVA] == 10) {
                 $contrat->setTvaReduite(true);
             }
             $contrat->setNbFactures((int) $data[self::CSV_NB_PASSAGES] * 1);
             $contrat->setFrequencePaiement(ContratManager::FREQUENCE_30J);
-            $prestation = new Prestation();
-            $prestation->setIdentifiant($data[self::CSV_PRESTATION]);
-            $prestation->setNom($data[self::CSV_PRESTATION]);
-            $prestation->setNbPassages((int) $data[self::CSV_NB_PASSAGES] * 1);
-            $contrat->addPrestation($prestation);
+
+            foreach(explode(',', $data[self::CSV_PRESTATION_CONFIG]) as $dataPrestation) {
+                $configPrestation = $configuration->getPrestationByIdentifiant($dataPrestation);
+                $prestation = new Prestation();
+                $prestation->setIdentifiant($configPrestation->getIdentifiant());
+                $prestation->setNom($configPrestation->getNom());
+                $prestation->setNomCourt($configPrestation->getNomCourt());
+                $prestation->setNbPassages((int) $data[self::CSV_NB_PASSAGES] * 1);
+                $contrat->addPrestation($prestation);
+            }
 
             $contrat->setNbPassages((int) $data[self::CSV_NB_PASSAGES] * 1);
             $contrat->setCommercial($commercial);

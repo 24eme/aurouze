@@ -207,6 +207,15 @@ class Configuration {
         return $this->provenances;
     }
 
+    public function getPrestationByIdentifiant($identifiant){
+      foreach ($this->getPrestations() as $prestation) {
+        if($identifiant == $prestation->getIdentifiant()){
+          return $prestation;
+        }
+      }
+      return null;
+    }
+
     public function getProduitByIdentifiant($identifiant){
       foreach ($this->getProduits() as $produit) {
         if($identifiant == $produit->getIdentifiant()){
