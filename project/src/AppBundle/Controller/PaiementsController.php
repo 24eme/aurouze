@@ -35,13 +35,15 @@ class PaiementsController extends Controller {
         return $this->render('paiements/index.html.twig', array('paiementsDocs' => $paiementsDocs, 'paiementsDocsPrelevement' => $paiementsDocsPrelevement, 'periode' => $periode));
     }
 
+
+
     /**
-     * @Route("/paiements/details/{type}/{date}", name="paiements_details")
+     * @Route("/paiements/details/{id}", name="paiements_details")
      */
     public function detailsAction(Request $request) {
         $type  = $request->get('type');
-        $date  = $request->get('date');
-        $paiements =  $this->get('paiements.manager')->getRepository()->findByDateAndType($date,$type);
+        $id = $request->get('id');
+        $paiements = $this->get('paiements.manager')->getRepository()->findById($id);
         return $this->render('paiements/details.html.twig', array('paiements' => $paiements,'type'=>$type));
     }
 
