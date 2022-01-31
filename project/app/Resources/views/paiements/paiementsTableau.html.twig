@@ -26,14 +26,14 @@
     </td>
     <td class="text-right">{{ reglement.montant | number_format(2, ',', ' ') }}&nbsp;€</td>
     <td class="text-center"><a href="{{ path('paiements_details',{ 'id': paiements.id ,'type' : regKey}) }}"><i class ="mdi mdi-remove-red-eye mdi-lg"></i></a></td>
-    <td class="text-center">
-    {% if(not paiements.isImprime) %}
-        <a class="btn btn-xs btn-warning btn" href="{{ path('paiements_modification', {'id': paiements.id })}}"><span class="glyphicon glyphicon-pencil"></span></a>
-    {% else %}
+    <td class="text-right">
+    {% if (paiements.isImprime) and regKey == "CHEQUE" %}
         <a class="btn btn-xs btn-default" href="{{ path('paiements_export_banque', {'id': paiements.id }) }}">
             <span class="glyphicon glyphicon-print"></span>&nbsp;{% if(paiements.isRemiseEspece) %}Espèce{% else %}{{ paiements.nbPaiementUniqueParMoyen }} chèq.{% endif %}
         </a>
     {% endif %}
+    <a class="btn btn-xs btn-warning btn" href="{{ path('paiements_modification', {'id': paiements.id })}}"><span class="glyphicon glyphicon-pencil"></span></a>
+
 
 
     </td>
