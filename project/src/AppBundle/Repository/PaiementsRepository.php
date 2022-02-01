@@ -59,7 +59,6 @@ class PaiementsRepository extends DocumentRepository {
         return $query->execute();
     }
 
-
     public function findByDatePaiementsDebutFin(\DateTime $dateDebut,\DateTime $dateFin) {
 
         $q = $this->createQueryBuilder();

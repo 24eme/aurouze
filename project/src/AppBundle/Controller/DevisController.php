@@ -91,7 +91,9 @@ class DevisController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
 
             $devis->update();
-
+            if($this->container->getParameter("commercial_seine_et_marne")){
+              $devis->setZone($this->container->getParameter("commercial_seine_et_marne"));
+            }
             $dm->persist($devis);
             $dm->flush();
 
@@ -148,6 +150,9 @@ class DevisController extends Controller
 
         if ($form->isSubmitted() && $form->isValid()) {
             $devis->update();
+            if($this->container->getParameter("commercial_seine_et_marne")){
+              $devis->setZone($this->container->getParameter("commercial_seine_et_marne"));
+            }
             $dm->persist($devis);
             $dm->flush();
 

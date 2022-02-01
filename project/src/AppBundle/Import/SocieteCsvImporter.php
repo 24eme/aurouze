@@ -18,6 +18,7 @@ use AppBundle\Document\Adresse as Adresse;
 use Doctrine\ODM\MongoDB\DocumentManager as DocumentManager;
 use Symfony\Component\Console\Output\OutputInterface;
 use AppBundle\Manager\EtablissementManager as EtablissementManager;
+use AppBundle\Manager\ContratManager;
 use AppBundle\Document\ContactCoordonnee;
 
 class SocieteCsvImporter extends CsvFile {
@@ -100,6 +101,7 @@ class SocieteCsvImporter extends CsvFile {
         $societe->setRaisonSociale($raisonSociale);
         $societe->setCodeComptable(trim($ligne[self::CSV_CODE_COMPTABLE]));
         $societe->setSiret(trim($ligne[self::CSV_SIRET]));
+        $societe->setFrequencePaiement(ContratManager::FREQUENCE_30J);
         $societe->setCommentaire(null);
         $ligne[self::CSV_COMMENTAIRE] = str_replace('"', "", $ligne[self::CSV_COMMENTAIRE]);
         $ligne[self::CSV_ADRESSE_COMMENTAIRE] = str_replace('"', "", $ligne[self::CSV_COMMENTAIRE]);
@@ -110,8 +112,16 @@ class SocieteCsvImporter extends CsvFile {
             $societe->setCommentaire($ligne[self::CSV_COMMENTAIRE]."\n");
         }
         if(trim($ligne[self::CSV_ADRESSE_COMMENTAIRE]) && $ligne[self::CSV_COMMENTAIRE] != $ligne[self::CSV_ADRESSE_COMMENTAIRE]) {
-            $societe->setCommentaire($societe->getCommentaire()."\n".$ligne[self::CSV_ADRESSE_COMMENTAIRE]);
+            $societe->setCommentaire($societe->getCommentaire()."\n".$ligne[self::CSV_ADRESSE_COMMENTAIRE]."\n");
         }
+
+        if($ligne[self::CSV_NUM_ACCISES]) {
+            $societe->setCommentaire($societe->getCommentaire()."N°TVA Intracommunautaire : ".$ligne[self::CSV_NUM_ACCISES]."\n");
+        }
+        if($ligne[self::CSV_CODE_APE]) {
+            $societe->setCommentaire($societe->getCommentaire()."Code APE : ".$ligne[self::CSV_CODE_APE]."\n");
+        }
+
         $societe->setSousTraitant(boolval($ligne[self::CSV_SOUS_TRAITANT]));
 
         $adresse = new Adresse();
@@ -124,19 +134,29 @@ class SocieteCsvImporter extends CsvFile {
 
         $societe->setAdresse($adresse);
 
+        $telephone1 = null;
+        $telephone2 = null;
+        $telephones = explode("/", trim($ligne[self::CSV_TEL_FIXE]));
+        if(isset($telephones[0])) {
+            $telephone1 = trim($telephones[0]);
+        }
+        if(isset($telephones[1])) {
+            $telephone2 = trim($telephones[1]);
+        }
+
         $contactCoordonnee = new ContactCoordonnee();
-        $contactCoordonnee->setTelephoneFixe(trim($ligne[self::CSV_TEL_FIXE]));
-        $contactCoordonnee->setTelephoneMobile(trim($ligne[self::CSV_TEL_MOBILE]));
+        $contactCoordonnee->setTelephoneFixe($telephone1);
+        $contactCoordonnee->setTelephoneMobile($telephone2);
         $contactCoordonnee->setFax(trim($ligne[self::CSV_FAX]));
         $contactCoordonnee->setSiteInternet(trim($ligne[self::CSV_SITE_WEB]));
         $contactCoordonnee->setEmail(trim($ligne[self::CSV_EMAIL]));
 
-
-         $societe->setContactCoordonnee($contactCoordonnee);
-        if ($ligne[self::CSV_TYPE_SOCIETE] == "") {
+        $societe->setContactCoordonnee($contactCoordonnee);
+        if (!$ligne[self::CSV_TYPE_SOCIETE] && preg_match('/MAIRIE/', strtoupper($ligne[self::CSV_RAISON_SOCIALE]))) {
+            $societe->setType(EtablissementManager::TYPE_ETB_MAIRIE);
+        } elseif (!$ligne[self::CSV_TYPE_SOCIETE]) {
             $societe->setType(EtablissementManager::TYPE_ETB_NON_SPECIFIE);
         } else {
-
             $types_etablissements = EtablissementManager::$type_libelles;
             $types_etb_keys = array_keys($types_etablissements);
 

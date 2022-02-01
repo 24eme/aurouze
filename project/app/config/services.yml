@@ -35,7 +35,7 @@ services:
 
     paiements.importer:
         class: AppBundle\Import\PaiementsCsvImporter
-        arguments: [@doctrine_mongodb.odm.default_document_manager, @paiements.manager, @facture.manager]
+        arguments: [@doctrine_mongodb.odm.default_document_manager, @paiements.manager, @facture.manager, @societe.manager]
 
     contrat.manager:
         class: AppBundle\Manager\ContratManager

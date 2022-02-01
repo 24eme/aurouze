@@ -61,13 +61,12 @@ class DevisRepository extends DocumentRepository {
 
       }
 
-      $regex = $this->getRegexForSeineEtMarne();
       if ($secteur == EtablissementManager::SECTEUR_PARIS) {
-         $q->addAnd($q->expr()->field('etablissementInfos.adresse.codePostal')->operator('$not', new \MongoRegex($regex)));
+        $q->field('zone')->notEqual("77");
       } elseif($secteur == EtablissementManager::SECTEUR_SEINE_ET_MARNE) {
-         $q->addAnd($q->expr()->field('etablissementInfos.adresse.codePostal')->equals(new \MongoRegex($regex)));
+         $q->field('zone')->equals("77");
       }
-      $query = $q->sort('etablissementInfos.adresse.codePostal', 'asc')->getQuery();
+      $query = $q->sort('zone', 'asc')->getQuery();
 
       return $query->execute();
   }
@@ -91,19 +90,5 @@ class DevisRepository extends DocumentRepository {
           }
       }
       return $resultSet;
-  }
-
-  private function getRegexForSeineEtMarne(){
-    $dpts = EtablissementManager::$secteurs_departements[EtablissementManager::SECTEUR_SEINE_ET_MARNE];
-    $regex = '';
-    $dptReg = '';
-    foreach ($dpts as $i => $dpt) {
-        $dptReg .= $dpt;
-        if ($i < count($dpts) - 1) {
-            $dptReg .= '|';
-        }
-    }
-    $regex .= '/^(' . $dptReg . ')/i';
-    return $regex;
   }
 }
