@@ -1,5 +1,5 @@
 <tr {% if document.pdfNonEnvoye is defined and document.pdfNonEnvoye is same as(false) %}class="success"{% endif %}>
-  <td>{{ document.dateEmission | localizeddate('medium', 'none', null, null, 'd MMMM yyyy') }}</td>
+  <td>{{ document.datePrevision | localizeddate('medium', 'none', null, null, 'd MMMM yyyy') }}</td>
   <td>
     <span class="glyphicon glyphicon-file"></span>
     <a href="{{ path('facturable_pdf', {'document': document.id, 'key': document.getSecretKey()}) }}">
