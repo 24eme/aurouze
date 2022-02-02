@@ -225,3 +225,14 @@
                           </div>
                         </div>
 {% endblock %}
+{% block javascripts %}
+<script type="text/javascript">
+  function toggleCheck(checkname) {
+      const state = this.checked;
+      const checkboxes = document.getElementsByName(checkname);
+      for (const checkbox of checkboxes) {
+          checkbox.checked = state;
+      }
+  }
+</script>
+{% endblock %}
