@@ -868,6 +868,11 @@
               if(!filtre){
                 $('div#liste_passage div.panel').each(function(){
                     var hasMarker = markers[$(this).attr('id')] != undefined ;
+                    const hasGeo = $(this).hasClass('no-geojson') == false
+                    if (! hasGeo) {
+                        $(this).show()
+                        return true
+                    }
                     if(!hasMarker){
                       $(this).hide();
                     }

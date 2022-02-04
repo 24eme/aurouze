@@ -206,8 +206,12 @@ class FactureController extends Controller
 
         $mouvements = $fm->getMouvementsBySociete($societe);
 
+        $afacturer = $request->get('afacturer', array());
 
         foreach($mouvements as $mouvement) {
+            if (!in_array($mouvement->getIdentifiant(), $afacturer)) {
+                continue;
+            }
             $facture = $fm->create($societe, array($mouvement), $date);
             $facture->setDateFacturation($date);
             $contrat =  $facture->getContrat();
