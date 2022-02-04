@@ -1054,8 +1054,13 @@ class FactureController extends Controller
         $fromEmail = $parameters['relance']['coordonnees']['email'];
         $fromName = $parameters['relance']['coordonnees']['nom'];
         $replyEmail = $parameters['relance']['coordonnees']['replyemail'];
-        $subject = $parameters['relance']['email_subject'];
-        $body = $parameters['relance']['email_message'];
+        $subject = $parameters['relance']['email_subject'].$facture->getNumeroFacture();
+
+        $body = $parameters['relance']["email_entete"]
+        .date('d-m-Y', strtotime(' + 7 days'))
+        .$parameters['relance']['email_debut_message']
+        .$facture->getDateFacturation()->format('d-m-Y')
+        .$parameters['relance']['email_fin_message'];
 
         if($facture->getSociete()->getContactCoordonnee()->getEmailFacturation()){
           $toEmail = $facture->getSociete()->getContactCoordonnee()->getEmailFacturation();
@@ -1075,10 +1080,10 @@ class FactureController extends Controller
             ->setFrom(array($fromEmail => $fromName))
             ->setTo("test@dns.fr") //$toEmail.
             ->setReplyTo($replyEmail)
-            ->setBody($body,'text/plain');
+            ->setBody($body,'text/html');
 
         $pdf = $this->relancePdfAction($request, $facture,1);
-        $namePdf = "nom_pdf";
+        $namePdf = "PDF-RELANCE-1-FACTURE-".$facture->getNumeroFacture();
         $attachment = \Swift_Attachment::newInstance($pdf,$namePdf,'application/pdf');
         $message->attach($attachment);
 

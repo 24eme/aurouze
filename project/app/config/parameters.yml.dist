@@ -98,4 +98,6 @@ parameters:
             nom: 'Nom du mail'
             replyemail: "emailReplyRelance@dns.fr"
         email_subject: ""
-        email_message: ""
+        email_entete: ""
+        email_debut_message: ""
+        email_fin_message: ""
