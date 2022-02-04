@@ -97,3 +97,5 @@ parameters:
             email: "emailRelance@dns.fr"
             nom: 'Nom du mail'
             replyemail: "emailReplyRelance@dns.fr"
+        email_subject: ""
+        email_message: ""

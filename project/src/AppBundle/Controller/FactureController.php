@@ -1047,7 +1047,6 @@ class FactureController extends Controller
        */
       public function relanceEmailAction(Request $request, Facture $facture){
 
-        $subject = "RELANCE TEST";
         $fm = $this->get('facture.manager');
 
         $parameters = $fm->getParameters();
@@ -1055,7 +1054,8 @@ class FactureController extends Controller
         $fromEmail = $parameters['relance']['coordonnees']['email'];
         $fromName = $parameters['relance']['coordonnees']['nom'];
         $replyEmail = $parameters['relance']['coordonnees']['replyemail'];
-
+        $subject = $parameters['relance']['email_subject'];
+        $body = $parameters['relance']['email_message'];
 
         if($facture->getSociete()->getContactCoordonnee()->getEmailFacturation()){
           $toEmail = $facture->getSociete()->getContactCoordonnee()->getEmailFacturation();
@@ -1069,8 +1069,6 @@ class FactureController extends Controller
           $referer = $request->headers->get('referer');
           return $this->redirect($referer);
         }
-
-        $body = "C'EST UN TEST";
 
         $message = \Swift_Message::newInstance()
             ->setSubject($subject)
