@@ -235,6 +235,15 @@
                  }
             });
         });
+        $('.relance_lien_envoyer_mail').on('click', function() {
+            if(!confirm('Êtes-vous sûrs de vouloir envoyer le mail?')) {
+                return false;
+            }
+            $.get($(this).attr('href'));
+            $(this).parents('tr').css("background-color", "#d9edf7");
+            $(this).remove();
+            return false;
+        });
     }
 
     $.initSomme = function () {

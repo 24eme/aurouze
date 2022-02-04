@@ -92,3 +92,8 @@ parameters:
         creditorName: ""
         creditorAccountIBAN: ""
         creditorAgentBIC: ""
+    relance:
+        coordonnees:
+            email: "emailRelance@dns.fr"
+            nom: 'Nom du mail'
+            replyemail: "emailReplyRelance@dns.fr"
