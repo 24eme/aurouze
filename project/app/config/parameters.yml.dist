@@ -27,7 +27,7 @@ parameters:
     knp_snappy_pdfbinary: xvfb-run wkhtmltopdf
     knp_snappy_imagebinary: xvfb-run wkhtmltoimage
     email_subject: 'Sujet Facture n°'
-    email_message: |-
+    email_footer: |-
 
     banque:
         creditorId: 'XXXXXXXXXXX'
@@ -97,8 +97,3 @@ parameters:
             email: "emailRelance@dns.fr"
             nom: 'Nom du mail'
             replyemail: "emailReplyRelance@dns.fr"
-        email_subject: ""
-        email_entete: ""
-        email_debut_message: ""
-        email_milieu_message: ""
-        email_fin_message: ""

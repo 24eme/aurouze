@@ -1054,15 +1054,9 @@ class FactureController extends Controller
         $fromEmail = $parameters['relance']['coordonnees']['email'];
         $fromName = $parameters['relance']['coordonnees']['nom'];
         $replyEmail = $parameters['relance']['coordonnees']['replyemail'];
-        $subject = $parameters['relance']['email_subject'].$facture->getNumeroFacture();
+        $subject = "1ERE RELANCE concernant la facture n° ".$facture->getNumeroFacture();
 
-        $body = $parameters['relance']["email_entete"]
-        .date('d/m/Y', strtotime(' + 7 days'))
-        .$parameters['relance']['email_debut_message']
-        .$facture->getDateFacturation()->format('d/m/Y')." "
-        .$parameters['relance']['email_milieu_message']
-        ." ".$facture->getMontantTTC()." € "
-        .$parameters['relance']['email_fin_message'];
+        $body = $this->render('facture/mailPremiereRelance.html.twig', ['facture' => $facture, 'dateLimite' => date('d/m/Y', strtotime(' + 7 days'))])->getContent();
 
         if($facture->getSociete()->getContactCoordonnee()->getEmailFacturation()){
           $toEmail = $facture->getSociete()->getContactCoordonnee()->getEmailFacturation();
@@ -1082,7 +1076,7 @@ class FactureController extends Controller
             ->setFrom(array($fromEmail => $fromName))
             ->setTo("test@dns.fr") //$toEmail.
             ->setReplyTo($replyEmail)
-            ->setBody($body,'text/html');
+            ->setBody($body,'text/plain');
 
         $pdf = $this->relancePdfAction($request, $facture,1);
         $namePdf = "PDF-RELANCE-1-FACTURE-".$facture->getNumeroFacture();
