@@ -1057,9 +1057,11 @@ class FactureController extends Controller
         $subject = $parameters['relance']['email_subject'].$facture->getNumeroFacture();
 
         $body = $parameters['relance']["email_entete"]
-        .date('d-m-Y', strtotime(' + 7 days'))
+        .date('d/m/Y', strtotime(' + 7 days'))
         .$parameters['relance']['email_debut_message']
-        .$facture->getDateFacturation()->format('d-m-Y')
+        .$facture->getDateFacturation()->format('d/m/Y')." "
+        .$parameters['relance']['email_milieu_message']
+        ." ".$facture->getMontantTTC()." € "
         .$parameters['relance']['email_fin_message'];
 
         if($facture->getSociete()->getContactCoordonnee()->getEmailFacturation()){

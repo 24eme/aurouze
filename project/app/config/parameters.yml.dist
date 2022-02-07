@@ -100,4 +100,5 @@ parameters:
         email_subject: ""
         email_entete: ""
         email_debut_message: ""
+        email_milieu_message: ""
         email_fin_message: ""
