@@ -80,7 +80,7 @@
                 </button>
                 <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="actionButton">
                     {% if (societe.contactCoordonnee.emailFacturation or societe.contactCoordonnee.email) %}
-                      <li><a href="{{ path('email_facture', {'id': facture.id}) }}" class="envoi_mail_lien">Envoyer par mail<span> <i class="glyphicon glyphicon-envelope"></i></span></a></li>
+                      <li><a href="{{ path('email_facture', {'id': facture.id}) }}">Envoyer par mail<span> <i class="glyphicon glyphicon-envelope"></i></span></a></li>
                     {% endif %}
                     {% if facture.isDevis %}
                         <li><a href="{{ path('devis_creation', { 'societe': societe.id, 'id': facture.id })}}">A déplacer Modifier le devis ???</a></li>
