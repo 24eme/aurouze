@@ -111,6 +111,7 @@
               <th class="col-xs-2">Commentaire</th>
               <th class="col-xs-1">Relance(s)</th>
               <th class="col-xs-1"></th>
+							<th class="col-xs-1"></th>
             </tr>
           </thead>
           <tbody>
@@ -185,6 +186,11 @@
 								</div>
 								{% if factureEnRetard.inPrelevement %}<br/><span class="label label-warning">Prélèvement bancaire</span>{% endif %}
               </td>
+							<td>
+								{% if not factureEnRetard.has1ereRelance and (factureEnRetard.societe.contactCoordonnee.emailFacturation or factureEnRetard.societe.contactCoordonnee.email)  %}
+								<a href="{{ path('relance_email', {'id': factureEnRetard.id}) }}" class="relance_lien_envoyer_mail"><i class="mdi mdi-send mdi-lg" title="Envoyer mail 1ère relance"></i></a>
+								{% endif %}
+							</td>
             </tr>
             {% endfor %}
           </tbody>

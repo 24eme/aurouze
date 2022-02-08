@@ -1,0 +1,15 @@
+Bonjour,
+
+Je me permets de vous solliciter par mail, car sauf erreur de notre part, la facture n°{{ facture.getNumeroFacture()}} d'un montant de {{ facture.getMontantTTC() }} € du {{ facture.getDateFacturation().format('d/m/Y') }} reste impayée dans nos comptes à ce jour.
+
+Je vous remercie de nous faire parvenir votre règlement de {{ facture.getMontantTTC() }} € avant le {{ dateLimite }}.
+
+Ce règlement peut être effectué par virement (IBAN indiqué sur la facture) ou par chèque à l’adresse indiquée sur la facture. Merci de me prévenir par retour de ce mail de la date de votre régularisation, afin que je puisse en informer la Direction.
+
+Vous trouverez le duplicata de cette facture en pièce jointe. Vous pouvez également la télécharger en suivant ce lien : <{{ app.request.schemeAndHttpHost }}{{ path('facturable_pdf', {'document': facture.id ,'key': facture.getSecretKey()})}}>
+
+En vous remerciant par avance de votre compréhension.
+
+Dans l’attente de votre retour et de votre prompt règlement, je vous souhaite une bonne journée.
+
+{{ email_footer }}
