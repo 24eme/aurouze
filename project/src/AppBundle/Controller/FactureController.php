@@ -1056,7 +1056,7 @@ class FactureController extends Controller
         $replyEmail = $parameters['relance']['coordonnees']['replyemail'];
         $subject = "1ERE RELANCE concernant la facture n° ".$facture->getNumeroFacture();
 
-        $body = $this->render('facture/mailPremiereRelance.html.twig', ['facture' => $facture, 'dateLimite' => date('d/m/Y', strtotime(' + 7 days'))])->getContent();
+        $body = $this->render('facture/mailPremiereRelance.html.twig', ['facture' => $facture, 'dateLimite' => date('d/m/Y', strtotime(' + 10 days'))])->getContent();
 
         if($facture->getSociete()->getContactCoordonnee()->getEmailFacturation()){
           $toEmail = $facture->getSociete()->getContactCoordonnee()->getEmailFacturation();
