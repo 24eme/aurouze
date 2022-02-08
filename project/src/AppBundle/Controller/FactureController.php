@@ -1051,9 +1051,9 @@ class FactureController extends Controller
 
         $parameters = $fm->getParameters();
 
-        $fromEmail = $parameters['relance']['coordonnees']['email'];
-        $fromName = $parameters['relance']['coordonnees']['nom'];
-        $replyEmail = $parameters['relance']['coordonnees']['replyemail'];
+        $fromEmail = $parameters['coordonnees']['email'];
+        $fromName = $parameters['coordonnees']['nom'];
+        $replyEmail = $parameters['coordonnees']['replyemail'];
         $subject = "1ERE RELANCE concernant la facture n° ".$facture->getNumeroFacture();
 
         $body = $this->render('facture/mailPremiereRelance.html.twig', ['facture' => $facture, 'dateLimite' => date('d/m/Y', strtotime(' + 10 days'))])->getContent();
@@ -1104,5 +1104,58 @@ class FactureController extends Controller
 
         return $this->redirect($referer);
       }
+
+        /**
+        * @Route("/passage/email_facture/{id}", name="email_facture")
+        * @ParamConverter("Facture", class="AppBundle:Facture")
+        */
+        public function factureEmailAction(Request $request, Facture $facture){
+          $fm = $this->get('facture.manager');
+          $parameters = $fm->getParameters();
+
+          $fromEmail = $parameters['coordonnees']['email'];
+          $fromName = $parameters['coordonnees']['nom'];
+          $replyEmail = $parameters['coordonnees']['replyemail'];
+          $prefix_subject =  $parameters['coordonnees']['prefix_objet'];
+
+          $subject = $prefix_subject." Facture n°".$facture->getNumeroFacture();
+          $body = $this->render('facture/mailFacture.html.twig', ['facture' => $facture])->getContent();
+          if($facture->getSociete()->getContactCoordonnee()->getEmailFacturation()){
+            $toEmail = $facture->getSociete()->getContactCoordonnee()->getEmailFacturation();
+          }
+          elseif($facture->getSociete()->getContactCoordonnee()->getEmail()) {
+            $toEmail = $facture->getSociete()->getContactCoordonnee()->getEmail();
+          }
+          else{
+            var_dump('NO mailer config');
+            $request->getSession()->getFlashBag()->add('notice', 'success');
+            $referer = $request->headers->get('referer');
+            return $this->redirect($referer);
+          }
+          $message = \Swift_Message::newInstance()
+              ->setSubject($subject)
+              ->setFrom(array($fromEmail => $fromName))
+              ->setTo("test@dns.fr") //$toEmail.
+              ->setReplyTo($replyEmail)
+              ->setBody($body,'text/plain');
+
+          $pdf = $this->createPdfFacture($request,$facture->getId());
+          $namePdf = "FACTURE-".$facture->getNumeroFacture();
+          $attachment = \Swift_Attachment::newInstance($pdf,$namePdf,'application/pdf');
+          $message->attach($attachment);
+
+          try {
+              $this->get('mailer')->send($message);
+          }
+          catch(Exception $e) {
+              var_dump('NO mailer config');
+          }
+          $request->getSession()->getFlashBag()->add('notice', 'success');
+          $referer = $request->headers->get('referer');
+
+          return $this->redirect($referer);
+        }
+
+
 
 }
