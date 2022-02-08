@@ -1078,6 +1078,12 @@ class FactureController extends Controller
             ->setReplyTo($replyEmail)
             ->setBody($body,'text/plain');
 
+
+            $pdf = $this->createPdfFacture($request,$facture->getId());
+            $namePdf = "FACTURE-".$facture->getNumeroFacture();
+            $attachment = \Swift_Attachment::newInstance($pdf,$namePdf,'application/pdf');
+            $message->attach($attachment);
+
         try {
             $this->get('mailer')->send($message);
             $dm = $this->get('doctrine_mongodb')->getManager();
