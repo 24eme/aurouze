@@ -95,5 +95,4 @@ parameters:
     coordonnees:
         email: "emailRelance@dns.fr"
         nom: 'Nom du mail'
-        replyemail: "emailReplyRelance@dns.fr"
         prefix_objet: "Nom"

@@ -1053,7 +1053,6 @@ class FactureController extends Controller
 
         $fromEmail = $parameters['coordonnees']['email'];
         $fromName = $parameters['coordonnees']['nom'];
-        $replyEmail = $parameters['coordonnees']['replyemail'];
         $subject = "1ERE RELANCE concernant la facture n° ".$facture->getNumeroFacture();
 
         $body = $this->render('facture/mailPremiereRelance.html.twig', ['facture' => $facture, 'dateLimite' => date('d/m/Y', strtotime(' + 10 days'))])->getContent();
@@ -1074,8 +1073,7 @@ class FactureController extends Controller
         $message = \Swift_Message::newInstance()
             ->setSubject($subject)
             ->setFrom(array($fromEmail => $fromName))
-            ->setTo("test@dns.fr") //$toEmail.
-            ->setReplyTo($replyEmail)
+            ->setTo($toEmail)
             ->setBody($body,'text/plain');
 
 
@@ -1115,7 +1113,6 @@ class FactureController extends Controller
 
           $fromEmail = $parameters['coordonnees']['email'];
           $fromName = $parameters['coordonnees']['nom'];
-          $replyEmail = $parameters['coordonnees']['replyemail'];
           $prefix_subject =  $parameters['coordonnees']['prefix_objet'];
 
           $subject = $prefix_subject." Facture n°".$facture->getNumeroFacture();
@@ -1135,8 +1132,7 @@ class FactureController extends Controller
           $message = \Swift_Message::newInstance()
               ->setSubject($subject)
               ->setFrom(array($fromEmail => $fromName))
-              ->setTo("test@dns.fr") //$toEmail.
-              ->setReplyTo($replyEmail)
+              ->setTo($toEmail)
               ->setBody($body,'text/plain');
 
           $pdf = $this->createPdfFacture($request,$facture->getId());
