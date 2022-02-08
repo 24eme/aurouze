@@ -48,6 +48,7 @@
         $.initAutocompleteAdresse();
         $.initMapForAdresse();
         $.initHighLight();
+        $.initFacture();
     });
 
     $.initClickInputAddon = function(){
@@ -244,6 +245,14 @@
             $(this).remove();
             return false;
         });
+    }
+
+    $.initFacture = function(){
+      $('.mail_facture').on('click',function(){
+        if(!confirm('Êtes-vous sûrs de vouloir envoyer le mail?')) {
+            return false;
+        }
+      });
     }
 
     $.initSomme = function () {
