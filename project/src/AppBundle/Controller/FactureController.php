@@ -1075,8 +1075,8 @@ class FactureController extends Controller
             ->setFrom(array($fromEmail => $fromName))
             ->setTo($toEmail)
             ->setBcc($fromEmail)
-            ->setBody($body,'text/plain');
-
+            ->setBody($body,'text/plain')
+            ->setReadReceiptTo($fromEmail);
 
             $pdf = $this->createPdfFacture($request,$facture->getId());
             $namePdf = "FACTURE-".$facture->getNumeroFacture();
@@ -1135,7 +1135,8 @@ class FactureController extends Controller
               ->setFrom(array($fromEmail => $fromName))
               ->setTo($toEmail)
               ->setBcc($fromEmail)
-              ->setBody($body,'text/plain');
+              ->setBody($body,'text/plain')
+              ->setReadReceiptTo($fromEmail);
 
           $pdf = $this->createPdfFacture($request,$facture->getId());
           $namePdf = "FACTURE-".$facture->getNumeroFacture();
