@@ -1074,7 +1074,7 @@ class FactureController extends Controller
             ->setSubject($subject)
             ->setFrom(array($fromEmail => $fromName))
             ->setTo($toEmail)
-            // ->setBcc($fromEmail)
+            ->setBcc($fromEmail)
             ->setBody($body,'text/plain')
             ->setReadReceiptTo($fromEmail);
 
@@ -1134,7 +1134,7 @@ class FactureController extends Controller
               ->setSubject($subject)
               ->setFrom(array($fromEmail => $fromName))
               ->setTo($toEmail)
-              // ->setBcc($fromEmail)
+              ->setBcc($fromEmail)
               ->setBody($body,'text/plain')
               ->setReadReceiptTo($fromEmail);
 
