@@ -33,6 +33,8 @@ parameters:
         creditorName: 'ETABLISSEMENTS XXXX XXXXXXXXX'
         creditorAccountIBAN: 'FRXXXXXXXXXXXXXXXXXXXXXXX'
         creditorAgentBIC: 'XXXXXXX'
+        emailIBAN: 'FRXXXXXXXXXXXXXXXXXXXXXXX'
+        emailBIC: 'XXXXXXX'
 
     application:
         name: ""
