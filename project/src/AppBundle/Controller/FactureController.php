@@ -1053,7 +1053,7 @@ class FactureController extends Controller
 
         $fromEmail = $parameters['coordonnees']['email'];
         $fromName = $parameters['coordonnees']['nom'];
-        $subject = "1ERE RELANCE concernant la facture n° ".$facture->getNumeroFacture();
+        $subject = "FACTURE NON PAYE ( FACTURE n°".$facture->getNumeroFacture()." de ".$facture->getMontantTTC()." € )";
 
         $body = $this->render('facture/mailPremiereRelance.html.twig', ['facture' => $facture, 'dateLimite' => date('d/m/Y', strtotime(' + 10 days'))])->getContent();
 
@@ -1074,7 +1074,6 @@ class FactureController extends Controller
             ->setSubject($subject)
             ->setFrom(array($fromEmail => $fromName))
             ->setTo($toEmail)
-            ->setBcc($fromEmail)
             ->setBody($body,'text/plain')
             ->setReadReceiptTo($fromEmail);
 
@@ -1134,7 +1133,6 @@ class FactureController extends Controller
               ->setSubject($subject)
               ->setFrom(array($fromEmail => $fromName))
               ->setTo($toEmail)
-              ->setBcc($fromEmail)
               ->setBody($body,'text/plain')
               ->setReadReceiptTo($fromEmail);
 
