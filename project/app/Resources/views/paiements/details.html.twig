@@ -32,10 +32,13 @@
   </span>
   <h4>
     {% if paiement.prelevement %}
-      <span class="label {% if not paiement.isAllSaisis() %}label-warning{% else %}label-default{% endif %}">
+    <p class="text-center">
+      <span class="label {% if not paiement.isAllSaisis() %}label-warning{% else %}label-default{% endif %} pull-left">
             {% if not paiement.isAllSaisis() %}<span class="glyphicon glyphicon-warning-sign"></span>&nbsp;{% endif %}
           {{ paiement.getNbPaiementsSaisis() }}/{{ paiement.paiement | length }} facture{% if paiement.paiement | length > 1 %}s{% endif %} saisie{% if paiement.paiement | length > 1 %}s{% endif %}
       </span>
+      <a href="{{ path('paiements_prelevement_remise_fichier',{ id : paiement.id })}}" class="btn btn-default btn-md"><strong>Fichier à transmettre à la banque</strong></a>
+      </p>
     {% endif %}
     <strong class="pull-right"> Total = {{ paiement.getMontantTotalByMoyenPaiement(type) | number_format(2, ',', ' ')}}&nbsp;€</strong><br>
   </h4>
