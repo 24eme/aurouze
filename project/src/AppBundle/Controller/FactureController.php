@@ -174,7 +174,6 @@ class FactureController extends Controller
      */
     public function societeAction(Request $request, Societe $societe) {
         $fm = $this->get('facture.manager');
-        $facturesRetard = $fm->getRepository()->findRetardDePaiementBySociete($societe,30);
 
         $formSociete = $this->createForm(SocieteChoiceType::class, array('societe' => $societe), array(
             'action' => $this->generateUrl('societe'),
