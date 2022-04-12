@@ -149,6 +149,11 @@ class FactureController extends Controller
             $fm->getRepository()->getClassMetadata()->idGenerator->generateNumeroFacture($dm, $facture);
         }
 
+        if ($origine = $facture->getOrigineAvoir()) {
+            $origine->setAvoirObject($facture);
+            $origine->updateMontantPaye();
+        }
+
         $dm->flush();
 
         return $this->redirectToRoute('facture_societe', array('id' => $societe->getId()));
@@ -174,7 +179,6 @@ class FactureController extends Controller
      */
     public function societeAction(Request $request, Societe $societe) {
         $fm = $this->get('facture.manager');
-        $facturesRetard = $fm->getRepository()->findRetardDePaiementBySociete($societe,30);
 
         $formSociete = $this->createForm(SocieteChoiceType::class, array('societe' => $societe), array(
             'action' => $this->generateUrl('societe'),
@@ -287,6 +291,8 @@ class FactureController extends Controller
       $dm->flush();
 
       $facture->setAvoir($avoir->getNumeroFacture());
+      $facture->setAvoirObject($avoir);
+      $facture->ajoutMontantPaye($avoir->getMontantTTC() * -1);
       $dm->persist($facture);
       $devis = $this->get('devis.manager')->getRepository()->findOneByIdentifiantFacture($factureId);
       if($devis){

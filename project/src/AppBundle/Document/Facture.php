@@ -126,6 +126,11 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
      */
     protected $origineAvoir;
 
+     /**
+     * @MongoDB\ReferenceOne(targetDocument="Facture", inversedBy="avoirs", simple=true)
+     */
+    protected $avoirObject;
+
     /**
      * @MongoDB\ReferenceMany(targetDocument="Paiements", mappedBy="paiement.facture", simple=true, repositoryMethod="findPaiementsByFacture")
      */
@@ -479,6 +484,29 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
      */
     public function getOrigineAvoir() {
     	return $this->origineAvoir;
+    }
+
+
+
+    /**
+     * Set AvoirObject
+     *
+     * @param AppBundle\Document\Facture $facture
+     * @return self
+     */
+    public function setAvoirObject(\AppBundle\Document\Facture $facture) {
+    	$this->avoirObject = $facture;
+
+    	return $this;
+    }
+
+    /**
+     * Get AvoirObject
+     *
+     * @return AppBundle\Document\Facture $facture
+     */
+    public function getAvoirObject() {
+    	return $this->avoirObject;
     }
 
     /**
@@ -843,7 +871,8 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
     }
 
     public function updateMontantPaye($output = null) {
-        $this->setMontantPaye(0.0);
+        $montantAvoir = ($this->getAvoirObject())? ($this->getAvoirObject()->getMontantTTC() * -1) : 0;
+        $this->setMontantPaye($montantAvoir);
         foreach ($this->getPaiements() as $paiements) {
             foreach ($paiements->getPaiement() as $paiement) {
             	if ($p = $paiement->getFacture()) {

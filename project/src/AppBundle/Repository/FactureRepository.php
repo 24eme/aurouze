@@ -136,7 +136,6 @@ class FactureRepository extends DocumentRepository {
       $q->field('numeroFacture')->notEqual(null);
       $q->field('cloture')->equals(false);
       $q->field('montantTTC')->gt(0.0);
-      $q->field('avoir')->equals(null);
       if(!is_null($nbRelance)){
         if($nbRelance > 2){
           $q->field('nbRelance')->gte($nbRelance);
