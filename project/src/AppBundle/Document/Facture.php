@@ -871,7 +871,8 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
     }
 
     public function updateMontantPaye($output = null) {
-        $this->setMontantPaye(0.0);
+        $montantAvoir = ($this->getAvoirObject())? ($this->getAvoirObject()->getMontantTTC() * -1) : 0;
+        $this->setMontantPaye($montantAvoir);
         foreach ($this->getPaiements() as $paiements) {
             foreach ($paiements->getPaiement() as $paiement) {
             	if ($p = $paiement->getFacture()) {
