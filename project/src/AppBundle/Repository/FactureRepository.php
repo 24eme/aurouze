@@ -52,7 +52,7 @@ class FactureRepository extends DocumentRepository {
                         ->addOr($q->expr()->field('numeroFacture')->equals(new \MongoRegex('/.*' . $term . '.*/i')));
             }
             if($filter && !$withCloture){
-              $q->field('avoir')->equals(null);
+                $q->field('cloture')->notEqual(1);
             }
             $factures = $q->limit(1000)->getQuery()->execute();
 
