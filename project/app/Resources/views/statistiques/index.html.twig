@@ -25,6 +25,12 @@
 	      	{% endfor %}
 	    </div>
     </div>
+    <h1>Exports de données</h1>
+    <div class="row">
+      <div class="col-xs-12">
+      	<a style="cursor: pointer; float:left; width:20%; background-color: #f5f5f5; color: #333; border: 1px solid #fff; height: 115px; line-height: 1.4; padding: 31px 10px 10px 10px; text-align: center;" href="{{ path('societe_export') }}"><span class="glyphicon glyphicon-list-alt"></span><br />Export des contacts<br /><small class="text-muted">Sociétés, Établissements, Interlocuteurs</small></a>
+      </div>
+    </div>
           {% for exportForm in exportForms %}
 <div  id="datechoice{{exportForm.type}}"  class="modal fade" role="dialog">
     <div class="modal-dialog modal-lg" >

@@ -7,6 +7,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use AppBundle\Type\SocieteChoiceType;
 use AppBundle\Type\SocieteType;
 use AppBundle\Type\AttachementType;
@@ -115,6 +116,34 @@ class SocieteController extends Controller {
          return $response;
      }
 
+     /**
+      * @Route("/societe/export", name="societe_export")
+      */
+    public function exportAction(Request $request) {
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $response = new StreamedResponse(function() use($dm) {
+            $societes = $dm->getRepository('AppBundle:Societe')->findAll();
+            $out = fopen('php://output', 'w');
+
+            fputcsv($out, array("Identifiant", "Type", "Statut", "Catégorie", "Raison sociale", "Nom", "Adresse", "Code postal", "Commune", "SIRET", "Code comptable", "Fréquence de paiement", "Téléphone fixe", "Téléphone mobile", "Email", "Site internet", "Libellé de contact"), ';');
+            foreach ($societes as $societe) {
+                fputcsv($out, array($societe->getIdentifiant()."", "SOCIETE", ($societe->getActif() ? "ACTIF" : "SUSPENDU"), $societe->getType(), $societe->getRaisonSociale(), null,$societe->getAdresse()->getAdresse(), $societe->getAdresse()->getCodePostal(), $societe->getAdresse()->getCommune(), $societe->getSiret(), $societe->getCodeComptable(), $societe->getFrequencePaiement(), $societe->getContactCoordonnee()->getTelephoneFixe(), $societe->getContactCoordonnee()->getTelephoneMobile(), $societe->getContactCoordonnee()->getEmail(), $societe->getContactCoordonnee()->getSiteInternet(), $societe->getContactCoordonnee()->getLibelle()), ';');
+                foreach($societe->getEtablissements() as $etablissement) {
+                    fputcsv($out, array($etablissement->getIdentifiant()."", "ETABLISSEMENT", ($etablissement->getActif() ? "ACTIF" : "SUSPENDU"), $etablissement->getType(), $societe->getRaisonSociale(), $etablissement->getNom(false), $etablissement->getAdresse()->getAdresse(), $etablissement->getAdresse()->getCodePostal(), $etablissement->getAdresse()->getCommune(), $etablissement->getSiret(), null, null, $etablissement->getContactCoordonnee()->getTelephoneFixe(), $etablissement->getContactCoordonnee()->getTelephoneMobile(), $etablissement->getContactCoordonnee()->getEmail(), $etablissement->getContactCoordonnee()->getSiteInternet(), $etablissement->getContactCoordonnee()->getLibelle()), ';');
+                }
+                foreach($societe->getComptes() as $compte) {
+                    fputcsv($out, array($compte->getIdentifiant()."", "INTERLOCUTEUR", ($compte->getActif() ? "ACTIF" : "SUSPENDU"), null, $societe->getRaisonSociale(), $compte->getIdentite(), $compte->getAdresse()->getAdresse(), $compte->getAdresse()->getCodePostal(), $compte->getAdresse()->getCommune(), null, null, null, $compte->getContactCoordonnee()->getTelephoneFixe(), $compte->getContactCoordonnee()->getTelephoneMobile(), $compte->getContactCoordonnee()->getEmail(), $compte->getContactCoordonnee()->getSiteInternet(), $compte->getContactCoordonnee()->getLibelle()), ';');
+                }
+            }
+            fclose($out);
+        }, 200, array(
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename=contact.csv',
+        ));
+        $response->setCharset('UTF-8');
+
+        return $response;
+    }
 
     public function contructSearchResult($criterias, &$result) {
 
