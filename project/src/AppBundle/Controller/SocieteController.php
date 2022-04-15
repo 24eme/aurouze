@@ -120,6 +120,8 @@ class SocieteController extends Controller {
       * @Route("/societe/export", name="societe_export")
       */
     public function exportAction(Request $request) {
+        set_time_limit(-1);
+        ini_set('memory_limit', '1G');
         $dm = $this->get('doctrine_mongodb')->getManager();
         $response = new StreamedResponse(function() use($dm) {
             $societes = $dm->getRepository('AppBundle:Societe')->findAll();
