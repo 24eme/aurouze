@@ -655,11 +655,7 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
      * @return AppBundle\Document\Sepa $sepa
      */
     public function getSepa() {
-        $sepa = $this->sepa;
-        if(!$sepa || !$sepa->getIban() || !$sepa->getBic()){
-            $sepa = $this->getSociete()->getSepa();
-        }
-        return $sepa;
+        return $this->sepa;
     }
 
     /**
