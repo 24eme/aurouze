@@ -83,17 +83,13 @@ class FactureRepository extends DocumentRepository {
     }
 
     public function exportByPrelevements($clients) {
-
-        $date = new \DateTime();
-        $date->modify("-2 year");
-
     	$q = $this->createQueryBuilder();
     	$q->addAnd($q->expr()->field('societe')->in($clients));
     	$q->addAnd($q->expr()->field('cloture')->equals(false));
         $q->addAnd($q->expr()->field('montantHT')->gt(0.0));
+	$q->addAnd($q->expr()->field('sepa.actif')->equals(true));
         $q->addAnd($q->expr()->field('avoir')->equals(null));
         $q->addAnd($q->expr()->field('inPrelevement')->equals(null));
-        $q->addAnd($q->expr()->field('dateEmission')->gt($date));
         $q->addAnd($q->expr()->field('numeroFacture')->notEqual(null));
 
     	$query = $q->getQuery();
