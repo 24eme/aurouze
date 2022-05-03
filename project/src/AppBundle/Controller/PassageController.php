@@ -553,6 +553,7 @@ class PassageController extends Controller
         try {
             $this->get('mailer')->send($message);
             $passage->setPdfNonEnvoye(false);
+            $passage->setPdfDateEnvoi();
             $dm->flush();
         }
         catch(Exception $e) {
