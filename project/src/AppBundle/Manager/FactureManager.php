@@ -68,6 +68,18 @@ class FactureManager {
     const EXPORT_STATS_TOTAL_PREC = 10;
     const EXPORT_STATS_TOTAL = 11;
 
+
+    const EXPORT_RETARD_DATE = 0;
+    const EXPORT_RETARD_CLIENT = 1;
+    const EXPORT_RETARD_MAIL = 2;
+    const EXPORT_RETARD_NUMERO_FIXE = 3;
+    const EXPORT_RETARD_NUMERO_PORTABLE = 4;
+    const EXPORT_RETARD_NUMERO_FACTURE = 5;
+    const EXPORT_RETARD_NUMERO_CONTRAT = 6;
+    const EXPORT_RETARD_MONTANT_TOTAL = 7;
+    const EXPORT_RETARD_MONTANT_PAYE =  8;
+    const EXPORT_RETARD_NB_RELANCES = 9;
+
     const AUCUNE_RELANCE = "Aucune relance effectuée";
     const RELANCE_RAPPEL = "1ère relance";
     const RELANCE_RAPPEL2 = "2ème relance";
@@ -111,7 +123,18 @@ public static $export_stats_libelle = array(
   self::EXPORT_STATS_TOTAL_PREC => "Total {X-1}",
   self::EXPORT_STATS_TOTAL => "Total {X}"
 );
-
+public static $export_factures_en_retards = array(
+  self::EXPORT_RETARD_DATE => "Date",
+  self::EXPORT_RETARD_CLIENT =>"Client",
+  self::EXPORT_RETARD_MAIL => "Mail Client",
+  self::EXPORT_RETARD_NUMERO_FIXE => "Numéro Fixe Client",
+  self::EXPORT_RETARD_NUMERO_PORTABLE => "Numéro Portable Client",
+  self::EXPORT_RETARD_NUMERO_FACTURE => "Numéro Facture",
+  self::EXPORT_RETARD_NUMERO_CONTRAT => "Numéro Contrat",
+  self::EXPORT_RETARD_MONTANT_TOTAL => "Montant total",
+  self::EXPORT_RETARD_MONTANT_PAYE => "Montant payé",
+  self::EXPORT_RETARD_NB_RELANCES => "Nombre de relances"
+);
     function __construct(DocumentManager $dm, MouvementManager $mm, $parameters) {
         $this->dm = $dm;
         $this->mm = $mm;
@@ -686,6 +709,47 @@ public static $export_stats_libelle = array(
     public function getRetardDePaiementBySociete(Societe $societe, $nbJourSeuil = 0){
       return $this->getRepository()->findRetardDePaiementBySociete($societe, $nbJourSeuil);
     }
+    public function buildLigneRetard($facture,$typeLigne = self::EXPORT_LIGNE_GENERALE){
+      $factureLigne = array();
+      $factureLigne[self::EXPORT_RETARD_DATE] = $facture->getDateFacturation()->format('d/m/Y');
+      $factureLigne[self::EXPORT_RETARD_CLIENT] = $facture->getSociete()->getRaisonSociale();
+      if($facture->getSociete()->getContactCoordonnee()->getEmailFacturation()){
+        $factureLigne[self::EXPORT_RETARD_MAIL] = $facture->getSociete()->getContactCoordonnee()->getEmailFacturation();
+      }else{
+        $factureLigne[self::EXPORT_RETARD_MAIL] = $facture->getSociete()->getContactCoordonnee()->getEmail();
+      }
+      $factureLigne[self::EXPORT_RETARD_NUMERO_FIXE] = $facture->getSociete()->getContactCoordonnee()->getTelephoneFixe();
+      $factureLigne[self::EXPORT_RETARD_NUMERO_PORTABLE] = $facture->getSociete()->getContactCoordonnee()->getTelephoneMobile();
+
+      $factureLigne[self::EXPORT_RETARD_NUMERO_FACTURE] =  $facture->getNumeroFacture();
+
+      $factureLigne[self::EXPORT_RETARD_NUMERO_CONTRAT] = "";
+      foreach($facture->getLignes() as $f){
+        if($f->getOrigineDocument()){
+          $factureLigne[self::EXPORT_RETARD_NUMERO_CONTRAT] .= $f->getOrigineDocument()->getNumeroArchive();  //voir s'il faut séparé les numéros de contrats.
+        }
+      }
+      if($typeLigne == self::EXPORT_LIGNE_GENERALE){
+          $factureLigne[self::EXPORT_RETARD_MONTANT_TOTAL] = number_format(($facture->isAvoir())? "0" : $facture->getMontantTTC(), 2, ",", "");
+          $factureLigne[self::EXPORT_RETARD_MONTANT_PAYE] = number_format(($facture->isAvoir())? (-1*$facture->getMontantTTC()): "0", 2, ",", "");
+      }
+
+      $factureLigne[self::EXPORT_RETARD_NB_RELANCES] =  $facture->getNbRelance();
+      ksort($factureLigne);
+      return $factureLigne;
+    }
+
+    public function getRetardDePaiement(){
+      $facturesObjs = $this->getRepository()->findFactureRetardDePaiement();
+      $facturesArray = array();
+      $facturesArray[] = self::$export_factures_en_retards;
+
+      foreach ($facturesObjs as $facture) {
+            $facturesArray[] =  $this->buildLigneRetard($facture,self::EXPORT_LIGNE_GENERALE);
+      }
+      return $facturesArray;
+    }
+
 
     public static function getCategoriePrestationFromId($idPrestation){
       if(preg_match("/^DESINSECTISATION/",$idPrestation)){

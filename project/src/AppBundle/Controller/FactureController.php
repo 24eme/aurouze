@@ -441,7 +441,36 @@ class FactureController extends Controller
         return $response;
     }
 
+    /**
+     * @Route("/facture/export_factures_en_retard", name="factures_en_retard_export")
+     */
+    public function exportFactureEnRetardAction(Request $request) {
+        ini_set('memory_limit', '-1');
 
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $fm = $this->get('facture.manager');
+
+        $facturesForCsv = $fm->getRetardDePaiement();
+
+        $filename = sprintf("export_factures_en_retard.csv");
+        $handle = fopen('php://memory', 'r+');
+
+        foreach ($facturesForCsv as $paiement) {
+            fputcsv($handle, $paiement,';');
+        }
+
+        rewind($handle);
+        $content = stream_get_contents($handle);
+        fclose($handle);
+
+        $response = new Response(utf8_decode($content), 200, array(
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename=' . $filename,
+        ));
+        $response->setCharset('UTF-8');
+
+        return $response;
+    }
 
     /**
      * @Route("/prelevements/export", name="factures_prelevements")
