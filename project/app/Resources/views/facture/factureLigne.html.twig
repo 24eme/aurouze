@@ -96,7 +96,7 @@
                                 <li><a onclick="return confirm('Êtes vous sûr de vouloir décloturer cette facture ?')" href="{{ path('facture_decloturer', {'id': facture.societe.id, 'factureId': facture.id }) }}">Décloturer (remettre les paiements à 0)</a></li>
                                 {% if not facture.isRedressee %}
                                   <li>
-                                    <a onclick="return confirm('Êtes vous sûr de vouloir faire un avoir partiel sur cette facture ?')"  href="{{ path('facture_avoir', { 'id': societe.id, 'type': 'facture', 'factureId': facture.id , 'mouvement' : "0" })}}">Créer un avoir partiel</a>
+                                    <a onclick="return confirm('Êtes vous sûr de vouloir faire un avoir total sur cette facture ?')"  href="{{ path('facture_avoir', { 'id': societe.id, 'type': 'facture', 'factureId': facture.id , 'mouvement' : "0" })}}">Créer un avoir total</a>
                                   </li>
                                   <li>
                                     <a onclick="return confirm('Êtes vous sûr de vouloir faire un avoir partiel remboursé par chèque sur cette facture ?')"  href="{{ path('facture_avoir', { 'id': societe.id, 'type': 'facture', 'factureId': facture.id , 'mouvement' : "0", 'remboursement': "1" })}}">Créer un avoir partiel avec remboursement par chèque</a>
