@@ -98,6 +98,7 @@
                 data-url-prev="{{ path('calendar',{'planifiable': ((planifiable) ? planifiable.id : null), 'id': ((planifiable) ? planifiable.etablissement.id : "0"), 'technicien': technicien, 'date': calendarTool.getSemainePrecedente('Y-m-d')}) }}"
                 data-url-next="{{ path('calendar',{'planifiable': ((planifiable) ? planifiable.id : null), 'id': ((planifiable) ? planifiable.etablissement.id : "0"), 'technicien': technicien, 'date': calendarTool.getSemaineSuivante('Y-m-d')}) }}"
                 data-url-date="{{ path('calendar',{'planifiable': ((planifiable) ? planifiable.id : null), 'id': ((planifiable) ? planifiable.etablissement.id : "0"), 'technicien': technicien, 'date': '-d', 'mode': 'JOUR'}) }}"
+                data-url-populate-holidays ="{{ path('calendarPopulateWithHolidays')}}"
                 >
             </div>
         </div>
