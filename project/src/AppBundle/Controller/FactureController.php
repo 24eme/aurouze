@@ -1151,7 +1151,12 @@ class FactureController extends Controller
           $prefix_subject =  $parameters['coordonnees']['prefix_objet'];
 
           $subject = $prefix_subject." Facture n°".$facture->getNumeroFacture();
-          $body = $this->render('facture/mailFacture.html.twig', ['facture' => $facture])->getContent();
+          if($facture->isAvoir()){
+            $body = $this->render('facture/mailAvoir.html.twig', ['facture' => $facture])->getContent();
+          }
+          else{
+            $body = $this->render('facture/mailFacture.html.twig', ['facture' => $facture])->getContent();
+          }
           if($facture->getSociete()->getContactCoordonnee()->getEmailFacturation()){
             $toEmail = $facture->getSociete()->getContactCoordonnee()->getEmailFacturation();
           }
