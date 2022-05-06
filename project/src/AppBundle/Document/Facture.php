@@ -176,6 +176,10 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
      */
     protected $inPrelevement;
 
+    /**
+     * @MongoDB\Field(type="date")
+     */
+    protected $dateEnvoiMail;
 
     public function __construct() {
         $this->lignes = new \Doctrine\Common\Collections\ArrayCollection();
@@ -1286,5 +1290,24 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
       return hash ('sha256' , $id.$secretKey);
     }
 
+    /**
+     * Set dateEnvoiMail
+     *
+     * @param date $dateEnvoiMail
+     * @return $this
+     */
+    public function setDateEnvoiMail($dateEnvoiMail) {
+        $this->dateEnvoiMail = $dateEnvoiMail;
+        return $this;
+    }
+
+    /**
+     * Get dateEnvoiMail
+     *
+     * @return date $dateEnvoiMail
+     */
+    public function getDateEnvoiMail() {
+      return $this->dateEnvoiMail;
+    }
 
 }

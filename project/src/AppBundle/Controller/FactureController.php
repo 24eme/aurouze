@@ -1183,6 +1183,9 @@ class FactureController extends Controller
 
           try {
               $this->get('mailer')->send($message);
+              $dm = $this->get('doctrine_mongodb')->getManager();
+              $facture->setDateEnvoiMail(new \DateTime());
+              $dm->flush();
           }
           catch(Exception $e) {
               var_dump('NO mailer config');
