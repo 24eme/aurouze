@@ -83,9 +83,6 @@
                       <li>
                         <a href="{{ path('email_facture', {'id': facture.id}) }}" class="mail_facture">Envoyer par mail
                         <span> <i class="glyphicon glyphicon-envelope"></i></span>
-                        {% if facture.getDateEnvoiMail() %}
-                          <span class="glyphicon glyphicon-ok" title="mail envoyé le {{ facture.getDateEnvoiMail()| date("d/m/Y") }}"></span>
-                        {% endif %}
                         </a>
                       </li>
                     {% endif %}
@@ -113,6 +110,9 @@
                             {% endif %}
                     {% endif %}
                   </ul>
+                  {% if facture.getDateEnvoiMail() %}
+                    <span class="glyphicon glyphicon-ok" title="Mail envoyé le {{ facture.getDateEnvoiMail()| date("d/m/Y") }}"></span>
+                  {% endif %}
                 </div>
               {% endif %}
               {% if not facture.numeroFacture and not facture.isDevis %}
