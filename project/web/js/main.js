@@ -1354,14 +1354,19 @@
     }
 
     $.initHighLight = function(){
-      $(".highlight").mouseover(function(e){
+      $(".highlight").click(function(e){
+        const les = document.getElementsByTagName("tr");
+        for(var i= 0; i < les.length; i++)
+        {
+          les[i].style.border = "none";
+        }
         document.getElementById(this.dataset.id).style.border = "3px dashed  darkblue";
+        document.getElementById(this.dataset.id).scrollIntoView({
+            behavior: 'auto',
+            block: 'center',
+            inline: 'center'
+        });
       });
-
-      $(".highlight").mouseout(function(e){
-        document.getElementById(this.dataset.id).style.border = "none";
-      });
-
     }
 }
 )(jQuery);
