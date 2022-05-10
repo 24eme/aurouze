@@ -4,7 +4,11 @@
 {% block body %}
     <ol class="breadcrumb">
         <li><a href="{{ path('calendarManuel') }}">Calendrier global</a></li>
-        <li><a href="{{ path('calendarManuel', {'date' : date}) }}">&nbsp;Semaine {{ calendarTool.getLibelle() }}</a></li>
+        {% if calendarTool.getMode() == "SEMAINE" %}
+            <li><a href="{{ path('calendarManuel', {'date' : date}) }}">&nbsp;Semaine {{ calendarTool.getLibelle() }}</a></li>
+        {% else %}
+            <li><a href="{{ path('calendarManuel', {'date' : date}) }}">&nbsp; {{ calendarTool.getLibelle() }}</a></li>
+        {% endif %}
     </ol>
     <div class="row">
         <div class="col-sm-12">
