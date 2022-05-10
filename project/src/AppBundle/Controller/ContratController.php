@@ -796,14 +796,13 @@ class ContratController extends Controller {
 
         $emailCommercial = $contrat->getCommercial()->getContactCoordonnee()->getEmail();
         $parameters = $this->get('contrat.manager')->getParameters();
-
         if ($emailCommercial) {
             $message = \Swift_Message::newInstance()
                 ->setSubject($subject)
                 ->setFrom([
                     $parameters['coordonnees']['email'] => $parameters['coordonnees']['nom']
                 ])
-                ->setTo($contrat->getCommercial()->getContactCoordonnee()->getEmail())
+                ->setTo(explode(";",$contrat->getCommercial()->getContactCoordonnee()->getEmail()))
                 ->setBody(
                     $this->renderView($template.'.html.twig', array('contrat' => $contrat)),
                     'text/plain'
