@@ -76,7 +76,7 @@ prévus sur {{ contrat.duree }} mois
             {% endif %}
           </td>
           <td>
-            {{ lastPassage.getDateDebut()|date('d-m-Y') }} à {{ lastPassage.getDateDebut()|date("H:s") }}
+            {{ lastPassage.getDateFrancais() }} à {{ lastPassage.getDateDebut()|date("H:s") }}
           </td>
           <td>
             {{ lastPassage.getTypePassage()}}
