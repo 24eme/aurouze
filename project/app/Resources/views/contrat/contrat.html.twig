@@ -25,9 +25,9 @@
             				class="label label-xs label-primary">{{ prestation.nomToString }}</span>
             			{%endif%} {% endfor %}
                         {% if(contrat.isEnAttenteAcceptation() and contrat.contratPassages | length == 0 ) %}
-                        {{ contrat.previsionnel | length }} passage(s)
+                        {{ contrat.previsionnel | length }} intervention(s)
                         {% else %}
-                            {{ contrat.nbPassages }}  passage(s)
+                            {{ contrat.nbPassages }}  intervention(s)
                         {% endif %}
                         </p>
                         <p class="text-center">
