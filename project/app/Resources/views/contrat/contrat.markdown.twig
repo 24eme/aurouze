@@ -53,7 +53,7 @@ ___
 {% endif %}
 ## Nombre prévisionnel d'interventions par type de prestation
 {% for prestation in contrat.prestations %}
-{{  prestation.nbPassages }} {% if application.name is same as(Aurouze) %}intervention{% else %}passage{% endif %}{% if prestation.nbPassages > 1 %}s{% endif %} concernant : {{  prestation.nom|trim }}  
+{{  prestation.nbPassages }} {% if application.name is same as("Aurouze") %}intervention{% else %}passage{% endif %}{% if prestation.nbPassages > 1 %}s{% endif %} concernant : {{  prestation.nom|trim }}  
 {% endfor %}
 
 {% if contrat.moyens|length > 0 %}
