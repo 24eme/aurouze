@@ -438,7 +438,7 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
               }
           }
         }
-        return $date->format('d/m/Y');
+        return ($date) ? $date->format('d/m/Y') : null;
     }
 
     /**
