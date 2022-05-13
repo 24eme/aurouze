@@ -10,19 +10,17 @@
 
 <ol class="breadcrumb">
     <li><a href="{{ path('attachements_last') }}">Documents</a></li>
-    <li><a href="{{ path('attachements_entite',{ 'id' : societe.id }) }}">&nbsp;{{ societe.raisonSociale }} </small></a></li>
+    <li><a href="{{ path('attachements_societe',{ 'id' : societe.id }) }}">&nbsp;{{ societe.raisonSociale }} </small></a></li>
     {% if(etablissement) %}
-        <li><a href="{{ path('attachements_entite',{ 'id' : etablissement.id }) }}">&nbsp;{{ etablissement.getNom(false) }}&nbsp;<small>{{etablissement.adresse.intitule }}</small></a></li>
+        <li><a href="{{ path('attachements_etablissement',{ 'id' : etablissement.id }) }}">&nbsp;{{ etablissement.getNom(false) }}&nbsp;<small>{{etablissement.adresse.intitule }}</small></a></li>
     {% endif %}
 </ol>
 
 {{ include('societe/choixForm.html.twig', {'urlTarget': path('societe_visualisation', {'id': '_id_'}), 'autofocus': true })}}
-<div class="row" style="padding: 15px 0px">
-    <div class="col-xs-12 text-right" >
+<div class="text-right">
     {% if not all %}
         <a class="btn btn-lg btn-default" data-toggle="modal" data-target="#document-modal-{{actif.id}}" ><span class="glyphicon glyphicon-plus"></span>&nbsp;Ajouter document</a>
     {% endif %}
-    </div>
 </div>
 <div class="row" style="margin-top: 20px;">
     <div class="col-xs-9">
@@ -30,7 +28,7 @@
     {{ include('attachement/attachementList.html.twig', {'attachements' : attachements}) }}
     </div>
     <div class="col-xs-3">
-            {{ include('attachement/menu.html.twig', {'societe' : societe, 'etablissement' : etablissement, 'actif' : actif ,'nbTotalAttachements' : nbTotalAttachements, 'all' : all }) }}
+        {{ include('attachement/menu.html.twig', {'societe' : societe, 'etablissement' : etablissement, 'actif' : actif, 'facets': facets, 'all' : all }) }}
     </div>
 </div>
 {% endblock %}
