@@ -1127,10 +1127,10 @@ class FactureController extends Controller
             $relance->setNumeroRelance(1);
             $facture->addRelance($relance);
             if($facture->getRelanceCommentaire()){
-                $facture->setRelanceCommentaire($facture->getRelanceCommentaire()."\n"."R1 le ".($relance->getDateRelance())->format('d-m-Y'));
+                $facture->setRelanceCommentaire($facture->getRelanceCommentaire()."\n"."R1 le ".$relance->getDateRelance()->format('d-m-Y'));
             }
             else{
-                $facture->setRelanceCommentaire("R1 le ".($relance->getDateRelance())->format('d-m-Y'));
+                $facture->setRelanceCommentaire("R1 le ".$relance->getDateRelance()->format('d-m-Y'));
             }
             $dm->flush();
         }
