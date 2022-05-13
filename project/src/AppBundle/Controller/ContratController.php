@@ -150,6 +150,17 @@ class ContratController extends Controller {
                 foreach ($contrat->getMouvements() as $mouvement) {
                     $mouvement->setSociete($formValues['societe']);
                 }
+                if( $formValues['documents']){
+                    $attachementRepository = $this->get('attachement.manager')->getRepository();
+
+                    foreach ($etablissementsArr as $oldEtb) {
+                        $etbN = $etablissementRepository->find($formValues[$oldEtb->getId()]);
+                        $documents = $attachementRepository->findBy(array('etablissement' => $oldEtb), array('updatedAt' => 'DESC'));
+                        foreach($documents as $d){
+                            $d->setEtablissement($etbN);
+                        }
+                    }
+                }
 
                 $dm->flush();
 
