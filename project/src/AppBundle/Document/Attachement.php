@@ -228,7 +228,7 @@ class Attachement
     {
       $this->imageFile = $imageFile;
 
-      if ($imageFile && !$this->getBase64()) {
+      if ($imageFile && !$this->getBase64() && !$this->updatedAt) {
           $this->updatedAt = new \DateTime('now');
       }
       if($imageFile instanceof \Symfony\Component\HttpFoundation\File\UploadedFile && $imageFile->getClientOriginalName()){
@@ -291,7 +291,7 @@ class Attachement
     }
 
     public function isPdf(){
-      return preg_match('/\.pdf$/',$this->getImageName());
+      return preg_match('/\.pdf$/i',$this->getImageName());
     }
 
     public function isImage(){

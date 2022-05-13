@@ -14,24 +14,63 @@ use Doctrine\Common\Collections\ArrayCollection;
  */
 class AttachementRepository extends DocumentRepository {
 
-	public function findBySocieteAndEtablissement($societe)
+    public function findLast() {
+
+        return $this->createQueryBuilder()
+             ->select('_id', 'updatedAt', 'imageName', 'titre', 'originalName', 'etablissement', 'societe', 'visibleTechnicien', 'ext')
+             ->limit(10)
+             ->sort(array('_id' => -1))
+             ->getQuery()
+             ->execute();
+    }
+
+    public function findBySociete($societe)
+	{
+        $attachments = array();
+		foreach($this->createQueryBuilder()->select('_id', 'updatedAt', 'imageName', 'titre', 'originalName', 'etablissement', 'societe', 'visibleTechnicien', 'ext')->field('societe')->equals($societe)->getQuery()->execute() as $attachement) {
+            $attachments[$attachement->getId()] = $attachement;
+        }
+
+        uasort($attachments,array("AppBundle\Document\Attachement", "cmpUpdateAt"));
+
+        return $attachments;
+    }
+
+    public function findByEtablissement($etablissement)
+	{
+        $attachments = array();
+		foreach($this->createQueryBuilder()->select('_id', 'updatedAt', 'imageName', 'titre', 'originalName', 'etablissement', 'societe', 'visibleTechnicien', 'ext')->field('etablissement')->equals($etablissement)->getQuery()->execute() as $attachement) {
+            $attachments[$attachement->getId()] = $attachement;
+        }
+
+        uasort($attachments,array("AppBundle\Document\Attachement", "cmpUpdateAt"));
+
+        return $attachments;
+    }
+
+	public function findBySocieteAndEtablissement($societe, &$facets = array())
 	{
 		$qb = $this->createQueryBuilder();
-		$attachementsSociete = $qb->field('societe')->equals($societe)->getQuery()->execute();
-
-		$res = array();
-		foreach ($attachementsSociete as $attachement) {
-			$res[$attachement->getId()] = $attachement;
+		$attachments = array();
+        $facets[$societe->getId()] = 0;
+		foreach ($this->findBySociete($societe) as $attachement) {
+            $facets[$societe->getId()]++;
+			$attachments[$attachement->getId()] = $attachement;
 		}
 
 		foreach ($societe->getEtablissements() as $etablissement) {
-			$attachementsEtb = $this->createQueryBuilder()->field('etablissement')->equals($etablissement)->getQuery()->execute();
-			foreach ($attachementsEtb as $attachement) {
-				$res[$attachement->getId()] = $attachement;
+            $facets[$etablissement->getId()] = 0;
+			foreach ($this->findByEtablissement($etablissement) as $attachement) {
+                $facets[$etablissement->getId()]++;
+				$attachments[$attachement->getId()] = $attachement;
 			}
 		}
-		uasort($res,array("AppBundle\Document\Attachement", "cmpUpdateAt"));
-		return $res;
+
+        $facets['total'] = count($attachments);
+
+		uasort($attachments,array("AppBundle\Document\Attachement", "cmpUpdateAt"));
+
+		return $attachments;
 	}
 
 
