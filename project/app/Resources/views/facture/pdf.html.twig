@@ -181,7 +181,11 @@ Condition de réglement : {{ facture.frequencePaiementLibelle }}
             {% if facture.isFacture %}
             <small>
             {% if facture.cloture  %}
-                Cette facture a été réglée le : {{ facture.getDatePaiement() }}
+                {% if facture.avoir %}
+                    Cette facture a été redressé (avoir {{ facture.avoir }})
+                {% else %}
+                    Cette facture a été réglée le : {{ facture.getDatePaiement() }}
+                {% endif %}
             {% else %}
               {% if facture.sepa and facture.sepa.actif %}Cette facture passera automatiquement en prélèvement le : {% else %}Date limite de règlement : {% endif %}{{ facture.dateLimitePaiement|date("d/m/Y") }}
             {% endif %}
