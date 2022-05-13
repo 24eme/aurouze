@@ -1211,4 +1211,13 @@ class Passage implements DocumentEtablissementInterface, DocumentSocieteInterfac
     {
         return $this->saisieTechnicien;
     }
+
+    public function getDateFrancais() {
+        $formatter = new \IntlDateFormatter("fr_FR", \IntlDateFormatter::LONG, \IntlDateFormatter::LONG);
+
+        $formatter->setPattern("EEEE d MMMM Y");
+
+        return ucfirst($formatter->format($this->getDateDebut()));
+
+    }
 }

@@ -150,6 +150,17 @@ class ContratController extends Controller {
                 foreach ($contrat->getMouvements() as $mouvement) {
                     $mouvement->setSociete($formValues['societe']);
                 }
+                if( $formValues['documents']){
+                    $attachementRepository = $this->get('attachement.manager')->getRepository();
+
+                    foreach ($etablissementsArr as $oldEtb) {
+                        $etbN = $etablissementRepository->find($formValues[$oldEtb->getId()]);
+                        $documents = $attachementRepository->findBy(array('etablissement' => $oldEtb), array('updatedAt' => 'DESC'));
+                        foreach($documents as $d){
+                            $d->setEtablissement($etbN);
+                        }
+                    }
+                }
 
                 $dm->flush();
 
@@ -796,14 +807,13 @@ class ContratController extends Controller {
 
         $emailCommercial = $contrat->getCommercial()->getContactCoordonnee()->getEmail();
         $parameters = $this->get('contrat.manager')->getParameters();
-
         if ($emailCommercial) {
             $message = \Swift_Message::newInstance()
                 ->setSubject($subject)
                 ->setFrom([
                     $parameters['coordonnees']['email'] => $parameters['coordonnees']['nom']
                 ])
-                ->setTo($contrat->getCommercial()->getContactCoordonnee()->getEmail())
+                ->setTo(explode(";",$contrat->getCommercial()->getContactCoordonnee()->getEmail()))
                 ->setBody(
                     $this->renderView($template.'.html.twig', array('contrat' => $contrat)),
                     'text/plain'

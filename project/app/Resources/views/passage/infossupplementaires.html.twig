@@ -34,12 +34,27 @@
       </li>
     {% endif %}
     {% if lastPassages %}
+    <hr style="border:0.5px dotted black;margin: inherit;">
     <li class="list-inline-item">
-    	Contrat n°{{ contrat.numeroArchive }} du {{ contrat.dateDebut | localizeddate("medium", "none", null, null, "d MMMM yyyy") | capitalize }} au {{ contrat.dateFin | localizeddate("medium", "none", null, null, "d MMMM yyyy") | capitalize }}
+    <a href="{{path("contrat_visualisation", {'id': contrat.id})}}">
+        Contrat n°{{ contrat.numeroArchive }} du {{ contrat.dateDebut | localizeddate("medium", "none", null, null, "d MMMM yyyy") | capitalize }} au {{ contrat.dateFin | localizeddate("medium", "none", null, null, "d MMMM yyyy") | capitalize }}
+    </a>
+    </li>
+    <li>
+    {% for prestation in contrat.prestations %}
+        {% if(prestation.wordToPicto) %}
+            &nbsp;<span class="step size-18" title="{{  prestation.nomToString }}" data-toggle="tooltip" >
+                <i class="mdi-{{prestation.wordToPicto}}">&nbsp;</i>&nbsp;<span>{{ prestation.nbPassages }}</span></span>
+            {%else%}
+            <span class="btn btn-xs label-primary">{{  prestation.nomToString }}&nbsp;<span>{{ prestation.nbPassages }}</span></span>
+        {%endif%}
+    {% endfor %}
+prévus sur {{ contrat.duree }} mois
     </li>
 
     {% if passage.techniciens|length > 0 %}
-      <li class="list-inline-item">
+    <hr style="border:0.5px dotted black;margin: inherit;">
+     <li class="list-inline-item">
     Dernier{% if lastPassages.toArray()|length > 1 %}s{% endif %} passage{% if lastPassages.toArray()|length > 1 %}s{% endif %} :
     <small>
     <table class="table">
@@ -61,7 +76,7 @@
             {% endif %}
           </td>
           <td>
-            le {{ lastPassage.getDateDebut()|date('d-m-Y') }} à {{ lastPassage.getDateDebut()|date("H:s") }}
+            {{ lastPassage.getDateFrancais() }} à {{ lastPassage.getDateDebut()|date("H:s") }}
           </td>
           <td>
             {{ lastPassage.getTypePassage()}}

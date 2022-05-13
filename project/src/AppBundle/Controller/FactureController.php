@@ -1108,7 +1108,7 @@ class FactureController extends Controller
         $message = \Swift_Message::newInstance()
             ->setSubject($subject)
             ->setFrom(array($fromEmail => $fromName))
-            ->setTo($toEmail)
+            ->setTo(explode(";", $toEmail))
             ->setBody($body,'text/plain')
             ->setReadReceiptTo($fromEmail);
 
@@ -1126,6 +1126,12 @@ class FactureController extends Controller
             $relance->setDateRelance(new \DateTime());
             $relance->setNumeroRelance(1);
             $facture->addRelance($relance);
+            if($facture->getRelanceCommentaire()){
+                $facture->setRelanceCommentaire($facture->getRelanceCommentaire()."\n"."R1 le ".($relance->getDateRelance())->format('d-m-Y'));
+            }
+            else{
+                $facture->setRelanceCommentaire("R1 le ".($relance->getDateRelance())->format('d-m-Y'));
+            }
             $dm->flush();
         }
         catch(Exception $e) {
@@ -1163,16 +1169,19 @@ class FactureController extends Controller
           elseif($facture->getSociete()->getContactCoordonnee()->getEmail()) {
             $toEmail = $facture->getSociete()->getContactCoordonnee()->getEmail();
           }
+
+
           else{
             var_dump('NO mailer config');
             $request->getSession()->getFlashBag()->add('notice', 'success');
             $referer = $request->headers->get('referer');
             return $this->redirect($referer);
           }
+
           $message = \Swift_Message::newInstance()
               ->setSubject($subject)
               ->setFrom(array($fromEmail => $fromName))
-              ->setTo($toEmail)
+              ->setTo(explode(";", $toEmail))
               ->setBody($body,'text/plain')
               ->setReadReceiptTo($fromEmail);
 
