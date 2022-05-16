@@ -50,10 +50,10 @@
     	<div class="col-sm-4 text-right">
         <div class = "btn-group">
             <button data-toggle="modal" data-container="body" data-target="#choix_technicien" class="btn btn-default"><span class="glyphicon glyphicon-check"></span> Filtrer les techniciens</button>
-          <a href="{{ path('calendarManuel', {'date': calendarTool.getDateDebut('Y-m-d'), 'planifiable': null, 'mode': 'SEMAINE' }) }}" class="btn btn-default {% if (calendarTool.mode == "SEMAINE") %}active{% endif %}">
+          <a href="{{ path('calendarManuel', {'date': calendarTool.getDate() | date('Y-m-d'), 'planifiable': null, 'mode': 'SEMAINE' }) }}" class="btn btn-default {% if (calendarTool.mode == "SEMAINE") %}active{% endif %}">
               <i class="mdi mdi-view-week"></i> Semaine
             </a>
-          <a href="{{ path('calendarManuel', {'date': calendarTool.getDateDebut('Y-m-d'), 'planifiable': null, 'mode': 'JOUR' }) }}"class="btn btn-md btn-default {% if (calendarTool.mode == "JOUR") %}active{% endif %}">
+          <a href="{{ path('calendarManuel', {'date': calendarTool.getDate() | date('Y-m-d'), 'planifiable': null, 'mode': 'JOUR' }) }}"class="btn btn-md btn-default {% if (calendarTool.mode == "JOUR") %}active{% endif %}">
               <i class="mdi mdi-view-day"></i> Jour
             </a>
           </div>
