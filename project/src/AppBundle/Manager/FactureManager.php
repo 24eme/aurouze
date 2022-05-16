@@ -72,15 +72,14 @@ class FactureManager {
     const EXPORT_RETARD_DATE = 0;
     const EXPORT_RETARD_CLIENT = 1;
     const EXPORT_RETARD_ADRESSE_SOCIETE = 2;
-    const EXPORT_RETARD_ADRESSE_ETABLISSEMENT = 3;
-    const EXPORT_RETARD_MAIL = 4;
-    const EXPORT_RETARD_NUMERO_FIXE = 5;
-    const EXPORT_RETARD_NUMERO_PORTABLE = 6;
-    const EXPORT_RETARD_NUMERO_FACTURE = 7;
-    const EXPORT_RETARD_NUMERO_CONTRAT = 8;
-    const EXPORT_RETARD_MONTANT_TOTAL = 9;
-    const EXPORT_RETARD_MONTANT_PAYE =  10;
-    const EXPORT_RETARD_NB_RELANCES = 11;
+    const EXPORT_RETARD_MAIL = 3;
+    const EXPORT_RETARD_NUMERO_FIXE = 4;
+    const EXPORT_RETARD_NUMERO_PORTABLE = 5;
+    const EXPORT_RETARD_NUMERO_FACTURE = 6;
+    const EXPORT_RETARD_NUMERO_CONTRAT = 7;
+    const EXPORT_RETARD_MONTANT_TOTAL = 8;
+    const EXPORT_RETARD_MONTANT_PAYE =  9;
+    const EXPORT_RETARD_NB_RELANCES = 10;
 
 
     const AUCUNE_RELANCE = "Aucune relance effectuée";
@@ -130,7 +129,6 @@ public static $export_factures_en_retards = array(
   self::EXPORT_RETARD_DATE => "Date",
   self::EXPORT_RETARD_CLIENT =>"Client",
   self::EXPORT_RETARD_ADRESSE_SOCIETE => "Adresse Société",
-  self::EXPORT_RETARD_ADRESSE_ETABLISSEMENT => "Adresse Etablissement",
   self::EXPORT_RETARD_MAIL => "Mail Client",
   self::EXPORT_RETARD_NUMERO_FIXE => "Numéro Fixe Client",
   self::EXPORT_RETARD_NUMERO_PORTABLE => "Numéro Portable Client",
@@ -720,7 +718,6 @@ public static $export_factures_en_retards = array(
       $factureLigne[self::EXPORT_RETARD_CLIENT] = $facture->getSociete()->getRaisonSociale();
 
       $factureLigne[self::EXPORT_RETARD_ADRESSE_SOCIETE] = $facture->getSociete()->getAdresse()->getAdresse()." ".$facture->getSociete()->getAdresse()->getCodePostal()." ".$facture->getSociete()->getAdresse()->getCommune();
-      $factureLigne[self::EXPORT_RETARD_ADRESSE_ETABLISSEMENT] = "";
 
       if($facture->getSociete()->getContactCoordonnee()->getEmailFacturation()){
         $factureLigne[self::EXPORT_RETARD_MAIL] = $facture->getSociete()->getContactCoordonnee()->getEmailFacturation();
@@ -748,7 +745,7 @@ public static $export_factures_en_retards = array(
       return $factureLigne;
     }
 
-    public function getRetardDePaiement(){
+    public function getRetardDePaiementCSV(){
       $facturesObjs = $this->getRepository()->findFactureRetardDePaiement();
       $facturesArray = array();
       $facturesArray[] = self::$export_factures_en_retards;
