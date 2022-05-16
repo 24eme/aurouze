@@ -907,7 +907,10 @@ class FactureController extends Controller
 
       $pdf = $request->get('pdf',null);
 
-      $dateFactureBasse = null;
+      $date = new \DateTime();
+      $interval = new \DateInterval('P2Y');
+      $dateFactureBasse = $date->sub($interval);
+
       $dateFactureHaute = null;
       $nbRelances = null;
       $commerciaux = null;
