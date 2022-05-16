@@ -177,9 +177,10 @@ class FactureRepository extends DocumentRepository {
       if($dateFactureHaute){
         $qD->field('dateFacturation')->lte($dateFactureHaute);
       }
-      if (!$dateFactureBasse && !$dateFactureHaute) {
-          $today->modify("-".FactureManager::DEFAUT_FREQUENCE_JOURS." days");
-          $qD->field('dateFacturation')->lt($today);
+      if (!$dateFactureHaute) {
+          $todayDevis = clone $today;
+          $todayDevis->modify("-".FactureManager::DEFAUT_FREQUENCE_JOURS." days");
+          $qD->field('dateFacturation')->lt($todayDevis);
       }
       $resultsDevis = $qD->getQuery()->execute();
 
