@@ -938,8 +938,13 @@ class FactureController extends Controller
           $arrayFacturesBySociete[$f->getSociete()->getId()][] = $f->getId();
       }
 
+      $tabNbFacturesBySociete = array();
+      foreach($arrayFacturesBySociete as $k=>$v){
+         $tabNbFacturesBySociete[$k] = count($arrayFacturesBySociete[$k]);
+      }
+
       return $this->render('facture/retardPaiements.html.twig', array('facturesEnRetard' => $facturesEnRetard, "formRelance" => $formRelance->createView(), 'nbRelances' => $nbRelances, 'pdf' => $pdf,
-      'formFacturesARelancer' => $formFacturesEnRetard->createView(), 'commerciaux' => $commerciaux,'arrayFacturesBySociete'=> $arrayFacturesBySociete));
+      'formFacturesARelancer' => $formFacturesEnRetard->createView(), 'commerciaux' => $commerciaux,'tabNbFacturesBySociete'=> $tabNbFacturesBySociete));
     }
 
 
