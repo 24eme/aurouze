@@ -1,6 +1,8 @@
 Bonjour,
 
-Veuillez trouver votre facture en pièce jointe. Vous pouvez également la télécharger en suivant ce lien : {{ app.request.schemeAndHttpHost }}{{ path('facturable_pdf', {'document': facture.id ,'key': facture.getSecretKey()})}}
+Veuillez trouver votre facture en pièce jointe.
+
+Vous pouvez également la télécharger en suivant ce lien : {{ app.request.schemeAndHttpHost }}{{ path('facturable_pdf', {'document': facture.id ,'key': facture.getSecretKey()})}}
 
 Dans l’attente de votre aimable règlement
 

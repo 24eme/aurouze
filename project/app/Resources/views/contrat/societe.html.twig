@@ -14,7 +14,7 @@
 
 
     <h3>Liste des contrats de la société {{ societe.raisonSociale }}
-    <small> (SOCIETE-{{societe.identifiant }})</small>
+    <small>N° {{societe.identifiant }}</small>
     <a style="margin-bottom: 10px;" href="{{ path('contrat_creation', {'id': societe.getId()}) }}" class="btn btn-sm btn-default pull-right"><strong><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>&nbsp;Créer un nouveau contrat</strong></a></h3>
     <br>
     <h3>Liste des contrats <strong>en cours </strong></h3>

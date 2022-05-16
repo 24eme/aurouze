@@ -450,7 +450,7 @@ class FactureController extends Controller
         $dm = $this->get('doctrine_mongodb')->getManager();
         $fm = $this->get('facture.manager');
 
-        $facturesForCsv = $fm->getRetardDePaiement();
+        $facturesForCsv = $fm->getRetardDePaiementCSV();
 
         $filename = sprintf("export_factures_en_retard.csv");
         $handle = fopen('php://memory', 'r+');
