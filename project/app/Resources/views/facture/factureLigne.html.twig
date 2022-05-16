@@ -117,7 +117,11 @@
                     <span class="glyphicon glyphicon-ok" title="Mail envoyé le {{ facture.getDateEnvoiMail()| date("d/m/Y") }}"></span>
                   {% endif %}
                   {% if facture.getRelanceCommentaire() %}
-                    <span class="glyphicon glyphicon-comment" title="{{ facture.getRelanceCommentaire() }}"></span>
+                    {% if(facture.numeroFacture and facture.isEditable) %}
+                        <a href="{{ path('facture_creation', { 'societe': societe.id, 'type': 'facture', 'id': facture.id })}}"><span class="glyphicon glyphicon-comment" title="{{ facture.getRelanceCommentaire() }}"></span></a>
+                    {% else %}
+                        <span class="glyphicon glyphicon-comment" title="{{ facture.getRelanceCommentaire() }}"></span>
+                    {% endif %}
                   {% endif %}
               </td>
               {% if not facture.numeroFacture and not facture.isDevis %}
