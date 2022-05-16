@@ -114,7 +114,7 @@
               {% endif %}
               <td>
                   {% if facture.getDateEnvoiMail() %}
-                    <span class="glyphicon glyphicon-ok" title="Mail envoyé le {{ facture.getDateEnvoiMail()| date("d/m/Y") }}"></span>
+                    <span class="glyphicon glyphicon-envelope" title="Mail envoyé le {{ facture.getDateEnvoiMail()| date("d/m/Y") }}"></span>
                   {% endif %}
                   {% if facture.getRelanceCommentaire() %}
                     {% if(facture.numeroFacture and facture.isEditable) %}
