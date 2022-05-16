@@ -16,7 +16,7 @@
                     <div class="list-group-item">
                         <h3 style="margin-top:0; margin-bottom: 0;">
                         	<i class="mdi mdi-business mdi-lg"></i>
-                            {{  societe.raisonSociale }} <small> (SOCIETE-{{societe.identifiant }})</small>
+                            {{ societe.raisonSociale }} <small>N° {{societe.identifiant }}</small>
                         	{% if not societe.actif %} <small><label class="label label-xs label-danger">SUSPENDU</label></small>{% endif %}
                             <a class="btn btn-sm btn-default pull-right" href="{{ path('societe_modification', {'id': societe.id}) }}">Modifier</a>
                             <small class="pull-right" style="padding-top: 5px; padding-right: 10px;">
