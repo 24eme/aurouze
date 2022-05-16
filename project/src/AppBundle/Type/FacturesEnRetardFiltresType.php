@@ -34,20 +34,27 @@ class FacturesEnRetardFiltresType extends AbstractType {
 		//$dateFactureHaute = new \DateTime();
     //$dateFactureBasse = new \DateTime();
 
+        $date = new \DateTime();
+        $interval = new \DateInterval('P2Y');
+        $dateFactureBasse = $date->sub($interval);; //mettre la date du jour - 2 ans
+
+
 		$builder->add('nbRelances', ChoiceType::class, array('label' => 'Nombre de relance',
                 		'choices' => $nbRelances,
 						        "required" => false,
                 		"attr" => array("class" => "select2 select2-simple nbRelance")));
 		$builder->add('dateFactureBasse', DateType::class, array('required' => false,
+                        "label" => "Du",
                 		"attr" => array('class' => 'input-inline datepicker dateFactureBasse',
                 				'data-provide' => 'datepicker',
                 				'data-date-format' => 'dd/mm/yyyy'
                 		),
-                	//	'data' => $dateFactureHaute,
+                        'data' => $dateFactureBasse,
                 		'widget' => 'single_text',
                 		'format' => 'dd/MM/yyyy',
 		));
     $builder->add('dateFactureHaute', DateType::class, array('required' => false,
+                        "label" => "Jusqu'au",
                 		"attr" => array('class' => 'input-inline datepicker dateFactureBasse',
                 				'data-provide' => 'datepicker',
                 				'data-date-format' => 'dd/mm/yyyy'
