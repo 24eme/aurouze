@@ -5,7 +5,7 @@ namespace AppBundle\Repository;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use AppBundle\Tool\RechercheTool;
 use AppBundle\Document\societe;
-
+use AppBundle\Manager\FactureManager;
 /**
  * FactureRepository
  *
@@ -169,8 +169,6 @@ class FactureRepository extends DocumentRepository {
       $resultsFacture = $qF->getQuery()->execute();
 
       // Devis
-
-     // $today->modify("-30 days");
       $qD = $this->makeBaseFactureRetardDePaiement($nbRelance, $societe);
       $qD->field('numeroDevis')->notEqual(null);
       if($dateFactureBasse){
@@ -179,7 +177,10 @@ class FactureRepository extends DocumentRepository {
       if($dateFactureHaute){
         $qD->field('dateFacturation')->lte($dateFactureHaute);
       }
-      //$qD->field('dateFacturation')->lt($today);
+      if (!$dateFactureBasse && !$dateFactureHaute) {
+          $today->modify("-".FactureManager::DEFAUT_FREQUENCE_JOURS." days");
+          $qD->field('dateFacturation')->lt($today);
+      }
       $resultsDevis = $qD->getQuery()->execute();
 
       $results = array_merge($resultsFacture->toArray(), $resultsDevis->toArray());
