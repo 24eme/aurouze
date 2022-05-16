@@ -112,9 +112,8 @@
                   </ul>
                  </div>
               {% endif %}
-              <td>
               {% if not facture.numeroFacture and not facture.isDevis %}
-                <a class="btn btn-default btn-xs " onclick="return confirm('Êtes vous sûr de vouloir facturer ?')" href="{{ path('facture_en_attente_facturer', { 'factureId': facture.id }) }}"> Créer la facture </a>
+                <a class="btn btn-default btn-xs" onclick="return confirm('Êtes vous sûr de vouloir facturer ?')" href="{{ path('facture_en_attente_facturer', { 'factureId': facture.id }) }}"> Créer la facture </a>
               {% endif %}
               </td>
               <td>
