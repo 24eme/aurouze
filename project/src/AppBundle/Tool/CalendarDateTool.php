@@ -34,7 +34,7 @@ class CalendarDateTool
 			'sam.',
 			'dim.',
 	);
-	public function __construct($date = null, $mode = self::MODE_DAY, $extra = false)
+	public function __construct($date = null, $mode = self::MODE_JOUR, $extra = false)
 	{
 		$this->setDate($date);
 		$this->mode = $mode;
@@ -168,9 +168,9 @@ class CalendarDateTool
 	}
 
 	public function getDateDebut($format = null) {
-		if($this->getMode() == self::MODE_WEEK) {
+		if($this->getMode() == self::MODE_DAY) {
 
-			return $this->getDateDebutMois($format);
+			return $this->getDateDebutJour($format);
 		}
 
 		if($this->getMode() == self::MODE_MONTH) {
@@ -178,12 +178,13 @@ class CalendarDateTool
 			return $this->getDateDebutMois($format);
 		}
 
-		return $this->getDateDebutJour($format);
+		return $this->getDateDebutSemaine($format);
 	}
 
 	public function getDateFin($format = null) {
-		if($this->getMode() == self::MODE_WEEK) {
-            return $this->getDateFinSemaine($format);
+		if($this->getMode() == self::MODE_DAY) {
+
+			return $this->getDateFinJour($format);
 		}
 
 		if($this->getMode() == self::MODE_MONTH) {
@@ -191,54 +192,45 @@ class CalendarDateTool
 			return $this->getDateFinMois($format);
 		}
 
-        return $this->getDateFinJour($format);
-
+		return $this->getDateFinSemaine($format);
 	}
 
 
 	public function getPrecedent() {
-		if($this->getMode() == self::MODE_WEEK) {
-            return $this->getSemainePrecedente();
+		if($this->getMode() == self::MODE_DAY) {
+
+			return $this->getJourPrecedent();
 		}
 
 		if($this->getMode() == self::MODE_MONTH) {
 
 			return $this->getMoisPrecedent();
 		}
-        return $this->getJourPrecedent();
 
+		return $this->getSemainePrecedente();
 	}
 
 	public function getSuivant() {
-		if($this->getMode() == self::MODE_WEEK) {
+		if($this->getMode() == self::MODE_DAY) {
 
-			return $this->getSemaineSuivante();
+			return $this->getJourSuivant();
 		}
 
 		if($this->getMode() == self::MODE_MONTH) {
 
 			return $this->getMoisSuivant();
 		}
-        return $this->getJourSuivant();
 
+		return $this->getSemaineSuivante();
 	}
 
 	public function getLibelle() {
 		$formatter = new \IntlDateFormatter("fr_FR", \IntlDateFormatter::LONG, \IntlDateFormatter::LONG);
 
-		if($this->getMode() == self::MODE_WEEK) {
-			$formatter->setPattern("MMM");
+		if($this->getMode() == self::MODE_DAY) {
+			$formatter->setPattern("EEEE d MMMM Y");
 
-			$firstMonth = $formatter->format($this->getDateDebutSemaine());
-			$lastMonth = $formatter->format($this->getDateFinSemaine());
-
-			if($firstMonth == $lastMonth) {
-				$firstMonth = "";
-			} else {
-				$firstMonth = " ".$firstMonth;
-			}
-
-			return sprintf("%s%s au %s %s %s", $this->getDateDebutSemaine()->format('j'), $firstMonth, $this->getDateFinSemaine()->format("j"), $lastMonth, $this->getDateFinSemaine()->format("Y"));
+			return ucfirst($formatter->format($this->getDate()));
 		}
 
 		if($this->getMode() == self::MODE_MONTH) {
@@ -248,10 +240,19 @@ class CalendarDateTool
 			return ucfirst($formatter->format($this->getDateDebutMois()));
 		}
 
-		$formatter->setPattern("EEEE d MMMM Y");
 
-		return ucfirst($formatter->format($this->getDate()));
+		$formatter->setPattern("MMM");
 
+		$firstMonth = $formatter->format($this->getDateDebutSemaine());
+		$lastMonth = $formatter->format($this->getDateFinSemaine());
+
+		if($firstMonth == $lastMonth) {
+			$firstMonth = "";
+		} else {
+			$firstMonth = " ".$firstMonth;
+		}
+
+		return sprintf("%s%s au %s %s %s", $this->getDateDebutSemaine()->format('j'), $firstMonth, $this->getDateFinSemaine()->format("j"), $lastMonth, $this->getDateFinSemaine()->format("Y"));
 	}
 
 	public static function getShortLibelleMois($mois)
