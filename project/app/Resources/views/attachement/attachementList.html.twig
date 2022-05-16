@@ -14,21 +14,22 @@
             {% for attachement in attachements %}
             <tr>
                 <td>
-                    {{ attachement.updatedAt | localizeddate("medium", "none", null, null, "dd MMMM yyyy HH:mm") }}
+                    {{ attachement.updatedAt | localizeddate("medium", "none", null, null, "dd MMM yyyy") }}
+                    <br />
+                    <span class="text-muted">{{ attachement.updatedAt | localizeddate("medium", "none", null, null, "HH:mm") }}</span>
                 </td>
                 <td>
-                    <a style="cursor:pointer;" href="{{ attachement.getBase64Src() }}" download="{{ attachement.getBase64Src() }}">
-                        <p><span class="glyphicon glyphicon-download-alt"></span>&nbsp;{% if attachement.titre %}{{ attachement.titre }}{% else %}{{ attachement.originalName }}{% endif %}</p>
-                    </a>
+                    <a href="{{ path('attachement_download', { id: attachement.id })}}">
+            <p><span class="glyphicon glyphicon-download-alt"></span>&nbsp;{% if attachement.titre %}{{ attachement.titre }}{% else %}{{ attachement.originalName }}{% endif %}</p></a>
                 </td>
                 <td>
                 {% if attachement.societe %}
-                    <a href="{{ path('attachements_entite',{ 'id' : attachement.societe.id }) }}">
+                    <a href="{{ path('attachements_societe',{ 'id' : attachement.societe.id }) }}">
             		      <strong>Société&nbsp;:&nbsp;</strong><small>{{ attachement.societe.raisonSociale }}</small>
             		</a>
                 {% endif %}
                 {% if attachement.etablissement %}
-                    <a href="{{ path('attachements_entite',{ 'id' : attachement.etablissement.id }) }}">
+                    <a href="{{ path('attachements_etablissement',{ 'id' : attachement.etablissement.id }) }}">
             			<strong>Lieu&nbsp;:&nbsp;</strong><small>{{ attachement.etablissement.adresse.intitule }}</small>
                     </a>
                 {% endif %}

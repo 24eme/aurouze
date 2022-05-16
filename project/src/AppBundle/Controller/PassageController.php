@@ -536,14 +536,14 @@ class PassageController extends Controller
         $message = \Swift_Message::newInstance()
             ->setSubject($suject)
             ->setFrom(array($fromEmail => $fromName))
-            ->setTo($passage->getEmailTransmission())
+            ->setTo(explode(";",$passage->getEmailTransmission()))
             ->setReplyTo($replyEmail)
             ->setBody($body,'text/plain');
 
         if ($passage->getSecondEmailTransmission()) {
-            $to = [];
-            $to[] = $passage->getEmailTransmission();
-            $to[] = $passage->getSecondEmailTransmission();
+            $emailsTransmissions = explode(";",$passage->getEmailTransmission());
+            $secondEmailsTransmission = explode(";",$passage->getSecondEmailTransmission());
+            $to = array_merge($emailsTransmissions,$secondEmailsTransmission);
             $message->setTo($to);
         }
 
@@ -553,6 +553,7 @@ class PassageController extends Controller
         try {
             $this->get('mailer')->send($message);
             $passage->setPdfNonEnvoye(false);
+            $passage->setPdfDateEnvoi();
             $dm->flush();
         }
         catch(Exception $e) {

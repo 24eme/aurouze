@@ -34,7 +34,7 @@ class CalendarDateTool
 			'sam.',
 			'dim.',
 	);
-	public function __construct($date = null, $mode = self::MODE_WEEK, $extra = false)
+	public function __construct($date = null, $mode = self::MODE_JOUR, $extra = false)
 	{
 		$this->setDate($date);
 		$this->mode = $mode;

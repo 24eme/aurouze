@@ -483,6 +483,16 @@ trait DocumentPlanifiableMethodsTrait
         return $this->pdfNonEnvoye;
     }
 
+    public function setPdfDateEnvoi(){
+      $today = new \DateTime();
+      $this->pdfDateEnvoi = $today;
+      return $this;
+    }
+
+    public function getPdfDateEnvoi(){
+      return $this->pdfDateEnvoi;
+    }
+
     public function getColors()
     {
         $rdv = $this->rendezVous;

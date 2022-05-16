@@ -1,0 +1,7 @@
+Bonjour,
+
+Veuillez trouver votre avoir en pièce jointe.
+
+Vous pouvez également le télécharger en suivant ce lien : {{ app.request.schemeAndHttpHost }}{{ path('facturable_pdf', {'document': facture.id ,'key': facture.getSecretKey()})}}
+
+{{ email_footer }}

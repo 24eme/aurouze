@@ -441,7 +441,36 @@ class FactureController extends Controller
         return $response;
     }
 
+    /**
+     * @Route("/facture/export_factures_en_retard", name="factures_en_retard_export")
+     */
+    public function exportFactureEnRetardAction(Request $request) {
+        ini_set('memory_limit', '-1');
 
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $fm = $this->get('facture.manager');
+
+        $facturesForCsv = $fm->getRetardDePaiementCSV();
+
+        $filename = sprintf("export_factures_en_retard.csv");
+        $handle = fopen('php://memory', 'r+');
+
+        foreach ($facturesForCsv as $paiement) {
+            fputcsv($handle, $paiement,';');
+        }
+
+        rewind($handle);
+        $content = stream_get_contents($handle);
+        fclose($handle);
+
+        $response = new Response(utf8_decode($content), 200, array(
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename=' . $filename,
+        ));
+        $response->setCharset('UTF-8');
+
+        return $response;
+    }
 
     /**
      * @Route("/prelevements/export", name="factures_prelevements")
@@ -878,7 +907,10 @@ class FactureController extends Controller
 
       $pdf = $request->get('pdf',null);
 
-      $dateFactureBasse = null;
+      $date = new \DateTime();
+      $interval = new \DateInterval('P2Y');
+      $dateFactureBasse = $date->sub($interval);
+
       $dateFactureHaute = null;
       $nbRelances = null;
       $commerciaux = null;
@@ -904,8 +936,18 @@ class FactureController extends Controller
           'method' => 'post',
       ));
 
+      $arrayFacturesBySociete = array();
+      foreach($facturesEnRetard as $f){
+          $arrayFacturesBySociete[$f->getSociete()->getId()][] = $f->getId();
+      }
+
+      $tabNbFacturesBySociete = array();
+      foreach($arrayFacturesBySociete as $k=>$v){
+         $tabNbFacturesBySociete[$k] = count($arrayFacturesBySociete[$k]);
+      }
+
       return $this->render('facture/retardPaiements.html.twig', array('facturesEnRetard' => $facturesEnRetard, "formRelance" => $formRelance->createView(), 'nbRelances' => $nbRelances, 'pdf' => $pdf,
-      'formFacturesARelancer' => $formFacturesEnRetard->createView(), 'commerciaux' => $commerciaux));
+      'formFacturesARelancer' => $formFacturesEnRetard->createView(), 'commerciaux' => $commerciaux,'tabNbFacturesBySociete'=> $tabNbFacturesBySociete));
     }
 
 
@@ -1079,7 +1121,7 @@ class FactureController extends Controller
         $message = \Swift_Message::newInstance()
             ->setSubject($subject)
             ->setFrom(array($fromEmail => $fromName))
-            ->setTo($toEmail)
+            ->setTo(explode(";", $toEmail))
             ->setBody($body,'text/plain')
             ->setReadReceiptTo($fromEmail);
 
@@ -1097,6 +1139,12 @@ class FactureController extends Controller
             $relance->setDateRelance(new \DateTime());
             $relance->setNumeroRelance(1);
             $facture->addRelance($relance);
+            if($facture->getRelanceCommentaire()){
+                $facture->setRelanceCommentaire($facture->getRelanceCommentaire()."\n"."R1 le ".$relance->getDateRelance()->format('d-m-Y'));
+            }
+            else{
+                $facture->setRelanceCommentaire("R1 le ".$relance->getDateRelance()->format('d-m-Y'));
+            }
             $dm->flush();
         }
         catch(Exception $e) {
@@ -1122,23 +1170,31 @@ class FactureController extends Controller
           $prefix_subject =  $parameters['coordonnees']['prefix_objet'];
 
           $subject = $prefix_subject." Facture n°".$facture->getNumeroFacture();
-          $body = $this->render('facture/mailFacture.html.twig', ['facture' => $facture])->getContent();
+          if($facture->isAvoir()){
+            $body = $this->render('facture/mailAvoir.html.twig', ['facture' => $facture])->getContent();
+          }
+          else{
+            $body = $this->render('facture/mailFacture.html.twig', ['facture' => $facture])->getContent();
+          }
           if($facture->getSociete()->getContactCoordonnee()->getEmailFacturation()){
             $toEmail = $facture->getSociete()->getContactCoordonnee()->getEmailFacturation();
           }
           elseif($facture->getSociete()->getContactCoordonnee()->getEmail()) {
             $toEmail = $facture->getSociete()->getContactCoordonnee()->getEmail();
           }
+
+
           else{
             var_dump('NO mailer config');
             $request->getSession()->getFlashBag()->add('notice', 'success');
             $referer = $request->headers->get('referer');
             return $this->redirect($referer);
           }
+
           $message = \Swift_Message::newInstance()
               ->setSubject($subject)
               ->setFrom(array($fromEmail => $fromName))
-              ->setTo($toEmail)
+              ->setTo(explode(";", $toEmail))
               ->setBody($body,'text/plain')
               ->setReadReceiptTo($fromEmail);
 
@@ -1149,6 +1205,9 @@ class FactureController extends Controller
 
           try {
               $this->get('mailer')->send($message);
+              $dm = $this->get('doctrine_mongodb')->getManager();
+              $facture->setDateEnvoiMail(new \DateTime());
+              $dm->flush();
           }
           catch(Exception $e) {
               var_dump('NO mailer config');
