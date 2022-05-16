@@ -907,7 +907,10 @@ class FactureController extends Controller
 
       $pdf = $request->get('pdf',null);
 
-      $dateFactureBasse = null;
+      $date = new \DateTime();
+      $interval = new \DateInterval('P2Y');
+      $dateFactureBasse = $date->sub($interval);
+
       $dateFactureHaute = null;
       $nbRelances = null;
       $commerciaux = null;
@@ -933,8 +936,18 @@ class FactureController extends Controller
           'method' => 'post',
       ));
 
+      $arrayFacturesBySociete = array();
+      foreach($facturesEnRetard as $f){
+          $arrayFacturesBySociete[$f->getSociete()->getId()][] = $f->getId();
+      }
+
+      $tabNbFacturesBySociete = array();
+      foreach($arrayFacturesBySociete as $k=>$v){
+         $tabNbFacturesBySociete[$k] = count($arrayFacturesBySociete[$k]);
+      }
+
       return $this->render('facture/retardPaiements.html.twig', array('facturesEnRetard' => $facturesEnRetard, "formRelance" => $formRelance->createView(), 'nbRelances' => $nbRelances, 'pdf' => $pdf,
-      'formFacturesARelancer' => $formFacturesEnRetard->createView(), 'commerciaux' => $commerciaux));
+      'formFacturesARelancer' => $formFacturesEnRetard->createView(), 'commerciaux' => $commerciaux,'tabNbFacturesBySociete'=> $tabNbFacturesBySociete));
     }
 
 
