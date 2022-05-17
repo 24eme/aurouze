@@ -465,6 +465,9 @@ trait DocumentPlanifiableMethodsTrait
     public function setPdfNonEnvoye($pdfNonEnvoye)
     {
         $this->pdfNonEnvoye = $pdfNonEnvoye;
+        if(!$pdfNonEnvoye){
+            $this->setPdfRapportDateEnvoi(new \DateTime());
+        }
         return $this;
     }
 
@@ -481,16 +484,6 @@ trait DocumentPlanifiableMethodsTrait
     public function isPdfNonEnvoye()
     {
         return $this->pdfNonEnvoye;
-    }
-
-    public function setPdfDateEnvoi(){
-      $today = new \DateTime();
-      $this->pdfDateEnvoi = $today;
-      return $this;
-    }
-
-    public function getPdfDateEnvoi(){
-      return $this->pdfDateEnvoi;
     }
 
     public function getColors()
