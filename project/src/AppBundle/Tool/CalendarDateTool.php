@@ -34,12 +34,14 @@ class CalendarDateTool
 			'sam.',
 			'dim.',
 	);
-	public function __construct($date = null, $mode = self::MODE_JOUR, $extra = false)
+	public function __construct($date = null, $mode = self::MODE_WEEK, $extra = false)
 	{
 		$this->setDate($date);
 		$this->mode = $mode;
 		$this->nb_day_in_week = ($extra)? 6 : 5;
-	}
+
+
+    }
 
 	public function getDate()
 	{
@@ -197,42 +199,30 @@ class CalendarDateTool
 
 
 	public function getPrecedent() {
-		if($this->getMode() == self::MODE_DAY) {
-
-			return $this->getJourPrecedent();
-		}
-
 		if($this->getMode() == self::MODE_MONTH) {
 
 			return $this->getMoisPrecedent();
 		}
-
-		return $this->getSemainePrecedente();
+        if($this->getMode() == self::MODE_WEEK) {
+            return $this->getSemainePrecedente();
+        }
+        return $this->getJourPrecedent();
 	}
 
 	public function getSuivant() {
-		if($this->getMode() == self::MODE_DAY) {
-
-			return $this->getJourSuivant();
-		}
-
 		if($this->getMode() == self::MODE_MONTH) {
 
 			return $this->getMoisSuivant();
 		}
 
-		return $this->getSemaineSuivante();
+        if($this->getMode() == self::MODE_WEEK) {
+          return $this->getSemaineSuivante();
+        }
+        return $this->getJourSuivant();
 	}
 
 	public function getLibelle() {
 		$formatter = new \IntlDateFormatter("fr_FR", \IntlDateFormatter::LONG, \IntlDateFormatter::LONG);
-
-		if($this->getMode() == self::MODE_DAY) {
-			$formatter->setPattern("EEEE d MMMM Y");
-
-			return ucfirst($formatter->format($this->getDate()));
-		}
-
 		if($this->getMode() == self::MODE_MONTH) {
 
 			$formatter->setPattern("MMMM Y");
@@ -240,20 +230,27 @@ class CalendarDateTool
 			return ucfirst($formatter->format($this->getDateDebutMois()));
 		}
 
+        if($this->getMode() == self::MODE_WEEK){
 
-		$formatter->setPattern("MMM");
+            $formatter->setPattern("MMM");
 
-		$firstMonth = $formatter->format($this->getDateDebutSemaine());
-		$lastMonth = $formatter->format($this->getDateFinSemaine());
+            $firstMonth = $formatter->format($this->getDateDebutSemaine());
+            $lastMonth = $formatter->format($this->getDateFinSemaine());
 
-		if($firstMonth == $lastMonth) {
-			$firstMonth = "";
-		} else {
-			$firstMonth = " ".$firstMonth;
-		}
+            if($firstMonth == $lastMonth) {
+            $firstMonth = "";
+            } else {
+            $firstMonth = " ".$firstMonth;
+            }
 
-		return sprintf("%s%s au %s %s %s", $this->getDateDebutSemaine()->format('j'), $firstMonth, $this->getDateFinSemaine()->format("j"), $lastMonth, $this->getDateFinSemaine()->format("Y"));
-	}
+            return sprintf("%s%s au %s %s %s", $this->getDateDebutSemaine()->format('j'), $firstMonth, $this->getDateFinSemaine()->format("j"), $lastMonth, $this->getDateFinSemaine()->format("Y"));
+            }
+
+            $formatter->setPattern("EEEE d MMMM Y");
+
+            return ucfirst($formatter->format($this->getDate()));
+
+    }
 
 	public static function getShortLibelleMois($mois)
 	{
