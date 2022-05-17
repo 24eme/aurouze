@@ -112,6 +112,10 @@
                   </ul>
                  </div>
               {% endif %}
+              {% if not facture.numeroFacture and not facture.isDevis %}
+                <a class="btn btn-default btn-xs" onclick="return confirm('Êtes vous sûr de vouloir facturer ?')" href="{{ path('facture_en_attente_facturer', { 'factureId': facture.id }) }}"> Créer la facture </a>
+              {% endif %}
+              </td>
               <td>
                   {% if facture.getDateEnvoiMail() %}
                     <span class="glyphicon glyphicon-envelope" title="Mail envoyé le {{ facture.getDateEnvoiMail()| date("d/m/Y") }}"></span>
@@ -124,8 +128,4 @@
                     {% endif %}
                   {% endif %}
               </td>
-              {% if not facture.numeroFacture and not facture.isDevis %}
-                <a class="btn btn-default btn-xs " onclick="return confirm('Êtes vous sûr de vouloir facturer ?')" href="{{ path('facture_en_attente_facturer', { 'factureId': facture.id }) }}"> Créer la facture </a>
-              {% endif %}
-            </td>
         </tr>
