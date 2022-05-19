@@ -310,15 +310,15 @@ class PaiementsController extends Controller {
 
     	$facturesForCsv = $fm->getFacturesPrelevementsForCsv();
 
+
         if(count($facturesForCsv)){
+
             $prelevement = new PrelevementXml($facturesForCsv,$banqueParameters);
             $prelevement->createPrelevement();
             $this->createPaiementsPrelevement($facturesForCsv,$prelevement);
         }
 
-        return $this->redirectToRoute('paiements_liste');
-
-
+        return $this->redirect($this->generateUrl('paiements_liste') . '#prelevements');
     }
 
     /**

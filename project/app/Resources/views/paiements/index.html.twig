@@ -28,6 +28,7 @@
         Prélèvements bancaires
         <a class="btn btn-default pull-right" href="{{ path('paiements_prelevement_previsualisation') }}">Créer un export pour la banque</a>
     </h2>
+    <div id="prelevements"></div>
     <div id="wrapper">
     {{ include('paiements/prelevementsTableau.html.twig', {'paiementsDocs': paiementsDocsPrelevement, 'prelevement' : true }) }}
     </div>
