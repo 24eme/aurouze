@@ -485,6 +485,7 @@ class PassageController extends Controller
         if(!$passage->getEmailTransmission()){
             $dm = $this->get('doctrine_mongodb')->getManager();
             $passage->setPdfNonEnvoye(false);
+            $passage->setPdfRapportDateEnvoi(new \DateTime());
             $dm->flush();
         }
 
@@ -553,6 +554,7 @@ class PassageController extends Controller
         try {
             $this->get('mailer')->send($message);
             $passage->setPdfNonEnvoye(false);
+            $passage->setPdfRapportDateEnvoi(new \DateTime());
             $dm->flush();
         }
         catch(Exception $e) {
