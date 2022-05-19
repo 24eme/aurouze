@@ -168,6 +168,11 @@ class Passage implements DocumentEtablissementInterface, DocumentSocieteInterfac
      */
     protected $zone;
 
+    /**
+     * @MongoDB\Field(type="date")
+     */
+    protected $dateEnvoiMailRapport;
+
 
     public function __construct() {
         $this->etablissementInfos = new EtablissementInfos();
@@ -1220,4 +1225,14 @@ class Passage implements DocumentEtablissementInterface, DocumentSocieteInterfac
         return ucfirst($formatter->format($this->getDateDebut()));
 
     }
+
+    public function setPdfRapportDateEnvoi($date){
+      $this->dateEnvoiMailRapport = $date;
+      return $this;
+    }
+
+    public function getPdfRapportDateEnvoi(){
+      return $this->dateEnvoiMailRapport;
+    }
+
 }
