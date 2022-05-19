@@ -32,6 +32,19 @@ class PaiementsController extends Controller {
         $paiementsDocsPrelevement = $this->get('paiements.manager')->getRepository()->findByPeriode($periode,true);
         $dm = $this->get('doctrine_mongodb')->getManager();
 
+        $tabPaiementsChequesNonTerminé = array();
+        $tabOthersPaiements = array();
+        foreach($paiementsDocs as $paiements){
+            foreach($paiements->getAggregatePaiements() as $k => $v){
+                if(!$paiements->isImprime() && $k == "CHEQUE"){
+                    $tabPaiementsChequesNonTerminé[] =$paiements;
+                }
+                else{
+                    $tabOthersPaiements[] = $paiements;
+                }
+            }
+        }
+        $paiementsDocs = array_merge($tabPaiementsChequesNonTerminé, $tabOthersPaiements);
         return $this->render('paiements/index.html.twig', array('paiementsDocs' => $paiementsDocs, 'paiementsDocsPrelevement' => $paiementsDocsPrelevement, 'periode' => $periode));
     }
 
