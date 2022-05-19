@@ -29,7 +29,7 @@
         <a class="btn btn-default pull-right" href="{{ path('paiements_prelevement_previsualisation') }}">Créer un export pour la banque</a>
     </h2>
     <div id="wrapper">
-    {{ include('paiements/paiementsTableau.html.twig', {'paiementsDocs': paiementsDocsPrelevement, 'prelevement' : true }) }}
+    {{ include('paiements/prelevementsTableau.html.twig', {'paiementsDocs': paiementsDocsPrelevement, 'prelevement' : true }) }}
     </div>
 
 {% endblock %}
