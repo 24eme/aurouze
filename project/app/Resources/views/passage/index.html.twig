@@ -79,7 +79,7 @@
                                             {% if passage.etablissementInfos.adresse.coordonnees.lat and passage.etablissementInfos.adresse.coordonnees.lon %}
                                               <i class="mdi mdi-zoom-in mdi-lg pull-right" style="cursor: pointer"></i>
                                             {% else %}
-                                                <a href="{{ path('etablissement_modification', {'societe': passage.etablissement.societe.getId(),'id': passage.etablissement.getId()}) }}#adresse" title="Placer l'établissement"><span class="glyphicon glyphicon-map-marker pull-right"></span></a>
+                                                <a href="{{ path('etablissement_modification', {'societe': passage.etablissement.societe.getId(),'id': passage.etablissement.getId()}) }}#adresse" target="_blank" title="Placer l'établissement" ><span class="glyphicon glyphicon-map-marker pull-right"></span></a>
                                             {% endif %}
                                             {% if passage.getDocumentType() is constant('AppBundle\\Document\\Devis::DOCUMENT_TYPE') %}
                                               <i class="pull-right mdi mdi-local-shipping mdi-lg"></i>
@@ -112,7 +112,7 @@
                                                     <i class="mdi mdi-group mdi-lg"></i>
                                                 </span>
                                             {% endif %}
-                                            <a href="{{ path("calendar_planifier", {'planifiable': passage.id}) }}" class="btn btn-link" >
+                                            <a href="{{ path("calendar_planifier", {'planifiable': passage.id}) }}" class="btn btn-link" target="_blank" >
                                                 <i class="mdi mdi-date-range mdi-lg"></i>
                                                 {{ passage.datePrevision | localizeddate("medium", "none", null, null, "MMM yyyy") | capitalize }}
                                             </a>
