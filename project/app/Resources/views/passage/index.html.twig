@@ -79,7 +79,7 @@
                                             {% if passage.etablissementInfos.adresse.coordonnees.lat and passage.etablissementInfos.adresse.coordonnees.lon %}
                                               <i class="mdi mdi-zoom-in mdi-lg pull-right" style="cursor: pointer"></i>
                                             {% else %}
-                                                <a href="{{ path('etablissement_modification', {'societe': passage.etablissement.societe.getId(),'id': passage.etablissement.getId()}) }}#adresse" target="_blank" title="Placer l'établissement" ><span class="glyphicon glyphicon-map-marker pull-right"></span></a>
+                                                <a href="{{ path('etablissement_modification', {'societe': passage.etablissement.societe.getId(),'id': passage.etablissement.getId()}) }}#adresse" target="_blank"><span class="glyphicon glyphicon-map-marker pull-right"></span></a>
                                             {% endif %}
                                             {% if passage.getDocumentType() is constant('AppBundle\\Document\\Devis::DOCUMENT_TYPE') %}
                                               <i class="pull-right mdi mdi-local-shipping mdi-lg"></i>

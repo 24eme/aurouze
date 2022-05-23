@@ -986,14 +986,22 @@
 
     $.initMoreInfo = function () {
       $(".btn-more-info").on("click", function () {
+
         var button = $(this);
         var icon = button.children('i').first();
         var div = button.prev();
 	if (div.children().length > 0) {
+            div.removeClass("div-open");
             div.empty();
             icon.addClass('mdi-vertical-align-bottom');
             icon.removeClass('mdi-vertical-align-top');
 	} else {
+            var opendiv = document.getElementsByClassName("div-open");
+            if(opendiv.length > 0 ){
+              $(opendiv[0]).empty();
+              $(opendiv[0]).removeClass('div-open');
+            }
+            div.addClass("div-open");
             div.html("<pre>Chargement...</pre>");
 
             $.get(div.data('url'), function (result) {
