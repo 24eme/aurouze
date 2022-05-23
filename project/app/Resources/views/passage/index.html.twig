@@ -81,6 +81,7 @@
                                             {% else %}
                                                 <a href="{{ path('etablissement_modification', {'societe': passage.etablissement.societe.getId(),'id': passage.etablissement.getId()}) }}#adresse" target="_blank"><span class="glyphicon glyphicon-map-marker pull-right"></span></a>
                                             {% endif %}
+                                            <span onClick="window.location.reload();" class="glyphicon glyphicon-refresh pull-right" style="cursor: pointer" title="actualiser"></span>
                                             {% if passage.getDocumentType() is constant('AppBundle\\Document\\Devis::DOCUMENT_TYPE') %}
                                               <i class="pull-right mdi mdi-local-shipping mdi-lg"></i>
                                             {% endif %}
