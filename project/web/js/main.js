@@ -825,7 +825,7 @@
                     {
                         onEachFeature: function (feature, layer) {
                             if ($('#liste_passage').length) {
-                                layer.on('mouseover', function (e) {
+                                layer.on('click', function (e) {
                                     $('.leaflet-marker-icon').css('opacity', '0.5');
                                     $(e.target._icon).css('opacity', '1');
                                     e.target.setZIndexOffset(1001);
@@ -843,6 +843,16 @@
                                         element.focus();
                                     }, 400);
                                 });
+
+                                layer.on('mouseover', function (e) {
+                                    $('.leaflet-marker-icon').css('opacity', '0.5');
+                                    $(e.target._icon).css('opacity', '1');
+                                    e.target.setZIndexOffset(1001);
+                                    if (hoverTimeout) {
+                                        clearTimeout(hoverTimeout);
+                                    }
+                                    e.target.bindPopup("<b>"+e.target.feature.properties.nom+"</b>").openPopup();
+                                });
                                 layer.on('mouseout', function (e) {
                                     if (hoverTimeout) {
                                         clearTimeout(hoverTimeout);
@@ -852,9 +862,6 @@
                                     $('.leaflet-marker-icon').css('opacity', '1');
                                 });
 
-                                layer.on('click', function (e) {
-                                  document.location.href = $('#' + e.target.feature.properties._id).data('url-etablissement');
-                                });
                             }
                         },
                         pointToLayer: function (feature, latlng) {
