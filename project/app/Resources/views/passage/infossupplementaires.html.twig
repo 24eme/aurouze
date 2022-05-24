@@ -1,9 +1,9 @@
 <div class="well">
-  <a class="btn btn-default" href="{{ path("passage_etablissement", {'id': etablissement.id}) }}" target="_blank">Voir l'établissement</a>
-  <a class="btn btn-primary" href="{{ path("calendar_planifier", {'planifiable': passage.id}) }}" target="_blank">Planifier</a>
+  <a class="btn btn-default" href="{{ path("passage_etablissement", {'id': etablissement.id}) }}">Voir l'établissement</a>
+  <a class="btn btn-primary" href="{{ path("calendar_planifier", {'planifiable': passage.id}) }}">Planifier</a>
   <h5>
     <i class="mdi mdi-lg mdi-{{ societe.icon }}"></i> Société :
-    <a href="{{path("societe_visualisation", {'id': societe.id})}}" target="_blank">
+    <a href="{{path("societe_visualisation", {'id': societe.id})}}">
       {{ societe.raisonsociale }}
     </a>
   </h5>
@@ -12,7 +12,7 @@
   </h5>
   <h5>
     <i class="mdi mdi-{{ passage.etablissementInfos.icon }} mdi-lg"></i> Lieu d'application :
-    <a href="{{path("passage_etablissement", {'id': passage.etablissement.id})}}" target="_blank">
+    <a href="{{path("passage_etablissement", {'id': passage.etablissement.id})}}">
       {{ etablissement.adresse.getIntitule() }}
     </a>
   </h5>
@@ -36,7 +36,7 @@
     {% if lastPassages %}
     <hr style="border:0.5px dotted black;margin: inherit;">
     <li class="list-inline-item">
-    <a href="{{path("contrat_visualisation", {'id': contrat.id})}}" target="_blank">
+    <a href="{{path("contrat_visualisation", {'id': contrat.id})}}">
         Contrat n°{{ contrat.numeroArchive }} du {{ contrat.dateDebut | localizeddate("medium", "none", null, null, "d MMMM yyyy") | capitalize }} au {{ contrat.dateFin | localizeddate("medium", "none", null, null, "d MMMM yyyy") | capitalize }}
     </a>
     </li>

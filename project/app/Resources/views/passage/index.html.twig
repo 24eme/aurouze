@@ -70,23 +70,27 @@
                                     {% set techBgColor = passage.techniciens[0].couleur %}
                                     {% set techIdentite = passage.techniciens[0].identiteCourt %}
                                 {% endif %}
-                                <div data-words='{{ words }}' id="{{ passage.id }}" data-url-etablissement="{{ path("passage_etablissement", {'id': 'ETABLISSEMENT-'~passage.etablissementIdentifiant}) }}" style="margin-bottom: 4px" class="panel panel-default hamzastyle-item hide-print{% if not passage.etablissementInfos.adresse.coordonnees.lat and not passage.etablissementInfos.adresse.coordonnees.lon %} no-geojson{% endif %}">
+                            <div {% if passage.isPlanifie %} style="opacity:0.5"{% endif %} data-words='{{ words }}' id="{{ passage.id }}" data-url-etablissement="{{ path("passage_etablissement", {'id': 'ETABLISSEMENT-'~passage.etablissementIdentifiant}) }}" style="margin-bottom: 4px" class="panel panel-default hamzastyle-item hide-print{% if not passage.etablissementInfos.adresse.coordonnees.lat and not passage.etablissementInfos.adresse.coordonnees.lon %} no-geojson{% endif %}">
                                     <div class="panel-heading">
                                         <div class="panel-title clearfix">
                                             <i class="mdi mdi-{{ passage.etablissementInfos.icon }} mdi-lg"></i>
                                             <strong>{{ passage.etablissementInfos.nom|capitalize }}</strong>
                                             <small>{{ passage.etablissementInfos.adresse.codePostal }} {{ passage.etablissementInfos.adresse.commune }}</small>
-                                            {% if passage.etablissementInfos.adresse.coordonnees.lat and passage.etablissementInfos.adresse.coordonnees.lon %}
-                                              <i class="mdi mdi-zoom-in mdi-lg pull-right" style="cursor: pointer"></i>
+                                            {% if passage.isPlanifie %}
+                                                <span class="glyphicon glyphicon-ok-sign pull-right" title="Planifié"></span>
                                             {% else %}
-                                                <a href="{{ path('etablissement_modification', {'societe': passage.etablissement.societe.getId(),'id': passage.etablissement.getId()}) }}#adresse" target="_blank"><span class="glyphicon glyphicon-map-marker pull-right"></span></a>
-                                            {% endif %}
-                                            <span onClick="window.location.reload();" class="glyphicon glyphicon-refresh pull-right" style="cursor: pointer" title="actualiser"></span>
-                                            {% if passage.getDocumentType() is constant('AppBundle\\Document\\Devis::DOCUMENT_TYPE') %}
-                                              <i class="pull-right mdi mdi-local-shipping mdi-lg"></i>
+                                                {% if passage.etablissementInfos.adresse.coordonnees.lat and passage.etablissementInfos.adresse.coordonnees.lon %}
+                                                  <i class="mdi mdi-zoom-in mdi-lg pull-right" style="cursor: pointer"></i>
+                                                {% else %}
+                                                    <a href="{{ path('etablissement_modification', {'societe': passage.etablissement.societe.getId(),'id': passage.etablissement.getId()}) }}#adresse"><span class="glyphicon glyphicon-map-marker pull-right"></span></a>
+                                                {% endif %}
+                                                {% if passage.getDocumentType() is constant('AppBundle\\Document\\Devis::DOCUMENT_TYPE') %}
+                                                  <i class="pull-right mdi mdi-local-shipping mdi-lg"></i>
+                                                {% endif %}
                                             {% endif %}
                                         </div>
                                     </div>
+                                    {% if not passage.isPlanifie %}
                                     <div class="panel-body">
                                         <div class="clearfix">
                                             {% for prestation in passage.prestations %}
@@ -113,16 +117,19 @@
                                                     <i class="mdi mdi-group mdi-lg"></i>
                                                 </span>
                                             {% endif %}
-                                            <a href="{{ path("calendar_planifier", {'planifiable': passage.id}) }}" class="btn btn-link" target="_blank" >
+                                            <a href="{{ path("calendar_planifier", {'planifiable': passage.id}) }}" class="btn btn-link">
                                                 <i class="mdi mdi-date-range mdi-lg"></i>
                                                 {{ passage.datePrevision | localizeddate("medium", "none", null, null, "MMM yyyy") | capitalize }}
                                             </a>
                                         </div>
-                                        {% if passage.getDocumentType() is not constant('AppBundle\\Document\\Devis::DOCUMENT_TYPE') %}
-                                          <div data-url="{{ path('ajax_more_infos_passage', {'passage': passage.id }) }}"></div>
-                                          <button type="button" class="btn-more-info btn btn-block btn-secondary"><i class="mdi mdi-lg mdi-vertical-align-bottom"></i> Plus d'informations</button>
-                                        {% endif %}
+
+                                            {% if passage.getDocumentType() is not constant('AppBundle\\Document\\Devis::DOCUMENT_TYPE') %}
+                                              <div data-url="{{ path('ajax_more_infos_passage', {'passage': passage.id }) }}"></div>
+                                              <button type="button" class="btn-more-info btn btn-block btn-secondary"><i class="mdi mdi-lg mdi-vertical-align-bottom"></i> Plus d'informations</button>
+                                            {% endif %}
+
                                     </div>
+                                    {% endif %}
                                 </div>
 
                                 <div data-words='{{ words }}' class="hamzastyle-item show-print">
