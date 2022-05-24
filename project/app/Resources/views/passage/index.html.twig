@@ -10,6 +10,20 @@
 
         </div>
         <div class="row hide-print">
+        {% if secteur %}
+        <ul class="nav nav-tabs">
+            <li role="presentation" class="active">
+                <a class="btn btn-default {% if secteur == "PARIS" %}active{% endif %}" href="{{ path('passage_secteur', {'secteur' :"PARIS"}) }}">
+                {{ etablissementManager.secteursNom("PARIS") }}
+                </a>
+            </li>
+            <li role="presentation">
+                <a class="btn btn-default {% if secteur == "SEINE_ET_MARNE" %}active{% endif %}" href="{{ path('passage_secteur', {'secteur' :"SEINE_ET_MARNE"}) }}">
+                {{ etablissementManager.secteursNom("SEINE_ET_MARNE") }}
+                </a>
+            </li>
+        </ul>
+        {% endif %}
             <div class="col-xs-12">
                 <h3 class="hide-print">Liste des passages à planifier {% if secteur %}pour {{ etablissementManager.secteursNom(secteur) }}{% endif %}{% if anneeMois %} en {{ dateFin | localizeddate("medium", "none", null, null, "MMMM yyyy") | capitalize }} {% else %} jusqu'au {{ dateFin | localizeddate("medium", "none", null, null, "d MMMM yyyy") }} {% endif %} </h3>
             </div>
@@ -35,28 +49,14 @@
         <br/>
         <div class="row">
             <div class="col-xs-12">
-                <div class="form-horizontal hide-print">
-                    <div class="form-group">
-                        <div class="col-xs-8">
-                            <select mulitple="multiple" data-placeholder="Filtrer la liste en saisissant un techinicien, un code postal, ..." data-hamzastyle-container="#liste_passage" class="hamzastyle form-control select2" data-hamzastyle-export="#form_filtre" ></select>
-                        </div>
-                        {{ form_start(passagesFiltreExportForm) }}
-                        {{ form_row(passagesFiltreExportForm.filtre) }}
-                        <button class="btn btn-default col-xs-1" href="{{ path('passages_filtre_export') }}" >Export</button>
-                        {{ form_end(passagesFiltreExportForm) }}
-                        <div class="col-xs-3 text-right">
-                            <div class="btn-group">
-                                {% if secteur %}
-                                <a class="btn btn-default {% if secteur == "PARIS" %}active{% endif %}" href="{{ path('passage_secteur', {'secteur' :"PARIS"}) }}">{{ etablissementManager.secteursNom("PARIS") }}</a>
-                                <a class="btn btn-default {% if secteur == "SEINE_ET_MARNE" %}active{% endif %}" href="{{ path('passage_secteur', {'secteur' :"SEINE_ET_MARNE"}) }}">{{ etablissementManager.secteursNom("SEINE_ET_MARNE") }}</a>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
+
                 <div class="row">
                     <div class="col-xs-6 enlarge-print">
-                        <div id="liste_passage" class="list-group well" style="height: 650px; overflow: auto; overflow-x: hidden; position: relative;">
+                        <div class="form-horizontal hide-print">
+                               <select mulitple="multiple" data-placeholder="Filtrer la liste en saisissant un techinicien, un code postal, ..." data-hamzastyle-container="#liste_passage" class="hamzastyle form-control select2" data-hamzastyle-export="#form_filtre" ></select>
+                               <br>
+                       </div>
+                        <div id="liste_passage" class="list-group well" style="height: 800px;overflow: auto; overflow-x: hidden; position: relative;">
                             {% for passage in passages %}
                                 {% set dptKeyWord = (passage.etablissementInfos.adresse.codePostal | slice(0, 2)) ? "Département "~passage.etablissementInfos.adresse.codePostal | slice(0, 2) : "" %}
                                 {% if(passage.techniciens | length == 0) %}
@@ -80,7 +80,8 @@
                                                 <span class="glyphicon glyphicon-ok-sign pull-right" title="Planifié"></span>
                                             {% else %}
                                                 {% if passage.etablissementInfos.adresse.coordonnees.lat and passage.etablissementInfos.adresse.coordonnees.lon %}
-                                                  <i class="mdi mdi-zoom-in mdi-lg pull-right" style="cursor: pointer"></i>
+                                                  <i id="zoom-{{passage.id}}"class="mdi mdi-zoom-in mdi-lg pull-right" style="cursor: pointer"></i>
+                                                  <div data-url="{{ path('ajax_more_infos_passage', {'passage': passage.id }) }}"></div>
                                                 {% else %}
                                                     <a href="{{ path('etablissement_modification', {'societe': passage.etablissement.societe.getId(),'id': passage.etablissement.getId()}) }}#adresse"><span class="glyphicon glyphicon-map-marker pull-right"></span></a>
                                                 {% endif %}
@@ -125,7 +126,7 @@
 
                                             {% if passage.getDocumentType() is not constant('AppBundle\\Document\\Devis::DOCUMENT_TYPE') %}
                                               <div data-url="{{ path('ajax_more_infos_passage', {'passage': passage.id }) }}"></div>
-                                              <button type="button" class="btn-more-info btn btn-block btn-secondary"><i class="mdi mdi-lg mdi-vertical-align-bottom"></i> Plus d'informations</button>
+                                              <button type="button" class="btn-more-info btn btn-block btn-secondary"><i class="mdi mdi-remove-red-eye"></i> Plus d'informations</button>
                                             {% endif %}
 
                                     </div>
@@ -173,10 +174,14 @@
                         </div>
                     </div>
                     <div class="col-xs-6 hide-print">
-                        <div id="map" class="well" style="width: 100%; height: 650px;" data-geojson="{{ geojson | json_encode(constant('JSON_HEX_QUOT')) }}"
+                        <div id="map" class="well" style="width: 100%; height: 300px;" data-geojson="{{ geojson | json_encode(constant('JSON_HEX_QUOT')) }}"
                                                                                        data-lat="{{ coordinatesCenter.lat }}" data-lon="{{ coordinatesCenter.lon }}"
                                                                                                                               data-zoom="{{ coordinatesCenter.zoom }}" data-historyrewrite="1" >
                         </div>
+                    <div id="info-passage">
+                    <div class="panel panel-default" style="height:500px;">
+                    </div>
+                    </div>
                     </div>
                 </div>
             </div>

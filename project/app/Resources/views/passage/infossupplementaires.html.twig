@@ -1,12 +1,23 @@
-<div class="well">
-  <a class="btn btn-default" href="{{ path("passage_etablissement", {'id': etablissement.id}) }}">Voir l'établissement</a>
-  <a class="btn btn-primary" href="{{ path("calendar_planifier", {'planifiable': passage.id}) }}">Planifier</a>
-  <h5>
-    <i class="mdi mdi-lg mdi-{{ societe.icon }}"></i> Société :
-    <a href="{{path("societe_visualisation", {'id': societe.id})}}">
-      {{ societe.raisonsociale }}
-    </a>
-  </h5>
+<div class="panel panel-default">
+<div class="panel-heading">
+    <div class="panel-title clearfix">
+        <i class="mdi mdi-{{ passage.etablissementInfos.icon }} mdi-lg"></i>
+        <strong>{{ passage.etablissementInfos.nom|capitalize }}</strong>
+        <small>{{ passage.etablissementInfos.adresse.codePostal }} {{ passage.etablissementInfos.adresse.commune }}</small>
+        <div style="float:right">
+        <a class="btn btn-default" href="{{ path("passage_etablissement", {'id': etablissement.id}) }}">Voir l'établissement</a>
+        <a class="btn btn-primary" href="{{ path("calendar_planifier", {'planifiable': passage.id}) }}">Planifier</a>
+        </div>
+    </div>
+
+</div>
+<div class="panel-body" style="width: 100%;overflow: auto;overflow-x: hidden;height: 450px;background-color:#f5f5f5;">
+    <h5>
+      <i class="mdi mdi-lg mdi-{{ societe.icon }}"></i> Société :
+      <a href="{{path("societe_visualisation", {'id': societe.id})}}">
+        {{ societe.raisonsociale }}
+      </a>
+    </h5>
   <h5>
     Solde : <span class="text-{% if (solde == 0) %}success{% elseif (solde < 0) %}danger{% else %}warning{% endif %}">{{ "%0.2f" | format(solde) }} €</span>
   </h5>
@@ -110,4 +121,5 @@ prévus sur {{ contrat.duree }} mois
         {% endif %}
     </div>
   </div>
+</div>
 </div>
