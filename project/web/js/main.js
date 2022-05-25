@@ -1012,12 +1012,18 @@
             $(divInfoPassage).html("<pre>Erreur lors du chargement des informations</pre>");
             button.text(' Réessayer');
         });
+        var clicked_div = document.getElementsByClassName("clicked-div");
+        if(clicked_div.length > 0){
+          $(clicked_div[0]).css("border-color","");
+          $(clicked_div[0]).removeClass("clicked-div");
+        }
+        $(this).parent().parent().parent().css("border-color","black");
+        $(this).parent().parent().parent().addClass("clicked-div");
       });
 
 
       $(".btn-more-info").on("click", function () {
-        var button = $(this);
-        var div = button.prev();
+        var div = $(this).prev();
         var divInfoPassage = document.getElementById('info-passage');
 
         $(divInfoPassage).html("<pre>Chargement...</pre>");
@@ -1026,8 +1032,16 @@
         })
         .fail(function () {
             $(divInfoPassage).html("<pre>Erreur lors du chargement des informations</pre>");
-            button.text(' Réessayer');
+            $(this).text(' Réessayer');
         });
+
+        var clicked_div = document.getElementsByClassName("clicked-div");
+        if(clicked_div.length > 0){
+          $(clicked_div[0]).css("border-color","");
+          $(clicked_div[0]).removeClass("clicked-div");
+        }
+        $(this).parent().css("border-color","black");
+        $(this).parent().addClass("clicked-div");
       });
     }
 

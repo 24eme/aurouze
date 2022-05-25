@@ -271,6 +271,7 @@ class PassageRepository extends DocumentRepository {
           $result[$moisAnnee]->nb = $result[$moisAnnee]->nb + 1;
       }
       ksort($result);
+      $result = array_slice($result,0, 1,true)+array_slice($result, -4, 4,true);
       return $result;
     }
 
