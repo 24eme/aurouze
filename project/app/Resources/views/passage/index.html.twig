@@ -67,7 +67,10 @@
                                     {% set techBgColor = passage.techniciens[0].couleur %}
                                     {% set techIdentite = passage.techniciens[0].identiteCourt %}
                                 {% endif %}
-                            <div {% if passage.isPlanifie %} style="opacity:0.5"{% endif %} data-words='{{ words }}' id="{{ passage.id }}" data-url-etablissement="{{ path("passage_etablissement", {'id': 'ETABLISSEMENT-'~passage.etablissementIdentifiant}) }}" style="margin-bottom: 4px" class="panel panel-default hamzastyle-item hide-print{% if not passage.etablissementInfos.adresse.coordonnees.lat and not passage.etablissementInfos.adresse.coordonnees.lon %} no-geojson{% endif %}">
+                                {% if passage.getDocumentType() is not constant('AppBundle\\Document\\Devis::DOCUMENT_TYPE') %}
+                                    <div data-url="{{ path('ajax_more_infos_passage', {'passage': passage.id }) }}"></div>
+                                {% endif %}
+                            <div {% if passage.isPlanifie %} style="opacity:0.5"{% endif %} data-words='{{ words }}' id="{{ passage.id }}" data-url-etablissement="{{ path("passage_etablissement", {'id': 'ETABLISSEMENT-'~passage.etablissementIdentifiant}) }}" style="margin-bottom: 4px" class="panel panel-default hamzastyle-item hide-print{% if not passage.etablissementInfos.adresse.coordonnees.lat and not passage.etablissementInfos.adresse.coordonnees.lon %} no-geojson{% endif %} {% if passage.getDocumentType() is not constant('AppBundle\\Document\\Devis::DOCUMENT_TYPE') %} btn-more-info {% endif %}" {% if passage.getDocumentType() is not constant('AppBundle\\Document\\Devis::DOCUMENT_TYPE') %} style="cursor:pointer" {% endif %}>
                             <div class="panel-heading" {% if passage.isPlanifie %} style="cursor: not-allowed;" {% endif %}>
                                         <div class="panel-title clearfix">
                                             <i class="mdi mdi-{{ passage.etablissementInfos.icon }} mdi-lg"></i>
@@ -90,12 +93,7 @@
                                         </div>
                                     </div>
                                     {% if not passage.isPlanifie %}
-                                    {% if passage.getDocumentType() is not constant('AppBundle\\Document\\Devis::DOCUMENT_TYPE') %}
-                                    <div data-url="{{ path('ajax_more_infos_passage', {'passage': passage.id }) }}"></div>
-                                    <div class="panel-body btn-more-info" style="cursor:pointer">
-                                    {% else %}
                                     <div class="panel-body">
-                                    {% endif %}
                                         <div class="clearfix">
                                             {% for prestation in passage.prestations %}
                                                 {% if prestation.wordToPicto %}

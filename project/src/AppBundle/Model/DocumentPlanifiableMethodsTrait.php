@@ -357,7 +357,7 @@ trait DocumentPlanifiableMethodsTrait
     }
 
     public function isTransmis(){
-      return boolval($this->signatureBase64) || boolval($this->emailTransmission);
+      return (boolval($this->signatureBase64) && boolval($this->duree)) || (boolval($this->emailTransmission)&& boolval($this->duree));
     }
 
     public function isValideTechnicien()

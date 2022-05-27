@@ -38,23 +38,24 @@ class PassageMobileType extends AbstractType
         $passageId = $builder->getData()->getId();
         $builder->add('description', TextareaType::class, array('label' => 'Constat :', 'required' => false, "attr" => array("class" => " phoenix", "rows" => 10)))
         ->add('commentaireInterne', TextareaType::class, array('label' => 'Commentaire Interne :', 'required' => false, "attr" => array("class" => " phoenix", "rows" => 5)))
-            ->add('dureeRaw', 'time', array(
+        ->add('dureeRaw', 'time', array(
             'input' => 'string',
             'widget' => 'single_text',
+            'required' => true,
             "attr" => array("class" => " phoenix")));
 
             $builder->get('dureeRaw')
                 ->addModelTransformer(new CallbackTransformer(
                     function ($dureeAsDateTime) {
                          if(!$dureeAsDateTime){
-                           return "01:00:00";
+                             return null;
                          }
                         return $dureeAsDateTime->format('H').':'.$dureeAsDateTime->format('i').":00";
                     },
                     function ($dureeAsString) {
                       $today = new \DateTime(date('Y-m-d 00:00:00'));
                       if(!$dureeAsString){
-                        return $today->modify("+1 hours");
+                        return null;
                       }
                       $dureeArr = explode(":",$dureeAsString);
                       return \DateTime::createFromFormat('Y-m-d H:i:s', $today->format('Y-m-d')." ".$dureeArr[0].":".$dureeArr[1].":".$dureeArr[2]);

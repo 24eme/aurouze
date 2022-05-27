@@ -156,11 +156,17 @@
     }
 
     $.initTransmission = function () {
-      $(".transmission_rapport").on("click",function(){
 
-        var formToPost = forms[$(this).attr('data-id')];
-        formToPost.serialize();
-        formToPost.submit();
+      $(".transmission_rapport").on("click",function(){
+        var duree = document.getElementById('mobile_'+($(this).attr('data-id')).replaceAll("-","_")+"_dureeRaw").value;
+        if(!duree){
+           alert("CHAMP DUREE OBLIGATOIRE");
+        }
+        else{
+          var formToPost = forms[$(this).attr('data-id')];
+          formToPost.serialize();
+          formToPost.submit();
+        }
 
       });
     }

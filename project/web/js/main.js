@@ -1040,8 +1040,8 @@
           $(clicked_div[0]).css("border-color","");
           $(clicked_div[0]).removeClass("clicked-div");
         }
-        $(this).parent().css("border-color","black");
-        $(this).parent().addClass("clicked-div");
+        $(this).css("border-color","black");
+        $(this).addClass("clicked-div");
       });
     }
 
