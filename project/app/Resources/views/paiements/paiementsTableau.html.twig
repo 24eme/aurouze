@@ -21,6 +21,9 @@
           <td>
             {% if paiements.dateCreation != date %}
               <strong>{{ paiements.dateCreation | localizeddate("medium", "none", null, null, "d MMM yyyy") }}</strong>
+              {% if not (paiements.isImprime) and regKey == "CHEQUE"%}
+              <span style="float:right" class="glyphicon glyphicon-pushpin"></span>
+              {% endif %}
             {% else %}
               <span class="text-muted">{{ paiements.dateCreation | localizeddate("medium", "none", null, null, "d MMM yyyy") }}</span>
             {% endif %}

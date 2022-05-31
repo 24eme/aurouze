@@ -41,6 +41,7 @@
     </a>
     </li>
     <li>
+    <small>
     {% for prestation in contrat.prestations %}
         {% if(prestation.wordToPicto) %}
             &nbsp;<span class="step size-18" title="{{  prestation.nomToString }}" data-toggle="tooltip" >
@@ -49,6 +50,7 @@
             <span class="btn btn-xs label-primary">{{  prestation.nomToString }}&nbsp;<span>{{ prestation.nbPassages }}</span></span>
         {%endif%}
     {% endfor %}
+    </small>
 prévus sur {{ contrat.duree }} mois
     </li>
 
