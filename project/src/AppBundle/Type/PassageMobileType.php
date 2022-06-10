@@ -42,7 +42,7 @@ class PassageMobileType extends AbstractType
             'input' => 'string',
             'widget' => 'single_text',
             'required' => true,
-            "attr" => array("class" => " phoenix")));
+            "attr" => array("class" => " phoenix","data-champs" => "dureeRaw")));
 
             $builder->get('dureeRaw')
                 ->addModelTransformer(new CallbackTransformer(

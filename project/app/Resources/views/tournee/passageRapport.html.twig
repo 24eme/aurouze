@@ -5,7 +5,7 @@
         &nbsp;Retour
   </a>
 
-  <a  class="ui-btn ui-icon-check ui-btn-icon-right rapport"  href="#visualisation_{{ planifiable.id }}" onclick="verifieDuree('{{ planifiable.id }}')">
+  <a  class="ui-btn ui-icon-check ui-btn-icon-right rapport"  href="#visualisation_{{ planifiable.id }}" onclick="verifyDuree('{{ planifiable.id }}')">
       Valider&nbsp;
   </a>
   <div class="reloadWarning ui-bar ui-bar-b" style="display:none;">
@@ -123,13 +123,3 @@
 </form>
 </div>
 </div>
-<script type="text/javascript">
-
-function verifieDuree(id_passage,element){
-    var duree = document.getElementById('mobile_'+id_passage.replaceAll("-","_")+"_dureeRaw").value;
-    if(!duree){
-       alert("CHAMP DUREE OBLIGATOIRE");
-       event.preventDefault();
-    }
-}
-</script>

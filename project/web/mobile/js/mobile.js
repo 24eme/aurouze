@@ -160,7 +160,12 @@
       $(".transmission_rapport").on("click",function(){
         var duree = document.getElementById('mobile_'+($(this).attr('data-id')).replaceAll("-","_")+"_dureeRaw").value;
         if(!duree){
-           alert("CHAMP DUREE OBLIGATOIRE");
+           location.href = "#rapport_"+$(this).attr('data-id');
+           if(document.getElementById("comment_"+$(this).attr('data-id')+"_dureeRaw")){
+              el = document.getElementById("comment_"+$(this).attr('data-id')+"_dureeRaw");
+              el.parentNode.removeChild(el);
+           }
+           $(document.getElementById("mobile_"+$(this).attr('data-id').replaceAll("-","_")+"_dureeRaw")).parent().after("<span style='color:red;' id='comment_"+$(this).attr('data-id')+"_dureeRaw'>Merci de remplir le champ</span>");
         }
         else{
           var formToPost = forms[$(this).attr('data-id')];
@@ -314,3 +319,17 @@
 
 
 })(jQuery);
+
+
+function verifyDuree(id_passage,element){
+    var duree = document.getElementById('mobile_'+id_passage.replaceAll("-","_")+"_dureeRaw").value;
+    if(document.getElementById("comment_"+id_passage+"_dureeRaw")){
+      el = document.getElementById("comment_"+id_passage+"_dureeRaw");
+      console.log(el);
+      el.parentNode.removeChild(el);
+    }
+    if(!duree){
+      $(document.getElementById("mobile_"+id_passage.replaceAll("-","_")+"_dureeRaw")).parent().after("<span style='color:red;' id='comment_"+id_passage+"_dureeRaw'>Merci de remplir le champ</span>");
+      event.preventDefault();
+    }
+}
