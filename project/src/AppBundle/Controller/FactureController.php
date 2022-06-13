@@ -1219,5 +1219,23 @@ class FactureController extends Controller
         }
 
 
+        /**
+        * @Route("/mouvementsPouvantEtreFactures", name="mouvementsPouvantEtreFactures")
+        */
+        public function ListMouvementsPouvantEtreFacturesAction(Request $request){
+            $secteur = $this->getParameter('secteurs');
+            $dm = $this->get('doctrine_mongodb')->getManager();
+            $contratManager = $this->get('contrat.manager');
+            $contratsFactureAEditer = $contratManager->getRepository()->findAllContratWithFactureAFacturer();
+            $mouvements = array();
+            foreach ($contratsFactureAEditer as $c) {
+                foreach($c->getMouvements() as $m){
+                    $mouvements[$m->getOrigineDocumentGeneration()->getDateDebut()->format('Y-m-d H:i:s')] = $m;
+                }
+            }
+            ksort($mouvements);
+            return $this->render('facture/listMouvementsPouvantEtreFacturesAction.html.twig',array('mouvements'=>$mouvements, 'secteur'=>$secteur));
+        }
+
 
 }

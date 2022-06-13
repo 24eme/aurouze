@@ -29,7 +29,9 @@
 			</tbody>
 		</table>
 {% endif %}
-	<h3>Contrats pouvant être facturés</h3>
+	<h3>Contrats pouvant être facturés<a class="btn btn-default btn-xs pull-right" href="{{ path('mouvementsPouvantEtreFactures') }}">VOIR DETAIL</a>
+</h3>
+
 
 	{{ include('contrat/contratTableau.html.twig', {'contrats': contratsFactureAEditer }) }}
 
