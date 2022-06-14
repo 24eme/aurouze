@@ -263,9 +263,6 @@
              if(element.dataset.relance == 2){
                ligne.style.backgroundColor = "#fcf8e3";
              }
-
-             console.log(text);
-
              if(text.length > 0){
                ligne.querySelector('textarea').value = text+"\nR"+element.dataset.relance+" le "+new Date().toLocaleDateString("fr");
              }
