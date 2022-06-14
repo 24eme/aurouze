@@ -190,6 +190,31 @@ class PassageRepository extends DocumentRepository {
 
         $q = $this->createQueryBuilder();
         $q->field('statut')->equals(PassageManager::STATUT_A_PLANIFIER)
+          ->field('datePrevision')->lte($mongoEndDate);
+
+        if($dateDebut){
+          $mongoStartDate = new MongoDate(strtotime($dateDebut->format('Y-m-d')));
+          $q->field('datePrevision')->gte($mongoStartDate);
+
+        }
+
+        if ($secteur == EtablissementManager::SECTEUR_PARIS) {
+          $q->field('zone')->notEqual("77");
+        } elseif($secteur == EtablissementManager::SECTEUR_SEINE_ET_MARNE) {
+          $q->field('zone')->equals("77");
+        }
+
+        $query = $q->sort('zone', 'asc')->getQuery();
+        return $query->execute();
+    }
+
+
+    public function findAllPassages($secteur = EtablissementManager::SECTEUR_PARIS, \DateTime $dateDebut = null, \DateTime $dateFin) {
+        $date = new \DateTime();
+        $mongoEndDate = new MongoDate(strtotime($dateFin->format('Y-m-d')));
+        $array = array(PassageManager::STATUT_A_PLANIFIER, PassageManager::STATUT_PLANIFIE);
+        $q = $this->createQueryBuilder();
+        $q->field('statut')->in($array)
                 ->field('datePrevision')->lte($mongoEndDate);
 
         if($dateDebut){
@@ -246,6 +271,7 @@ class PassageRepository extends DocumentRepository {
           $result[$moisAnnee]->nb = $result[$moisAnnee]->nb + 1;
       }
       ksort($result);
+      $result = array_slice($result,0, 1,true)+array_slice($result, -4, 4,true);
       return $result;
     }
 

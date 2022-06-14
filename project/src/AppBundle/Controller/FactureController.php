@@ -1094,6 +1094,7 @@ class FactureController extends Controller
        * @ParamConverter("Facture", class="AppBundle:Facture")
        */
       public function relanceEmailAction(Request $request, Facture $facture){
+        $response = new Response();
 
         $fm = $this->get('facture.manager');
 
@@ -1103,7 +1104,12 @@ class FactureController extends Controller
         $fromName = $parameters['coordonnees']['nom'];
         $subject = "FACTURE NON PAYEE ( FACTURE n°".$facture->getNumeroFacture()." de ".$facture->getMontantTTC()." € )";
 
-        $body = $this->render('facture/mailPremiereRelance.html.twig', ['facture' => $facture, 'dateLimite' => date('d/m/Y', strtotime(' + 10 days'))])->getContent();
+        if( !$facture->getNbRelance()){
+            $body = $this->render('facture/mailPremiereRelance.html.twig', ['facture' => $facture, 'dateLimite' => date('d/m/Y', strtotime(' + 10 days'))])->getContent();
+        }
+        else{
+            $body = $this->render('facture/mailDeuxiemeRelance.html.twig', ['facture' => $facture, 'dateLimite' => date('d/m/Y', strtotime(' + 10 days'))])->getContent();
+        }
 
         if($facture->getSociete()->getContactCoordonnee()->getEmailFacturation()){
           $toEmail = $facture->getSociete()->getContactCoordonnee()->getEmailFacturation();
@@ -1130,21 +1136,25 @@ class FactureController extends Controller
             $attachment = \Swift_Attachment::newInstance($pdf,$namePdf,'application/pdf');
             $message->attach($attachment);
 
+
+
         try {
             $this->get('mailer')->send($message);
             $dm = $this->get('doctrine_mongodb')->getManager();
-            $facture->setNbRelance(1);
+
+            if(!$facture->getNbRelance()){
+                $facture->setNbRelance(1);
+            }
+            else{
+                $facture->setNbRelance(2);
+            }
             $dm->flush();
             $relance = new Relance();
             $relance->setDateRelance(new \DateTime());
-            $relance->setNumeroRelance(1);
+            $relance->setNumeroRelance($facture->getNbRelance());
             $facture->addRelance($relance);
-            if($facture->getRelanceCommentaire()){
-                $facture->setRelanceCommentaire($facture->getRelanceCommentaire()."\n"."R1 le ".$relance->getDateRelance()->format('d-m-Y'));
-            }
-            else{
-                $facture->setRelanceCommentaire("R1 le ".$relance->getDateRelance()->format('d-m-Y'));
-            }
+
+            $commentaire = $facture->getRelanceCommentaire();
             $dm->flush();
         }
         catch(Exception $e) {
@@ -1154,7 +1164,10 @@ class FactureController extends Controller
         $request->getSession()->getFlashBag()->add('notice', 'success');
         $referer = $request->headers->get('referer');
 
-        return $this->redirect($referer);
+        $response->headers->set('Content-Type', 'text/plain');
+        $response->setContent($commentaire);
+        return $response;
+
       }
 
         /**
@@ -1218,6 +1231,24 @@ class FactureController extends Controller
           return $this->redirect($referer);
         }
 
+
+        /**
+        * @Route("/mouvementsPouvantEtreFactures", name="mouvementsPouvantEtreFactures")
+        */
+        public function ListMouvementsPouvantEtreFacturesAction(Request $request){
+            $secteur = $this->getParameter('secteurs');
+            $dm = $this->get('doctrine_mongodb')->getManager();
+            $contratManager = $this->get('contrat.manager');
+            $contratsFactureAEditer = $contratManager->getRepository()->findAllContratWithFactureAFacturer();
+            $mouvements = array();
+            foreach ($contratsFactureAEditer as $c) {
+                foreach($c->getMouvements() as $m){
+                    $mouvements[$m->getOrigineDocumentGeneration()->getDateDebut()->format('Y-m-d H:i:s')] = $m;
+                }
+            }
+            ksort($mouvements);
+            return $this->render('facture/listMouvementsPouvantEtreFacturesAction.html.twig',array('mouvements'=>$mouvements, 'secteur'=>$secteur));
+        }
 
 
 }
