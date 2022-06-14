@@ -245,6 +245,7 @@
 
             const element = this;
             const ligne = this.parentNode.parentNode;
+            const textarea = ligne.querySelector('textarea');
 
             fetch($(this).attr('href'))
            .then(function(response) {
@@ -264,16 +265,16 @@
                ligne.style.backgroundColor = "#fcf8e3";
              }
              if(text.length > 0){
-               ligne.querySelector('textarea').value = text+"\nR"+element.dataset.relance+" le "+new Date().toLocaleDateString("fr");
+               textarea.value = text+"\nR"+element.dataset.relance+" le "+new Date().toLocaleDateString("fr");
              }
              else{
-               ligne.querySelector('textarea').value = "R"+element.dataset.relance+" le "+new Date().toLocaleDateString("fr");
+               textarea.value = "R"+element.dataset.relance+" le "+new Date().toLocaleDateString("fr");
              }
              element.parentNode.removeChild(element);
-             ligne.querySelector('textarea').dispatchEvent(new Event("blur"));
+             textarea.dispatchEvent(new Event("blur"));
            })
            .catch(error => console.error('Error: ', error));
-           return false;
+           return false; //au cas ou;
         });
     }
 
