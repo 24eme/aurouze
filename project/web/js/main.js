@@ -236,14 +236,47 @@
                  }
             });
         });
-        $('.relance_lien_envoyer_mail').on('click', function() {
+
+        $('.relance_lien_envoyer_mail').on('click', function(e) {
+            e.preventDefault();
             if(!confirm('Êtes-vous sûrs de vouloir envoyer le mail?')) {
                 return false;
             }
-            $.get($(this).attr('href'));
-            $(this).parents('tr').css("background-color", "#d9edf7");
-            $(this).remove();
-            return false;
+
+            const element = this;
+            const ligne = this.parentNode.parentNode;
+
+            fetch($(this).attr('href'))
+           .then(function(response) {
+             if(response.ok){
+               return response.text();
+             }
+             else{
+              throw new Error(response.status);
+             }
+           })
+           .then(function(text) {
+
+             if(element.dataset.relance == 1){
+               ligne.style.backgroundColor = "#d9edf7";
+             }
+             if(element.dataset.relance == 2){
+               ligne.style.backgroundColor = "#fcf8e3";
+             }
+
+             console.log(text);
+
+             if(text.length > 0){
+               ligne.querySelector('textarea').value = text+"\nR"+element.dataset.relance+" le "+new Date().toLocaleDateString("fr");
+             }
+             else{
+               ligne.querySelector('textarea').value = "R"+element.dataset.relance+" le "+new Date().toLocaleDateString("fr");
+             }
+             element.parentNode.removeChild(element);
+             ligne.querySelector('textarea').dispatchEvent(new Event("blur"));
+           })
+           .catch(error => console.error('Error: ', error));
+           return false;
         });
     }
 

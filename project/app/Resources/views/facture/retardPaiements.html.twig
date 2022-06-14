@@ -193,8 +193,9 @@
               </td>
 							<td>
 								{% if not factureEnRetard.has1ereRelance and (factureEnRetard.societe.contactCoordonnee.emailFacturation or factureEnRetard.societe.contactCoordonnee.email)  %}
-								<a href="{{ path('relance_email', {'id': factureEnRetard.id}) }}" class="relance_lien_envoyer_mail"><i class="mdi mdi-send mdi-lg" title="Envoyer mail 1ère relance"></i></a>
-
+									<a href="{{ path('relance_email', {'id': factureEnRetard.id}) }}" class="relance_lien_envoyer_mail" data-relance ="1"><i class="mdi mdi-send mdi-lg" title="Envoyer mail 1ère relance"></i></a>
+								{% elseif factureEnRetard.has1ereRelance and not factureEnRetard.has2ndRelance and (factureEnRetard.societe.contactCoordonnee.emailFacturation or factureEnRetard.societe.contactCoordonnee.email) %}
+                                    <a href="{{ path('relance_email', {'id': factureEnRetard.id}) }}" class="relance_lien_envoyer_mail" data-relance ="2"><i class="mdi mdi-send mdi-lg" title="Envoyer mail 2nd relance"></i></a>
                                 {% endif %}
 							</td>
             </tr>
