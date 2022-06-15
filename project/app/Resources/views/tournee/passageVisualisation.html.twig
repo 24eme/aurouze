@@ -150,6 +150,14 @@
             {% endfor %}
             )
           </p>
+
+          <div class="ui-body ui-body-a ui-corner-all">
+            <span style="text-decoration: underline">Commentaire</span><br/><br/>
+            {{ hPassage.commentaire | nl2br }}
+          </div>
+
+          <br>
+
           <div class="ui-body ui-body-a ui-corner-all">
             <span style="text-decoration: underline">Constat</span><br/><br/>
             {{ hPassage.description | nl2br }}
