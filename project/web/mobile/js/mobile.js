@@ -331,5 +331,6 @@ function verifyDuree(id_passage,element){
     if(!duree){
       $(document.getElementById("mobile_"+id_passage.replaceAll("-","_")+"_dureeRaw")).parent().after("<span style='color:red;' id='comment_"+id_passage+"_dureeRaw'>Merci de remplir le champ</span>");
       event.preventDefault();
+      document.getElementById("ancre-champ-duree").scrollIntoView();
     }
 }
