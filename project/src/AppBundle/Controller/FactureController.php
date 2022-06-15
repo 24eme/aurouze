@@ -42,7 +42,6 @@ class FactureController extends Controller
         $contratManager = $this->get('contrat.manager');
         $factureManager = $this->get('facture.manager');
         $devisManager = $this->get('devis.manager');
-        $contratsFactureAEditer = $contratManager->getRepository()->findContratWithFactureAFacturer(50);
         $facturesEnAttente = $factureManager->getRepository()->findBy(array('numeroFacture' => null, 'numeroDevis' => null), array('dateFacturation' => 'desc'));
 
         $factures = $factureManager->getRepository()->findBy(['numeroDevis' => ['$ne' => null]]);
@@ -52,7 +51,18 @@ class FactureController extends Controller
         }
 
         $devisAFacturer = $devisManager->getRepository('AppBundle:Devis')->findBy(['numeroDevis' => ['$nin' => $numeros], 'dateAcceptation' => ['$ne' => null]], ['dateEmission' => 'desc']);
-        return $this->render('facture/index.html.twig',array('contratsFactureAEditer' => $contratsFactureAEditer, 'facturesEnAttente' => $facturesEnAttente, 'devisAFacturer' => $devisAFacturer));
+
+        $secteur = $this->getParameter('secteurs');
+        $contratsFactureAEditer = $contratManager->getRepository()->findAllContratWithFactureAFacturer();
+        $mouvements = array();
+        foreach ($contratsFactureAEditer as $c) {
+            foreach($c->getMouvements() as $m){
+                $mouvements[$m->getOrigineDocumentGeneration()->getDateDebut()->format('Y-m-d H:i:s')] = $m;
+            }
+        }
+        ksort($mouvements);
+
+        return $this->render('facture/index.html.twig',array('facturesEnAttente' => $facturesEnAttente, 'devisAFacturer' => $devisAFacturer,'mouvements'=>$mouvements, 'secteur'=>$secteur));
     }
 
     /**
