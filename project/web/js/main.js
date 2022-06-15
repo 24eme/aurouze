@@ -1057,6 +1057,9 @@
         var div = $(this).prev();
         var divInfoPassage = document.getElementById('info-passage');
 
+        var url = window.location.protocol + "//" + window.location.host + window.location.pathname +"#"+this.id;
+        window.history.pushState({ path: url }, '', url);
+
         $(divInfoPassage).html("<pre>Chargement...</pre>");
         $.get(div.data('url'), function (result) {
             $(divInfoPassage).html(result);
