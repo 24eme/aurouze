@@ -12,8 +12,14 @@
 
     {{ include('societe/choixForm.html.twig', {'urlTarget': path('facture_societe', {'id': '_id_'})}) }}
 
-    <h3>Solde du client : <span class="text-{% if (solde == 0) %}success{% elseif (solde < 0) %}danger{% else %}warning{% endif %}">{{ "%0.2f" | format(solde) }} €</span></h3>
-
+    <h3>Solde du client :
+        <span class="text-{% if (solde == 0) %}success{% elseif (solde < 0) %}danger{% else %}warning{% endif %}">{{ "%0.2f" | format(solde) }} €</span>
+        {% if societe.sepa and societe.sepa.actif %}
+        <small data-toggle="tooltip" title="{{ societe.sepa.iban }} <br/> {{ societe.sepa.bic }} <br/> {{ societe.sepa.rum }} <br/> ({{ societe.sepa.date | date("d/m/Y") }}) <br/> {% if societe.sepa.first %}Premier prélèvement{% else %}Prélèvements récurrents{% endif %}">
+            <label class="label label-xs label-primary" style="cursor:pointer;">SEPA</label>
+        </small >&nbsp;
+        {% endif %}
+    </h3>
     <h3>Prévisionnel des factures </h3>
     <table class="table table-bordered table-striped text-muted">
         <thead>
