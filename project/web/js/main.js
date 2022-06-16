@@ -253,6 +253,7 @@
                return response.text();
              }
              else{
+              alert("IL Y A UNE ERREUR, LE MAIL N'A PAS PU ETRE ENVOYE");
               throw new Error(response.status);
              }
            })
