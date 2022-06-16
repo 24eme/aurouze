@@ -54,10 +54,14 @@ class FactureController extends Controller
 
         $secteur = $this->getParameter('secteurs');
         $contratsFactureAEditer = $contratManager->getRepository()->findAllContratWithFactureAFacturer();
+
+
         $mouvements = array();
         foreach ($contratsFactureAEditer as $c) {
             foreach($c->getMouvements() as $m){
-                $mouvements[$m->getOrigineDocumentGeneration()->getDateDebut()->format('Y-m-d H:i:s')] = $m;
+                if($m->getOrigineDocumentGeneration()){
+                    $mouvements[$m->getOrigineDocumentGeneration()->getDateDebut()->format('Y-m-d H:i:s')] = $m;
+                }
             }
         }
         ksort($mouvements);
