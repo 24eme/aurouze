@@ -3,6 +3,7 @@
 
     $(document).ready(function ()
     {
+        $.initQueryHash();
         $.initClickInputAddon();
         $.initAjaxPost();
         $.initSelect2();
@@ -10,7 +11,6 @@
         $.initModal();
         $.initTooltips();
         $.initHamzaStyle();
-        $.initQueryHash();
         $.initDynamicCollection();
         $.initDatePicker();
         $.initPeriodePicker();
@@ -253,6 +253,7 @@
                return response.text();
              }
              else{
+              alert("IL Y A UNE ERREUR, LE MAIL N'A PAS PU ETRE ENVOYE");
               throw new Error(response.status);
              }
            })
@@ -1056,6 +1057,9 @@
       $(".btn-more-info").on("click", function () {
         var div = $(this).prev();
         var divInfoPassage = document.getElementById('info-passage');
+
+        var url = window.location.protocol + "//" + window.location.host + window.location.pathname +"#"+this.id;
+        window.history.pushState({ path: url }, '', url);
 
         $(divInfoPassage).html("<pre>Chargement...</pre>");
         $.get(div.data('url'), function (result) {

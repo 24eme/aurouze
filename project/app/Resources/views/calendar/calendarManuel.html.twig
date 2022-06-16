@@ -166,8 +166,8 @@
   																		{% for technicien,events in (eventsDates[date]) %}
   																			{% for event in events %}
   																			<a style="cursor: pointer;
-  																				background-color: {{ event.backgroundColor }};
-                                          border: 1px dotted #fff;
+                                                                            background-color: {{ event.backgroundColor }}70;
+                                          border: 1px dotted black;
                                           font-size: 0.75em;
   																				color: {{ event.textColor }};
                                           padding: 0 2px;
@@ -191,7 +191,7 @@
                                         left: {{ ((100 / nbTechniciens) * index)|round(0, 'floor') }}%;
                                         background-color: {{ techniciens["COMPTE-"~technicien].couleur }};
                                         border: 0;
-                                        opacity: 0.2;
+                                        opacity: 0.1;
                                         padding: 0 5px;
                                         width: {{ ((100 / nbTechniciens))|round(0, 'floor') - 1 }}%;"
                                         class="fc-time-grid-event fc-v-event fc-event fc-start fc-end">
