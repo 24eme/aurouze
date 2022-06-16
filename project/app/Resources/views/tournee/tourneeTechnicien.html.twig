@@ -60,6 +60,11 @@
               <span  class="step size-18" ><i class="mdi mdi-local-shipping" style="cursor: pointer;"></i></span>
             {% endif %}
             </p>
+            <p class="">
+                Informations :
+                {{planifiable.commentaire | striptags | slice(0, 50)}}
+                {% if planifiable.commentaire | length > 50 %}...{% endif %}
+            </p>
         </a>
         </li>
       {% else %}
