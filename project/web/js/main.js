@@ -3,6 +3,7 @@
 
     $(document).ready(function ()
     {
+        $.initQueryHash();
         $.initClickInputAddon();
         $.initAjaxPost();
         $.initSelect2();
@@ -10,7 +11,6 @@
         $.initModal();
         $.initTooltips();
         $.initHamzaStyle();
-        $.initQueryHash();
         $.initDynamicCollection();
         $.initDatePicker();
         $.initPeriodePicker();
