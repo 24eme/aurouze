@@ -1118,7 +1118,7 @@ class FactureController extends Controller
             $body = $this->render('facture/mailPremiereRelance.html.twig', ['facture' => $facture, 'dateLimite' => date('d/m/Y', strtotime(' + 10 days'))])->getContent();
         }
         else{
-            $body = $this->render('facture/mailDeuxiemeRelance.html.twig', ['facture' => $facture, 'dateLimite' => date('d/m/Y', strtotime(' + 10 days'))])->getContent();
+            $body = $this->render('facture/mailDeuxiemeRelance.html.twig', ['facture' => $facture, 'dateLimite' => date('d/m/Y', strtotime(' + 8 days'))])->getContent();
         }
 
         if($facture->getSociete()->getContactCoordonnee()->getEmailFacturation()){
