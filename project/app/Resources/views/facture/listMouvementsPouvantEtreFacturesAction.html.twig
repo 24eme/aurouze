@@ -1,0 +1,53 @@
+
+<div class="row">
+<div class="col-xs-12">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th class="col-xs-1">Date Passage</th>
+                <th class="col-xs-2">Client</th>
+                <th class="col-xs-1">Prestations</th>
+                <th class="col-xs-1">Prix HT</th>
+                <th class="col-xs-2 text-center">Lieu de passage</th>
+                <th class="col-xs-3">Mouvement libelle</th>
+                <th class="col-xs-1">N°contrat</th>
+                <th class="col-xs-1 text-center">Agence</th>
+                <th class="col-xs-1"></th>
+            </tr>
+        </thead>
+        {% for mouvement in mouvements %}
+            <tr class="{{ mouvement.origineDocumentGeneration.contrat.statutCouleur }}">
+                <td><small>{{ mouvement.origineDocumentGeneration.dateDebut | localizeddate("medium", "none", null, null, "dd/MM/yyyy") }}</small></td>
+                <td><small><a href="{{ path('contrats_societe', {'id': mouvement.societe.id }) }}">{{ mouvement.societe.raisonSociale }}</a></small></td>
+                <td>
+                    {% for prestation in mouvement.origineDocumentGeneration.prestations %}
+                        {% if(prestation.wordToPicto) %}
+                            &nbsp;<span class="" title="{{  prestation.nomToString }} : {{ prestation.nbPassages }}" data-toggle="tooltip" >
+                                <i class="mdi-{{prestation.wordToPicto}}" style="cursor:pointer;">&nbsp;</i></span>
+                            {% else %}
+                            <span class="btn btn-xs label-primary">{{  prestation.nomToString }}&nbsp;<span>{{ prestation.nbPassages }}</span></span>
+                        {% endif %}
+                    {% endfor %}
+                </td>
+                <td class="text-right">{{ "%0.2f" | format(mouvement.prixUnitaire)  }}&nbsp;€</td>
+                <td class="text-center">
+                    <a data-html="true" data-toggle="tooltip" href="{{ path('passage_etablissement', {'id': mouvement.origineDocumentGeneration.etablissement.id }) }}">{{ mouvement.origineDocumentGeneration.etablissement.adresse.adresseFormatee }}</a>
+                </td>
+                <td><small>{{ mouvement.libelle }}</small></td>
+                <td class="text-center"><a href="{{ path('contrat_visualisation', {'id': mouvement.origineDocumentGeneration.contrat.id })}}">n°&nbsp;{{ mouvement.origineDocumentGeneration.contrat.numeroArchive }}</a>&nbsp;<a href="{{ path('contrat_pdf', {'id': mouvement.origineDocumentGeneration.contrat.id })}}"><small class="glyphicon glyphicon-file"></small></a></td>
+                <td class="text-center">
+                {% if mouvement.origineDocumentGeneration.zone %}
+                    {{mouvement.origineDocumentGeneration.zone}}
+                {% else %}
+                    75
+                {% endif %}
+                </td>
+                <td><a class="btn btn-sm" href="{{path('facture_societe', {'id': mouvement.societe.id} )}}" title="Facturer"><i class="glyphicon glyphicon-arrow-right"></i></a></td>
+            </tr>
+
+
+        {% endfor %}
+    </table>
+
+  </div>
+</div>

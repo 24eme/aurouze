@@ -186,8 +186,7 @@ class ContactCoordonnee {
      */
     public function getEmailFacturation()
     {
-      $emailFacturation=preg_split("/;/",$this->emailFacturation);
-      return $emailFacturation[0];
+        return $this->emailFacturation;
     }
 
     /**

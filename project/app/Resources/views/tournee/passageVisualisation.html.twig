@@ -3,9 +3,15 @@
 <a href="#tournee_accueil" class="ui-btn ui-icon-arrow-l ui-btn-icon-left" >
       &nbsp;Retour
 </a>
+{% if not planifiable.isPdfEnvoye() %}
 <a class="ui-btn ui-icon-check ui-btn-icon-right transmission_rapport" data-id="{{ planifiable.id }}" >
     Envoyer&nbsp;
 </a>
+{% else %}
+<button>
+    Rapport déjà envoyé au client
+</button>
+{% endif %}
 <div class="reloadWarning ui-bar ui-bar-b" style="display:none;">
 	<h3>Votre tournée a été modifiée. Il est préférable de la recharger.&nbsp;
       <a onclick="window.location.reload()" class="ui-btn ui-icon-back ui-btn-icon-left" data-role="button" data-mini="true" >
@@ -150,6 +156,14 @@
             {% endfor %}
             )
           </p>
+
+          <div class="ui-body ui-body-a ui-corner-all">
+            <span style="text-decoration: underline">Commentaire</span><br/><br/>
+            {{ hPassage.commentaire | nl2br }}
+          </div>
+
+          <br>
+
           <div class="ui-body ui-body-a ui-corner-all">
             <span style="text-decoration: underline">Constat</span><br/><br/>
             {{ hPassage.description | nl2br }}

@@ -29,9 +29,9 @@
 			</tbody>
 		</table>
 {% endif %}
-	<h3>Contrats pouvant être facturés</h3>
+    <h3>Liste des mouvements à facturer</h3>
 
-	{{ include('contrat/contratTableau.html.twig', {'contrats': contratsFactureAEditer }) }}
+	{{ include('facture/listMouvementsPouvantEtreFacturesAction.html.twig', {'mouvements':mouvements, 'secteur':secteur}) }}
 
 	<h3>Devis pouvant être édités</h3>
 

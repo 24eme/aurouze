@@ -357,7 +357,7 @@ trait DocumentPlanifiableMethodsTrait
     }
 
     public function isTransmis(){
-      return boolval($this->signatureBase64) || boolval($this->emailTransmission);
+      return (boolval($this->signatureBase64) && boolval($this->duree)) || (boolval($this->emailTransmission)&& boolval($this->duree));
     }
 
     public function isValideTechnicien()
@@ -481,6 +481,11 @@ trait DocumentPlanifiableMethodsTrait
     public function isPdfNonEnvoye()
     {
         return $this->pdfNonEnvoye;
+    }
+
+
+    public function isPdfEnvoye(){
+        return($this->pdfNonEnvoye === false);
     }
 
     public function getColors()

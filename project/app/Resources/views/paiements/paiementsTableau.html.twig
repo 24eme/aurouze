@@ -31,9 +31,11 @@
           <td>
           {% if paiements.dateCreation != date %}
             <strong>{{ reglement.libelle }}</strong>
+            <span  style="float:right; border-radius:8px;background-color:#F3BFCC;padding: 0px 2px;" class="text-right">{{reglement.factures}}</span>
           {% else %}
             <span class="text-muted">{{ reglement.libelle }}</span>
           {% endif %}
+
           </td>
           <td>{{ libelle.libelle }}</td>
           <td><a href="{{ path('facturable_pdf', {'document': paiement.facture.id , 'key': paiement.facture.getSecretKey()})}}">Facture n° {{ paiement.facture.numeroFacture }}</a></td>

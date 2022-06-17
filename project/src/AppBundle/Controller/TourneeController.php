@@ -195,10 +195,10 @@ class TourneeController extends Controller {
 
         $passage->setDateRealise($passage->getDateDebut());
 
-        $passage->setSaisieTechnicien(($passage->getEmailTransmission() || $passage->getNomTransmission() || $passage->getSignatureBase64()) && $passage->getDescription());
+        $passage->setSaisieTechnicien(($passage->getEmailTransmission() || $passage->getNomTransmission() || $passage->getSignatureBase64()) && $passage->getDescription() && $passage->getDuree());
 
-        if(!$passage->getPdfNonEnvoye()){
-          $passage->setPdfNonEnvoye(true);
+        if($passage->isPdfEnvoye()){
+          throw new \Exception("Le PDF a déjà été envoyé : modification impossible", 1);
         }
         $dm->persist($passage);
         $dm->flush();

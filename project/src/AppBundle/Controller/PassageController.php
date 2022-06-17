@@ -128,6 +128,7 @@ class PassageController extends Controller
         $coordinatesCenter->setLat($lat);
         $coordinatesCenter->setLon($lon);
         $coordinatesCenter->setZoom($zoom);
+
         $geojson = $this->buildGeoJson($passages);
         $passagesFiltreExportForm = $this->getPassagesFiltreExportForm();
 
