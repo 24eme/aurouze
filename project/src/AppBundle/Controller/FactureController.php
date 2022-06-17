@@ -55,18 +55,22 @@ class FactureController extends Controller
         $secteur = $this->getParameter('secteurs');
         $contratsFactureAEditer = $contratManager->getRepository()->findAllContratWithFactureAFacturer();
 
-
+        $mouvementsSansPassage = array();
         $mouvements = array();
         foreach ($contratsFactureAEditer as $c) {
             foreach($c->getMouvements() as $m){
                 if($m->getOrigineDocumentGeneration()){
                     $mouvements[$m->getOrigineDocumentGeneration()->getDateDebut()->format('Y-m-d H:i:s')] = $m;
                 }
+                else{
+                    $mouvementsSansPassage[]=$m;
+                }
             }
         }
         ksort($mouvements);
 
-        return $this->render('facture/index.html.twig',array('facturesEnAttente' => $facturesEnAttente, 'devisAFacturer' => $devisAFacturer,'mouvements'=>$mouvements, 'secteur'=>$secteur));
+
+        return $this->render('facture/index.html.twig',array('facturesEnAttente' => $facturesEnAttente, 'devisAFacturer' => $devisAFacturer,'mouvements'=>$mouvements, 'secteur'=>$secteur, 'mouvementsSansPassage'=>$mouvementsSansPassage));
     }
 
     /**
