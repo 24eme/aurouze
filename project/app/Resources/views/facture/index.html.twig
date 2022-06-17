@@ -31,7 +31,7 @@
 {% endif %}
     <h3>Liste des mouvements à facturer</h3>
 
-	{{ include('facture/listMouvementsPouvantEtreFacturesAction.html.twig', {'mouvements':mouvements, 'secteur':secteur}) }}
+	{{ include('facture/listMouvementsPouvantEtreFacturesAction.html.twig', {'mouvements':mouvements, 'secteur':secteur, 'mouvementsSansPassage':mouvementsSansPassage}) }}
 
 	<h3>Devis pouvant être édités</h3>
 
