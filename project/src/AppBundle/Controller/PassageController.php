@@ -112,7 +112,7 @@ class PassageController extends Controller
 
         $passages = null;
         $moisPassagesArray = $passageManager->getNbPassagesToPlanPerMonth($secteur, clone $dateFinAll);
-        $passages = $passageManager->getRepository()->findAllPassages($secteur, $dateDebut, clone $dateFin)->toArray();
+        $passages = $passageManager->getRepository()->findToPlan($secteur, $dateDebut, clone $dateFin)->toArray();
         $devis = $devisManager->getRepository()->findToPlan($secteur, $dateDebut, clone $dateFin)->toArray();
 
         foreach ($devis as $key => $d) {
@@ -128,9 +128,8 @@ class PassageController extends Controller
         $coordinatesCenter->setLat($lat);
         $coordinatesCenter->setLon($lon);
         $coordinatesCenter->setZoom($zoom);
-        $passagesAPlanifier = $passageManager->getRepository()->findToPlan($secteur, $dateDebut, clone $dateFin)->toArray();
-        usort($passagesAPlanifier, array("AppBundle\Document\Passage", "triPerHourPrecedente"));
-        $geojson = $this->buildGeoJson($passagesAPlanifier);
+
+        $geojson = $this->buildGeoJson($passages);
         $passagesFiltreExportForm = $this->getPassagesFiltreExportForm();
 
         return $this->render('passage/index.html.twig', array(
