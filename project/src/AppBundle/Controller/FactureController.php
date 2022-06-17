@@ -1173,6 +1173,9 @@ class FactureController extends Controller
         }
         catch(Exception $e) {
             var_dump('NO mailer config');
+            $request->getSession()->getFlashBag()->add('notice', 'success');
+            $referer = $request->headers->get('referer');
+            return $this->redirect($referer);
         }
 
         $request->getSession()->getFlashBag()->add('notice', 'success');
