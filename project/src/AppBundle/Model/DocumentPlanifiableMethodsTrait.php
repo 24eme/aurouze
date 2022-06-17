@@ -483,6 +483,11 @@ trait DocumentPlanifiableMethodsTrait
         return $this->pdfNonEnvoye;
     }
 
+
+    public function isPdfEnvoye(){
+        return($this->pdfNonEnvoye === false);
+    }
+
     public function getColors()
     {
         $rdv = $this->rendezVous;

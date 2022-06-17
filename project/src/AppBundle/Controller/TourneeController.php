@@ -197,7 +197,7 @@ class TourneeController extends Controller {
 
         $passage->setSaisieTechnicien(($passage->getEmailTransmission() || $passage->getNomTransmission() || $passage->getSignatureBase64()) && $passage->getDescription() && $passage->getDuree());
 
-        if(!$passage->getPdfNonEnvoye()){
+        if($passage->isPdfEnvoye()){
           throw new \Exception("Le PDF a déjà été envoyé : modification impossible", 1);
         }
         $dm->persist($passage);
