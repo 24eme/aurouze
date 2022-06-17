@@ -45,8 +45,50 @@
                 <td><a class="btn btn-sm" href="{{path('facture_societe', {'id': mouvement.societe.id} )}}" title="Facturer"><i class="glyphicon glyphicon-arrow-right"></i></a></td>
             </tr>
 
-
         {% endfor %}
+        {% for mouvement in mouvementsSansPassage %}
+            <tr class="{{ mouvement.document.statutCouleur }}">
+                <td></td>
+                <td><small><a href="{{ path('contrats_societe', {'id': mouvement.societe.id }) }}">{{ mouvement.societe.raisonSociale }}</a></small></td>
+                <td>
+                    {% for prestation in mouvement.document.prestations %}
+                        {% if(prestation.wordToPicto) %}
+                            &nbsp;<span class="" title="{{  prestation.nomToString }} : {{ prestation.nbPassages }}" data-toggle="tooltip" >
+                                <i class="mdi-{{prestation.wordToPicto}}" style="cursor:pointer;">&nbsp;</i></span>
+                            {% else %}
+                            <span class="btn btn-xs label-primary">{{  prestation.nomToString }}&nbsp;<span>{{ prestation.nbPassages }}</span></span>
+                        {% endif %}
+                    {% endfor %}
+                </td>
+                <td class="text-right">{{ "%0.2f" | format(mouvement.prixUnitaire)  }}&nbsp;€</td>
+                <td class="text-center">
+                    {% if ((mouvement.document.etablissements | length) > 1) %}
+                        <a data-html="true" title="{% for etablissement in mouvement.document.etablissements %} {{ etablissement.adresse.adresseFormatee }} <br/> {% endfor %}" data-toggle="tooltip" href="{{ path('contrat_visualisation', {'id': mouvement.document.id }) }}">{{ mouvement.document.etablissements | length }}&nbsp;établissements</a>
+                    {% elseif ((mouvement.document.etablissements | length) == 1) %}
+                        <a title="{% for etablissement in mouvement.document.etablissements %} {{ etablissement.nom }} - {{ etablissement.adresse.commune }} {% endfor %}" data-toggle="tooltip" href="{{ path('passage_etablissement', {'id': mouvement.document.etablissements[0].id }) }}">
+                      {% for etablissement in mouvement.document.etablissements %}
+                       {% if etablissement.adresse.adresseFormatee %}{{ etablissement.adresse.adresseFormatee }}{% else %}{{ etablissement.adresse.commune }}{% endif %}
+                      {% endfor %}
+                      </a>
+                    {% else %}
+                        <small>Aucun</small>
+                    {% endif %}
+                </td>
+                <td><small>{{ mouvement.libelle }}</small></td>
+                <td class="text-center"><a href="{{ path('contrat_visualisation', {'id': mouvement.document.id })}}">n°&nbsp;{{ mouvement.document.numeroArchive }}</a>&nbsp;<a href="{{ path('contrat_pdf', {'id': mouvement.document.id })}}"><small class="glyphicon glyphicon-file"></small></a></td>
+                <td class="text-center">
+                {% if mouvement.document.zone %}
+                    {{mouvement.document.zone}}
+                {% else %}
+                    75
+                {% endif %}
+                </td>
+                <td><a class="btn btn-sm" href="{{path('facture_societe', {'id': mouvement.societe.id} )}}" title="Facturer"><i class="glyphicon glyphicon-arrow-right"></i></a></td>
+            </tr>
+        {% endfor %}
+
+
+
     </table>
 
   </div>
