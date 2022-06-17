@@ -74,7 +74,7 @@
                         <li class="{%if (_menu_active == 'paiementsRetard') %}active{% endif %}"><a href="{% if(app.request.get('societe') and _menu_active != 'paiementsRetard') %}
                       {{ path('factures_retard_societe',{ id : app.request.get('societe').id }) }}
                       {% else %}  {{ path('factures_retard') }}{% endif %}"></span>Retard{% if(retard > 0) %}&nbsp;<span class="badge badge-danger">{{ retard }}</span>{% endif %}</a></li>
-                        <li class="{%if (_menu_active == 'attachements') %}active{% endif %}"><a href="{% if(app.request.get('etablissement') and _menu_active != 'attachements') %}{{ path('attachements_entite', { id: app.request.get('etablissement').id }) }}{% elseif(app.request.get('societe') and _menu_active != 'attachements') %}{{ path('attachements_entite', { id: app.request.get('societe').id }) }}{% else %}{{ path('attachements_last') }}{% endif %}">
+                        <li class="{%if (_menu_active == 'attachements') %}active{% endif %}"><a href="{% if(app.request.get('etablissement') and _menu_active != 'attachements') %}{{ path('attachements_etablissement', { id: app.request.get('etablissement').id }) }}{% elseif(app.request.get('societe') and _menu_active != 'attachements') %}{{ path('attachements_societe', { id: app.request.get('societe').id, all: true }) }}{% else %}{{ path('attachements_last') }}{% endif %}">
                           Documents
                       </a></li>
                     </ul>
@@ -83,7 +83,7 @@
 
                     <ul class="nav navbar-nav pull-right">
                         <li class="{%if (_menu_active == 'recherche') %}active{% endif %}"><a href="{{ path('recherche')}}" title="Recherche"><span class="glyphicon glyphicon-search"></span><span class="hidden-lg hidden-md hidden-sm"> Recherche</span></a></li>
-                        <li class="{%if (_menu_active == 'calendar') %}active{% endif %}"><a href="{{ path('calendarManuel') }}" title="Calendrier"><span class="glyphicon glyphicon-calendar"></span><span class="hidden-lg hidden-md hidden-sm"> Calendrier</a></span></li>
+                    <li class="{%if (_menu_active == 'calendar') %}active{% endif %}"><a href="{{ path('calendarManuel') }}" title="Calendrier"><span class="glyphicon glyphicon-calendar"></span><span class="hidden-lg hidden-md hidden-sm"> Calendrier</a></span></li>
                         <li class="{%if (_menu_active == 'statistiques') %}active{% endif %}"><a href="{{ path('statistiques') }}" title="Statistiques"><span class="glyphicon glyphicon-stats"></span><span class="hidden-lg hidden-md hidden-sm"> Statistiques</span></a></li>
                         <li class="{%if (_menu_active == 'tournee') %}active{% endif %}"><a href="{{ path('tournees') }}" title="Tournées"><span class="glyphicon glyphicon-road"></span><span class="hidden-lg hidden-md hidden-sm"> Tournées</span></a></li>
                         <li class="dropdown {%if (_menu_active == 'configuration' or _menu_active == 'erreurs' ) %}active{% endif %}">

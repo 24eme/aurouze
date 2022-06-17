@@ -1,13 +1,11 @@
 {% if attachement.isPdf %}
-    <div class="thumbnail thumbnail-overlayed">
-        <a style="cursor:pointer;" href="{{ attachement.getBase64Src() }}" download="{{ attachement.getBase64Src() }}">
-            <img src="{{asset('/images/pdf.jpg') }}" alt="{{ attachement.originalName }}" style="margin-bottom:0; max-width : 50px; max-height : 50px;" class="vignette" />
-        </a>
-    </div>
+    <a class="btn btn-sm btn-default" href="{{ path('attachement_download', { id: attachement.id })}}"><span class="glyphicon glyphicon-file"></span> PDF</a>
 {% elseif attachement.isImage %}
   <div class="thumbnail thumbnail-overlayed" data-cible="modal-viewer-{{attachement.id }}" >
-    <img src="{{ attachement.getBase64Src() }}" alt="{{ attachement.originalName }}" class="img-thumbnail vignette" style="margin-bottom:0; max-width : 100px; max-height : 100px;"/>
+    <img src="{{ path('attachement_download', { id: attachement.id, noattachment: true })}}" alt="{{ attachement.originalName }}" class="img-thumbnail vignette" style="margin-bottom:0; max-width : 100px; max-height : 100px;"/>
     <div class="overlay">
     </div>
   </div>
-  {% endif %}
+ {% else %}
+    <a class="btn btn-sm btn-default" href="{{ path('attachement_download', { id: attachement.id })}}"><span class="glyphicon glyphicon-download-alt"></span></a>
+ {% endif %}

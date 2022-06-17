@@ -20,19 +20,25 @@
        </tr>
    </thead>
   {% for paiement in paiements %}
-  {% if(not paiement.isImprime) %}
-    <a class="btn btn-xs btn-warning btn pull-right" href="{{ path('paiements_modification', {'id': paiement.id })}}"><span class="glyphicon glyphicon-pencil"></span></a>
-  {% else %}
-      <a class="btn btn-xs btn-default pull-right" href="{{ path('paiements_export_banque', {'id': paiement.id }) }}">
-    <span class="glyphicon glyphicon-print"></span>&nbsp;{% if(paiement.isRemiseEspece) %}Espèce{% else %}{{ paiement.nbPaiementUniqueParMoyen }} chèq.{% endif %}
+  <span class="pull-right">
+    {% if (paiement.isImprime and type == "CHEQUE")%}
+      <a class="btn btn-default" href="{{ path('paiements_export_banque', {'id': paiement.id }) }}">
+        <span class="glyphicon glyphicon-print"></span>&nbsp;{% if(paiement.isRemiseEspece) %}Espèce{% else %}{{ paiement.nbPaiementUniqueParMoyen }} chèq.{% endif %}
       </a>
-  {% endif %}
+    {% endif %}
+    <a class="btn btn-warning" href="{{ path('paiements_modification', {'id': paiement.id })}}">
+      <span class="glyphicon glyphicon-pencil"></span>
+    </a>
+  </span>
   <h4>
     {% if paiement.prelevement %}
-      <span class="label {% if not paiement.isAllSaisis() %}label-warning{% else %}label-default{% endif %}">
+    <p class="text-center">
+      <span class="label {% if not paiement.isAllSaisis() %}label-warning{% else %}label-default{% endif %} pull-left">
             {% if not paiement.isAllSaisis() %}<span class="glyphicon glyphicon-warning-sign"></span>&nbsp;{% endif %}
           {{ paiement.getNbPaiementsSaisis() }}/{{ paiement.paiement | length }} facture{% if paiement.paiement | length > 1 %}s{% endif %} saisie{% if paiement.paiement | length > 1 %}s{% endif %}
       </span>
+      <a href="{{ path('paiements_prelevement_remise_fichier',{ id : paiement.id })}}" class="btn btn-default btn-md"><strong>Fichier à transmettre à la banque</strong></a>
+      </p>
     {% endif %}
     <strong class="pull-right"> Total = {{ paiement.getMontantTotalByMoyenPaiement(type) | number_format(2, ',', ' ')}}&nbsp;€</strong><br>
   </h4>
@@ -43,7 +49,7 @@
         <tr>
           <td>{{ libelle.libelle }}</td>
           <td><a title="Voir la société" href="{{ path('societe_visualisation', {'id': p.facture.societe.id })}}">{% if p.facture.societe.raisonSociale | length > 40 %}{{ p.facture.societe.raisonSociale | slice(0, 40)~"..." }}{%else%}{{ p.facture.societe.raisonSociale }}{% endif %}</a></td>
-          <td> Facture n°<a href="{{ path('facturable_pdf', {'document': p.facture.id , 'key': p.facture.getSecretKey()})}}">{{ p.facture.numeroFacture }}</a></td>
+          <td><a href="{{ path('facturable_pdf', {'document': p.facture.id , 'key': p.facture.getSecretKey()})}}">Facture n°{{ p.facture.numeroFacture }}</a></td>
           <td class="text-right">{{ p.montant | number_format(2, ',', ' ') }}&nbsp;€</td>
        </tr>
      {% endif %}

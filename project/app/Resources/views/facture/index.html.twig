@@ -29,16 +29,17 @@
 			</tbody>
 		</table>
 {% endif %}
-	<h3>Contrats pouvant être facturés</h3>
+    <h3>Liste des mouvements à facturer</h3>
 
-	{{ include('contrat/contratTableau.html.twig', {'contrats': contratsFactureAEditer }) }}
+	{{ include('facture/listMouvementsPouvantEtreFacturesAction.html.twig', {'mouvements':mouvements, 'secteur':secteur}) }}
 
 	<h3>Devis pouvant être édités</h3>
 
 	<table class="table table-bordered table-striped">
 		<thead>
 			<tr>
-				<th class="col-xs-2">Date</th>
+				<th class="col-xs-2">Livraison</th>
+  			<th class="col-xs-2">Plannifié</th>
 				<th class="col-xs-2">Document</th>
 				<th class="col-xs-3">Contenu</th>
 				<th class="col-xs-1 text-right">Montant TTC</th>

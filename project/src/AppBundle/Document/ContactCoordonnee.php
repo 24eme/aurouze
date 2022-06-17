@@ -162,8 +162,7 @@ class ContactCoordonnee {
      */
     public function getEmail()
     {
-        $email=preg_split("/;/",$this->email);
-        return $email[0];
+        return $this->email;
     }
 
     /**
@@ -187,8 +186,7 @@ class ContactCoordonnee {
      */
     public function getEmailFacturation()
     {
-      $emailFacturation=preg_split("/;/",$this->emailFacturation);
-      return $emailFacturation[0];
+        return $this->emailFacturation;
     }
 
     /**

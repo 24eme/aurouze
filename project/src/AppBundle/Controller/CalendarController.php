@@ -294,9 +294,133 @@ class CalendarController extends Controller {
 
         $response = new Response(json_encode($calendarData));
         $response->headers->set('Content-Type', 'application/json');
-
         return $response;
     }
+
+    /**
+     * @Route("/calendar/populateWithHolidays", name="calendarPopulateWithHolidays")
+     */
+    public function calendarPopulateWithHolidaysAction(Request $request) {
+        $response = new Response('
+          [
+            {
+              "title": "FERIE : \nJour de l\'an",
+              "start": "2022-01-01T00:00:00",
+              "end": "2022-01-01T23:59:59"
+            },
+            {
+              "title": "FERIE : \nLundi de Pâques",
+              "start": "2022-04-18T00:00:00",
+              "end": "2022-04-18T23:59:59"
+            },
+            {
+              "title": "FERIE : \nFête du Travail",
+              "start": "2022-05-01T00:00:00",
+              "end": "2022-05-01T23:59:59"
+            },
+            {
+              "title": "FERIE : \nVictoire des alliés",
+              "start": "2022-05-08T00:00:00",
+              "end": "2022-05-08T23:59:59"
+            },
+            {
+              "title": "FERIE : \njeudi de l\'ascension",
+              "start": "2022-05-26T00:00:00",
+              "end": "2022-05-26T23:59:59"
+            },
+            {
+              "title": "FERIE : \nLundi de pentecôte",
+              "start": "2022-06-06T00:00:00",
+              "end": "2022-06-06T23:59:59"
+            },
+            {
+              "title": "FERIE : \nFête nationale",
+              "start": "2022-07-14T00:00:00",
+              "end": "2022-07-14T23:59:59"
+            },
+            {
+              "title": "FERIE : \nAssomption",
+              "start": "2022-08-15T00:00:00",
+              "end": "2022-08-15T23:59:59"
+            },
+            {
+              "title": "FERIE : \nLa Toussaint",
+              "start": "2022-11-01T00:00:00",
+              "end": "2022-11-01T23:59:59"
+            },
+            {
+              "title": "FERIE : \nArmistice",
+              "start": "2022-11-11T00:00:00",
+              "end": "2022-11-11T23:59:59"
+            },
+            {
+              "title": "FERIE : \nNoël",
+              "start": "2022-12-25T00:00:00",
+              "end": "2022-12-25T23:59:59"
+            },
+            {
+              "title": "FERIE : \nJour de l\'an",
+              "start": "2023-01-01T00:00:00",
+              "end": "2023-01-01T23:59:59"
+            },
+            {
+              "title": "FERIE : \nLundi de Pâques",
+              "start": "2023-04-10T00:00:00",
+              "end": "2023-04-10T23:59:59"
+            },
+            {
+              "title": "FERIE : \nFête du Travail",
+              "start": "2023-05-01T00:00:00",
+              "end": "2023-05-01T23:59:59"
+            },
+            {
+              "title": "FERIE : \nVictoire des alliés",
+              "start": "2023-05-08T00:00:00",
+              "end": "2023-05-08T23:59:59"
+            },
+            {
+              "title": "FERIE : \njeudi de l\'ascension",
+              "start": "2023-05-18T00:00:00",
+              "end": "2023-05-18T23:59:59"
+            },
+            {
+              "title": "FERIE : \nLundi de pentecôte",
+              "start": "2023-05-29T00:00:00",
+              "end": "2023-05-29T23:59:59"
+            },
+            {
+              "title": "FERIE : \nFête nationale",
+              "start": "2023-07-14T00:00:00",
+              "end": "2023-07-14T23:59:59"
+            },
+            {
+              "title": "FERIE : \nAssomption",
+              "start": "2023-08-15T00:00:00",
+              "end": "2023-08-15T23:59:59"
+            },
+            {
+              "title": "FERIE : \nLa Toussaint",
+              "start": "2023-11-01T00:00:00",
+              "end": "2023-11-01T23:59:59"
+            },
+            {
+              "title": "FERIE : \nArmistice",
+              "start": "2023-11-11T00:00:00",
+              "end": "2023-11-11T23:59:59"
+            },
+            {
+              "title": "FERIE : \nNoël",
+              "start": "2023-12-25T00:00:00",
+              "end": "2023-12-25T23:59:59"
+            }
+          ]'
+        );
+        $response->headers->set('Content-Type', 'application/json');
+        return $response;
+    }
+
+
+
 
     /**
      * @Route("/calendar/read", name="calendarRead")

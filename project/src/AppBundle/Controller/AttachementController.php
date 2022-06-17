@@ -7,6 +7,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use AppBundle\Type\EtablissementChoiceType;
 use AppBundle\Type\SocieteType;
 use AppBundle\Type\AttachementType;
@@ -23,79 +25,89 @@ class AttachementController extends Controller {
     public function indexAction(Request $request) {
 
     	$dm = $this->get('doctrine_mongodb')->getManager();
-        $lastAttachements = $this->get('attachement.manager')->getRepository()->findBy(array(), array('updatedAt' => 'DESC'), 10);
+        $lastAttachements = $this->get('attachement.manager')->getRepository()->findLast();
     	return $this->render('attachement/index.html.twig',array('lastAttachements' => $lastAttachements));
     }
 
-
     /**
-     * @Route("/attachement/{id}/documents/{all}", name="attachements_entite", defaults={"all" = null})
+     * @Route("/attachement/download/{id}", name="attachement_download")
      */
-    public function visualisationAction(Request $request, $id, $all = null) {
+    public function downloadAction(Request $request, $id) {
 
-      $societe = $this->get('societe.manager')->getRepository()->findOneById($id);
+    	$dm = $this->get('doctrine_mongodb')->getManager();
+        $attachement = $this->get('attachement.manager')->getRepository()->find($id);
 
-      if($societe){
-          return $this->redirectToRoute('attachements_societe', array('id' => $societe->getId(), 'all' => $all));
-      }
-      $etablissement = $this->get('etablissement.manager')->getRepository()->findOneById($id);
-      if($etablissement){
-          return $this->redirectToRoute('attachements_etablissement', array('id' => $etablissement->getId()));
-      }
+        $tmpfilename = tempnam(sys_get_temp_dir(), 'download');
+        file_put_contents($tmpfilename, base64_decode($attachement->getBase64()));
+
+        $response = new BinaryFileResponse($tmpfilename);
+
+        if(!$request->get('noattachment')) {
+            $response->setContentDisposition(
+                ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+                $attachement->getOriginalName()
+            );
+        }
+
+        return $response;
     }
 
     /**
-     * @Route("/attachement/societe/{id}/documents/{all}", name="attachements_societe", defaults={"all" = null})
+     * @Route("/attachement/societe/{id}/documents", name="attachements_societe")
      * @ParamConverter("societe", class="AppBundle:Societe")
      */
-    public function visualisationSocieteAction(Request $request, $societe, $all = null) {
-
-
-      ini_set('memory_limit', '-1');
-      $dm = $this->get('doctrine_mongodb')->getManager();
-      $attachement = new Attachement();
-      $attachementRepository = $this->get('attachement.manager')->getRepository();
-      $actif = $societe;
-
-      $allAttachements = $attachementRepository->findBySocieteAndEtablissement($societe);
-
-
-      $attachements = ($all)? $allAttachements : $attachementRepository->findBy(array('societe' => $societe), array('updatedAt' => 'DESC'));
-      $nbTotalAttachements = count($allAttachements);
-      $urlForm = $this->generateUrl('societe_upload_attachement', array('id' => $societe->getId()));
-
-      $form = $this->createForm(new AttachementType($dm), $attachement, array(
-              'action' => $urlForm,
-              'method' => 'POST',
-      ));
-      return $this->render('attachement/listing.html.twig', array('attachements'  => $attachements, 'societe' => $societe, 'etablissement' => null, 'actif' => $actif, 'urlForm' => $urlForm, 'form' => $form->createView(), 'all' => $all, 'nbTotalAttachements' => $nbTotalAttachements));
+    public function visualisationSocieteAction(Request $request, $id) {
+        return $this->visualisationAction($request, $id);
     }
 
     /**
      * @Route("/attachement/etablissement/{id}/documents", name="attachements_etablissement")
      * @ParamConverter("etablissement", class="AppBundle:Etablissement")
      */
-    public function visualisationEtablissementAction(Request $request, $etablissement) {
+    public function visualisationEtablissementAction(Request $request, $id) {
+        return $this->visualisationAction($request, $id);
+    }
 
-      ini_set('memory_limit', '-1');
+    /**
+     * @Route("/attachement/{id}/documents", name="attachements_entite")
+     */
+    public function visualisationAction(Request $request, $id) {
       $dm = $this->get('doctrine_mongodb')->getManager();
       $attachement = new Attachement();
       $attachementRepository = $this->get('attachement.manager')->getRepository();
-      $societe = $etablissement->getSociete();
-      $attachements = $attachementRepository->findBy(array('etablissement' => $etablissement), array('updatedAt' => 'DESC'));
-      $actif = $etablissement;
-      $urlForm = $this->generateUrl('etablissement_upload_attachement', array('id' => $etablissement->getId()));
+      $etablissement = null;
+      $societe = null;
+      $all = boolval($request->get('all'));
 
-      $nbTotalAttachements = count($attachementRepository->findBySocieteAndEtablissement($societe));
+      $societe = $this->get('societe.manager')->getRepository()->find($id);
+      if(!$societe) {
+        $etablissement = $this->get('etablissement.manager')->getRepository()->find($id);
+        $societe = $etablissement->getSociete();
+      }
+
+      $urlForm = $this->generateUrl('societe_upload_attachement', array('id' => $societe->getId()));
+
+      $actif = $societe;
+      $facets = array();
+      $attachements = $attachementRepository->findBySocieteAndEtablissement($societe, $facets);
+
+      if(!$all && !$etablissement) {
+           $attachements = $attachementRepository->findBySociete($societe, $facets);
+      }
+
+      if($etablissement) {
+        $actif = $etablissement;
+        $urlForm = $this->generateUrl('etablissement_upload_attachement', array('id' => $etablissement->getId()));
+        $attachements = $attachementRepository->findByEtablissement($etablissement);
+      }
 
       $form = $this->createForm(new AttachementType($dm), $attachement, array(
               'action' => $urlForm,
               'method' => 'POST',
       ));
 
-      return $this->render('attachement/listing.html.twig', array('attachements'  => $attachements, 'societe' => $societe, 'etablissement' => $etablissement, 'actif' => $actif, 'urlForm' => $urlForm, 'form' => $form->createView(), 'nbTotalAttachements' => $nbTotalAttachements , 'all' => null));
+      return $this->render('attachement/listing.html.twig', array('attachements'  => $attachements, 'societe' => $societe, 'etablissement' => $etablissement, 'actif' => $actif, 'urlForm' => $urlForm, 'form' => $form->createView(), 'all' => $all, 'facets' => $facets));
     }
-
 
     /**
     * @Route("/attachement/{id}/supprimer", name="attachement_delete")
@@ -152,7 +164,7 @@ class AttachementController extends Controller {
             $attachement->convertBase64AndRemove();
             $dm->flush();
             }
-        return $this->redirectToRoute('attachements_entite', array('id' => $societe->getId()));
+        return $this->redirectToRoute('attachements_societe', array('id' => $societe->getId()));
       }
   }
 
@@ -182,7 +194,7 @@ class AttachementController extends Controller {
             $dm->flush();
 
           }
-          return $this->redirectToRoute('attachements_entite', array('id' => $etablissement->getId()));
+          return $this->redirectToRoute('attachements_etablissement', array('id' => $etablissement->getId()));
       }
   }
 

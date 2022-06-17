@@ -4,7 +4,7 @@
 {% block body %}
     <ol class="breadcrumb">
         <li><a href="{{ path('calendarManuel') }}">Calendrier global</a></li>
-        <li><a href="{{ path('calendarManuel', {'date' : date}) }}">&nbsp;Semaine {{ calendarTool.getLibelle() }}</a></li>
+        <li><a href="{{ path('calendarManuel', {'date' : date}) }}">&nbsp; {{ calendarTool.getLibelle() }}</a></li>
     </ol>
     <div class="row">
         <div class="col-sm-12">
@@ -44,8 +44,10 @@
             {% endif %}
         </div>
     	<div class="col-sm-4 text-right">
+        <div class = "btn-group">
             <button data-toggle="modal" data-container="body" data-target="#choix_technicien" class="btn btn-default"><span class="glyphicon glyphicon-check"></span> Filtrer les techniciens</button>
-    	</div>
+          </div>
+      </div>
 </div>
 <div id="choix_technicien" class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-sm" role="document">
@@ -87,28 +89,31 @@
 											<thead>
 												<tr>
 													<th class="fc-axis fc-widget-header" style="width: 17px;"></th>
-													{% for date, eventDate in eventsDates %}
-													<th data-date="{{ date }}" class="fc-day-header fc-widget-header fc-mon">
-                                                        <div>{{ calendarTool.getShortLibelleJour(date|date("N")) }} {{ date|date("j") }}/{{ date|date("n") }}</div>
-                                                        <div style="text-align:left; padding: 0 2px;">
-                                                        {% for technicien, events in eventDate %}<a href="{{ path('calendar',{'technicien': techniciens["COMPTE-"~technicien].id, 'passage': ((passage) ? passage.id : null), 'id': ((passage) ? passage.etablissement.id : "0"), 'date': calendarTool.getDateDebut('Y-m-d'), 'mode': calendarTool.mode }) }}" data-toggle="tooltip" title="{{ techniciens["COMPTE-"~technicien].identite }}" style="
-                                                        display:inline-block;
-                                                        margin-right: 0;
-                                                        border-radius: 0;
-                                                        padding: 0px 0px;
-                                                        border: 0px none;
-                                                        font-size: 0.75em;
-                                                        background-color: {{ techniciens["COMPTE-"~technicien].couleur }};
-                                                        color: #fff;
-                                                        overflow:hidden;
-                                                        text-overflow: '';
-                                                        width: {{ ((100 / nbTechniciens))|round(0, 'floor') }}%;"
-                                                        class="fc-time-grid-event fc-v-event fc-event fc-start fc-end">
-                                                        &nbsp;<strong>{{ techniciens["COMPTE-"~technicien].prenom | slice(0,10) | upper }}</strong>
-                                                        </a>{% endfor %}
-                                                    </div>
-                                                    </th>
-													{% endfor %}
+                            <th data-date="{{ calendarTool.getDate()|date("Y-m-d") }}" class="fc-day-header fc-widget-header fc-mon">
+                              <div>{{ calendarTool.getShortLibelleJour(calendarTool.getDate()|date("N")) }} {{ calendarTool.getDate()|date("j") }}/{{ calendarTool.getDate()|date("n") }}</div>
+                              <div style="text-align:left; padding: 0 2px;">
+                                {% set date = calendarTool.getDate()|date("Y-m-d") %}
+                                {% if date in eventsDates|keys %}
+                                  {% for technicien,events in (eventsDates[date]) %}
+                                    <a href="{{ path('calendar',{'technicien': techniciens["COMPTE-"~technicien].id, 'passage': ((passage) ? passage.id : null), 'id': ((passage) ? passage.etablissement.id : "0"), 'date': calendarTool.getDateDebut('Y-m-d'), 'mode': calendarTool.mode }) }}" data-toggle="tooltip" title="{{ techniciens["COMPTE-"~technicien].identite }}" style="
+                                    display:inline-block;
+                                    margin-right: 0;
+                                    border-radius: 0;
+                                    padding: 0px 0px;
+                                    border: 0px none;
+                                    font-size: 0.75em;
+                                    background-color: {{ techniciens["COMPTE-"~technicien].couleur }};
+                                    color: #fff;
+                                    overflow:hidden;
+                                    text-overflow: '';
+                                    width: {{ ((100 / nbTechniciens))|round(0, 'floor') - 0.4 }}%;"
+                                    class="fc-time-grid-event fc-v-event fc-event fc-start fc-end">
+                                    &nbsp;<strong>{{ techniciens["COMPTE-"~technicien].prenom | slice(0,10) | upper }}</strong>
+                                    </a>
+                                  {% endfor %}
+                                {% endif %}
+                              </div>
+                            </th>
 												</tr>
 											</thead>
 										</table>
@@ -126,18 +131,6 @@
 									{% endif %}
 									<div class="fc-time-grid-container" style="height: {{ height }}px; overflow: hidden;">
 										<div class="fc-time-grid">
-											<div class="fc-bg">
-												<table>
-													<tbody>
-														<tr>
-															<td class="fc-axis fc-widget-content" style="width: 17px;"></td>
-															{% for date, eventDate in eventsDates %}
-															<td data-date="" class="fc-day fc-widget-content{% if date == calendarTool.getAujourdhui('Y-m-d') %} fc-today fc-state-highlight{% endif %}"></td>
-															{% endfor %}
-														</tr>
-													</tbody>
-												</table>
-											</div>
 											<div class="fc-slats">
 												<table>
 													<tbody>
@@ -151,7 +144,7 @@
 																<td class="fc-axis fc-time fc-widget-content" style="width: 17px;"><span>{{ "%02d"|format(i) }}</span></td>
 																<td class="fc-widget-content"></td>
 															</tr>
-															<tr class="fc-minor" data-time="{{ "%02d:30:00"|format(i) }}">
+															<tr class="fc-minor" data-time="{{ "%02d:30:00"|format(i) }}" style="background-color:rgba(0, 0, 0, 0.05);">
 																<td class="fc-axis fc-time fc-widget-content" style="width: 17px;"></td>
 																<td class="fc-widget-content"></td>
 															</tr>
@@ -164,51 +157,51 @@
 													<tbody>
 														<tr>
 															<td style="width:17px" class="fc-axis"></td>
-															{% for date, eventDate in eventsDates %}
-															<td class="{{ date }}">
-																<div class="fc-content-col">
-																	<div class="fc-event-container">
-																		{% set index = 0 %}
-																		{% for technicien, events in eventDate %}
-																			{% for event in events %}
-																			<a style="cursor: pointer;
-																				background-color: {{ event.backgroundColor }};
-                                                                                border: 1px dotted #fff;
-                                                                                font-size: 0.75em;
-																				color: {{ event.textColor }};
-                                                                                padding: 0 2px;
-																				z-index: {{ index + 1 }};
-																				top: {{ (event.coefStart * 26) + 1 }}px;
-																				bottom: -{{ (event.coefEnd * 26) + 3 }}px;
-																				left: {{ ((100 / nbTechniciens) * index)|round(0, 'floor') }}%;
-                                                                                border-radius: 0;
-																				width: {{ ((100 / nbTechniciens))|round(0, 'floor') - 3 }}%;"
-                                                                                data-container="body"
-																				class="fc-time-grid-event fc-v-event fc-event fc-start fc-end toggle-tooltip"
-																				nb="{{ eventDate|keys|length }}" data-toggle="modal" data-remote="false" data-target="#modal-calendrier-infos" href="{{path('calendarRead', { 'id': event.id, 'service': app.request.uri })}}"
-                                                                                title="{{ event.resume }}" ><small style="word-wrap: break-word;">{{ event.resume }}</small>
-																			</a>
-																			{% endfor %}
-                                                                            <a style="
-                                                                                display:inline-block;
-                                                                                top: -10px;
-																				z-index: {{ index - 1 }};
-                                                                                border-radius: 0;
-                                                                                bottom: -{{ height }}px;
-                                                                                left: {{ ((100 / nbTechniciens) * index)|round(0, 'floor') }}%;
-                                                                                background-color: {{ techniciens["COMPTE-"~technicien].couleur }};
-                                                                                border: 0;
-                                                                                opacity: 0.2;
-                                                                                padding: 0 5px;
-                                                                                width: {{ ((100 / nbTechniciens))|round(0, 'floor') - 5 }}%;"
-                                                                                class="fc-time-grid-event fc-v-event fc-event fc-start fc-end">
-                                                                            </a>
-																			{% set index = index + 1 %}
-																		{% endfor %}
-																	</div>
-																</div>
-															</td>
-															{% endfor %}
+  															<td class="{{ calendarTool.getDate()|date("Y-m-d") }}">
+  																<div class="fc-content-col">
+  																	<div class="fc-event-container">
+  																		{% set index = 0 %}
+                                      {% set date = calendarTool.getDate()|date("Y-m-d") %}
+                                      {% if date in eventsDates|keys %}
+  																		{% for technicien,events in (eventsDates[date]) %}
+  																			{% for event in events %}
+  																			<a style="cursor: pointer;
+                                                                            background-color: {{ event.backgroundColor }}70;
+                                          border: 1px dotted black;
+                                          font-size: 0.75em;
+  																				color: {{ event.textColor }};
+                                          padding: 0 2px;
+  																				z-index: {{ index + 1 }};
+  																				top: {{ (event.coefStart * 26) + 1 }}px;
+  																				bottom: -{{ (event.coefEnd * 26) + 3 }}px;
+  																				left: {{ ((100 / nbTechniciens) * index)|round(0, 'floor') }}%;
+                                          border-radius: 0;
+  																				width: {{ ((100 / nbTechniciens))|round(0, 'floor') - 1 }}%;"
+                                          data-container="body"
+  																				class="fc-time-grid-event fc-v-event fc-event fc-start fc-end toggle-tooltip"
+  																				nb="{{ eventsDates[date]|keys|length }}" data-toggle="modal" data-remote="false" data-target="#modal-calendrier-infos" href="{{path('calendarRead', { 'id': event.id, 'service': app.request.uri })}}"
+                                          title="{{ event.resume }}" ><small style="word-wrap: break-word;">{{ event.resume }}</small>
+  																			</a>
+  																			{% endfor %}
+                                        <a style="
+                                        display:inline-block;
+                                        top: -10px;z-index: {{ index - 1 }};
+                                        border-radius: 0;
+                                        bottom: -{{ height }}px;
+                                        left: {{ ((100 / nbTechniciens) * index)|round(0, 'floor') }}%;
+                                        background-color: white;
+                                        border: 0.5px solid black;
+                                        opacity: 0.1;
+                                        padding: 0 5px;
+                                        width: {{ ((100 / nbTechniciens))|round(0, 'floor') - 1 }}%;"
+                                        class="fc-time-grid-event fc-v-event fc-event fc-start fc-end">
+                                        </a>
+  																			{% set index = index + 1 %}
+                                      {% endfor %}
+                                    {% endif %}
+  																	</div>
+  																</div>
+  															</td>
 														</tr>
 													</tbody>
 												</table>

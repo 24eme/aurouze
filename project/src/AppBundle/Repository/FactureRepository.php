@@ -5,7 +5,7 @@ namespace AppBundle\Repository;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use AppBundle\Tool\RechercheTool;
 use AppBundle\Document\societe;
-
+use AppBundle\Manager\FactureManager;
 /**
  * FactureRepository
  *
@@ -52,7 +52,7 @@ class FactureRepository extends DocumentRepository {
                         ->addOr($q->expr()->field('numeroFacture')->equals(new \MongoRegex('/.*' . $term . '.*/i')));
             }
             if($filter && !$withCloture){
-              $q->field('avoir')->equals(null);
+                $q->field('cloture')->notEqual(1);
             }
             $factures = $q->limit(1000)->getQuery()->execute();
 
@@ -83,17 +83,13 @@ class FactureRepository extends DocumentRepository {
     }
 
     public function exportByPrelevements($clients) {
-
-        $date = new \DateTime();
-        $date->modify("-2 year");
-
     	$q = $this->createQueryBuilder();
     	$q->addAnd($q->expr()->field('societe')->in($clients));
     	$q->addAnd($q->expr()->field('cloture')->equals(false));
         $q->addAnd($q->expr()->field('montantHT')->gt(0.0));
+	$q->addAnd($q->expr()->field('sepa.actif')->equals(true));
         $q->addAnd($q->expr()->field('avoir')->equals(null));
         $q->addAnd($q->expr()->field('inPrelevement')->equals(null));
-        $q->addAnd($q->expr()->field('dateEmission')->gt($date));
         $q->addAnd($q->expr()->field('numeroFacture')->notEqual(null));
 
     	$query = $q->getQuery();
@@ -136,7 +132,6 @@ class FactureRepository extends DocumentRepository {
       $q->field('numeroFacture')->notEqual(null);
       $q->field('cloture')->equals(false);
       $q->field('montantTTC')->gt(0.0);
-      $q->field('avoir')->equals(null);
       if(!is_null($nbRelance)){
         if($nbRelance > 2){
           $q->field('nbRelance')->gte($nbRelance);
@@ -174,8 +169,6 @@ class FactureRepository extends DocumentRepository {
       $resultsFacture = $qF->getQuery()->execute();
 
       // Devis
-
-     // $today->modify("-30 days");
       $qD = $this->makeBaseFactureRetardDePaiement($nbRelance, $societe);
       $qD->field('numeroDevis')->notEqual(null);
       if($dateFactureBasse){
@@ -184,7 +177,11 @@ class FactureRepository extends DocumentRepository {
       if($dateFactureHaute){
         $qD->field('dateFacturation')->lte($dateFactureHaute);
       }
-      //$qD->field('dateFacturation')->lt($today);
+      if (!$dateFactureHaute) {
+          $todayDevis = clone $today;
+          $todayDevis->modify("-".FactureManager::DEFAUT_FREQUENCE_JOURS." days");
+          $qD->field('dateFacturation')->lt($todayDevis);
+      }
       $resultsDevis = $qD->getQuery()->execute();
 
       $results = array_merge($resultsFacture->toArray(), $resultsDevis->toArray());

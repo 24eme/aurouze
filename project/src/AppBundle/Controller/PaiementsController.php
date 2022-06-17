@@ -32,16 +32,31 @@ class PaiementsController extends Controller {
         $paiementsDocsPrelevement = $this->get('paiements.manager')->getRepository()->findByPeriode($periode,true);
         $dm = $this->get('doctrine_mongodb')->getManager();
 
+        $tabPaiementsChequesNonTerminé = array();
+        $tabOthersPaiements = array();
+        foreach($paiementsDocs as $paiements){
+            foreach($paiements->getAggregatePaiements() as $k => $v){
+                if(!$paiements->isImprime() && $k == "CHEQUE"){
+                    $tabPaiementsChequesNonTerminé[] =$paiements;
+                }
+                else{
+                    $tabOthersPaiements[] = $paiements;
+                }
+            }
+        }
+        $paiementsDocs = array_merge($tabPaiementsChequesNonTerminé, $tabOthersPaiements);
         return $this->render('paiements/index.html.twig', array('paiementsDocs' => $paiementsDocs, 'paiementsDocsPrelevement' => $paiementsDocsPrelevement, 'periode' => $periode));
     }
 
+
+
     /**
-     * @Route("/paiements/details/{type}/{date}", name="paiements_details")
+     * @Route("/paiements/details/{id}", name="paiements_details")
      */
     public function detailsAction(Request $request) {
         $type  = $request->get('type');
-        $date  = $request->get('date');
-        $paiements =  $this->get('paiements.manager')->getRepository()->findByDateAndType($date,$type);
+        $id = $request->get('id');
+        $paiements = $this->get('paiements.manager')->getRepository()->findById($id);
         return $this->render('paiements/details.html.twig', array('paiements' => $paiements,'type'=>$type));
     }
 
@@ -295,15 +310,15 @@ class PaiementsController extends Controller {
 
     	$facturesForCsv = $fm->getFacturesPrelevementsForCsv();
 
+
         if(count($facturesForCsv)){
+
             $prelevement = new PrelevementXml($facturesForCsv,$banqueParameters);
             $prelevement->createPrelevement();
             $this->createPaiementsPrelevement($facturesForCsv,$prelevement);
         }
 
-        return $this->redirectToRoute('paiements_liste');
-
-
+        return $this->redirect($this->generateUrl('paiements_liste') . '#prelevements');
     }
 
     /**

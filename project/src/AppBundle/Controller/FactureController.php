@@ -42,7 +42,6 @@ class FactureController extends Controller
         $contratManager = $this->get('contrat.manager');
         $factureManager = $this->get('facture.manager');
         $devisManager = $this->get('devis.manager');
-        $contratsFactureAEditer = $contratManager->getRepository()->findContratWithFactureAFacturer(50);
         $facturesEnAttente = $factureManager->getRepository()->findBy(array('numeroFacture' => null, 'numeroDevis' => null), array('dateFacturation' => 'desc'));
 
         $factures = $factureManager->getRepository()->findBy(['numeroDevis' => ['$ne' => null]]);
@@ -52,7 +51,22 @@ class FactureController extends Controller
         }
 
         $devisAFacturer = $devisManager->getRepository('AppBundle:Devis')->findBy(['numeroDevis' => ['$nin' => $numeros], 'dateAcceptation' => ['$ne' => null]], ['dateEmission' => 'desc']);
-        return $this->render('facture/index.html.twig',array('contratsFactureAEditer' => $contratsFactureAEditer, 'facturesEnAttente' => $facturesEnAttente, 'devisAFacturer' => $devisAFacturer));
+
+        $secteur = $this->getParameter('secteurs');
+        $contratsFactureAEditer = $contratManager->getRepository()->findAllContratWithFactureAFacturer();
+
+
+        $mouvements = array();
+        foreach ($contratsFactureAEditer as $c) {
+            foreach($c->getMouvements() as $m){
+                if($m->getOrigineDocumentGeneration()){
+                    $mouvements[$m->getOrigineDocumentGeneration()->getDateDebut()->format('Y-m-d H:i:s')] = $m;
+                }
+            }
+        }
+        ksort($mouvements);
+
+        return $this->render('facture/index.html.twig',array('facturesEnAttente' => $facturesEnAttente, 'devisAFacturer' => $devisAFacturer,'mouvements'=>$mouvements, 'secteur'=>$secteur));
     }
 
     /**
@@ -149,6 +163,11 @@ class FactureController extends Controller
             $fm->getRepository()->getClassMetadata()->idGenerator->generateNumeroFacture($dm, $facture);
         }
 
+        if ($origine = $facture->getOrigineAvoir()) {
+            $origine->setAvoirObject($facture);
+            $origine->updateMontantPaye();
+        }
+
         $dm->flush();
 
         return $this->redirectToRoute('facture_societe', array('id' => $societe->getId()));
@@ -174,7 +193,6 @@ class FactureController extends Controller
      */
     public function societeAction(Request $request, Societe $societe) {
         $fm = $this->get('facture.manager');
-        $facturesRetard = $fm->getRepository()->findRetardDePaiementBySociete($societe,30);
 
         $formSociete = $this->createForm(SocieteChoiceType::class, array('societe' => $societe), array(
             'action' => $this->generateUrl('societe'),
@@ -206,8 +224,12 @@ class FactureController extends Controller
 
         $mouvements = $fm->getMouvementsBySociete($societe);
 
+        $afacturer = $request->get('afacturer', array());
 
         foreach($mouvements as $mouvement) {
+            if (!in_array($mouvement->getIdentifiant(), $afacturer)) {
+                continue;
+            }
             $facture = $fm->create($societe, array($mouvement), $date);
             $facture->setDateFacturation($date);
             $contrat =  $facture->getContrat();
@@ -283,6 +305,8 @@ class FactureController extends Controller
       $dm->flush();
 
       $facture->setAvoir($avoir->getNumeroFacture());
+      $facture->setAvoirObject($avoir);
+      $facture->ajoutMontantPaye($avoir->getMontantTTC() * -1);
       $dm->persist($facture);
       $devis = $this->get('devis.manager')->getRepository()->findOneByIdentifiantFacture($factureId);
       if($devis){
@@ -431,7 +455,36 @@ class FactureController extends Controller
         return $response;
     }
 
+    /**
+     * @Route("/facture/export_factures_en_retard", name="factures_en_retard_export")
+     */
+    public function exportFactureEnRetardAction(Request $request) {
+        ini_set('memory_limit', '-1');
 
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $fm = $this->get('facture.manager');
+
+        $facturesForCsv = $fm->getRetardDePaiementCSV();
+
+        $filename = sprintf("export_factures_en_retard.csv");
+        $handle = fopen('php://memory', 'r+');
+
+        foreach ($facturesForCsv as $paiement) {
+            fputcsv($handle, $paiement,';');
+        }
+
+        rewind($handle);
+        $content = stream_get_contents($handle);
+        fclose($handle);
+
+        $response = new Response(utf8_decode($content), 200, array(
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename=' . $filename,
+        ));
+        $response->setCharset('UTF-8');
+
+        return $response;
+    }
 
     /**
      * @Route("/prelevements/export", name="factures_prelevements")
@@ -868,13 +921,16 @@ class FactureController extends Controller
 
       $pdf = $request->get('pdf',null);
 
-      $dateFactureBasse = null;
+      $date = new \DateTime();
+      $interval = new \DateInterval('P2Y');
+      $dateFactureBasse = $date->sub($interval);
+
       $dateFactureHaute = null;
       $nbRelances = null;
       $commerciaux = null;
       $formFacturesEnRetard = $this->createForm(new FacturesEnRetardFiltresType($this->container, $this->get('doctrine_mongodb')->getManager()), null, array(
           'action' => $this->generateUrl('factures_retard'),
-          'method' => 'post',
+          'method' => 'GET',
       ));
       $formFacturesEnRetard->handleRequest($request);
       if ($formFacturesEnRetard->isSubmitted() && $formFacturesEnRetard->isValid()) {
@@ -894,8 +950,18 @@ class FactureController extends Controller
           'method' => 'post',
       ));
 
+      $arrayFacturesBySociete = array();
+      foreach($facturesEnRetard as $f){
+          $arrayFacturesBySociete[$f->getSociete()->getId()][] = $f->getId();
+      }
+
+      $tabNbFacturesBySociete = array();
+      foreach($arrayFacturesBySociete as $k=>$v){
+         $tabNbFacturesBySociete[$k] = count($arrayFacturesBySociete[$k]);
+      }
+
       return $this->render('facture/retardPaiements.html.twig', array('facturesEnRetard' => $facturesEnRetard, "formRelance" => $formRelance->createView(), 'nbRelances' => $nbRelances, 'pdf' => $pdf,
-      'formFacturesARelancer' => $formFacturesEnRetard->createView(), 'commerciaux' => $commerciaux));
+      'formFacturesARelancer' => $formFacturesEnRetard->createView(), 'commerciaux' => $commerciaux,'tabNbFacturesBySociete'=> $tabNbFacturesBySociete));
     }
 
 
@@ -1035,4 +1101,171 @@ class FactureController extends Controller
 
       throw new \Exception('Une erreur s\'est produite');
       }
+
+
+      /**
+       * @Route("/passage/relance-email/{id}", name="relance_email")
+       * @ParamConverter("Facture", class="AppBundle:Facture")
+       */
+      public function relanceEmailAction(Request $request, Facture $facture){
+        $response = new Response();
+
+        $fm = $this->get('facture.manager');
+
+        $parameters = $fm->getParameters();
+
+        $fromEmail = $parameters['coordonnees']['email'];
+        $fromName = $parameters['coordonnees']['nom'];
+        $subject = "FACTURE NON PAYEE ( FACTURE n°".$facture->getNumeroFacture()." de ".$facture->getMontantTTC()." € )";
+
+        if( !$facture->getNbRelance()){
+            $body = $this->render('facture/mailPremiereRelance.html.twig', ['facture' => $facture, 'dateLimite' => date('d/m/Y', strtotime(' + 10 days'))])->getContent();
+        }
+        else{
+            $body = $this->render('facture/mailDeuxiemeRelance.html.twig', ['facture' => $facture, 'dateLimite' => date('d/m/Y', strtotime(' + 8 days'))])->getContent();
+        }
+
+        if($facture->getSociete()->getContactCoordonnee()->getEmailFacturation()){
+          $toEmail = $facture->getSociete()->getContactCoordonnee()->getEmailFacturation();
+        }
+        elseif($facture->getSociete()->getContactCoordonnee()->getEmail()) {
+          $toEmail = $facture->getSociete()->getContactCoordonnee()->getEmail();
+        }
+        else{
+          var_dump('NO mailer config');
+          $request->getSession()->getFlashBag()->add('notice', 'success');
+          $referer = $request->headers->get('referer');
+          return $this->redirect($referer);
+        }
+
+        $message = \Swift_Message::newInstance()
+            ->setSubject($subject)
+            ->setFrom(array($fromEmail => $fromName))
+            ->setTo(explode(";", $toEmail))
+            ->setBody($body,'text/plain')
+            ->setReadReceiptTo($fromEmail);
+
+            $pdf = $this->createPdfFacture($request,$facture->getId());
+            $namePdf = "FACTURE-".$facture->getNumeroFacture();
+            $attachment = \Swift_Attachment::newInstance($pdf,$namePdf,'application/pdf');
+            $message->attach($attachment);
+
+
+
+        try {
+            $this->get('mailer')->send($message);
+            $dm = $this->get('doctrine_mongodb')->getManager();
+
+            if(!$facture->getNbRelance()){
+                $facture->setNbRelance(1);
+            }
+            else{
+                $facture->setNbRelance(2);
+            }
+            $dm->flush();
+            $relance = new Relance();
+            $relance->setDateRelance(new \DateTime());
+            $relance->setNumeroRelance($facture->getNbRelance());
+            $facture->addRelance($relance);
+
+            $commentaire = $facture->getRelanceCommentaire();
+            $dm->flush();
+        }
+        catch(Exception $e) {
+            var_dump('NO mailer config');
+            $request->getSession()->getFlashBag()->add('notice', 'success');
+            $referer = $request->headers->get('referer');
+            return $this->redirect($referer);
+        }
+
+        $request->getSession()->getFlashBag()->add('notice', 'success');
+        $referer = $request->headers->get('referer');
+
+        $response->headers->set('Content-Type', 'text/plain');
+        $response->setContent($commentaire);
+        return $response;
+
+      }
+
+        /**
+        * @Route("/passage/email_facture/{id}", name="email_facture")
+        * @ParamConverter("Facture", class="AppBundle:Facture")
+        */
+        public function factureEmailAction(Request $request, Facture $facture){
+          $fm = $this->get('facture.manager');
+          $parameters = $fm->getParameters();
+
+          $fromEmail = $parameters['coordonnees']['email'];
+          $fromName = $parameters['coordonnees']['nom'];
+          $prefix_subject =  $parameters['coordonnees']['prefix_objet'];
+
+          $subject = $prefix_subject." Facture n°".$facture->getNumeroFacture();
+          if($facture->isAvoir()){
+            $body = $this->render('facture/mailAvoir.html.twig', ['facture' => $facture])->getContent();
+          }
+          else{
+            $body = $this->render('facture/mailFacture.html.twig', ['facture' => $facture])->getContent();
+          }
+          if($facture->getSociete()->getContactCoordonnee()->getEmailFacturation()){
+            $toEmail = $facture->getSociete()->getContactCoordonnee()->getEmailFacturation();
+          }
+          elseif($facture->getSociete()->getContactCoordonnee()->getEmail()) {
+            $toEmail = $facture->getSociete()->getContactCoordonnee()->getEmail();
+          }
+
+
+          else{
+            var_dump('NO mailer config');
+            $request->getSession()->getFlashBag()->add('notice', 'success');
+            $referer = $request->headers->get('referer');
+            return $this->redirect($referer);
+          }
+
+          $message = \Swift_Message::newInstance()
+              ->setSubject($subject)
+              ->setFrom(array($fromEmail => $fromName))
+              ->setTo(explode(";", $toEmail))
+              ->setBody($body,'text/plain')
+              ->setReadReceiptTo($fromEmail);
+
+          $pdf = $this->createPdfFacture($request,$facture->getId());
+          $namePdf = "FACTURE-".$facture->getNumeroFacture();
+          $attachment = \Swift_Attachment::newInstance($pdf,$namePdf,'application/pdf');
+          $message->attach($attachment);
+
+          try {
+              $this->get('mailer')->send($message);
+              $dm = $this->get('doctrine_mongodb')->getManager();
+              $facture->setDateEnvoiMail(new \DateTime());
+              $dm->flush();
+          }
+          catch(Exception $e) {
+              var_dump('NO mailer config');
+          }
+          $request->getSession()->getFlashBag()->add('notice', 'success');
+          $referer = $request->headers->get('referer');
+
+          return $this->redirect($referer);
+        }
+
+
+        /**
+        * @Route("/mouvementsPouvantEtreFactures", name="mouvementsPouvantEtreFactures")
+        */
+        public function ListMouvementsPouvantEtreFacturesAction(Request $request){
+            $secteur = $this->getParameter('secteurs');
+            $dm = $this->get('doctrine_mongodb')->getManager();
+            $contratManager = $this->get('contrat.manager');
+            $contratsFactureAEditer = $contratManager->getRepository()->findAllContratWithFactureAFacturer();
+            $mouvements = array();
+            foreach ($contratsFactureAEditer as $c) {
+                foreach($c->getMouvements() as $m){
+                    $mouvements[$m->getOrigineDocumentGeneration()->getDateDebut()->format('Y-m-d H:i:s')] = $m;
+                }
+            }
+            ksort($mouvements);
+            return $this->render('facture/listMouvementsPouvantEtreFacturesAction.html.twig',array('mouvements'=>$mouvements, 'secteur'=>$secteur));
+        }
+
+
 }

@@ -2,45 +2,68 @@
 <table class="table table-bordered table-striped">
   <thead>
   <tr>
-    <th class="col-xs-1">Date</th>
-    <th class="col-xs-3">Type</th>
-    <th class="col-xs-2"></th>
-    <th class="col-xs-1">Montant total</th>
-    <th class="col-xs-1 text-center">Détail</th>
-    <th class="col-xs-1 text-center">Actions</th>
+    <th class="col-xs-2">Date</th>
+    <th class="col-xs-2">Type</th>
+    <th class="col-xs-3">Libelle</th>
+    <th class="col-xs-2">Facture</th>
+    <th class="col-xs-1 text-center">Montant</th>
+    <th class="col-xs-1 text-center">Total</th>
+    <th class="col-xs-2 text-center">Actions</th>
   </tr>
   </thead>
 
-{% for paiements in paiementsDocs %}
-{% for regKey, reglement in paiements.aggregatePaiements %}
-  <tr>
-    <td>{{ paiements.dateCreation | localizeddate("medium", "none", null, null, "d MMM yyyy") }}</td>
-    <td>{{ reglement.libelle }} ({{ reglement.items | length }})</td>
-  <td>{{ reglement.factures }} facture{% if reglement.factures > 1 %}s{% endif %}
-    {% if paiements.prelevement %}
-    <span class="pull-right label {% if not paiements.isAllSaisis() %}label-warning{% else %}label-default{% endif %}">
-          {% if not paiements.isAllSaisis() %}<span class="glyphicon glyphicon-warning-sign"></span>&nbsp;{% endif %}
-          {{ paiements.getNbPaiementsSaisis() }}/{{ paiements.paiement | length }} facture{% if paiements.paiement | length > 1 %}s{% endif %} saisie{% if paiements.paiement | length > 1 %}s{% endif %}
-    </span>
-      {% endif %}
+  {% for paiements in paiementsDocs %}
+  {% set date = null %}
+  {% for regKey, reglement in paiements.aggregatePaiements %}
+    {% for libKey, libelle in reglement.items %}
+        {% for paiement in libelle.items %}
+        <tr>
+          <td>
+            {% if paiements.dateCreation != date %}
+              <strong>{{ paiements.dateCreation | localizeddate("medium", "none", null, null, "d MMM yyyy") }}</strong>
+              {% if not (paiements.isImprime) and regKey == "CHEQUE"%}
+              <span style="float:right" class="glyphicon glyphicon-pushpin"></span>
+              {% endif %}
+            {% else %}
+              <span class="text-muted">{{ paiements.dateCreation | localizeddate("medium", "none", null, null, "d MMM yyyy") }}</span>
+            {% endif %}
+          </td>
+          <td>
+          {% if paiements.dateCreation != date %}
+            <strong>{{ reglement.libelle }}</strong>
+            <span  style="float:right; border-radius:8px;background-color:#F3BFCC;padding: 0px 2px;" class="text-right">{{reglement.factures}}</span>
+          {% else %}
+            <span class="text-muted">{{ reglement.libelle }}</span>
+          {% endif %}
 
-    </td>
-
-    <td class="text-right">{{ reglement.montant | number_format(2, ',', ' ') }}&nbsp;€</td>
-    <td class="text-center"><a href="{{ path('paiements_details',{ 'type' : regKey ,'date': paiements.dateCreation | localizeddate("medium", "none", null, null, "ddMMyyyy")}) }}"><i class ="mdi mdi-remove-red-eye mdi-lg"></i></a></td>
-    <td class="text-center">
-    {% if(not paiements.isImprime) %}
-        <a class="btn btn-xs btn-warning btn" href="{{ path('paiements_modification', {'id': paiements.id })}}"><span class="glyphicon glyphicon-pencil"></span></a>
-    {% else %}
-        <a class="btn btn-xs btn-default" href="{{ path('paiements_export_banque', {'id': paiements.id }) }}">
-            <span class="glyphicon glyphicon-print"></span>&nbsp;{% if(paiements.isRemiseEspece) %}Espèce{% else %}{{ paiements.nbPaiementUniqueParMoyen }} chèq.{% endif %}
-        </a>
-    {% endif %}
-
-
-    </td>
-  </tr>
-{% endfor %}
-{% endfor %}
+          </td>
+          <td>{{ libelle.libelle }}</td>
+          <td><a href="{{ path('facturable_pdf', {'document': paiement.facture.id , 'key': paiement.facture.getSecretKey()})}}">Facture n° {{ paiement.facture.numeroFacture }}</a></td>
+          <td class="text-right">{{ paiement.montant | number_format(2, ',', ' ') }}&nbsp;€</td>
+          <td class="text-right">
+          {% if paiements.dateCreation != date %}
+            <strong>{{ reglement.montant | number_format(2, ',', ' ') }}&nbsp;€</strong>
+          {% else %}
+            <span class="text-muted">{{ reglement.montant | number_format(2, ',', ' ') }}&nbsp;€</span>
+          {% endif %}
+          </td>
+          <td class="text-right">
+          {% if paiements.dateCreation != date %}
+            {% if (paiements.isImprime) and regKey == "CHEQUE" %}
+          <a  type="button" class="btn btn-xs btn-default" href="{{ path('paiements_export_banque', {'id': paiements.id }) }}" title="&nbsp;{% if(paiements.isRemiseEspece) %}Espèce{% else %}{{ paiements.nbPaiementUniqueParMoyen }} chèq.{% endif %}">
+                <span class="glyphicon glyphicon-print"></span>
+              </a>
+            {% endif %}
+            <a  type="button" class="btn btn-xs btn-warning" href="{{ path('paiements_modification', {'id': paiements.id })}}">
+              <span class="glyphicon glyphicon-pencil"></span>
+            </a>
+          {% endif %}
+          </td>
+          {% set  date = paiements.dateCreation %}
+        </tr>
+    {% endfor %}
+  {% endfor %}
+  {% endfor %}
+  {% endfor %}
 </table>
 {% endif %}

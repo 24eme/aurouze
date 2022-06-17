@@ -128,6 +128,7 @@ class PassageController extends Controller
         $coordinatesCenter->setLat($lat);
         $coordinatesCenter->setLon($lon);
         $coordinatesCenter->setZoom($zoom);
+
         $geojson = $this->buildGeoJson($passages);
         $passagesFiltreExportForm = $this->getPassagesFiltreExportForm();
 
@@ -485,6 +486,7 @@ class PassageController extends Controller
         if(!$passage->getEmailTransmission()){
             $dm = $this->get('doctrine_mongodb')->getManager();
             $passage->setPdfNonEnvoye(false);
+            $passage->setPdfRapportDateEnvoi(new \DateTime());
             $dm->flush();
         }
 
@@ -536,14 +538,14 @@ class PassageController extends Controller
         $message = \Swift_Message::newInstance()
             ->setSubject($suject)
             ->setFrom(array($fromEmail => $fromName))
-            ->setTo($passage->getEmailTransmission())
+            ->setTo(explode(";",$passage->getEmailTransmission()))
             ->setReplyTo($replyEmail)
             ->setBody($body,'text/plain');
 
         if ($passage->getSecondEmailTransmission()) {
-            $to = [];
-            $to[] = $passage->getEmailTransmission();
-            $to[] = $passage->getSecondEmailTransmission();
+            $emailsTransmissions = explode(";",$passage->getEmailTransmission());
+            $secondEmailsTransmission = explode(";",$passage->getSecondEmailTransmission());
+            $to = array_merge($emailsTransmissions,$secondEmailsTransmission);
             $message->setTo($to);
         }
 
@@ -553,6 +555,7 @@ class PassageController extends Controller
         try {
             $this->get('mailer')->send($message);
             $passage->setPdfNonEnvoye(false);
+            $passage->setPdfRapportDateEnvoi(new \DateTime());
             $dm->flush();
         }
         catch(Exception $e) {

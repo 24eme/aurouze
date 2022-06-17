@@ -22,7 +22,8 @@
                         </button>
                       {% else %}
                         <button class="btn btn-md btn-block" style="background-color:{{rdv.calculateTilesColors().background}}; color:{{rdv.calculateTilesColors().text}};">
-                          Pdf envoyé
+                          Pdf envoyé <br>
+                          le {{ rdv.passage.getPdfRapportDateEnvoi | date('d/m/Y') }}
                         </button>
                       {% endif %}
                     {% else %}
