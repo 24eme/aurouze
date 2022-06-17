@@ -3,7 +3,7 @@
 <a href="#tournee_accueil" class="ui-btn ui-icon-arrow-l ui-btn-icon-left" >
       &nbsp;Retour
 </a>
-{% if planifiable.isPdfNonEnvoye %}
+{% if planifiable.isPdfNonEnvoye is not same as (false) %}
 <a class="ui-btn ui-icon-check ui-btn-icon-right transmission_rapport" data-id="{{ planifiable.id }}" >
     Envoyer&nbsp;
 </a>
