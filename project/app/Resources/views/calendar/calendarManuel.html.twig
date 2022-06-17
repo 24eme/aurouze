@@ -144,7 +144,7 @@
 																<td class="fc-axis fc-time fc-widget-content" style="width: 17px;"><span>{{ "%02d"|format(i) }}</span></td>
 																<td class="fc-widget-content"></td>
 															</tr>
-															<tr class="fc-minor" data-time="{{ "%02d:30:00"|format(i) }}">
+															<tr class="fc-minor" data-time="{{ "%02d:30:00"|format(i) }}" style="background-color:rgba(0, 0, 0, 0.05);">
 																<td class="fc-axis fc-time fc-widget-content" style="width: 17px;"></td>
 																<td class="fc-widget-content"></td>
 															</tr>
@@ -189,8 +189,8 @@
                                         border-radius: 0;
                                         bottom: -{{ height }}px;
                                         left: {{ ((100 / nbTechniciens) * index)|round(0, 'floor') }}%;
-                                        background-color: {{ techniciens["COMPTE-"~technicien].couleur }};
-                                        border: 0;
+                                        background-color: white;
+                                        border: 0.5px solid black;
                                         opacity: 0.1;
                                         padding: 0 5px;
                                         width: {{ ((100 / nbTechniciens))|round(0, 'floor') - 1 }}%;"
