@@ -158,8 +158,11 @@
     $.initTransmission = function () {
 
       $(".transmission_rapport").on("click",function(){
-        var duree = document.getElementById('mobile_'+($(this).attr('data-id')).replaceAll("-","_")+"_dureeRaw").value;
-        if(!duree){
+        let transmission = true;
+        if(document.getElementById('mobile_'+($(this).attr('data-id')))) {
+            transmission = document.getElementById('mobile_'+($(this).attr('data-id')).replaceAll("-","_")+"_dureeRaw").value;
+        }
+        if(!transmission){
            location.href = "#rapport_"+$(this).attr('data-id');
            if(document.getElementById("comment_"+$(this).attr('data-id')+"_dureeRaw")){
               el = document.getElementById("comment_"+$(this).attr('data-id')+"_dureeRaw");
