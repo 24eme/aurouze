@@ -208,6 +208,8 @@ public static $export_factures_en_retards = array(
           $facture->addLigne($ligne);
         }
 
+        $facture->update();
+
         return $facture;
     }
 
