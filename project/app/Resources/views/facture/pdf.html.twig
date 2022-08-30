@@ -149,7 +149,7 @@ Condition de réglement : {{ facture.frequencePaiementLibelle }}
 </p>
 {% endif %}
 
-{% if (devisLie) %}
+{% if (devisLie and devisLie.numeroCommande) %}
 <p>
     Numero Commande : <strong>{{ devisLie.numeroCommande }}</strong>
 </p>
