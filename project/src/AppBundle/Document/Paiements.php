@@ -282,6 +282,17 @@ class Paiements {
         return $montantTotal;
     }
 
+    public function getMontantTotalByOperation($paiement) {
+        $montantTotal = 0;
+        foreach ($this->getPaiement() as $p) {
+            if($p->getDatePaiement() != $paiement->getDatePaiement() || $p->getMoyenPaiement() !== $paiement->getMoyenPaiement() || $p->getLibelle() !== $paiement->getLibelle()) {
+                continue;
+            }
+            $montantTotal += $paiement->getMontant();
+        }
+        return $montantTotal;
+    }
+
     public function getMontantTotalByMoyenPaiement($moyen_paiement) {
         $montantTotal = 0;
         foreach ($this->getPaiement() as $paiement) {
