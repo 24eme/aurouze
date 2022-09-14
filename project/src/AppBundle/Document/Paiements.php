@@ -285,10 +285,10 @@ class Paiements {
     public function getMontantTotalByOperation($paiement) {
         $montantTotal = 0;
         foreach ($this->getPaiement() as $p) {
-            if($p->getDatePaiement() != $paiement->getDatePaiement() || $p->getMoyenPaiement() !== $paiement->getMoyenPaiement() || $p->getLibelle() !== $paiement->getLibelle()) {
-                continue;
-            }
-            $montantTotal += $paiement->getMontant();
+	    if($p->getDatePaiement()->format('Y-m-d') != $paiement->getDatePaiement()->format('Y-m-d') || $p->getMoyenPaiement() != $paiement->getMoyenPaiement() || $p->getLibelle() != $paiement->getLibelle()) {
+		continue;
+	    }
+            $montantTotal += $p->getMontant();
         }
         return $montantTotal;
     }
