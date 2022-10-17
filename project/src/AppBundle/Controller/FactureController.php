@@ -59,6 +59,9 @@ class FactureController extends Controller
         $mouvements = array();
         foreach ($contratsFactureAEditer as $c) {
             foreach($c->getMouvements() as $m){
+                if (!$m->getFacturable()||$m->getFacture()) {
+                    continue;
+                }
                 if($m->getOrigineDocumentGeneration()){
                     $mouvements[$m->getOrigineDocumentGeneration()->getDateDebut()->format('Y-m-d H:i:s')] = $m;
                 }

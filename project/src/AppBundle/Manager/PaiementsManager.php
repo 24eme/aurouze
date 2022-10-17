@@ -204,7 +204,7 @@ class PaiementsManager {
                       } else {
                           $paiementArr[self::EXPORT_TYPE_PIECE_BANQUE] = "";
                       }
-                      $paiementArr[self::EXPORT_MONTANT_PIECE_BANQUE] = number_format($paiement->getMontant(), 2, ",", "");
+                      $paiementArr[self::EXPORT_MONTANT_PIECE_BANQUE] = number_format($paiements->getMontantTotalByOperation($paiement), 2, ",", "");
                       $paiementArr[self::EXPORT_MONTANT_CHEQUE] = ($paiement->getMoyenPaiement() == self::MOYEN_PAIEMENT_CHEQUE)? $paiements->getMontantTotalByMoyenPaiement(self::MOYEN_PAIEMENT_CHEQUE) : "";
 
                       $paiementArr[self::EXPORT_TYPE_RELANCE] = ($paiement->getFacture()->getNbRelance())? FactureManager::$types_nb_relance[$paiement->getFacture()->getNbRelance()] :FactureManager::$types_nb_relance[0];

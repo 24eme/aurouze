@@ -1985,8 +1985,11 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
       }
       $nbPassagesEff = $this->getContratPassages()->first()->getNbPassagesRealises(true);
       $nbPassageTotal = $this->getNbPassages();
+      if($this->isAnnule()) {
+        $nbPassageTotal = 0;
+      }
       $nbPassageRestant = $nbPassageTotal - $nbPassagesEff;
-      $ratioEffectue = (!$nbPassageTotal)? "0" : (floatval($nbPassagesEff) / floatval($nbPassageTotal));
+      $ratioEffectue = (!$nbPassageTotal)? "1" : (floatval($nbPassagesEff) / floatval($nbPassageTotal));
 
       $prixFacture =  $this->getPrixFactures();
       $prixTotal =  $this->getPrixHt();
