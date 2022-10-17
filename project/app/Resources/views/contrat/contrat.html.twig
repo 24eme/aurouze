@@ -61,6 +61,9 @@
                         Fréquence de paiement : <strong>{{ contrat.frequencePaiementLibelle }}</strong><br />
                     	Numéro de commande : <strong>{% if contrat.referenceClient %}{{ contrat.referenceClient }}{% else %}Non défini{% endif %}</strong><br />
                         Destinataire de la facture : <strong>{% if contrat.factureDestinataire %}{{ contrat.factureDestinataire }}{% else %}{{ contrat.societe.raisonSociale }}{% endif %}</strong>
+                        <br />
+                        <br />
+                        PCA : <strong>{{ contrat.calculPca.pca | number_format(2, ',', ' ') }}&nbsp;€ ({{ (contrat.calculPca.ratioActivite * 100) | number_format(2, ',', ' ') }}% réalisé et {{ (contrat.calculPca.ratioFacture * 100) | number_format(2, ',', ' ') }}% facturé)</strong>
                     </div>
                 </div>
             </div>

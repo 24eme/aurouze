@@ -40,16 +40,17 @@ class ContratManager implements MouvementManagerInterface {
 
     const EXPORT_PCA_CLIENT = 0;
     const EXPORT_PCA_NUMERO_CONTRAT = 1;
-    const EXPORT_PCA_DEBUT = 2;
-    const EXPORT_PCA_FIN = 3;
-    const EXPORT_PCA_MONTANT_HT = 4;
-    const EXPORT_PCA_MONTANT_FACTURE = 5;
-    const EXPORT_PCA_RATIO_FACTURE = 6;
-    const EXPORT_PCA_NB_PASSAGE = 7;
-    const EXPORT_PCA_NB_PASSAGE_EFFECTUE  = 8;
-    const EXPORT_PCA_RATIO_PASSAGE  = 9;
-    const EXPORT_PCA_PCA_VALEUR = 10;
-    const EXPORT_PCA_CONTROLE  = 11;
+    const EXPORT_PCA_TYPE_CONTRAT = 2;
+    const EXPORT_PCA_DEBUT = 3;
+    const EXPORT_PCA_FIN = 4;
+    const EXPORT_PCA_MONTANT_HT = 5;
+    const EXPORT_PCA_MONTANT_FACTURE = 6;
+    const EXPORT_PCA_RATIO_FACTURE = 7;
+    const EXPORT_PCA_NB_PASSAGE = 8;
+    const EXPORT_PCA_NB_PASSAGE_EFFECTUE  = 9;
+    const EXPORT_PCA_RATIO_PASSAGE  = 10;
+    const EXPORT_PCA_PCA_VALEUR = 11;
+    const EXPORT_PCA_CONTROLE  = 12;
 
     public static $moyens_contrat_libelles = array(
         self::MOYEN_3D => '3D',
@@ -124,6 +125,7 @@ class ContratManager implements MouvementManagerInterface {
     public static $pca_entete_libelle = array(
       self::EXPORT_PCA_CLIENT => "Client",
       self::EXPORT_PCA_NUMERO_CONTRAT => "Numéro Contrat",
+      self::EXPORT_PCA_TYPE_CONTRAT => "Type de Contrat",
       self::EXPORT_PCA_DEBUT => "Début",
       self::EXPORT_PCA_FIN => "Fin",
       self::EXPORT_PCA_MONTANT_HT => "Montant HT",
@@ -531,6 +533,7 @@ class ContratManager implements MouvementManagerInterface {
                 $pcaArr = array();
                 $pcaArr[self::EXPORT_PCA_CLIENT] = $contratObj->getSociete()->getRaisonSociale();
                 $pcaArr[self::EXPORT_PCA_NUMERO_CONTRAT] = $contratObj->getNumeroArchive();
+                $pcaArr[self::EXPORT_PCA_TYPE_CONTRAT] = $contratObj->getTypeContrat();
                 $pcaArr[self::EXPORT_PCA_DEBUT] = $contratObj->getDateDebut()->format('d/m/Y');
                 $pcaArr[self::EXPORT_PCA_FIN] = ($contratObj->getDateFin())? $contratObj->getDateFin()->format('d/m/Y') : "";
                 $pcaArr[self::EXPORT_PCA_MONTANT_HT] = sprintf("%01.02f",$contratObj->getPrixHt());
