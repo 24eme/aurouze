@@ -1823,6 +1823,8 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
      * @return string $frequencePaiement
      */
     public function getFrequencePaiement() {
+        $this->frequencePaiement = $this->getSociete()->getFrequencePaiement();
+
         return $this->frequencePaiement;
     }
 
