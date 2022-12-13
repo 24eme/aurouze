@@ -1829,6 +1829,7 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
     }
 
     public function getFrequencePaiementLibelle() {
+        $this->getFrequencePaiement();
 
         if(is_null($this->frequencePaiement)) return "N.C.";
 
