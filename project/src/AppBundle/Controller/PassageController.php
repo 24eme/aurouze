@@ -75,9 +75,9 @@ class PassageController extends Controller
     }
 
     /**
-     * @Route("/passage/{secteur}/visualisation/{mois}", name="passage_secteur")
+     * @Route("/passage/{secteur}/visualisation/{periode}", name="passage_secteur")
      */
-    public function secteurAction(Request $request, $secteur, $mois = null) {
+    public function secteurAction(Request $request, $secteur, $periode = null) {
 
         $formEtablissement = $this->createForm(EtablissementChoiceType::class, null, array(
             'action' => $this->generateUrl('passage_etablissement_choice'),
@@ -86,7 +86,6 @@ class PassageController extends Controller
         $passageManager = $this->get('passage.manager');
         $devisManager = $this->get('devis.manager');
 
-        $moisCourant = ($request->get('mois', null) == "courant");
         $dateFin = new \DateTime();
         $dateFinCourant = clone $dateFin;
         $dateFinCourant->modify("+1 month");
@@ -97,21 +96,28 @@ class PassageController extends Controller
         $dateFin = $dateFinCourant;
         $anneeMois = "courant";
         $dateFinAll = $dateFin;
-        if(!$moisCourant){
-            $anneeMois = ($request->get('mois',null))? $request->get('mois') : date('Ym', strtotime(date('Y-m-d')));
-            $dateDebut = \DateTime::createFromFormat('Ymd H:i:s',$anneeMois.'01 00:00:00');
+
+        if(strlen($request->get('periode')) == 4) {
+            $anneeMois = $request->get('periode');
+            $dateDebut = \DateTime::createFromFormat('Ymd',$anneeMois.'0101');
+            $dateFin = clone $dateDebut;
+            $dateFin->modify("+1 year -1 day");
+            $dateFin->setTime(23,59,59);
+        } else {
+            $anneeMois = ($request->get('periode',null))? $request->get('periode') : date('Ym', strtotime(date('Y-m-d')));
             $dateDebut = \DateTime::createFromFormat('Ymd',$anneeMois.'01');
             $dateFin = clone $dateDebut;
             $dateFin->modify("last day of this month");
             $dateFin->setTime(23,59,59);
-
-            $dateFinAll = clone $dateDebut;
-            $dateFinAll->modify("last day of next month");
-            $dateFinAll->setTime(23,59,59);
         }
+
+        $dateFinAll = new \DateTime();
+        $dateFinAll->modify("last day of next month");
+        $dateFinAll->setTime(23,59,59);
 
         $passages = null;
         $moisPassagesArray = $passageManager->getNbPassagesToPlanPerMonth($secteur, clone $dateFinAll);
+
         $passages = $passageManager->getRepository()->findToPlan($secteur, $dateDebut, clone $dateFin)->toArray();
         $devis = $devisManager->getRepository()->findToPlan($secteur, $dateDebut, clone $dateFin)->toArray();
 
