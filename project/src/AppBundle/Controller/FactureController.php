@@ -1153,7 +1153,7 @@ class FactureController extends Controller
             ->setReadReceiptTo($fromEmail);
 
             $pdf = $this->createPdfFacture($request,$facture->getId());
-            $namePdf = "FACTURE-".$facture->getNumeroFacture();
+            $namePdf = "FACTURE-".$facture->getNumeroFacture().".pdf";
             $attachment = \Swift_Attachment::newInstance($pdf,$namePdf,'application/pdf');
             $message->attach($attachment);
 
@@ -1236,7 +1236,7 @@ class FactureController extends Controller
               ->setReadReceiptTo($fromEmail);
 
           $pdf = $this->createPdfFacture($request,$facture->getId());
-          $namePdf = "FACTURE-".$facture->getNumeroFacture();
+          $namePdf = "FACTURE-".$facture->getNumeroFacture().".pdf";
           $attachment = \Swift_Attachment::newInstance($pdf,$namePdf,'application/pdf');
           $message->attach($attachment);
 
