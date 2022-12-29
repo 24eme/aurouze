@@ -212,7 +212,13 @@ class FactureController extends Controller
 
         $exportSocieteForm = $this->createExportSocieteForm($societe);
 
-        return $this->render('facture/societe.html.twig', array('societe' => $societe, 'mouvements' => $mouvements,'hasDevis' => $hasDevis,  'factures' => $factures, 'exportSocieteForm' => $exportSocieteForm->createView(), 'solde' => $solde));
+        $defaultDate = new \DateTime();
+
+        if($this->container->getParameter('date_facturation')) {
+            $defaultDate = new \DateTime($this->container->getParameter('date_facturation'));
+        }
+
+        return $this->render('facture/societe.html.twig', array('societe' => $societe, 'mouvements' => $mouvements,'hasDevis' => $hasDevis,  'factures' => $factures, 'exportSocieteForm' => $exportSocieteForm->createView(), 'solde' => $solde, 'defaultDate' => $defaultDate));
     }
 
     /**
