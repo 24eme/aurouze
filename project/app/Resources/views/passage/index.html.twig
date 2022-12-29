@@ -17,10 +17,10 @@
                 <ul class="nav nav-tabs">
                     {% for key,moisPassage in moisPassagesArray %}
                         <li role="presentation" class="{% if key == anneeMois %} active {% endif %}">
-                            <a href='{{ path('passage_secteur',{"secteur" : secteur, "mois" : key, "lat" : coordinatesCenter.lat, "lon" : coordinatesCenter.lon, "zoom": coordinatesCenter.zoom }) }}' >
+                            <a href='{{ path('passage_secteur',{"secteur" : secteur, "periode" : key, "lat" : coordinatesCenter.lat, "lon" : coordinatesCenter.lon, "zoom": coordinatesCenter.zoom }) }}' >
                                 <small><strong>
-                                        {% if key == 'courant' %}
-                                            D'ici le {{ dateFinCourant | localizeddate("medium", "none", null, null, "d/MM/Y") }}
+                                        {% if key | length == 4 %}
+                                            {{ moisPassage.date | localizeddate("medium", "none", null, null, "yyyy") | capitalize }}
                                         {% else %}
                                             {{ moisPassage.date | localizeddate("medium", "none", null, null, "MMMM yyyy") | capitalize }}
                                         {% endif %}
