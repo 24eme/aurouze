@@ -242,36 +242,44 @@ class PassageRepository extends DocumentRepository {
       $passages = $this->findToPlan($secteur, null, $dateFin);
       $devis = $this->dm->getRepository('AppBundle:Devis')->findToPlan($secteur, null, $dateFin);
 
-      $result = array();
-      $result['courant'] = new \stdClass();
-      $result['courant']->date = $date;
-      $result['courant']->nb = 0;
+      $resultMoisAnnee = array();
+      $resultAnnee = array();
       foreach ($passages as $passage) {
           $moisAnnee = $passage->getDatePrevision()->format('Ym');
-          if (!array_key_exists($moisAnnee, $result)) {
-              $result[$moisAnnee] = new \stdClass();
-              $result[$moisAnnee]->nb = 0;
-              $result[$moisAnnee]->date = $passage->getDatePrevision();
+          $annee = $passage->getDatePrevision()->format('Y');
+          if (!array_key_exists($annee, $resultAnnee)) {
+              $resultAnnee[$annee] = new \stdClass();
+              $resultAnnee[$annee]->nb = 0;
+              $resultAnnee[$annee]->date = $passage->getDatePrevision();
           }
-          if($datePlusOnemonth > $passage->getDatePrevision()){
-            $result['courant']->nb = $result['courant']->nb + 1;
+          if (!array_key_exists($moisAnnee, $resultMoisAnnee)) {
+              $resultMoisAnnee[$moisAnnee] = new \stdClass();
+              $resultMoisAnnee[$moisAnnee]->nb = 0;
+              $resultMoisAnnee[$moisAnnee]->date = $passage->getDatePrevision();
           }
-          $result[$moisAnnee]->nb = $result[$moisAnnee]->nb + 1;
+          $resultAnnee[$annee]->nb = $resultAnnee[$annee]->nb + 1;
+          $resultMoisAnnee[$moisAnnee]->nb = $resultMoisAnnee[$moisAnnee]->nb + 1;
       }
       foreach ($devis as $d) {
           $moisAnnee = $d->getDatePrevision()->format('Ym');
-          if (!array_key_exists($moisAnnee, $result)) {
-              $result[$moisAnnee] = new \stdClass();
-              $result[$moisAnnee]->nb = 0;
-              $result[$moisAnnee]->date = $d->getDatePrevision();
+          $annee = $d->getDatePrevision()->format('Y');
+          if (!array_key_exists($annee, $resultAnnee)) {
+              $resultAnnee[$annee] = new \stdClass();
+              $resultAnnee[$annee]->nb = 0;
+              $resultAnnee[$annee]->date = $d->getDatePrevision();
           }
-          if($datePlusOnemonth > $d->getDatePrevision()){
-            $result['courant']->nb = $result['courant']->nb + 1;
+          if (!array_key_exists($moisAnnee, $resultMoisAnnee)) {
+              $resultMoisAnnee[$moisAnnee] = new \stdClass();
+              $resultMoisAnnee[$moisAnnee]->nb = 0;
+              $resultMoisAnnee[$moisAnnee]->date = $d->getDatePrevision();
           }
-          $result[$moisAnnee]->nb = $result[$moisAnnee]->nb + 1;
+          $resultAnnee[$annee]->nb = $resultAnnee[$annee]->nb + 1;
+          $resultMoisAnnee[$moisAnnee]->nb = $resultMoisAnnee[$moisAnnee]->nb + 1;
       }
-      ksort($result);
-      $result = array_slice($result,0, 1,true)+array_slice($result, -4, 4,true);
+      unset($resultAnnee[date('Y') + 1]);
+      ksort($resultAnnee);
+      ksort($resultMoisAnnee);
+      $result = array_slice($resultAnnee,-2, 2,true)+array_slice($resultMoisAnnee, -4, 4,true);
       return $result;
     }
 
