@@ -125,6 +125,12 @@
                 <div data-role="popup" id="popupPhoto-{{ attachement.id }}" class="photopopup" data-overlay-theme="a" data-corners="false" data-tolerance="30,15">
                     <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a><img src="{{ attachement.getBase64Src() }}" alt="{{ attachement.originalName }}">
                 </div>
+                <div class="ui-grid-a">
+                    <div class="ui-block-a"></div>
+                    <div class="ui-block-b">
+                        <a class="ui-btn ui-icon-edit ui-btn-icon-left" href="#attachement_annotate_{{ planifiable.id }}_{{ attachement.id }}">Annoter</a>
+                    </div>
+                 </div>
                 {% else %}
                 <a href="{{ attachement.getBase64Src() }}" class="ui-btn ui-corner-all ui-shadow" >
                  {{ attachement.originalName }}
