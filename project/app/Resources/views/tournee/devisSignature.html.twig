@@ -15,7 +15,7 @@
       <div class="signature-pad ui-body ui-body-a ui-corner-all" id="signature_pad_content_{{ planifiable.id }}">
           {{ form_errors(form.signatureBase64) }}
           {{ form_widget(form.signatureBase64) }}
-          <canvas id="signature_pad_{{ planifiable.id }}"></canvas>
+          <canvas class="cadreSignature" id="signature_pad_{{ planifiable.id }}"></canvas>
       </div>
       <a  class="signature_valider ui-btn ui-icon-check ui-btn-icon-right rapport"  href="#rapport_{{ planifiable.id }}" data-id="{{ planifiable.id }}" >
           Valider la saisie&nbsp;
