@@ -223,7 +223,7 @@
 
 
     function updateSignaturesPads(){
-      var divs = document.querySelectorAll('canvas');
+      var divs = document.getElementsByClassName('cadreSignature');
       [].forEach.call(divs, function(canvas) {
         var idCanva = canvas.id;
         var parent = $("#"+idCanva).parent();
@@ -237,14 +237,13 @@
         $(this).css('width',newwidth);
         $(this).css('height',newwidth*ratio);
       });
-      var divs = document.querySelectorAll('canvas');
+      var divs = document.getElementsByClassName('cadreSignature');
       [].forEach.call(divs, function(canvas) {
-
         var idCanva = canvas.id;
         canvas.width = $("#"+idCanva).parent().width();
         canvas.height = $("#"+idCanva).parent().height();
       });
-      var divs = document.querySelectorAll('canvas');
+      var divs = document.getElementsByClassName('cadreSignature');
       [].forEach.call(divs, function(div) {
           var idCanva = div.id;
           delete signaturesPad[idCanva];
