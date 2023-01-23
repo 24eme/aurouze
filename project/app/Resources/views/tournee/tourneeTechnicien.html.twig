@@ -110,3 +110,71 @@
 
 {% endfor %}
 {% endblock %}
+
+{% block javascripts %}
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function() {
+    const lineColor = '#3c763d';
+    const lineWidth = 3;
+    $('.annotations').each(function() {
+        var image = new fabric.Image(document.getElementById($(this).find('img:first').attr('id')), {
+          left: 0,
+          top: 0,
+          opacity: 1
+        });
+        var canvas = this.__canvas = new fabric.Canvas($(this).find('canvas:first').attr('id'));
+        window.addEventListener('resize', resizeCanvas, false);
+        function resizeCanvas() {
+          canvas.setHeight(window.innerHeight-200);
+          canvas.setWidth(window.innerWidth-100);
+          canvas.backgroundImage.scaleToWidth(window.innerWidth-100);
+          canvas.backgroundImage.scaleToHeight(window.innerHeight-200);
+          canvas.renderAll();
+        }
+        canvas.setBackgroundImage(image);
+        $(this).find('button.clean:first').click(function() {
+            canvas.forEachObject(function(obj){
+              canvas.remove(obj);
+            })
+        });
+        $(this).find('button.addtxt:first').click(function() {
+            canvas.isDrawingMode = false;
+            canvas.off('mouse:down');
+            canvas.on('mouse:down', function(opts) {
+                if (!opts.target) {
+                    var text = new fabric.IText('votre texte', { fontFamily: 'arial black', left: opts.pointer.x, top: opts.pointer.y });
+                    canvas.add(text);
+                }
+            });
+
+        });
+        $(this).find('button.addpoint:first').click(function() {
+            canvas.isDrawingMode = false;
+            canvas.off('mouse:down');
+            canvas.on('mouse:down', function(opts) {
+                if (!opts.target) {
+                    var point = new fabric.Circle({
+                        radius: 20,
+                        fill: lineColor,
+                        left: opts.pointer.x,
+                        top: opts.pointer.y
+                    });
+                    canvas.add(point);
+                }
+            });
+        });
+        $(this).find('button.adddraw:first').click(function() {
+            canvas.isDrawingMode = true;
+            canvas.off('mouse:down');
+            canvas.freeDrawingBrush = new fabric['PencilBrush'](canvas);
+            canvas.freeDrawingBrush.color = lineColor;
+            canvas.freeDrawingBrush.width = lineWidth;
+        });
+        $(this).find('button.remove:first').click(function() {
+          canvas.remove(canvas.getActiveObject())
+        });
+        resizeCanvas();
+    });
+});
+</script>
+{% endblock %}
