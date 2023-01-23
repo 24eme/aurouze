@@ -101,6 +101,11 @@
   {{ include('tournee/'~type~'Rapport.html.twig', { 'planifiable' : planifiable, "technicien" : technicien, "form" : planifiableForms[planifiable.id]}) }}
   {{ include('tournee/'~type~'Signature.html.twig', { 'planifiable' : planifiable, "technicien" : technicien, "form" : planifiableForms[planifiable.id]}) }}
   {{ include('tournee/attachementAjout.html.twig', { 'planifiable' : planifiable, "technicien" : technicien, "attachementform" : attachementsForms[planifiable.etablissement.id]}) }}
+  {% for attachement in planifiable.etablissement.attachements %}
+      {% if attachement.visibleTechnicien and attachement.isImage %}
+      {{ include('tournee/attachementAnnotation.html.twig', { 'planifiable' : planifiable, "technicien" : technicien, "attachement" : attachement}) }}
+      {% endif %}
+  {% endfor %}
   {% endif %}
 
 {% endfor %}
