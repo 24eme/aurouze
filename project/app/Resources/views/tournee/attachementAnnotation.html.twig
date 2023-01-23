@@ -1,0 +1,30 @@
+<div data-role="page" id="attachement_annotate_{{ planifiable.id }}_{{ attachement.id }}" >
+    <div data-role="header" style="overflow:hidden;" data-position="fixed">
+      <h1>Tournée {{ technicien.identite }}</h1>
+      <a href="#rapport_{{ planifiable.id }}" class="signature_valider ui-btn ui-icon-arrow-l ui-btn-icon-left" data-id="{{ planifiable.id }}" >
+            &nbsp;Retour
+      </a>
+    </div>
+
+  <div class="annotations" style="padding: 50px;">
+    <canvas id="canva_{{ planifiable.id }}_{{ attachement.id }}" style="border:1px solid #aaa"></canvas>
+    <div class="ui-grid-b">
+        <div class="ui-block-a">
+            <button style="width: 20%; float:left;" id="canvaclear_{{ planifiable.id }}_{{ attachement.id }}" data-icon="refresh" class="btn btn-info clean">Reset</button>
+            <button style="width: 10%; float:left; background-color:#b0413e;" class="btn btn-info remove">X</button>
+        </div>
+        <div class="ui-block-b">
+            <button style="width: 50%;margin-left:25%;" id="canvasave_{{ planifiable.id }}_{{ attachement.id }}" class="btn btn-info">Sauvegarder</button>
+        </div>
+        <div class="ui-block-c">
+            <div style="width: 50%; float:right;">
+                <button style="width: 20%; float:right;" class="btn btn-info addtxt">T</button>
+                <button style="width: 20%; float:right;" class="btn btn-info addpoint">O</button>
+                <button style="width: 20%; float:right;" class="btn btn-info adddraw">~</button>
+            </div>
+        </div>
+    </div>
+    <img id="img_{{ planifiable.id }}_{{ attachement.id }}" src="{{ attachement.getBase64Src() }}" alt="{{ attachement.originalName }}" style="display:none;"/>
+  </div>
+
+</div>
