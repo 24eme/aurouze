@@ -22,7 +22,7 @@
                                         {% if key | length == 4 %}
                                             {{ moisPassage.date | localizeddate("medium", "none", null, null, "yyyy") | capitalize }}
                                         {% else %}
-                                            {{ moisPassage.date | localizeddate("medium", "none", null, null, "MMMM yyyy") | capitalize }}
+                                            {{ moisPassage.date | localizeddate("medium", "none", null, null, "MMM yyyy") | capitalize }}
                                         {% endif %}
                                     </strong></small>&nbsp;&nbsp;&nbsp;<span class="badge">{{ moisPassage.nb }}</span>&nbsp;</a>
                         </li>
