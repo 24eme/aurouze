@@ -77,7 +77,7 @@
                                     id="{{ passage.id }}"
                                     data-url-etablissement="{{ path("passage_etablissement", {'id': 'ETABLISSEMENT-'~passage.etablissementIdentifiant}) }}"
                                     style="margin-bottom: 4px"
-                                    class="panel panel-default hamzastyle-item hide-print
+                                    class="panel panel-default hamzastyle-item hide-print cursor-pointer
                                     {% if not passage.etablissementInfos.adresse.coordonnees.lat and not passage.etablissementInfos.adresse.coordonnees.lon %}
                                     no-geojson
                                     {% endif %}
