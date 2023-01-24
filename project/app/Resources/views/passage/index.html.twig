@@ -98,8 +98,7 @@
                                                   <i id="zoom-{{passage.id}}"class="mdi mdi-zoom-in mdi-lg pull-right" style="cursor: pointer"></i>
                                                   <div data-url="{{ path('ajax_more_infos_passage', {'passage': passage.id }) }}"></div>
                                                 {% else %}
-                                                    <a href="{{ path('etablissement_modification', {'societe': passage.etablissement.societe.getId(),'id': passage.etablissement.getId()}) }}#adresse">
-                                                        <i class="material-icons pull-right" style="font-size:28px" title="Placer l'établissement">edit_location</i></a>
+                                                    <a class="pull-right" style="opacity: 0.5; font-size: 80%;" title="Saisir l'emplacement de l'établissement" href="{{ path('etablissement_modification', {'societe': passage.etablissement.societe.getId(),'id': passage.etablissement.getId()}) }}#adresse">Emplacement non trouvé</a>
                                                 {% endif %}
                                                 {% if passage.getDocumentType() is constant('AppBundle\\Document\\Devis::DOCUMENT_TYPE') %}
                                                   <i class="pull-right mdi mdi-local-shipping mdi-lg"></i>
