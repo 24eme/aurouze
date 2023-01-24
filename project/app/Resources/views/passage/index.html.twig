@@ -22,7 +22,7 @@
                                         {% if key | length == 4 %}
                                             {{ moisPassage.date | localizeddate("medium", "none", null, null, "yyyy") | capitalize }}
                                         {% else %}
-                                            {{ moisPassage.date | localizeddate("medium", "none", null, null, "MMMM yyyy") | capitalize }}
+                                            {{ moisPassage.date | localizeddate("medium", "none", null, null, "MMM yyyy") | capitalize }}
                                         {% endif %}
                                     </strong></small>&nbsp;&nbsp;&nbsp;<span class="badge">{{ moisPassage.nb }}</span>&nbsp;</a>
                         </li>
@@ -77,7 +77,7 @@
                                     id="{{ passage.id }}"
                                     data-url-etablissement="{{ path("passage_etablissement", {'id': 'ETABLISSEMENT-'~passage.etablissementIdentifiant}) }}"
                                     style="margin-bottom: 4px"
-                                    class="panel panel-default hamzastyle-item hide-print
+                                    class="panel panel-default hamzastyle-item hide-print cursor-pointer
                                     {% if not passage.etablissementInfos.adresse.coordonnees.lat and not passage.etablissementInfos.adresse.coordonnees.lon %}
                                     no-geojson
                                     {% endif %}
@@ -98,8 +98,7 @@
                                                   <i id="zoom-{{passage.id}}"class="mdi mdi-zoom-in mdi-lg pull-right" style="cursor: pointer"></i>
                                                   <div data-url="{{ path('ajax_more_infos_passage', {'passage': passage.id }) }}"></div>
                                                 {% else %}
-                                                    <a href="{{ path('etablissement_modification', {'societe': passage.etablissement.societe.getId(),'id': passage.etablissement.getId()}) }}#adresse">
-                                                        <i class="material-icons pull-right" style="font-size:28px" title="Placer l'établissement">edit_location</i></a>
+                                                    <a class="pull-right" style="opacity: 0.5; font-size: 80%;" title="Saisir l'emplacement de l'établissement" href="{{ path('etablissement_modification', {'societe': passage.etablissement.societe.getId(),'id': passage.etablissement.getId()}) }}#adresse">Emplacement non trouvé</a>
                                                 {% endif %}
                                                 {% if passage.getDocumentType() is constant('AppBundle\\Document\\Devis::DOCUMENT_TYPE') %}
                                                   <i class="pull-right mdi mdi-local-shipping mdi-lg"></i>

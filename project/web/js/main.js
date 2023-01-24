@@ -3,7 +3,6 @@
 
     $(document).ready(function ()
     {
-        $.initQueryHash();
         $.initClickInputAddon();
         $.initAjaxPost();
         $.initSelect2();
@@ -25,6 +24,7 @@
         $.initRdvLink();
         $.initSearchActif();
         $.initLinkCalendar();
+        $.initQueryHash();
         $.initMap();
         $.initTypeheadFacture();
         $.initTypeheadSearchable();
@@ -973,7 +973,7 @@
                 var marker = markers[$(this).parent().parent().parent().attr('id')];
                 if(typeof marker != 'undefined' && marker){
                   if(document.location.hash != ""){
-                    document.location.hash = "";
+                    $(window).trigger('hashchange');
                   }
                   map.setZoomAround(marker._latlng,15);
                   map.panTo(marker._latlng);
@@ -1057,9 +1057,6 @@
       $(".btn-more-info").on("click", function () {
         var div = $(this).prev();
         var divInfoPassage = document.getElementById('info-passage');
-
-        var url = window.location.protocol + "//" + window.location.host + window.location.pathname +"#"+this.id;
-        window.history.pushState({ path: url }, '', url);
 
         $(divInfoPassage).html("<pre>Chargement...</pre>");
         $.get(div.data('url'), function (result) {
