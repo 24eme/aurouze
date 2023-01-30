@@ -107,12 +107,12 @@ class PassageController extends Controller
             $anneeMois = ($request->get('periode',null))? $request->get('periode') : date('Ym', strtotime(date('Y-m-d')));
             $dateDebut = \DateTime::createFromFormat('Ymd',$anneeMois.'01');
             $dateFin = clone $dateDebut;
-            $dateFin->modify("last day of this month");
+            $dateFin->modify("last day of +2month");
             $dateFin->setTime(23,59,59);
         }
 
         $dateFinAll = new \DateTime();
-        $dateFinAll->modify("last day of next month");
+        $dateFinAll->modify("last day of +2 month");
         $dateFinAll->setTime(23,59,59);
 
         $passages = null;
