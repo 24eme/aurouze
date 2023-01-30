@@ -112,7 +112,7 @@ class PassageController extends Controller
         }
 
         $dateFinAll = new \DateTime();
-        $dateFinAll->modify("last day of next month");
+        $dateFinAll->modify("last day of +2 month");
         $dateFinAll->setTime(23,59,59);
 
         $passages = null;
