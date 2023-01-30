@@ -9,7 +9,7 @@
         </div>
         <div class="row hide-print">
             <div class="col-xs-12">
-                <h3 style="margin-top: 0; margin-bottom: 20px;" class="hide-print">Liste des passages à planifier par mois / année</h3>
+                <h3 class="hide-print">Liste des passages à planifier {% if secteur %}pour {{ etablissementManager.secteursNom(secteur) }}{% endif %}{% if anneeMois %} en {{ dateFin | localizeddate("medium", "none", null, null, "MMMM yyyy") | capitalize }} {% else %} jusqu'au {{ dateFin | localizeddate("medium", "none", null, null, "d MMMM yyyy") }} {% endif %} </h3>
             </div>
         </div>
         <div class="row hide-print">
@@ -17,14 +17,14 @@
                 <ul class="nav nav-tabs">
                     {% for key,moisPassage in moisPassagesArray %}
                         <li role="presentation" class="{% if key == anneeMois %} active {% endif %}">
-                            <a style="padding: 10px;" href='{{ path('passage_secteur',{"secteur" : secteur, "periode" : key, "lat" : coordinatesCenter.lat, "lon" : coordinatesCenter.lon, "zoom": coordinatesCenter.zoom }) }}' >
-
+                            <a href='{{ path('passage_secteur',{"secteur" : secteur, "periode" : key, "lat" : coordinatesCenter.lat, "lon" : coordinatesCenter.lon, "zoom": coordinatesCenter.zoom }) }}' >
+                                <small><strong>
                                         {% if key | length == 4 %}
                                             {{ moisPassage.date | localizeddate("medium", "none", null, null, "yyyy") | capitalize }}
                                         {% else %}
-                                            <strong>{{ moisPassage.date | localizeddate("medium", "none", null, null, "MMM yyyy") | capitalize }}</strong>
+                                            {{ moisPassage.date | localizeddate("medium", "none", null, null, "MMM yyyy") | capitalize }}
                                         {% endif %}
-                                    <span class="badge"><small>{{ moisPassage.nb }}</small></span>&nbsp;</a>
+                                    </strong></small>&nbsp;&nbsp;&nbsp;<span class="badge">{{ moisPassage.nb }}</span>&nbsp;</a>
                         </li>
                     {% endfor %}
 
@@ -34,7 +34,8 @@
                 <div class="col-xs-3 text-right">
                     <div class="btn-group">
                         {% if secteur %}
-                        <a class="btn btn-default {% if secteur == "PARIS" %}active{% endif %}" href="{{ path('passage_secteur', {'secteur' :"PARIS"}) }}">{{ etablissementManager.secteursNom("PARIS") }}</a><a class="btn btn-default {% if secteur == "SEINE_ET_MARNE" %}active{% endif %}" href="{{ path('passage_secteur', {'secteur' :"SEINE_ET_MARNE"}) }}">{{ etablissementManager.secteursNom("SEINE_ET_MARNE") }}</a>
+                        <a class="btn btn-default {% if secteur == "PARIS" %}active{% endif %}" href="{{ path('passage_secteur', {'secteur' :"PARIS"}) }}">{{ etablissementManager.secteursNom("PARIS") }}</a>
+                        <a class="btn btn-default {% if secteur == "SEINE_ET_MARNE" %}active{% endif %}" href="{{ path('passage_secteur', {'secteur' :"SEINE_ET_MARNE"}) }}">{{ etablissementManager.secteursNom("SEINE_ET_MARNE") }}</a>
                         {% endif %}
                     </div>
                 </div>
