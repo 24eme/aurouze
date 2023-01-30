@@ -128,7 +128,7 @@ class PassageManager
     public function getNbPassagesToPlanPerMonth($secteur = EtablissementManager::SECTEUR_PARIS, $dateUntil = null) {
         if(is_null($dateUntil)) {
             $dateUntil = new \DateTime();
-            $dateUntil->modify("last day of +2 month");
+            $dateUntil->modify("last day of next month");
         }
         return $this->getRepository()->findNbPassagesToPlanPerMonthUntil($secteur, $dateUntil);
     }
