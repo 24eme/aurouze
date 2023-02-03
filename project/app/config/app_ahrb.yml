@@ -1,5 +1,5 @@
 parameters:
     secteurs: false
-    calendar_extra: false
+    calendar_extra: true
     certification_bois: false
     date_facturation: null
