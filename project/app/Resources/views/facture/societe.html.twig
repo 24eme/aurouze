@@ -20,166 +20,26 @@
         </small >&nbsp;
         {% endif %}
     </h3>
-    <h3>Prévisionnel des factures </h3>
-    <table class="table table-bordered table-striped text-muted">
-        <thead>
-            <tr>
-                <th class="col-xs-2">Date</th>
-                <th class="col-xs-2">Document</th>
-                <th class="col-xm-3">Contenu</th>
-                <th class="col-xs-1">Écheance</th>
-                <th class="col-xs-1 text-right">Montant&nbsp;TTC</th>
-                <th class="col-xs-1 text-right">Montant&nbsp;payé</th>
-                <th class="col-xs-1 text-right">Restant</th>
-                <th class="col-xm-1 text-right"></th>
-                <th class="col-xm-1 text-center"></th>
-            </tr>
-        </thead>
-        <tbody>
-            {% set totalRestant = 0.0 %}
-            {% for facture in factures %}
-             {% if not facture.isDevis and not (facture.paye or facture.isAvoir or facture.isRedressee) and not facture.numeroFacture %}
-                {% set totalRestant = totalRestant + facture.montantAPayer %}
-              {{ include('facture/factureLigne.html.twig', {'facture': facture, 'societe' : societe}) }}
-              {% endif %}
-            {% endfor %}
-        </tbody>
-      </table>
-    {% if(mouvements | length > 0) %}
-        <form action="{{ path('facture_societe_generation', { 'id': societe.id })}}" method="GET" class="form-inline">
 
-          <h3 class="col-xs-4">Mouvements à facturer</h3>
-          <div class="col-xs-8 pull-right text-right" style="margin:20px 0 10px 0;padding-right:0;">
-            <span>Date de facturation</span>
-            <div class="form-group">
-                <div class="input-group">
-                    <input data-provide="datepicker" class="form-control datepicker" type="text" value="{{ defaultDate|date("d/m/Y") }}" data-date-format="dd/mm/yyyy" required="required" name="dateFacturation" />
-                    <div class="input-group-addon">
-                        <span class="glyphicon glyphicon-calendar"></span>
-                    </div>
-                </div>
-            </div>
-            <button class="btn btn-primary btn" type="submit">Facturer</button>
-          </div>
-        <table style="margin-top: 20px;" class="table table-bordered">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th>Document d'origine</th>
-                    <th>Intitulé</th>
-                    <th class="text-right">Montant HT</th>
-                    <th><input type="checkbox" checked="checked" onchange="toggleCheck.call(this, 'afacturer[]')" /></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for mouvement in mouvements %}
-                  {% if mouvement.document.id %}
-                    <tr>
-                        {% if mouvement.identifiant %}
-                          <td class="text-center"><a onclick="return confirm('Êtes vous sûr de vouloir supprimer ce mouvement de facture ?')" href="{{ path('facture_defacturer', {'id': mouvement.document.id, 'identifiant': mouvement.identifiant}) }}"><span class="text-danger glyphicon glyphicon-remove"></span></a></td>
-                        {% else %}
-                          <td></td>
-                        {% endif %}
-                        <td><a href="{{ path('contrat_visualisation', {'id': mouvement.document.id })}}">Contrat n° {{ mouvement.document.numeroArchive }}</a></td>
-                        <td>{{ mouvement.libelle }}</td>
-                        <td class="text-right">{{ "%0.2f" | format(mouvement.prixUnitaire)  }} €</td>
-                        <td>
-                          <input type="checkbox" checked="checked" name="afacturer[]" value="{{ mouvement.identifiant }}" />
-                        </td>
-                    </tr>
-                    {% endif %}
-                {% endfor %}
-            </tbody>
-        </table>
-    </form>
-    {% else %}
-        <p class="text-muted"><i>Aucun mouvement</i></p>
-    {% endif %}
+    <div>
+        <ul class="nav nav-tabs" role="tablist">
+            <li class="active" role="presentation"><a href="#facture-previsionnel" aria-controls="facture-previsionnel" role="tab" data-toggle="tab">Prévisionnel des factures</a></li>
+            <li role="presentation"><a href="#facture-attente" aria-controls="facture-attente" role="tab" data-toggle="tab">En attente de paiement</a></li>
+            <li role="presentation"><a href="#facture-payee" aria-controls="facture-payee" role="tab" data-toggle="tab">Payées</a></li>
+        </ul>
+    </div>
 
-{% if hasDevis %}
-    <h3>Devis</h3>
-    <table class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th class="col-xs-2">Date</th>
-                <th class="col-xs-2">Document</th>
-                <th class="col-xm-3">Contenu</th>
-                <th class="col-xs-1">Écheance</th>
-                <th class="col-xs-1 text-right">Montant&nbsp;TTC</th>
-                <th class="col-xs-1 text-right">Montant&nbsp;payé</th>
-                <th class="col-xs-1 text-right">Restant</th>
-                <th class="col-xm-1 text-right"></th>
-                <th class="col-xm-1 text-center"></th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for facture in factures %}
-             {% if facture.isDevis %}
-              {{ include('facture/factureLigne.html.twig', {'facture': facture, 'societe' : societe}) }}
-              {% endif %}
-            {% endfor %}
-        </tbody>
-      </table>
-{% endif %}
-
-
-    <h3>Liste des Factures <strong>en attente de paiement</strong>
-      <div class="btn-group pull-right">
-        <a href="{{ path('facture_creation', { 'societe': societe.id } ) }}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-plus"></span> Créer une facture</a></div>
-        <div class="btn-group pull-right">
-          <a data-toggle="modal" data-target="#exportSocieteForm" class="btn btn-default btn-sm">
-            <span class="glyphicon glyphicon-usd"></span> Export des factures
-          </a>&nbsp;
-      </div>
-    </h3>
-    <table class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th class="col-xs-2">Date</th>
-                <th class="col-xs-2">Document</th>
-                <th class="col-xm-3">Contenu</th>
-                <th class="col-xs-1">Écheance</th>
-                <th class="col-xs-1 text-right">Montant&nbsp;TTC</th>
-                <th class="col-xs-1 text-right">Montant&nbsp;payé</th>
-                <th class="col-xs-1 text-right">Restant</th>
-                <th class="col-xm-1 text-right"></th>
-                <th class="col-xm-1 text-center"></th>
-            </tr>
-        </thead>
-        <tbody>
-            {% set totalRestant = 0.0 %}
-            {% for facture in factures %}
-             {% if not facture.isDevis and not (facture.paye or facture.isAvoir or facture.isRedressee) and facture.numeroFacture %}
-                {% set totalRestant = totalRestant + facture.montantAPayer %}
-              {{ include('facture/factureLigne.html.twig', {'facture': facture, 'societe' : societe}) }}
-              {% endif %}
-            {% endfor %}
-        </tbody>
-      </table>
-
-      <h3>Liste des Factures <strong>payées</strong> </h3>
-      <table class="table table-bordered table-striped">
-          <thead>
-              <tr>
-                  <th class="col-xs-2">Date</th>
-                  <th class="col-xs-2">Document</th>
-                  <th class="col-xm-3">Contenu</th>
-                  <th class="col-xs-1">Écheance</th>
-                  <th class="col-xs-1 text-right">Montant&nbsp;TTC</th>
-                  <th class="col-xs-1 text-right">Montant&nbsp;payé</th>
-                  <th class="col-xs-1 text-right">Restant</th>
-                  <th class="col-xm-1 text-right"></th>
-                  <th class="col-xm-1 text-center"></th>
-              </tr>
-          </thead>
-          <tbody>
-              {% for facture in factures %}
-               {% if facture.paye or facture.isAvoir or facture.isRedressee %}
-                  {{ include('facture/factureLigne.html.twig', {'facture': facture, 'societe' : societe}) }}
-                {% endif %}
-              {% endfor %}
-          </tbody>
-        </table>
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="facture-previsionnel">
+            {{ include('facture/listing/previsionnel.html.twig') }}
+        </div>
+        <div role="tabpanel" class="tab-pane" id="facture-attente">
+            {{ include('facture/listing/attente.html.twig') }}
+        </div>
+        <div role="tabpanel" class="tab-pane" id="facture-payee">
+            {{ include('facture/listing/payee.html.twig') }}
+        </div>
+    </div>
 
                   <div class="btn-group pull-right">
                     <a data-toggle="modal" data-target="#exportSocieteForm" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-usd"></span> Export des factures</a>

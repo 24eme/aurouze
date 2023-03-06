@@ -1,0 +1,34 @@
+<h3>Liste des Factures <strong>en attente de paiement</strong>
+    <div class="btn-group pull-right">
+        <a href="{{ path('facture_creation', { 'societe': societe.id } ) }}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-plus"></span> Créer une facture</a></div>
+    <div class="btn-group pull-right">
+        <a data-toggle="modal" data-target="#exportSocieteForm" class="btn btn-default btn-sm">
+            <span class="glyphicon glyphicon-usd"></span> Export des factures
+        </a>&nbsp;
+    </div>
+</h3>
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th class="col-xs-2">Date</th>
+            <th class="col-xs-2">Document</th>
+            <th class="col-xm-3">Contenu</th>
+            <th class="col-xs-1">Écheance</th>
+            <th class="col-xs-1 text-right">Montant&nbsp;TTC</th>
+            <th class="col-xs-1 text-right">Montant&nbsp;payé</th>
+            <th class="col-xs-1 text-right">Restant</th>
+            <th class="col-xm-1 text-right"></th>
+            <th class="col-xm-1 text-center"></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% set totalRestant = 0.0 %}
+        {% for facture in factures %}
+            {% if not facture.isDevis and not (facture.paye or facture.isAvoir or facture.isRedressee) and facture.numeroFacture %}
+                {% set totalRestant = totalRestant + facture.montantAPayer %}
+                {{ include('facture/factureLigne.html.twig', {'facture': facture, 'societe' : societe}) }}
+            {% endif %}
+        {% endfor %}
+    </tbody>
+</table>
+
