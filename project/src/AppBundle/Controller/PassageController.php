@@ -117,6 +117,18 @@ class PassageController extends Controller
 
         $passages = null;
         $moisPassagesArray = $passageManager->getNbPassagesToPlanPerMonth($secteur, clone $dateFinAll);
+        $morePassages = [];
+        foreach ($moisPassagesArray as $key => $values) {
+            if (strlen($key) !== 4) { continue; }
+
+            if (\DateTimeImmutable::createFromFormat('Y', $key)->format('Y') >= (new \DateTimeImmutable())->format('Y')) {
+                continue;
+            }
+
+            for ($i = 1; $i < 13; $i++) {
+                $morePassages[$key * 100 + $i] = \DateTimeImmutable::createFromFormat('Ym', $key*100+$i)->format('Y-m-d');
+            }
+        }
 
         $passages = $passageManager->getRepository()->findToPlan($secteur, $dateDebut, clone $dateFin)->toArray();
         $devis = $devisManager->getRepository()->findToPlan($secteur, $dateDebut, clone $dateFin)->toArray();
@@ -146,6 +158,7 @@ class PassageController extends Controller
             'formEtablissement' => $formEtablissement->createView(),
             'geojson' => $geojson,
             'moisPassagesArray' => $moisPassagesArray,
+            'morePassages' => $morePassages,
             'passageManager' => $passageManager,
             'etablissementManager' => $this->get('etablissement.manager'),
             'secteur' => $secteur,

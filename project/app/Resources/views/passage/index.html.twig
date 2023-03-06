@@ -27,9 +27,19 @@
                                     <span class="badge"><small>{{ moisPassage.nb }}</small></span>&nbsp;</a>
                         </li>
                     {% endfor %}
-
+                    <li class="dropdown" role="presentation">
+                        <a id="dropdown-more-date" class="dropdown-toggle" href="#" data-toggle="dropdown" aria-controls="dropdown-more-date-contents" aria-expanded=false>Plus d'options <span class="caret"></span></a>
+                        <ul id="dropdown-more-date-content" class="dropdown-menu" aria-labelledby="dropdown-more-date">
+                            {% for k,v in morePassages %}
+                            <li {% if (k == anneeMois) %}class="active"{% endif %}><a href="{{ path('passage_secteur', {"secteur" : secteur, "periode" : k, "lat" : coordinatesCenter.lat, "lon" : coordinatesCenter.lon, "zoom": coordinatesCenter.zoom }) }}">
+                                        {{ v | localizeddate("medium", "none", null, null, "MMM yyyy") | capitalize }}
+                                </a></li>
+                            {% endfor %}
+                        </ul>
+                    </li>
                 </ul>
             </div>
+
             {% if secteur %}
                 <div class="col-xs-3 text-right">
                     <div class="btn-group">
@@ -40,6 +50,7 @@
                 </div>
             {% endif %}
         </div>
+
         <br/>
         <div class="row">
             <div class="col-xs-12">
