@@ -545,16 +545,27 @@ class ContratController extends Controller {
             return new Response($html, 200);
         }
 
-        return new Response(
-                $this->get('knp_snappy.pdf')->getOutputFromHtml($html, array(
-                    'footer-html' => $footer,
-                    'header-html' => $header,
-                    'margin-right' => 0,
-                    'margin-left' => 0,
-                    'margin-top' => 38,
-                    'margin-bottom' => 38,
-                    'page-size' => "A4"
-                )), 200, array(
+        if (! shell_exec(sprintf("which %s", escapeshellarg('pdftk')))) {
+            throw new \LogicException('missing pdftk binary');
+        }
+
+        $tmpfile = $this->container->getParameter('kernel.cache_dir').'/PDFCONTRAT_'.$contrat->getNumeroArchive().uniqid();
+        $this->get('knp_snappy.pdf')->generateFromHtml($html, $tmpfile, [
+            'footer-html' => $footer,
+            'header-html' => $header,
+            'margin-right' => 0,
+            'margin-left' => 0,
+            'margin-top' => 38,
+            'margin-bottom' => 38,
+            'page-size' => "A4"
+        ]);
+
+        exec(escapeshellcmd('pdftk '.$tmpfile.' '.$this->get('kernel')->getRootDir().'/../data/CGV.pdf cat output '.$tmpfile.'.pdf'), $output, $exitcode);
+        if ($exitcode !== 0) {
+            throw new \Exception('pdftk failed with error: '.implode(', ', $output));
+        }
+
+        return new Response(file_get_contents($tmpfile.'.pdf'), 200, array(
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'attachment; filename="contrat-' . $contrat->getNumeroArchive() . '.pdf"'
                 )
