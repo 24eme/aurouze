@@ -595,6 +595,8 @@ class ContratController extends Controller {
      */
     public function exportPcaAction(Request $request) {
         ini_set('memory_limit', '-1');
+        ini_set('set_time_limit', '90');
+        ini_set('max_execution_time', '90');
       // $response = new StreamedResponse();
         $formRequest = $request->request->get('form');
         $dateDebutString = $formRequest['dateDebut']." 23:59:59";
