@@ -599,6 +599,9 @@ class ContratController extends Controller {
         ini_set('max_execution_time', '90');
       // $response = new StreamedResponse();
         $formRequest = $request->request->get('form');
+        if (! isset($formRequest['dateDebut'])) {
+            $formRequest['dateDebut'] = (new \DateTime())->format('d/m/Y');
+        }
         $dateDebutString = $formRequest['dateDebut']." 23:59:59";
 
         $dateDebut = \DateTime::createFromFormat('d/m/Y H:i:s',$dateDebutString);
