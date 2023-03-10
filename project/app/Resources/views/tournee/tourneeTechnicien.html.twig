@@ -165,13 +165,14 @@ document.addEventListener("DOMContentLoaded", function() {
             canvas.off('mouse:down');
             canvas.on('mouse:down', function(opts) {
                 if (!opts.target) {
+                    const pointer = canvas.getPointer(opts.e)
                     const point = new fabric.Circle({
                         radius: 20,
                         fill: lineColor,
                         originX: 'center',
                         originY: 'center',
-                        left: opts.pointer.x,
-                        top: opts.pointer.y
+                        left: pointer.x,
+                        top: pointer.y
                     });
                     const text = new fabric.Text((canvas.getObjects('group').length + 1).toString(), {
                         fontFamily: 'Arial Black',
