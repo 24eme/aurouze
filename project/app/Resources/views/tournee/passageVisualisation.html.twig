@@ -40,17 +40,20 @@
     <strong>{% if planifiable.etablissement.societe.raisonSociale != planifiable.etablissementInfos.nom %}{{ planifiable.etablissement.societe.raisonSociale }}, {% endif %}{{ planifiable.etablissementInfos.nom }}</strong><br/>
     {{ planifiable.etablissementInfos.adresse.adresse }}<br/>
     {{ planifiable.etablissementInfos.adresse.codePostal }}&nbsp;{{ planifiable.etablissementInfos.adresse.commune }}
+    <br/><br/><h3><span class="ui-btn ui-btn-a ui-icon-info ui-btn-icon-notext ui-btn-inline ui-shadow"></span><span style="text-decoration: underline;">Informations</span></h3>
+    <p style="margin-top: 10px; margin-bottom: 0px;">
     {% if(planifiable.etablissement.commentaire) %}
-        <br/><br/><span class="ui-btn ui-btn-a ui-icon-info ui-btn-icon-notext ui-btn-inline ui-shadow"></span><span style="text-decoration: underline;">Etablissement : </span><br/>{{ planifiable.etablissement.commentaire | nl2br}}
-    {% endif %}
-    {% if(planifiable.commentaire) %}
-        <br/><br/><span class="ui-btn ui-btn-a ui-icon-info ui-btn-icon-notext ui-btn-inline ui-shadow"></span><span style="text-decoration: underline;">Informations : </span><br/>{{ planifiable.commentaire | nl2br}}
+    <strong>Établissement</strong><br />{{ planifiable.etablissement.commentaire | nl2br}}<br /><br />
     {% endif %}
     {% if(planifiable.rendezvous.description) %}
-        <br/><br/><span class="ui-btn ui-btn-a ui-icon-info ui-btn-icon-notext ui-btn-inline ui-shadow"></span><span style="text-decoration: underline;">Informations : </span><br/>{{ planifiable.rendezvous.description | nl2br}}
+    <strong>RDV / Passage</strong><br />{{ planifiable.rendezvous.description | nl2br}}<br /><br />
     {% endif %}
+    {% if(not planifiable.etablissement.commentaire and not planifiable.rendezvous.description) %}
+        Aucune<br /><br />
+    {% endif %}
+    </p>
     {% if planifiable.etablissementInfos.telephoneFixe or planifiable.etablissementInfos.telephonePortable %}
-        <br/>{% if planifiable.etablissementInfos.telephoneFixe %}<i class="mdi mdi-call mdi-lg"></i>&nbsp;<a href="tel:{{ planifiable.etablissementInfos.telephoneFixe }}">{{ planifiable.etablissementInfos.telephoneFixe }}</a>{% endif %}
+        {% if planifiable.etablissementInfos.telephoneFixe %}<i class="mdi mdi-call mdi-lg"></i>&nbsp;<a href="tel:{{ planifiable.etablissementInfos.telephoneFixe }}">{{ planifiable.etablissementInfos.telephoneFixe }}</a>{% endif %}
         {% if planifiable.etablissementInfos.telephonePortable %}<a href="tel:{{ planifiable.etablissementInfos.telephonePortable }}">{{ planifiable.etablissementInfos.telephonePortable }}</a>{% endif %}
     {% endif %}
     <a href="tel:{{telephoneSecretariat}}">Tél Secrétariat</a>
