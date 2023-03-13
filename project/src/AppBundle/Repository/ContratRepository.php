@@ -218,6 +218,14 @@ class ContratRepository extends DocumentRepository {
       return $query->execute();
     }
 
+    public function findAllContratWithFactureAFacturer(){
+      $q = $this->createQueryBuilder();
+      $q->field('mouvements.facture')->equals(false);
+      $q->field('mouvements.facturable')->equals(true);
+      $query = $q->getQuery();
+      return $query->execute();
+    }
+
     public function findAllContratWithDateReconduction(){
       $q = $this->createQueryBuilder();
       $q->field('dateReconduction')->notEqual(null);

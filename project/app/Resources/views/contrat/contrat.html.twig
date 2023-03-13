@@ -41,7 +41,10 @@
                         Durée d'un passage : <strong>{{ contrat.getHumanDureePassage() }}</strong><br /><br />
                         Commercial : <strong>{{ contrat.getCommercial().getIdentite() }}</strong><br />
                         Nombre de technicien : <strong>{% if contrat.getMultiTechnicien() > 1 %} {{ contrat.getMultiTechnicien() }} {% else %}Non défini{% endif %}</strong><br />
-                        Technicien : <strong>{% if contrat.getTechnicien() %}{{ contrat.getTechnicien().getIdentite() }}{% else %}Non défini{% endif %}</strong><br />
+                        Technicien : <strong>{% if contrat.getTechnicien() %}{{ contrat.getTechnicien().getIdentite() }}{% else %}Non défini{% endif %}</strong><br /><br/>
+                        {% if lastEmailTransmission %}
+                            Dernier mail de rapport : <strong>{{ lastEmailTransmission }}</strong><br />
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -61,6 +64,9 @@
                         Fréquence de paiement : <strong>{{ contrat.frequencePaiementLibelle }}</strong><br />
                     	Numéro de commande : <strong>{% if contrat.referenceClient %}{{ contrat.referenceClient }}{% else %}Non défini{% endif %}</strong><br />
                         Destinataire de la facture : <strong>{% if contrat.factureDestinataire %}{{ contrat.factureDestinataire }}{% else %}{{ contrat.societe.raisonSociale }}{% endif %}</strong>
+                        <br />
+                        <br />
+                        PCA : <strong>{{ contrat.calculPca.pca | number_format(2, ',', ' ') }}&nbsp;€ ({{ (contrat.calculPca.ratioActivite * 100) | number_format(2, ',', ' ') }}% réalisé et {{ (contrat.calculPca.ratioFacture * 100) | number_format(2, ',', ' ') }}% facturé)</strong>
                     </div>
                 </div>
             </div>

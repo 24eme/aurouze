@@ -5,9 +5,15 @@ namespace AppBundle\Repository;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 
 class ConfigurationRepository extends DocumentRepository {
+    public $configuration = null;
+
 
     public function findConfiguration() {
-        return $this->findOneById("CONFIGURATION");
+        if(!$this->configuration) {
+            $this->configuration = $this->findOneById("CONFIGURATION");
+        }
+
+        return $this->configuration;
     }
 
 

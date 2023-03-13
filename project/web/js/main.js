@@ -10,7 +10,6 @@
         $.initModal();
         $.initTooltips();
         $.initHamzaStyle();
-        $.initQueryHash();
         $.initDynamicCollection();
         $.initDatePicker();
         $.initPeriodePicker();
@@ -25,6 +24,7 @@
         $.initRdvLink();
         $.initSearchActif();
         $.initLinkCalendar();
+        $.initQueryHash();
         $.initMap();
         $.initTypeheadFacture();
         $.initTypeheadSearchable();
@@ -236,14 +236,46 @@
                  }
             });
         });
-        $('.relance_lien_envoyer_mail').on('click', function() {
+
+        $('.relance_lien_envoyer_mail').on('click', function(e) {
+            e.preventDefault();
             if(!confirm('Êtes-vous sûrs de vouloir envoyer le mail?')) {
                 return false;
             }
-            $.get($(this).attr('href'));
-            $(this).parents('tr').css("background-color", "#d9edf7");
-            $(this).remove();
-            return false;
+
+            const element = this;
+            const ligne = this.parentNode.parentNode;
+            const textarea = ligne.querySelector('textarea');
+
+            fetch($(this).attr('href'))
+           .then(function(response) {
+             if(response.ok){
+               return response.text();
+             }
+             else{
+              alert("IL Y A UNE ERREUR, LE MAIL N'A PAS PU ETRE ENVOYE");
+              throw new Error(response.status);
+             }
+           })
+           .then(function(text) {
+
+             if(element.dataset.relance == 1){
+               ligne.style.backgroundColor = "#d9edf7";
+             }
+             if(element.dataset.relance == 2){
+               ligne.style.backgroundColor = "#fcf8e3";
+             }
+             if(text.length > 0){
+               textarea.value = text+"\nR"+element.dataset.relance+" le "+new Date().toLocaleDateString("fr");
+             }
+             else{
+               textarea.value = "R"+element.dataset.relance+" le "+new Date().toLocaleDateString("fr");
+             }
+             element.parentNode.removeChild(element);
+             textarea.dispatchEvent(new Event("blur"));
+           })
+           .catch(error => console.error('Error: ', error));
+           return false; //au cas ou;
         });
     }
 
@@ -825,7 +857,7 @@
                     {
                         onEachFeature: function (feature, layer) {
                             if ($('#liste_passage').length) {
-                                layer.on('mouseover', function (e) {
+                                layer.on('click', function (e) {
                                     $('.leaflet-marker-icon').css('opacity', '0.5');
                                     $(e.target._icon).css('opacity', '1');
                                     e.target.setZIndexOffset(1001);
@@ -841,7 +873,20 @@
                                         list.scrollTop(0);
                                         list.scrollTop(element.position().top - (list.height() / 2) + (element.height()));
                                         element.focus();
+                                        $(document.getElementById("zoom-"+e.target.feature.properties._id)).trigger('click');
                                     }, 400);
+
+
+                                });
+
+                                layer.on('mouseover', function (e) {
+                                    $('.leaflet-marker-icon').css('opacity', '0.5');
+                                    $(e.target._icon).css('opacity', '1');
+                                    e.target.setZIndexOffset(1001);
+                                    if (hoverTimeout) {
+                                        clearTimeout(hoverTimeout);
+                                    }
+                                    e.target.bindPopup("<b>"+e.target.feature.properties.nom+"</b>").openPopup();
                                 });
                                 layer.on('mouseout', function (e) {
                                     if (hoverTimeout) {
@@ -852,9 +897,6 @@
                                     $('.leaflet-marker-icon').css('opacity', '1');
                                 });
 
-                                layer.on('click', function (e) {
-                                  document.location.href = $('#' + e.target.feature.properties._id).data('url-etablissement');
-                                });
                             }
                         },
                         pointToLayer: function (feature, latlng) {
@@ -931,13 +973,18 @@
                 var marker = markers[$(this).parent().parent().parent().attr('id')];
                 if(typeof marker != 'undefined' && marker){
                   if(document.location.hash != ""){
-                    document.location.hash = "";
+                    $(window).trigger('hashchange');
                   }
                   map.setZoomAround(marker._latlng,15);
                   map.panTo(marker._latlng);
                   marker.bindPopup("<b>"+marker.feature.properties.nom+"</b>").openPopup();
                 }
             });
+
+            $('#liste_passage .btn-more-info').click(function () {
+                map.closePopup();
+            });
+
 
             if(hasHistoryRewrite){
               map.on('moveend', function(){
@@ -985,27 +1032,48 @@
     }
 
     $.initMoreInfo = function () {
-      $(".btn-more-info").on("click", function () {
-        var button = $(this);
-        var icon = button.children('i').first();
-        var div = button.prev();
-	if (div.children().length > 0) {
-            div.empty();
-            icon.addClass('mdi-vertical-align-bottom');
-            icon.removeClass('mdi-vertical-align-top');
-	} else {
-            div.html("<pre>Chargement...</pre>");
+      $('#liste_passage .mdi-zoom-in').click(function () {
+        var div = $(this).next();
+        var divInfoPassage = document.getElementById('info-passage');
 
-            $.get(div.data('url'), function (result) {
-                div.html(result);
-                icon.removeClass('mdi-vertical-align-bottom');
-                icon.addClass('mdi-vertical-align-top');
-            })
-            .fail(function () {
-                div.html("<pre>Erreur lors du chargement des informations</pre>");
-                button.text(' Réessayer');
-            });
-	}
+        $(divInfoPassage).html("<pre>Chargement...</pre>");
+        $.get(div.data('url'), function (result) {
+            $(divInfoPassage).html(result);
+        })
+        .fail(function () {
+            $(divInfoPassage).html("<pre>Erreur lors du chargement des informations</pre>");
+            button.text(' Réessayer');
+        });
+        var clicked_div = document.getElementsByClassName("clicked-div");
+        if(clicked_div.length > 0){
+          $(clicked_div[0]).css("border-color","");
+          $(clicked_div[0]).removeClass("clicked-div");
+        }
+        $(this).parent().parent().parent().css("border-color","black");
+        $(this).parent().parent().parent().addClass("clicked-div");
+      });
+
+
+      $(".btn-more-info").on("click", function () {
+        var div = $(this).prev();
+        var divInfoPassage = document.getElementById('info-passage');
+
+        $(divInfoPassage).html("<pre>Chargement...</pre>");
+        $.get(div.data('url'), function (result) {
+            $(divInfoPassage).html(result);
+        })
+        .fail(function () {
+            $(divInfoPassage).html("<pre>Erreur lors du chargement des informations</pre>");
+            $(this).text(' Réessayer');
+        });
+
+        var clicked_div = document.getElementsByClassName("clicked-div");
+        if(clicked_div.length > 0){
+          $(clicked_div[0]).css("border-color","");
+          $(clicked_div[0]).removeClass("clicked-div");
+        }
+        $(this).css("border-color","black");
+        $(this).addClass("clicked-div");
       });
     }
 
@@ -1354,14 +1422,19 @@
     }
 
     $.initHighLight = function(){
-      $(".highlight").mouseover(function(e){
+      $(".highlight").click(function(e){
+        const les = document.getElementsByTagName("tr");
+        for(var i= 0; i < les.length; i++)
+        {
+          les[i].style.border = "none";
+        }
         document.getElementById(this.dataset.id).style.border = "3px dashed  darkblue";
+        document.getElementById(this.dataset.id).scrollIntoView({
+            behavior: 'auto',
+            block: 'center',
+            inline: 'center'
+        });
       });
-
-      $(".highlight").mouseout(function(e){
-        document.getElementById(this.dataset.id).style.border = "none";
-      });
-
     }
 }
 )(jQuery);

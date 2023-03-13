@@ -75,9 +75,9 @@ class PassageController extends Controller
     }
 
     /**
-     * @Route("/passage/{secteur}/visualisation/{mois}", name="passage_secteur")
+     * @Route("/passage/{secteur}/visualisation/{periode}", name="passage_secteur")
      */
-    public function secteurAction(Request $request, $secteur, $mois = null) {
+    public function secteurAction(Request $request, $secteur, $periode = null) {
 
         $formEtablissement = $this->createForm(EtablissementChoiceType::class, null, array(
             'action' => $this->generateUrl('passage_etablissement_choice'),
@@ -86,7 +86,6 @@ class PassageController extends Controller
         $passageManager = $this->get('passage.manager');
         $devisManager = $this->get('devis.manager');
 
-        $moisCourant = ($request->get('mois', null) == "courant");
         $dateFin = new \DateTime();
         $dateFinCourant = clone $dateFin;
         $dateFinCourant->modify("+1 month");
@@ -97,21 +96,39 @@ class PassageController extends Controller
         $dateFin = $dateFinCourant;
         $anneeMois = "courant";
         $dateFinAll = $dateFin;
-        if(!$moisCourant){
-            $anneeMois = ($request->get('mois',null))? $request->get('mois') : date('Ym', strtotime(date('Y-m-d')));
-            $dateDebut = \DateTime::createFromFormat('Ymd H:i:s',$anneeMois.'01 00:00:00');
+
+        if(strlen($request->get('periode')) == 4) {
+            $anneeMois = $request->get('periode');
+            $dateDebut = \DateTime::createFromFormat('Ymd',$anneeMois.'0101');
+            $dateFin = clone $dateDebut;
+            $dateFin->modify("+1 year -1 day");
+            $dateFin->setTime(23,59,59);
+        } else {
+            $anneeMois = ($request->get('periode',null))? $request->get('periode') : date('Ym', strtotime(date('Y-m-d')));
             $dateDebut = \DateTime::createFromFormat('Ymd',$anneeMois.'01');
             $dateFin = clone $dateDebut;
             $dateFin->modify("last day of this month");
             $dateFin->setTime(23,59,59);
-
-            $dateFinAll = clone $dateDebut;
-            $dateFinAll->modify("last day of next month");
-            $dateFinAll->setTime(23,59,59);
         }
+
+        $dateFinAll = new \DateTime();
+        $dateFinAll->modify("last day of +2 month");
+        $dateFinAll->setTime(23,59,59);
 
         $passages = null;
         $moisPassagesArray = $passageManager->getNbPassagesToPlanPerMonth($secteur, clone $dateFinAll);
+        $morePassages = [];
+        foreach ($moisPassagesArray as $key => $values) {
+            if (strlen($key) === 4) {
+                $morePassages[$key] = \DateTimeImmutable::createFromFormat('Y', $key)->format('Y-m-d');
+            }
+        }
+        $now = new \DateTimeImmutable();
+        for ($i = 3; $i < (3+6); $i++) {
+            $date = $now->modify("+".$i." month");
+            $morePassages[$date->format('Ym')] = $date->format('Y-m-d');
+        }
+
         $passages = $passageManager->getRepository()->findToPlan($secteur, $dateDebut, clone $dateFin)->toArray();
         $devis = $devisManager->getRepository()->findToPlan($secteur, $dateDebut, clone $dateFin)->toArray();
 
@@ -128,6 +145,7 @@ class PassageController extends Controller
         $coordinatesCenter->setLat($lat);
         $coordinatesCenter->setLon($lon);
         $coordinatesCenter->setZoom($zoom);
+
         $geojson = $this->buildGeoJson($passages);
         $passagesFiltreExportForm = $this->getPassagesFiltreExportForm();
 
@@ -139,6 +157,7 @@ class PassageController extends Controller
             'formEtablissement' => $formEtablissement->createView(),
             'geojson' => $geojson,
             'moisPassagesArray' => $moisPassagesArray,
+            'morePassages' => $morePassages,
             'passageManager' => $passageManager,
             'etablissementManager' => $this->get('etablissement.manager'),
             'secteur' => $secteur,
@@ -485,6 +504,7 @@ class PassageController extends Controller
         if(!$passage->getEmailTransmission()){
             $dm = $this->get('doctrine_mongodb')->getManager();
             $passage->setPdfNonEnvoye(false);
+            $passage->setPdfRapportDateEnvoi(new \DateTime());
             $dm->flush();
         }
 
@@ -525,7 +545,7 @@ class PassageController extends Controller
         $fromEmail = $parameters['coordonnees']['email'];
         $fromName = $parameters['coordonnees']['nom'];
 
-        $replyEmail = $parameters['coordonnees']['replyemail'];
+        $replyEmail = $parameters['coordonnees']['replyEmail'];
 
         $suject = "[".ucfirst($appname)."] - Rapport de visite du ".$passage->getDateDebut()->format("d/m/Y")." à ".$passage->getDateDebut()->format("H\hi");
         $body = $this->renderView(
@@ -536,14 +556,14 @@ class PassageController extends Controller
         $message = \Swift_Message::newInstance()
             ->setSubject($suject)
             ->setFrom(array($fromEmail => $fromName))
-            ->setTo($passage->getEmailTransmission())
+            ->setTo(explode(";",$passage->getEmailTransmission()))
             ->setReplyTo($replyEmail)
             ->setBody($body,'text/plain');
 
         if ($passage->getSecondEmailTransmission()) {
-            $to = [];
-            $to[] = $passage->getEmailTransmission();
-            $to[] = $passage->getSecondEmailTransmission();
+            $emailsTransmissions = explode(";",$passage->getEmailTransmission());
+            $secondEmailsTransmission = explode(";",$passage->getSecondEmailTransmission());
+            $to = array_merge($emailsTransmissions,$secondEmailsTransmission);
             $message->setTo($to);
         }
 
@@ -553,6 +573,7 @@ class PassageController extends Controller
         try {
             $this->get('mailer')->send($message);
             $passage->setPdfNonEnvoye(false);
+            $passage->setPdfRapportDateEnvoi(new \DateTime());
             $dm->flush();
         }
         catch(Exception $e) {

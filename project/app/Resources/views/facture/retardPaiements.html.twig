@@ -111,7 +111,7 @@
               <th class="col-xs-2">Commentaire</th>
               <th class="col-xs-1">Relance(s)</th>
               <th class="col-xs-1"></th>
-							<th class="col-xs-1"></th>
+			  <th class="col-xs-1"></th>
             </tr>
           </thead>
           <tbody>
@@ -152,8 +152,13 @@
 								{% endfor %}
 							</td>
               <td class="text-center">
-								<span class="text-right">{{ "%0.2f" | format(factureEnRetard.montantTTC)  }}&nbsp;€</span>&nbsp;/&nbsp;<span class="text-left">{{ "%0.2f" | format(factureEnRetard.montantPaye)  }}&nbsp;€</span>
-							</td>
+								<span class="text-right">{{ "%0.2f" | format(factureEnRetard.montantTTC)  }}&nbsp;€</span>&nbsp;/&nbsp;<span class="text-left">{{ "%0.2f" | format(factureEnRetard.montantPaye)  }}&nbsp;€ </span>
+                                {% set nbAutresFacturesEnRetard = tabNbFacturesBySociete[factureEnRetard.societe.id] - 1 %}
+                                {% if nbAutresFacturesEnRetard > 0 %}
+                                    <br>
+                                <small><span><a href="{{ path('factures_retard_societe',{ id : factureEnRetard.societe.id }) }}"> {{ nbAutresFacturesEnRetard }} {% if nbAutresFacturesEnRetard == 1 %}autre facture {% else %} autres factures {% endif %} en retard</span></small>
+                                {% endif %}
+                            </td>
 							<td>
 								<textarea rows="3" data-url="{{ path('facture_relance_commentaire_add', {'id': factureEnRetard.id }) }}" data-id="{{factureEnRetard.id}}" class="input-inline form-control commentaire" id="facture_retard_commentaire_ajax" >{{ factureEnRetard.relanceCommentaire }}</textarea>
 							</td>
@@ -188,8 +193,10 @@
               </td>
 							<td>
 								{% if not factureEnRetard.has1ereRelance and (factureEnRetard.societe.contactCoordonnee.emailFacturation or factureEnRetard.societe.contactCoordonnee.email)  %}
-								<a href="{{ path('relance_email', {'id': factureEnRetard.id}) }}" class="relance_lien_envoyer_mail"><i class="mdi mdi-send mdi-lg" title="Envoyer mail 1ère relance"></i></a>
-								{% endif %}
+									<a href="{{ path('relance_email', {'id': factureEnRetard.id}) }}" class="relance_lien_envoyer_mail" data-relance ="1"><i class="mdi mdi-send mdi-lg" title="Envoyer mail 1ère relance"></i></a>
+								{% elseif factureEnRetard.has1ereRelance and not factureEnRetard.has2ndRelance and (factureEnRetard.societe.contactCoordonnee.emailFacturation or factureEnRetard.societe.contactCoordonnee.email) %}
+                                    <a href="{{ path('relance_email', {'id': factureEnRetard.id}) }}" class="relance_lien_envoyer_mail" data-relance ="2"><i class="mdi mdi-send mdi-lg" title="Envoyer mail 2nd relance"></i></a>
+                                {% endif %}
 							</td>
             </tr>
             {% endfor %}

@@ -43,7 +43,7 @@ class ContratType extends AbstractType {
      */
     public function buildForm(FormBuilderInterface $builder, array $options) {
         $builder
-                ->add('typeContrat', ChoiceType::class, array('label' => 'Type de contrat* :', 'choices' => array_merge(array('' => ''), ContratManager::$types_contrat_libelles), "attr" => array("class" => "select2 select2-simple")))
+                ->add('typeContrat', ChoiceType::class, array('label' => 'Type de contrat* :','required' => true, 'choices' => array_merge(array('' => ''), ContratManager::$types_contrat_libelles), "attr" => array("class" => "select2 select2-simple")))
                 ->add('nomenclature', TextareaType::class, array('label' => 'Nomenclature* :', "attr" => array("class" => "form-control", "rows" => 6)))
                 ->add('duree', TextType::class, array('label' => 'Durée du contrat* :'))
                 ->add('auditPassage', TextType::class, array('label' => 'Audit commercial au passage n° :', 'required' => false))

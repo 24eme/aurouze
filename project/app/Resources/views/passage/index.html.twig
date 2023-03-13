@@ -2,61 +2,67 @@
 {% extends 'base.html.twig' %}
 {% block title %}Passages{% endblock title %}
 {% block body %}
-
         <div class="row hide-print">
             <div class="col-xs-12">
                 {{ include('societe/choixForm.html.twig', {'urlTarget': path('passage_societe', {'id': '_id_', 'object': '_object_'}), 'autofocus': true })}}
             </div>
-
         </div>
         <div class="row hide-print">
             <div class="col-xs-12">
-                <h3 class="hide-print">Liste des passages à planifier {% if secteur %}pour {{ etablissementManager.secteursNom(secteur) }}{% endif %}{% if anneeMois %} en {{ dateFin | localizeddate("medium", "none", null, null, "MMMM yyyy") | capitalize }} {% else %} jusqu'au {{ dateFin | localizeddate("medium", "none", null, null, "d MMMM yyyy") }} {% endif %} </h3>
+                <h3 style="margin-top: 0; margin-bottom: 20px;" class="hide-print">Liste des passages à planifier par mois / année</h3>
             </div>
         </div>
         <div class="row hide-print">
-            <div class="col-xs-12">
-                <ul class="nav nav-pills">
-                    {% for key,moisPassage in moisPassagesArray %}
+            <div class="col-xs-9">
+                <ul class="nav nav-tabs">
+                    <li class="dropdown" role="presentation">
+                        <a id="dropdown-more-date" class="dropdown-toggle" href="#" data-toggle="dropdown" aria-controls="dropdown-more-date-contents" aria-expanded=false>Plus d'options <span class="caret"></span></a>
+                        <ul id="dropdown-more-date-content" class="dropdown-menu" aria-labelledby="dropdown-more-date">
+                            {% for k,v in morePassages %}
+                            <li {% if (k == anneeMois) %}class="active"{% endif %}><a href="{{ path('passage_secteur', {"secteur" : secteur, "periode" : k, "lat" : coordinatesCenter.lat, "lon" : coordinatesCenter.lon, "zoom": coordinatesCenter.zoom }) }}">
+                                {% if k | length == 4 %}
+                                    {{ v | localizeddate("medium", "none", null, null, "yyyy") | capitalize }}
+                                {% else %}
+                                    {{ v | localizeddate("medium", "none", null, null, "MMM yyyy") | capitalize }}
+                                {% endif %}
+                                </a></li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    {% for key,moisPassage in moisPassagesArray if not (key | length == 4) %}
                         <li role="presentation" class="{% if key == anneeMois %} active {% endif %}">
-                            <a href='{{ path('passage_secteur',{"secteur" : secteur, "mois" : key, "lat" : coordinatesCenter.lat, "lon" : coordinatesCenter.lon, "zoom": coordinatesCenter.zoom }) }}' >
-                                <small><strong>
-                                        {% if key == 'courant' %}
-                                            D'ici le {{ dateFinCourant | localizeddate("medium", "none", null, null, "d/MM/Y") }}
-                                        {% else %}
-                                            {{ moisPassage.date | localizeddate("medium", "none", null, null, "MMMM yyyy") | capitalize }}
-                                        {% endif %}
-                                    </strong></small>&nbsp;&nbsp;&nbsp;<span class="badge">{{ moisPassage.nb }}</span>&nbsp;</a>
+                            <a style="padding: 10px;" href='{{ path('passage_secteur',{"secteur" : secteur, "periode" : key, "lat" : coordinatesCenter.lat, "lon" : coordinatesCenter.lon, "zoom": coordinatesCenter.zoom }) }}' >
+                                <strong>{{ moisPassage.date | localizeddate("medium", "none", null, null, "MMM yyyy") | capitalize }}</strong>
+                                <span class="badge"><small>{{ moisPassage.nb }}</small></span>&nbsp;</a>
                         </li>
                     {% endfor %}
                 </ul>
             </div>
+
+            {% if secteur %}
+                <div class="col-xs-3 text-right">
+                    <div class="btn-group">
+                        {% if secteur %}
+                        <a class="btn btn-default {% if secteur == "PARIS" %}active{% endif %}" href="{{ path('passage_secteur', {'secteur' :"PARIS"}) }}">{{ etablissementManager.secteursNom("PARIS") }}</a><a class="btn btn-default {% if secteur == "SEINE_ET_MARNE" %}active{% endif %}" href="{{ path('passage_secteur', {'secteur' :"SEINE_ET_MARNE"}) }}">{{ etablissementManager.secteursNom("SEINE_ET_MARNE") }}</a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
         </div>
+
         <br/>
         <div class="row">
             <div class="col-xs-12">
                 <div class="form-horizontal hide-print">
                     <div class="form-group">
-                        <div class="col-xs-8">
+                        <div class="col-xs-12">
                             <select mulitple="multiple" data-placeholder="Filtrer la liste en saisissant un techinicien, un code postal, ..." data-hamzastyle-container="#liste_passage" class="hamzastyle form-control select2" data-hamzastyle-export="#form_filtre" ></select>
-                        </div>
-                        {{ form_start(passagesFiltreExportForm) }}
-                        {{ form_row(passagesFiltreExportForm.filtre) }}
-                        <button class="btn btn-default col-xs-1" href="{{ path('passages_filtre_export') }}" >Export</button>
-                        {{ form_end(passagesFiltreExportForm) }}
-                        <div class="col-xs-3 text-right">
-                            <div class="btn-group">
-                                {% if secteur %}
-                                <a class="btn btn-default {% if secteur == "PARIS" %}active{% endif %}" href="{{ path('passage_secteur', {'secteur' :"PARIS"}) }}">{{ etablissementManager.secteursNom("PARIS") }}</a>
-                                <a class="btn btn-default {% if secteur == "SEINE_ET_MARNE" %}active{% endif %}" href="{{ path('passage_secteur', {'secteur' :"SEINE_ET_MARNE"}) }}">{{ etablissementManager.secteursNom("SEINE_ET_MARNE") }}</a>
-                                {% endif %}
-                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-xs-6 enlarge-print">
-                        <div id="liste_passage" class="list-group well" style="height: 650px; overflow: auto; overflow-x: hidden; position: relative;">
+                        <div id="liste_passage" class="list-group well" style="height: 800px;overflow: auto; overflow-x: hidden; position: relative;">
                             {% for passage in passages %}
                                 {% set dptKeyWord = (passage.etablissementInfos.adresse.codePostal | slice(0, 2)) ? "Département "~passage.etablissementInfos.adresse.codePostal | slice(0, 2) : "" %}
                                 {% if(passage.techniciens | length == 0) %}
@@ -70,20 +76,46 @@
                                     {% set techBgColor = passage.techniciens[0].couleur %}
                                     {% set techIdentite = passage.techniciens[0].identiteCourt %}
                                 {% endif %}
-                                <div data-words='{{ words }}' id="{{ passage.id }}" data-url-etablissement="{{ path("passage_etablissement", {'id': 'ETABLISSEMENT-'~passage.etablissementIdentifiant}) }}" style="margin-bottom: 4px" class="panel panel-default hamzastyle-item hide-print{% if not passage.etablissementInfos.adresse.coordonnees.lat and not passage.etablissementInfos.adresse.coordonnees.lon %} no-geojson{% endif %}">
-                                    <div class="panel-heading">
+                                {% if passage.getDocumentType() is not constant('AppBundle\\Document\\Devis::DOCUMENT_TYPE') %}
+                                    <div data-url="{{ path('ajax_more_infos_passage', {'passage': passage.id }) }}"></div>
+                                {% endif %}
+                            <div {% if passage.isPlanifie %}
+                                    style="opacity:0.5"
+                                {% endif %}
+                                    data-words='{{ words }}'
+                                    id="{{ passage.id }}"
+                                    data-url-etablissement="{{ path("passage_etablissement", {'id': 'ETABLISSEMENT-'~passage.etablissementIdentifiant}) }}"
+                                    style="margin-bottom: 4px"
+                                    class="panel panel-default hamzastyle-item hide-print cursor-pointer
+                                    {% if not passage.etablissementInfos.adresse.coordonnees.lat and not passage.etablissementInfos.adresse.coordonnees.lon %}
+                                    no-geojson
+                                    {% endif %}
+                                    {% if passage.getDocumentType() is not constant('AppBundle\\Document\\Devis::DOCUMENT_TYPE') and not passage.isPlanifie %}
+                                    btn-more-info" style="cursor:pointer"
+                                    {% else %}
+                                    "
+                                    {% endif %}>
+                            <div class="panel-heading" {% if passage.isPlanifie %} style="cursor: not-allowed;" {% endif %}>
                                         <div class="panel-title clearfix">
                                             <i class="mdi mdi-{{ passage.etablissementInfos.icon }} mdi-lg"></i>
                                             <strong>{{ passage.etablissementInfos.nom|capitalize }}</strong>
                                             <small>{{ passage.etablissementInfos.adresse.codePostal }} {{ passage.etablissementInfos.adresse.commune }}</small>
-                                            {% if passage.etablissementInfos.adresse.coordonnees.lat and passage.etablissementInfos.adresse.coordonnees.lon %}
-                                              <i class="mdi mdi-zoom-in mdi-lg pull-right" style="cursor: pointer"></i>
-                                            {% endif %}
-                                            {% if passage.getDocumentType() is constant('AppBundle\\Document\\Devis::DOCUMENT_TYPE') %}
-                                              <i class="pull-right mdi mdi-local-shipping mdi-lg"></i>
+                                            {% if passage.isPlanifie %}
+                                                <span class="glyphicon glyphicon-ok-sign pull-right" title="Planifié"></span>
+                                            {% else %}
+                                                {% if passage.etablissementInfos.adresse.coordonnees.lat and passage.etablissementInfos.adresse.coordonnees.lon %}
+                                                  <i id="zoom-{{passage.id}}"class="mdi mdi-zoom-in mdi-lg pull-right" style="cursor: pointer"></i>
+                                                  <div data-url="{{ path('ajax_more_infos_passage', {'passage': passage.id }) }}"></div>
+                                                {% else %}
+                                                    <a class="pull-right" style="opacity: 0.5; font-size: 80%;" title="Saisir l'emplacement de l'établissement" href="{{ path('etablissement_modification', {'societe': passage.etablissement.societe.getId(),'id': passage.etablissement.getId()}) }}#adresse">Emplacement non trouvé</a>
+                                                {% endif %}
+                                                {% if passage.getDocumentType() is constant('AppBundle\\Document\\Devis::DOCUMENT_TYPE') %}
+                                                  <i class="pull-right mdi mdi-local-shipping mdi-lg"></i>
+                                                {% endif %}
                                             {% endif %}
                                         </div>
                                     </div>
+                                    {% if not passage.isPlanifie %}
                                     <div class="panel-body">
                                         <div class="clearfix">
                                             {% for prestation in passage.prestations %}
@@ -102,7 +134,7 @@
                                             {% endif %}
                                         </div>
                                         <div class="clearfix">
-                                            <span class="label" style="background-color: {{ techBgColor }};color: {{ techColor }};">
+                                            <span class="label badge" style="background-color: {{ techBgColor }};color: {{ techColor }};">
                                                 <small>{{ techIdentite }}</small>
                                             </span>
                                             {% if passage.multiTechnicien > 1 %}
@@ -110,16 +142,9 @@
                                                     <i class="mdi mdi-group mdi-lg"></i>
                                                 </span>
                                             {% endif %}
-                                            <a href="{{ path("calendar_planifier", {'planifiable': passage.id}) }}" class="btn btn-link" >
-                                                <i class="mdi mdi-date-range mdi-lg"></i>
-                                                {{ passage.datePrevision | localizeddate("medium", "none", null, null, "MMM yyyy") | capitalize }}
-                                            </a>
                                         </div>
-                                        {% if passage.getDocumentType() is not constant('AppBundle\\Document\\Devis::DOCUMENT_TYPE') %}
-                                          <div data-url="{{ path('ajax_more_infos_passage', {'passage': passage.id }) }}"></div>
-                                          <button type="button" class="btn-more-info btn btn-block btn-secondary"><i class="mdi mdi-lg mdi-vertical-align-bottom"></i> Plus d'informations</button>
-                                        {% endif %}
                                     </div>
+                                    {% endif %}
                                 </div>
 
                                 <div data-words='{{ words }}' class="hamzastyle-item show-print">
@@ -163,10 +188,14 @@
                         </div>
                     </div>
                     <div class="col-xs-6 hide-print">
-                        <div id="map" class="well" style="width: 100%; height: 650px;" data-geojson="{{ geojson | json_encode(constant('JSON_HEX_QUOT')) }}"
+                        <div id="map" class="well" style="width: 100%; height: 300px;" data-geojson="{{ geojson | json_encode(constant('JSON_HEX_QUOT')) }}"
                                                                                        data-lat="{{ coordinatesCenter.lat }}" data-lon="{{ coordinatesCenter.lon }}"
                                                                                                                               data-zoom="{{ coordinatesCenter.zoom }}" data-historyrewrite="1" >
                         </div>
+                    <div id="info-passage">
+                    <div class="panel panel-default" style="height:450px;">
+                    </div>
+                    </div>
                     </div>
                 </div>
             </div>

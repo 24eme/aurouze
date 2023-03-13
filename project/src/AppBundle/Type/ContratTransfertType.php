@@ -30,10 +30,11 @@ class ContratTransfertType extends AbstractType {
      */
     public function buildForm(FormBuilderInterface $builder, array $options) {
         $builder->add('factures', CheckboxType::class, array('label' => 'Transférer les factures égalements', 'required' => false, 'data' => true, 'label_attr' => array('class' => 'control-label')));
+        $builder->add('documents', CheckboxType::class, array('label' => 'Transférer les documents de l\' établissement égalements', 'required' => false, 'data' => false, 'label_attr' => array('class' => 'control-label')));
         $builder->addEventListener(FormEvents::PRE_SET_DATA, array($this, 'onPreSetData'));
         $builder->addEventListener(FormEvents::PRE_SUBMIT, array($this, 'onPreSubmit'));
     }
-    
+
     protected function addSociete(FormInterface $form, $societe = null)
     {
         $form->add('societe', DocumentType::class, array(

@@ -150,6 +150,17 @@ class ContratController extends Controller {
                 foreach ($contrat->getMouvements() as $mouvement) {
                     $mouvement->setSociete($formValues['societe']);
                 }
+                if( $formValues['documents']){
+                    $attachementRepository = $this->get('attachement.manager')->getRepository();
+
+                    foreach ($etablissementsArr as $oldEtb) {
+                        $etbN = $etablissementRepository->find($formValues[$oldEtb->getId()]);
+                        $documents = $attachementRepository->findBy(array('etablissement' => $oldEtb), array('updatedAt' => 'DESC'));
+                        foreach($documents as $d){
+                            $d->setEtablissement($etbN);
+                        }
+                    }
+                }
 
                 $dm->flush();
 
@@ -264,7 +275,7 @@ class ContratController extends Controller {
         $dm->persist($contratReconduit);
         $dm->flush();
 
-        return $this->redirectToRoute('contrat_acceptation', array('id' => $contratReconduit->getId()));
+        return $this->redirectToRoute('contrat_modification', array('id' => $contratReconduit->getId()));
     }
 
     /**
@@ -428,7 +439,15 @@ class ContratController extends Controller {
             }
         }
 
-        return $this->render('contrat/visualisation.html.twig', array('contrat' => $contrat, 'factures' => $factures, 'societe' => $contrat->getSociete(), 'recapProduits' => $recapProduits));
+        $lastPassages = $this->get('contrat.manager')->getPassagesByNumeroArchiveContrat($contrat, true);
+        $lastEmailTransmission = null;
+        foreach ($lastPassages as $etab => $ps) {
+            foreach ($ps as $p) {
+                if ($p->getEmailTransmission()) { $lastEmailTransmission = $p->getEmailTransmission(); break; }
+            }
+        }
+
+        return $this->render('contrat/visualisation.html.twig', array('contrat' => $contrat, 'factures' => $factures, 'societe' => $contrat->getSociete(), 'recapProduits' => $recapProduits, 'lastEmailTransmission' => $lastEmailTransmission));
     }
 
     /**
@@ -534,16 +553,27 @@ class ContratController extends Controller {
             return new Response($html, 200);
         }
 
-        return new Response(
-                $this->get('knp_snappy.pdf')->getOutputFromHtml($html, array(
-                    'footer-html' => $footer,
-                    'header-html' => $header,
-                    'margin-right' => 0,
-                    'margin-left' => 0,
-                    'margin-top' => 38,
-                    'margin-bottom' => 38,
-                    'page-size' => "A4"
-                )), 200, array(
+        if (! shell_exec(sprintf("which %s", escapeshellarg('pdftk')))) {
+            throw new \LogicException('missing pdftk binary');
+        }
+
+        $tmpfile = $this->container->getParameter('kernel.cache_dir').'/PDFCONTRAT_'.$contrat->getNumeroArchive().uniqid();
+        $this->get('knp_snappy.pdf')->generateFromHtml($html, $tmpfile, [
+            'footer-html' => $footer,
+            'header-html' => $header,
+            'margin-right' => 0,
+            'margin-left' => 0,
+            'margin-top' => 38,
+            'margin-bottom' => 38,
+            'page-size' => "A4"
+        ]);
+
+        exec(escapeshellcmd('pdftk '.$tmpfile.' '.$this->get('kernel')->getRootDir().'/../data/CGV.pdf cat output '.$tmpfile.'.pdf'), $output, $exitcode);
+        if ($exitcode !== 0) {
+            throw new \Exception('pdftk failed with error: '.implode(', ', $output));
+        }
+
+        return new Response(file_get_contents($tmpfile.'.pdf'), 200, array(
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'attachment; filename="contrat-' . $contrat->getNumeroArchive() . '.pdf"'
                 )
@@ -573,8 +603,13 @@ class ContratController extends Controller {
      */
     public function exportPcaAction(Request $request) {
         ini_set('memory_limit', '-1');
+        ini_set('set_time_limit', '90');
+        ini_set('max_execution_time', '90');
       // $response = new StreamedResponse();
         $formRequest = $request->request->get('form');
+        if (! isset($formRequest['dateDebut'])) {
+            $formRequest['dateDebut'] = (new \DateTime())->format('d/m/Y');
+        }
         $dateDebutString = $formRequest['dateDebut']." 23:59:59";
 
         $dateDebut = \DateTime::createFromFormat('d/m/Y H:i:s',$dateDebutString);
@@ -796,14 +831,13 @@ class ContratController extends Controller {
 
         $emailCommercial = $contrat->getCommercial()->getContactCoordonnee()->getEmail();
         $parameters = $this->get('contrat.manager')->getParameters();
-
         if ($emailCommercial) {
             $message = \Swift_Message::newInstance()
                 ->setSubject($subject)
                 ->setFrom([
                     $parameters['coordonnees']['email'] => $parameters['coordonnees']['nom']
                 ])
-                ->setTo($contrat->getCommercial()->getContactCoordonnee()->getEmail())
+                ->setTo(explode(";",$contrat->getCommercial()->getContactCoordonnee()->getEmail()))
                 ->setBody(
                     $this->renderView($template.'.html.twig', array('contrat' => $contrat)),
                     'text/plain'

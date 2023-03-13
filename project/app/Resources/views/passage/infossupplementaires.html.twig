@@ -1,96 +1,152 @@
-<div class="well">
-  <a class="btn btn-default" href="{{ path("passage_etablissement", {'id': etablissement.id}) }}">Voir l'établissement</a>
-  <a class="btn btn-primary" href="{{ path("calendar_planifier", {'planifiable': passage.id}) }}">Planifier</a>
-  <h5>
-    <i class="mdi mdi-lg mdi-{{ societe.icon }}"></i> Société :
-    <a href="{{path("societe_visualisation", {'id': societe.id})}}">
-      {{ societe.raisonsociale }}
-    </a>
-  </h5>
-  <h5>
-    Solde : <span class="text-{% if (solde == 0) %}success{% elseif (solde < 0) %}danger{% else %}warning{% endif %}">{{ "%0.2f" | format(solde) }} €</span>
-  </h5>
-  <h5>
-    <i class="mdi mdi-{{ passage.etablissementInfos.icon }} mdi-lg"></i> Lieu d'application :
-    <a href="{{path("passage_etablissement", {'id': passage.etablissement.id})}}">
-      {{ etablissement.adresse.getIntitule() }}
-    </a>
-  </h5>
-  <ul class="list-inline">
-    {% if etablissement.contactCoordonnee.libelle %}
-      <li class="list-inline-item"><i class="mdi mdi-contacts mdi-lg"></i> {{ etablissement.contactCoordonnee.libelle }}</li>
+<div class="panel panel-default">
+<div class="panel-heading">
+    <div class="panel-title clearfix">
+        <i class="mdi mdi-{{ passage.etablissementInfos.icon }} mdi-lg"></i>
+        <strong>{{ passage.etablissementInfos.nom|capitalize }}</strong>
+        <small>{{ passage.etablissementInfos.adresse.codePostal }} {{ passage.etablissementInfos.adresse.commune }}</small>
+        <div style="float:right">
+        <a class="btn btn-default" href="{{ path("passage_etablissement", {'id': etablissement.id}) }}">Voir l'établissement</a>
+        <a class="btn btn-primary" href="{{ path("calendar_planifier", {'planifiable': passage.id}) }}">Planifier</a>
+        </div>
+    </div>
+</div>
+<div class="panel-body" style="width: 100%;overflow: auto;overflow-x: hidden;height: 400px;">
+    {% set dptKeyWord = (passage.etablissementInfos.adresse.codePostal | slice(0, 2)) ? "Département "~passage.etablissementInfos.adresse.codePostal | slice(0, 2) : "" %}
+    {% if(passage.techniciens | length == 0) %}
+        {% set words = [dptKeyWord, "Sans technicien", passage.etablissementInfos.adresse.codePostal | trim, passage.etablissementInfos.adresse.commune | trim, passage.etablissementInfos.type, passage.datePrevision | localizeddate("medium", "none", null, null, "MMMM yyyy") | capitalize, passage.etablissementInfos.nom] | merge(passage.prestationsNom) | merge(passage.wordingsArrFacturant) | json_encode(constant('JSON_UNESCAPED_UNICODE')) %}
+        {% set techColor = 'white' %}
+        {% set techBgColor = 'transparent' %}
+        {% set techIdentite = "" %}
+    {% else %}
+        {% set words = [dptKeyWord, passage.techniciens[0].identite, passage.etablissementInfos.adresse.codePostal | trim, passage.etablissementInfos.adresse.commune | trim, passage.etablissementInfos.type, passage.datePrevision | localizeddate("medium", "none", null, null, "MMMM yyyy") | capitalize, passage.etablissementInfos.nom, passage] | merge(passage.prestationsNom) | merge(passage.wordingsArrFacturant) | json_encode(constant('JSON_UNESCAPED_UNICODE')) %}
+        {% set techColor = passage.techniciens[0].couleurText %}
+        {% set techBgColor = passage.techniciens[0].couleur %}
+        {% set techIdentite = passage.techniciens[0].identiteCourt %}
     {% endif %}
-    {% if etablissement.contactCoordonnee.telephoneFixe %}
-      <li class="list-inline-item"><i class="mdi mdi-call mdi-lg"></i> {{ etablissement.contactCoordonnee.telephoneFixe }}</li>
-    {% endif %}
-    {% if etablissement.contactCoordonnee.telephoneMobile %}
-      <li class="list-inline-item"><i class="mdi mdi-smartphone mdi-lg"></i> {{ etablissement.contactCoordonnee.telephoneMobile }}</li>
-    {% endif %}
-    {% if etablissement.contactCoordonnee.email %}
-      <li class="list-inline-item"><i class="mdi mdi-mail mdi-lg"></i>
-        <a href="mailto:{{ etablissement.contactCoordonnee.email }}">
-          {{ etablissement.contactCoordonnee.email }}
+    <div class="clearfix">
+        <span class="label" style="background-color: {{ techBgColor }};color: {{ techColor }};">
+            <small>{{ techIdentite }}</small>
+        </span>
+        {% if passage.multiTechnicien > 1 %}
+            <span data-toggle="tooltip" title="{{ passage.multiTechnicien }} techniciens nécessaire sur ce passage">
+                <i class="mdi mdi-group mdi-lg"></i>
+            </span>
+        {% endif %}
+        <a href="{{ path("calendar_planifier", {'planifiable': passage.id}) }}" class="btn btn-link">
+            <i class="mdi mdi-date-range mdi-lg"></i>
+            {{ passage.datePrevision | localizeddate("medium", "none", null, null, "MMM yyyy") | capitalize }}
         </a>
-      </li>
-    {% endif %}
-    {% if lastPassages %}
-    <li class="list-inline-item">
-    	Contrat n°{{ contrat.numeroArchive }} du {{ contrat.dateDebut | localizeddate("medium", "none", null, null, "d MMMM yyyy") | capitalize }} au {{ contrat.dateFin | localizeddate("medium", "none", null, null, "d MMMM yyyy") | capitalize }}
-    </li>
+    </div>
+    <div class="well">
+        <h5>
+          <i class="mdi mdi-lg mdi-{{ societe.icon }}"></i> Société :
+          <a href="{{path("societe_visualisation", {'id': societe.id})}}">
+            {{ societe.raisonsociale }}
+          </a>
+        </h5>
+      <h5>
+        Solde : <span class="text-{% if (solde == 0) %}success{% elseif (solde < 0) %}danger{% else %}warning{% endif %}">{{ "%0.2f" | format(solde) }} €</span>
+      </h5>
+      <h5>
+        <i class="mdi mdi-{{ passage.etablissementInfos.icon }} mdi-lg"></i> Lieu d'application :
+        <a href="{{path("passage_etablissement", {'id': passage.etablissement.id})}}">
+          {{ etablissement.adresse.getIntitule() }}
+        </a>
+      </h5>
+      <ul class="list-inline">
+        {% if etablissement.contactCoordonnee.libelle %}
+          <li class="list-inline-item"><i class="mdi mdi-contacts mdi-lg"></i> {{ etablissement.contactCoordonnee.libelle }}</li>
+        {% endif %}
+        {% if etablissement.contactCoordonnee.telephoneFixe %}
+          <li class="list-inline-item"><i class="mdi mdi-call mdi-lg"></i> {{ etablissement.contactCoordonnee.telephoneFixe }}</li>
+        {% endif %}
+        {% if etablissement.contactCoordonnee.telephoneMobile %}
+          <li class="list-inline-item"><i class="mdi mdi-smartphone mdi-lg"></i> {{ etablissement.contactCoordonnee.telephoneMobile }}</li>
+        {% endif %}
+        {% if etablissement.contactCoordonnee.email %}
+          <li class="list-inline-item"><i class="mdi mdi-mail mdi-lg"></i>
+            <a href="mailto:{{ etablissement.contactCoordonnee.email }}">
+              {{ etablissement.contactCoordonnee.email }}
+            </a>
+          </li>
+        {% endif %}
+        {% if lastPassages %}
+        <hr style="border:0.5px dotted black;margin: inherit;">
+        <li class="list-inline-item">
+        <a href="{{path("contrat_visualisation", {'id': contrat.id})}}">
+            Contrat n°{{ contrat.numeroArchive }} du {{ contrat.dateDebut | localizeddate("medium", "none", null, null, "d MMMM yyyy") | capitalize }} au {{ contrat.dateFin | localizeddate("medium", "none", null, null, "d MMMM yyyy") | capitalize }}
+        </a>
+        </li>
+        <li>
+        <small>
+        {% for prestation in contrat.prestations %}
+            {% if(prestation.wordToPicto) %}
+                &nbsp;<span class="step size-18" title="{{  prestation.nomToString }}" data-toggle="tooltip" >
+                    <i class="mdi-{{prestation.wordToPicto}}">&nbsp;</i>&nbsp;<span>{{ prestation.nbPassages }}</span></span>
+                {%else%}
+                <span class="btn btn-xs label-primary">{{  prestation.nomToString }}&nbsp;<span>{{ prestation.nbPassages }}</span></span>
+            {%endif%}
+        {% endfor %}
+        </small>
+    prévus sur {{ contrat.duree }} mois
+        </li>
 
-    {% if passage.techniciens|length > 0 %}
-      <li class="list-inline-item">
-    Dernier{% if lastPassages.toArray()|length > 1 %}s{% endif %} passage{% if lastPassages.toArray()|length > 1 %}s{% endif %} :
-    <small>
-    <table class="table">
-        <thead>
-          <tr>
-            <th scope="col">Technicien</th>
-            <th scope="col">Date & Heure</th>
-            <th scope="col">Type</th>
-          </tr>
-        </thead>
-          {% for lastPassage in lastPassages %}
-          <tr>
-          <td>
-            {% if lastPassage.techniciens|length > 0%}
-              {% set tech = lastPassage.techniciens[0]%}
-              <span class="label" style="background-color: {{ tech.couleur }};color: {{ tech.couleurText }};">
-                    <small>{{ tech.identiteCourt }}</small>
-                </span>&nbsp;
+        {% if passage.techniciens|length > 0 %}
+        <hr style="border:0.5px dotted black;margin: inherit;">
+         <li class="list-inline-item">
+        Dernier{% if lastPassages.toArray()|length > 1 %}s{% endif %} passage{% if lastPassages.toArray()|length > 1 %}s{% endif %} :
+        <small>
+        <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Technicien</th>
+                <th scope="col">Date & Heure</th>
+                <th scope="col">Type</th>
+              </tr>
+            </thead>
+              {% for lastPassage in lastPassages %}
+              <tr>
+              <td>
+                {% if lastPassage.techniciens|length > 0%}
+                  {% set tech = lastPassage.techniciens[0]%}
+                  <span class="label" style="background-color: {{ tech.couleur }};color: {{ tech.couleurText }};">
+                        <small>{{ tech.identiteCourt }}</small>
+                    </span>&nbsp;
+                {% endif %}
+              </td>
+              <td>
+                {{ lastPassage.getDateFrancais() }} à {{ lastPassage.getDateDebut()|date("H:s") }}
+              </td>
+              <td>
+                {{ lastPassage.getTypePassage()}}
+              </td>
+              </tr>
+              {% endfor %}
+            <table>
+          </small>
+          </li>
+          {% endif %}
+        {% endif %}
+      </ul>
+      <br />
+      <div class="row">
+        <div class="col-xs-6">
+          <h5><i class="mdi mdi-lg mdi-info"></i> Nomenclature :</h5>
+          {{ contrat.nomenclature | nl2br }}
+        </div>
+        <div class="col-xs-6 commentaires">
+          <h5 style="cursor:pointer;" class="text-primary commentaire_lien" data-url="{{ path('etablissement_commentaire', {'id': passage.etablissement.id , 'passageId': passage.id}) }}" ><i class="mdi mdi-lg mdi-comment" ></i> Commentaires :</h5>
+            {% if passage.commentaire %}
+                <div title="Commentaire du passage">{{ passage.commentaire | nl2br }}</div>
             {% endif %}
-          </td>
-          <td>
-            le {{ lastPassage.getDateDebut()|date('d-m-Y') }} à {{ lastPassage.getDateDebut()|date("H:s") }}
-          </td>
-          <td>
-            {{ lastPassage.getTypePassage()}}
-          </td>
-          </tr>
-          {% endfor %}
-        <table>
-      </small>
-      </li>
-      {% endif %}
-    {% endif %}
-  </ul>
-  <br />
-  <div class="row">
-    <div class="col-xs-6">
-      <h5><i class="mdi mdi-lg mdi-info"></i> Nomenclature :</h5>
-      {{ contrat.nomenclature | nl2br }}
+            {% if etablissement.commentaire %}
+                <div title="Commentaire établissement">{{ etablissement.commentaire | nl2br }}</div>
+            {% endif %}
+            {% if etablissement.commentairePlanification %}
+                <div title="Commentaire plannification">{{ etablissement.commentairePlanification | nl2br }}</div>
+            {% endif %}
+        </div>
+      </div>
     </div>
-    <div class="col-xs-6 commentaires">
-      <h5 style="cursor:pointer;" class="text-primary commentaire_lien" data-url="{{ path('etablissement_commentaire', {'id': passage.etablissement.id , 'passageId': passage.id}) }}" ><i class="mdi mdi-lg mdi-comment" ></i> Commentaires :</h5>
-        {% if passage.commentaire %}
-            <div title="Commentaire du passage">{{ passage.commentaire | nl2br }}</div>
-        {% endif %}
-        {% if etablissement.commentaire %}
-            <div title="Commentaire établissement">{{ etablissement.commentaire | nl2br }}</div>
-        {% endif %}
-        {% if etablissement.commentairePlanification %}
-            <div title="Commentaire plannification">{{ etablissement.commentairePlanification | nl2br }}</div>
-        {% endif %}
-    </div>
-  </div>
+</div>
 </div>

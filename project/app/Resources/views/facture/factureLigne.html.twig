@@ -19,9 +19,9 @@
                 </a>
         {% if facture.isFacture %}
           {% if(facture.isAvoir and facture.origineAvoir ) %}
-          <small class="highlight" data-id="{{facture.origineAvoir.id}}"> <a href="{{ path('facturable_pdf', {'document': facture.origineAvoir.id ,'key': facture.origineAvoir.getSecretKey()})}}"><br><i class ="mdi mdi-subdirectory-arrow-right mdi-lg"></i> Facture n°{{ facture.origineAvoir.numeroFacture}}</a></small>
+            <br><small style="cursor:pointer" class="highlight" data-id="{{facture.origineAvoir.id}}"><i class ="mdi mdi-subdirectory-arrow-right mdi-lg"></i> Facture n°{{ facture.origineAvoir.numeroFacture}}</small>
           {% elseif(facture.isRedressee)%}
-            <br><small style="cursor:pointer"class="highlight" data-id ="{{facture.avoir}}"><i class ="mdi mdi-subdirectory-arrow-right mdi-lg"></i>Avoir n°{{ facture.avoir}} </small>
+            <br><small style="cursor:pointer" class="highlight" data-id ="{{facture.avoir}}"><i class ="mdi mdi-subdirectory-arrow-right mdi-lg"></i>Avoir n°{{ facture.avoir}} </small>
           {% endif %}
         {% endif %}
             </td>
@@ -80,7 +80,11 @@
                 </button>
                 <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="actionButton">
                     {% if (societe.contactCoordonnee.emailFacturation or societe.contactCoordonnee.email) %}
-                      <li><a href="{{ path('email_facture', {'id': facture.id}) }}" class="mail_facture">Envoyer par mail<span> <i class="glyphicon glyphicon-envelope"></i></span></a></li>
+                      <li>
+                        <a href="{{ path('email_facture', {'id': facture.id}) }}" class="mail_facture">Envoyer par mail
+                        <span> <i class="glyphicon glyphicon-envelope"></i></span>
+                        </a>
+                      </li>
                     {% endif %}
                     {% if facture.isDevis %}
                         <li><a href="{{ path('devis_creation', { 'societe': societe.id, 'id': facture.id })}}">A déplacer Modifier le devis ???</a></li>
@@ -96,7 +100,7 @@
                                 <li><a onclick="return confirm('Êtes vous sûr de vouloir décloturer cette facture ?')" href="{{ path('facture_decloturer', {'id': facture.societe.id, 'factureId': facture.id }) }}">Décloturer (remettre les paiements à 0)</a></li>
                                 {% if not facture.isRedressee %}
                                   <li>
-                                    <a onclick="return confirm('Êtes vous sûr de vouloir faire un avoir partiel sur cette facture ?')"  href="{{ path('facture_avoir', { 'id': societe.id, 'type': 'facture', 'factureId': facture.id , 'mouvement' : "0" })}}">Créer un avoir partiel</a>
+                                    <a onclick="return confirm('Êtes vous sûr de vouloir faire un avoir total sur cette facture ?')"  href="{{ path('facture_avoir', { 'id': societe.id, 'type': 'facture', 'factureId': facture.id , 'mouvement' : "0" })}}">Créer un avoir total</a>
                                   </li>
                                   <li>
                                     <a onclick="return confirm('Êtes vous sûr de vouloir faire un avoir partiel remboursé par chèque sur cette facture ?')"  href="{{ path('facture_avoir', { 'id': societe.id, 'type': 'facture', 'factureId': facture.id , 'mouvement' : "0", 'remboursement': "1" })}}">Créer un avoir partiel avec remboursement par chèque</a>
@@ -106,10 +110,22 @@
                             {% endif %}
                     {% endif %}
                   </ul>
-                </div>
+                 </div>
               {% endif %}
               {% if not facture.numeroFacture and not facture.isDevis %}
-                <a class="btn btn-default btn-xs " onclick="return confirm('Êtes vous sûr de vouloir facturer ?')" href="{{ path('facture_en_attente_facturer', { 'factureId': facture.id }) }}"> Créer la facture </a>
+                <a class="btn btn-default btn-xs" onclick="return confirm('Êtes vous sûr de vouloir facturer ?')" href="{{ path('facture_en_attente_facturer', { 'factureId': facture.id }) }}"> Créer la facture </a>
               {% endif %}
-            </td>
+              </td>
+              <td>
+                  {% if facture.getDateEnvoiMail() %}
+                    <span class="glyphicon glyphicon-envelope" title="Mail envoyé le {{ facture.getDateEnvoiMail()| date("d/m/Y") }}"></span>
+                  {% endif %}
+                  {% if facture.getRelanceCommentaire() %}
+                    {% if(facture.numeroFacture and facture.isEditable) %}
+                        <a href="{{ path('facture_creation', { 'societe': societe.id, 'type': 'facture', 'id': facture.id })}}"><span class="glyphicon glyphicon-comment" title="{{ facture.getRelanceCommentaire() }}"></span></a>
+                    {% else %}
+                        <span class="glyphicon glyphicon-comment" title="{{ facture.getRelanceCommentaire() }}"></span>
+                    {% endif %}
+                  {% endif %}
+              </td>
         </tr>

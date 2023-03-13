@@ -1823,10 +1823,13 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
      * @return string $frequencePaiement
      */
     public function getFrequencePaiement() {
+        $this->frequencePaiement = $this->getSociete()->getFrequencePaiement();
+
         return $this->frequencePaiement;
     }
 
     public function getFrequencePaiementLibelle() {
+        $this->getFrequencePaiement();
 
         if(is_null($this->frequencePaiement)) return "N.C.";
 
@@ -1985,8 +1988,11 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
       }
       $nbPassagesEff = $this->getContratPassages()->first()->getNbPassagesRealises(true);
       $nbPassageTotal = $this->getNbPassages();
+      if($this->isAnnule()) {
+        $nbPassageTotal = 0;
+      }
       $nbPassageRestant = $nbPassageTotal - $nbPassagesEff;
-      $ratioEffectue = (!$nbPassageTotal)? "0" : (floatval($nbPassagesEff) / floatval($nbPassageTotal));
+      $ratioEffectue = (!$nbPassageTotal)? "1" : (floatval($nbPassagesEff) / floatval($nbPassageTotal));
 
       $prixFacture =  $this->getPrixFactures();
       $prixTotal =  $this->getPrixHt();

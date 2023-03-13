@@ -9,9 +9,6 @@
             {% if(mode == 'SEMAINE') %}
             <li><a href="{{ path('calendar',{ 'technicien': technicien, 'date': date, 'mode':mode, 'id': ((planifiable) ? planifiable.etablissement.id : "0")  }) }}">&nbsp;Semaine {{ calendarTool.getLibelle() }}</a></li>
             {% endif %}
-            {% if(mode == 'JOUR') %}
-            <li><a href="{{ path('calendar',{ 'technicien': technicien, 'date': date, 'mode':mode, 'id': ((planifiable) ? planifiable.etablissement.id : "0")  }) }}">&nbsp;{{ date | localizeddate('full', 'none') | capitalize }}</a></li>
-            {% endif %}
         {% if(mode == 'MOIS') %}
             <li><a href="{{ path('calendar',{ 'technicien': technicien, 'date': date, 'mode':mode, 'id': ((planifiable) ? planifiable.etablissement.id : "0")  }) }}">&nbsp;{{ date | localizeddate("medium", "none", null, null, "MMMM yyyy") | capitalize }}</a></li>
             {% endif %}
@@ -20,7 +17,7 @@
         <div class="col-sm-12">
             <ul class="nav nav-tabs nav-justified" role="tablist" style="margin: 15px 0; font-size: 13px;">
                 <li role="presentation">
-                    <a href="{{ path('calendarManuel', {'date': calendarTool.getDateDebut('Y-m-d'), 'planifiable': ((planifiable) ? planifiable.id : null), 'mode': calendarTool.mode }) }}" role="tab" style="color: black;"><i class="mdi mdi-apps mdi-lg"></i> Résumé</a>
+                    <a href="{{ path('calendarManuel', {'date': calendarTool.getDateDebut('Y-m-d'), 'planifiable': ((planifiable) ? planifiable.id : null) }) }}" role="tab" style="color: black;"><i class="mdi mdi-apps mdi-lg"></i> Résumé</a>
                 </li>
                 {% set i=0 %}
                 {% for tech in techniciensOnglet %}
@@ -77,9 +74,6 @@
                 <a href="{{ path('calendar',{'planifiable': ((planifiable) ? planifiable.id : null), 'id': ((planifiable) ? planifiable.etablissement.id : "0"), 'technicien': technicienObj.id, 'date': calendarTool.getDateDebut() | date("Y-m-d"), 'mode': 'SEMAINE' }) }}" class="btn btn-default {% if (calendarTool.mode == "SEMAINE") %}active{% endif %}">
                     <i class="mdi mdi-view-week"></i> Semaine
                 </a>
-                <a href="{{ path('calendar',{'planifiable': ((planifiable) ? planifiable.id : null), 'id': ((planifiable) ? planifiable.etablissement.id : "0"), 'technicien': technicienObj.id, 'date': calendarTool.getDateDebut() | date("Y-m-d"), 'mode': 'JOUR' }) }}" class="btn btn-md btn-default {% if (calendarTool.mode == "JOUR") %}active{% endif %}">
-                    <i class="mdi mdi-view-day"></i> Jour
-                </a>
             </div>
         </div>
     </div>
@@ -98,6 +92,7 @@
                 data-url-prev="{{ path('calendar',{'planifiable': ((planifiable) ? planifiable.id : null), 'id': ((planifiable) ? planifiable.etablissement.id : "0"), 'technicien': technicien, 'date': calendarTool.getSemainePrecedente('Y-m-d')}) }}"
                 data-url-next="{{ path('calendar',{'planifiable': ((planifiable) ? planifiable.id : null), 'id': ((planifiable) ? planifiable.etablissement.id : "0"), 'technicien': technicien, 'date': calendarTool.getSemaineSuivante('Y-m-d')}) }}"
                 data-url-date="{{ path('calendar',{'planifiable': ((planifiable) ? planifiable.id : null), 'id': ((planifiable) ? planifiable.etablissement.id : "0"), 'technicien': technicien, 'date': '-d', 'mode': 'JOUR'}) }}"
+                data-url-populate-holidays ="{{ path('calendarPopulateWithHolidays')}}"
                 >
             </div>
         </div>

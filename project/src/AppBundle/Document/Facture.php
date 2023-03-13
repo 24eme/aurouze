@@ -176,6 +176,10 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
      */
     protected $inPrelevement;
 
+    /**
+     * @MongoDB\Field(type="date")
+     */
+    protected $dateEnvoiMail;
 
     public function __construct() {
         $this->lignes = new \Doctrine\Common\Collections\ArrayCollection();
@@ -1253,19 +1257,24 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
 
     public function getPrelevementDate(){
       $dateEmission = clone $this->getDateEmission();
-      if($dateEmission->format('m') > 20){
+
+      if($dateEmission->format('d') > 20){
           $dateEmission->modify("+2 month");
       }else{
           $dateEmission->modify("+1 month");
       }
+
       $dueDate = \DateTime::createFromFormat("Ymd",$dateEmission->format("Y").$dateEmission->format("m")."20");
       $now = new \DateTime();
+
       if($dueDate < $now){
-          if($now->format('m') > 20){
+          if($now->format('d') > 20){
               $now->modify("+1 month");
           }
+
           $dueDate = \DateTime::createFromFormat("Ymd",$now->format("Y").$now->format("m")."20");
       }
+
       return $dueDate;
     }
 
@@ -1286,5 +1295,24 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
       return hash ('sha256' , $id.$secretKey);
     }
 
+    /**
+     * Set dateEnvoiMail
+     *
+     * @param date $dateEnvoiMail
+     * @return $this
+     */
+    public function setDateEnvoiMail($dateEnvoiMail) {
+        $this->dateEnvoiMail = $dateEnvoiMail;
+        return $this;
+    }
+
+    /**
+     * Get dateEnvoiMail
+     *
+     * @return date $dateEnvoiMail
+     */
+    public function getDateEnvoiMail() {
+      return $this->dateEnvoiMail;
+    }
 
 }

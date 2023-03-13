@@ -22,7 +22,8 @@
                         </button>
                       {% else %}
                         <button class="btn btn-md btn-block" style="background-color:{{rdv.calculateTilesColors().background}}; color:{{rdv.calculateTilesColors().text}};">
-                          Pdf envoyé
+                          Pdf envoyé <br>
+                          le {{ rdv.passage.getPdfRapportDateEnvoi | date('d/m/Y') }}
                         </button>
                       {% endif %}
                     {% else %}
@@ -148,6 +149,16 @@
                               </div>
                           </div>
                         {% endif %}
+                        {% if(rdv.passage.prerequis) %}
+                        <div class="form-group" style="margin-bottom: 0">
+                              <label class="control-label col-xs-2">Prérequis</label>
+                              <div class="col-xs-10">
+                                  <p class="form-control-static">
+                                    {{ rdv.passage.prerequis | nl2br }}
+                                  </p>
+                              </div>
+                          </div>
+                        {% endif %}
                         {% if(rdv.passage.nomTransmission or rdv.passage.emailTransmission or rdv.passage.secondEmailTransmission) %}
                           <div class="form-group" style="margin-bottom: 0">
                               <label class="control-label col-xs-2">Nom / Email</label>
@@ -242,6 +253,13 @@
                         {{ form_label(form.description, "Commentaire", {'label_attr': {'class': 'col-xs-2 contral-label'}}) }}
                         <div class="col-xs-10">
                             {{ form_widget(form.description) }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        {{ form_errors(form.prerequis) }}
+                        {{ form_label(form.prerequis, "Prérequis", {'label_attr': {'class': 'col-xs-2 contral-label'}}) }}
+                        <div class="col-xs-10">
+                            {{ form_widget(form.prerequis) }}
                         </div>
                     </div>
                 {% endif %}

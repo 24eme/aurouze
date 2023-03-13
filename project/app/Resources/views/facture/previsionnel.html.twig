@@ -1,0 +1,41 @@
+{% set _menu_active = 'facture' %}
+{% extends 'base.html.twig' %}
+
+{% block title %}Factures{% endblock title %}
+
+    {% block body %}
+        <ol class="breadcrumb">
+            <li><a href="{{ path('facture') }}">Facture</a></li>
+        </ol>
+
+        {{ include('societe/choixForm.html.twig', {'urlTarget': path('facture_societe', {'id': '_id_'}), 'autofocus': true }) }}
+
+        <div>
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="active" role="presentation"><a href="#">Prévisionnel des factures</a></li>
+                <li role="presentation"><a href="{{ path('facture_mouvements') }}">Mouvements à facturer</a></li>
+                <li role="presentation"><a href="{{ path('facture_devis') }}">Devis</a></li>
+            </ul>
+        </div>
+
+        {% if facturesEnAttente | length %}
+            <h3>Prévisionnel des factures</h3>
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th class="col-xs-2">Date</th>
+                        <th class="col-xs-2">Document</th>
+                        <th class="col-xs-3">Contrat</th>
+                        <th class="col-xs-4">Client</th>
+                        <th class="col-xs-1 text-right">Montant&nbsp;HT</th>
+                        <th class="col-xs-1 text-right">Montant&nbsp;TTC</th>
+                        <th class="col-xs-1 text-right"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{ include('facture/factureEnAttente.html.twig', {'facture': facturesEnAttente}) }}
+                </tbody>
+            </table>
+        {% endif %}
+    {% endblock %}
+
