@@ -38,42 +38,68 @@ class FactureController extends Controller
      * @Route("/", name="facture")
      */
     public function indexAction(Request $request) {
-        $dm = $this->get('doctrine_mongodb')->getManager();
-        $contratManager = $this->get('contrat.manager');
+        return $this->redirectToRoute('facture_previsionnel');
+    }
+
+    /**
+     * @Route("/previsionnel", name="facture_previsionnel")
+     */
+    public function previsionnelAction(Request $request)
+    {
         $factureManager = $this->get('facture.manager');
-        $devisManager = $this->get('devis.manager');
         $facturesEnAttente = $factureManager->getRepository()->findBy(array('numeroFacture' => null, 'numeroDevis' => null), array('dateFacturation' => 'desc'));
 
+        return $this->render('facture/previsionnel.html.twig', compact('facturesEnAttente'));
+    }
+
+    /**
+     * @Route("/mouvements", name="facture_mouvements")
+     */
+    public function mouvementsAction(Request $request)
+    {
+        $contratManager = $this->get('contrat.manager');
+        $contratsFactureAEditer = $contratManager->getRepository()->findAllContratWithFactureAFacturer();
+        $secteur = $this->getParameter('secteurs');
+
+        $mouvementsSansPassage = array();
+        $mouvements = array();
+
+        foreach ($contratsFactureAEditer as $c) {
+            foreach($c->getMouvements() as $m) {
+                if (!$m->getFacturable() || $m->getFacture()) {
+                    continue;
+                }
+
+                if($m->getOrigineDocumentGeneration()){
+                    $mouvements[$m->getOrigineDocumentGeneration()->getDateDebut()->format('Y-m-d H:i:s').uniqid()] = $m;
+                } else {
+                    $mouvementsSansPassage[] = $m;
+                }
+            }
+        }
+        ksort($mouvements);
+
+        return $this->render('facture/mouvements.html.twig', compact('mouvements', 'mouvementsSansPassage', 'secteur'));
+    }
+
+    /**
+     * @Route("/devis", name="facture_devis")
+     */
+    public function devisAction(Request $request)
+    {
+        $devisManager = $this->get('devis.manager');
+        $factureManager = $this->get('facture.manager');
+
         $factures = $factureManager->getRepository()->findBy(['numeroDevis' => ['$ne' => null]]);
-        $numeros = array();
+
+        $numeros = [];
         foreach($factures as $facture) {
             $numeros[] = $facture->getNumeroDevis();
         }
 
         $devisAFacturer = $devisManager->getRepository('AppBundle:Devis')->findBy(['numeroDevis' => ['$nin' => $numeros], 'dateAcceptation' => ['$ne' => null]], ['dateEmission' => 'desc']);
 
-        $secteur = $this->getParameter('secteurs');
-        $contratsFactureAEditer = $contratManager->getRepository()->findAllContratWithFactureAFacturer();
-
-        $mouvementsSansPassage = array();
-        $mouvements = array();
-        foreach ($contratsFactureAEditer as $c) {
-            foreach($c->getMouvements() as $m){
-                if (!$m->getFacturable()||$m->getFacture()) {
-                    continue;
-                }
-                if($m->getOrigineDocumentGeneration()){
-                    $mouvements[$m->getOrigineDocumentGeneration()->getDateDebut()->format('Y-m-d H:i:s').uniqid()] = $m;
-                }
-                else{
-                    $mouvementsSansPassage[]=$m;
-                }
-            }
-        }
-        ksort($mouvements);
-
-
-        return $this->render('facture/index.html.twig',array('facturesEnAttente' => $facturesEnAttente, 'devisAFacturer' => $devisAFacturer,'mouvements'=>$mouvements, 'secteur'=>$secteur, 'mouvementsSansPassage'=>$mouvementsSansPassage));
+        return $this->render('facture/devis.html.twig', compact('devisAFacturer'));
     }
 
     /**
