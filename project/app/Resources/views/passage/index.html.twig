@@ -15,21 +15,30 @@
         <div class="row hide-print">
             <div class="col-xs-9">
                 <ul class="nav nav-tabs">
-                    {% for key,moisPassage in moisPassagesArray %}
+                    <li class="dropdown" role="presentation">
+                        <a id="dropdown-more-date" class="dropdown-toggle" href="#" data-toggle="dropdown" aria-controls="dropdown-more-date-contents" aria-expanded=false>Plus d'options <span class="caret"></span></a>
+                        <ul id="dropdown-more-date-content" class="dropdown-menu" aria-labelledby="dropdown-more-date">
+                            {% for k,v in morePassages %}
+                            <li {% if (k == anneeMois) %}class="active"{% endif %}><a href="{{ path('passage_secteur', {"secteur" : secteur, "periode" : k, "lat" : coordinatesCenter.lat, "lon" : coordinatesCenter.lon, "zoom": coordinatesCenter.zoom }) }}">
+                                {% if k | length == 4 %}
+                                    {{ v | localizeddate("medium", "none", null, null, "yyyy") | capitalize }}
+                                {% else %}
+                                    {{ v | localizeddate("medium", "none", null, null, "MMM yyyy") | capitalize }}
+                                {% endif %}
+                                </a></li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    {% for key,moisPassage in moisPassagesArray if not (key | length == 4) %}
                         <li role="presentation" class="{% if key == anneeMois %} active {% endif %}">
                             <a style="padding: 10px;" href='{{ path('passage_secteur',{"secteur" : secteur, "periode" : key, "lat" : coordinatesCenter.lat, "lon" : coordinatesCenter.lon, "zoom": coordinatesCenter.zoom }) }}' >
-
-                                        {% if key | length == 4 %}
-                                            {{ moisPassage.date | localizeddate("medium", "none", null, null, "yyyy") | capitalize }}
-                                        {% else %}
-                                            <strong>{{ moisPassage.date | localizeddate("medium", "none", null, null, "MMM yyyy") | capitalize }}</strong>
-                                        {% endif %}
-                                    <span class="badge"><small>{{ moisPassage.nb }}</small></span>&nbsp;</a>
+                                <strong>{{ moisPassage.date | localizeddate("medium", "none", null, null, "MMM yyyy") | capitalize }}</strong>
+                                <span class="badge"><small>{{ moisPassage.nb }}</small></span>&nbsp;</a>
                         </li>
                     {% endfor %}
-
                 </ul>
             </div>
+
             {% if secteur %}
                 <div class="col-xs-3 text-right">
                     <div class="btn-group">
@@ -40,6 +49,7 @@
                 </div>
             {% endif %}
         </div>
+
         <br/>
         <div class="row">
             <div class="col-xs-12">

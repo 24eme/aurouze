@@ -439,7 +439,15 @@ class ContratController extends Controller {
             }
         }
 
-        return $this->render('contrat/visualisation.html.twig', array('contrat' => $contrat, 'factures' => $factures, 'societe' => $contrat->getSociete(), 'recapProduits' => $recapProduits));
+        $lastPassages = $this->get('contrat.manager')->getPassagesByNumeroArchiveContrat($contrat, true);
+        $lastEmailTransmission = null;
+        foreach ($lastPassages as $etab => $ps) {
+            foreach ($ps as $p) {
+                if ($p->getEmailTransmission()) { $lastEmailTransmission = $p->getEmailTransmission(); break; }
+            }
+        }
+
+        return $this->render('contrat/visualisation.html.twig', array('contrat' => $contrat, 'factures' => $factures, 'societe' => $contrat->getSociete(), 'recapProduits' => $recapProduits, 'lastEmailTransmission' => $lastEmailTransmission));
     }
 
     /**

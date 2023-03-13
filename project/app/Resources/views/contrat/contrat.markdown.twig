@@ -1,6 +1,6 @@
 {{ application.adresse_commune }}, le {{ contrat.dateCreation|date("d/m/Y") }}
 
->{{ contrat.devisDestinataire|trim|raw }}  
+>{{ contrat.devisDestinataire|trim|replace({',': ',</br>'})|raw }}  
 >{{ contrat.devisAdresse.adresseFormatee | nl2br|trim|raw }}  
 >{{ contrat.devisAdresse.codePostal }} {{ contrat.devisAdresse.commune|trim|raw }}
 

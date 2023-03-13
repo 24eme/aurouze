@@ -88,6 +88,11 @@ class RendezVous {
    */
    protected $rendezVousConfirme;
 
+    /**
+     * @MongoDB\Field(type="string")
+     */
+    protected $prerequis;
+
     public function __construct()
     {
         $this->participants = new \Doctrine\Common\Collections\ArrayCollection();
@@ -456,5 +461,23 @@ class RendezVous {
     public function getDevis()
     {
         return $this->devis;
+    }
+
+    /**
+     * Get prerequis
+     * @return string $prerequis
+     */
+    public function getPrerequis()
+    {
+        return $this->prerequis;
+    }
+
+    /**
+     * Set prerequis
+     * @param string $prerequis
+     */
+    public function setPrerequis($prerequis)
+    {
+        $this->prerequis = $prerequis;
     }
 }

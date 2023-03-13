@@ -1,0 +1,25 @@
+{% set _menu_active = 'facture' %}
+{% extends 'base.html.twig' %}
+
+{% block title %}Factures{% endblock title %}
+
+    {% block body %}
+        <ol class="breadcrumb">
+            <li><a href="{{ path('facture') }}">Facture</a></li>
+        </ol>
+
+        {{ include('societe/choixForm.html.twig', {'urlTarget': path('facture_societe', {'id': '_id_'}), 'autofocus': true }) }}
+
+        <div>
+            <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation"><a href="{{ path('facture_previsionnel') }}">Prévisionnel des factures</a></li>
+                <li class="active" role="presentation"><a href="#">Mouvements à facturer</a></li>
+                <li role="presentation"><a href="{{ path('facture_devis') }}">Devis</a></li>
+            </ul>
+        </div>
+
+        <h3>Liste des mouvements à facturer</h3>
+
+        {{ include('facture/listMouvementsPouvantEtreFacturesAction.html.twig', {'mouvements':mouvements, 'secteur':secteur, 'mouvementsSansPassage':mouvementsSansPassage}) }}
+
+    {% endblock %}

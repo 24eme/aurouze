@@ -65,6 +65,11 @@
                 {{planifiable.commentaire | striptags | slice(0, 50)}}
                 {% if planifiable.commentaire | length > 50 %}...{% endif %}
             </p>
+            {% if planifiable.prerequis is defined %}
+                <p style="color: #ff4136">
+                    Prérequis : {{ planifiable.prerequis | nl2br }}
+                </p>
+            {% endif %}
         </a>
         </li>
       {% else %}
