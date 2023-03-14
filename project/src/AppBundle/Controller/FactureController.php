@@ -47,7 +47,8 @@ class FactureController extends Controller
     public function previsionnelAction(Request $request)
     {
         $factureManager = $this->get('facture.manager');
-        $facturesEnAttente = $factureManager->getRepository()->findBy(array('numeroFacture' => null, 'numeroDevis' => null), array('dateFacturation' => 'desc'));
+        $dateLimite = new \DateTimeImmutable('+1 month');
+        $facturesEnAttente = $factureManager->getRepository()->findBy(['numeroFacture' => null, 'numeroDevis' => null, 'dateFacturation' => ['$lte' => new \MongoDate($dateLimite->getTimestamp())]], ['dateFacturation' => 'desc']);
 
         return $this->render('facture/previsionnel.html.twig', compact('facturesEnAttente'));
     }
