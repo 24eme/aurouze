@@ -97,7 +97,7 @@ class FactureController extends Controller
             $numeros[] = $facture->getNumeroDevis();
         }
 
-        $devisAFacturer = $devisManager->getRepository('AppBundle:Devis')->findBy(['numeroDevis' => ['$nin' => $numeros], 'dateAcceptation' => ['$ne' => null]], ['dateEmission' => 'desc']);
+        $devisAFacturer = $devisManager->getRepository('AppBundle:Devis')->findBy(['numeroDevis' => ['$nin' => $numeros], 'dateAcceptation' => ['$ne' => null]], ['datePrevision' => 'desc']);
 
         return $this->render('facture/devis.html.twig', compact('devisAFacturer'));
     }
