@@ -149,7 +149,7 @@
                               </div>
                           </div>
                         {% endif %}
-                        {% if(rdv.passage.prerequis) %}
+                        {% if(rdv.passage.prerequis is defined and rdv.passage.prerequis) %}
                         <div class="form-group" style="margin-bottom: 0">
                               <label class="control-label col-xs-2">Prérequis</label>
                               <div class="col-xs-10">

@@ -60,14 +60,16 @@
               <span  class="step size-18" ><i class="mdi mdi-local-shipping" style="cursor: pointer;"></i></span>
             {% endif %}
             </p>
+            {% if planifiable.commentaire %}
             <p class="">
                 Informations :
                 {{planifiable.commentaire | striptags | slice(0, 50)}}
                 {% if planifiable.commentaire | length > 50 %}...{% endif %}
             </p>
-            {% if planifiable.prerequis is defined %}
+            {% endif %}
+            {% if rendezvous.prerequis is defined and rendezvous.prerequis %}
                 <p style="color: #ff4136">
-                    Prérequis : {{ planifiable.prerequis | nl2br }}
+                    Prérequis : {{ rendezvous.prerequis | nl2br }}
                 </p>
             {% endif %}
         </a>
@@ -81,6 +83,11 @@
             </div>
             <div class="col-xs-12">
               {{rendezvous.description | nl2br }}
+              {% if rendezvous.prerequis is defined and rendezvous.prerequis %}
+                  <p style="color: #ff4136">
+                      Prérequis : {{ rendezvous.prerequis | nl2br }}
+                  </p>
+              {% endif %}
             </div>
           </div>
         </li>
