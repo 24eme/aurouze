@@ -17,8 +17,8 @@
   </td>
   <td class="text-right">{{ "%0.2f" | format(document.montantTTC)  }} €</td>
   <td class="text-center">
-  {% if document.rendezVous %}<span class="glyphicon glyphicon-ok text-muted"></span>{% else %}<span class="glyphicon glyphicon-remove"></span>{% endif %}
-    </td>
+      {% if document.rendezVous %}<span class="glyphicon glyphicon-ok text-muted"></span>{% endif %}
+  </td>
   <td>
     <a href="{{ path('devis_modification', {'id': document.id}) }}">Modifier</a>
   </td>
