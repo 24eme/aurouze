@@ -1024,25 +1024,29 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
           $facturationInterval = (floatval($maxNbPrestations) / floatval($this->getNbFactures()));
         }
 
-        if(floatval($this->getNbFactures()) > 1){
-          $facturationInterval = (floatval($maxNbPrestations -1) / floatval($this->getNbFactures()-1));
-        }
         $compteurFacturation = $facturationInterval;
         $cpt = 0;
+        $nbMouvementsDeclenchables = 0;
         foreach ($passagesDatesArray as $date => $passage) {
             if ($cpt < 1) {
-                $passagesDatesArray[$date]->mouvement_declenchable = boolval($this->getNbFactures());
+                $passagesDatesArray[$date]->mouvement_declenchable = boolval($this->getNbFactures() && $nbMouvementsDeclenchables < $this->getNbFactures());
                 $compteurFacturation--;
+                if($passagesDatesArray[$date]->mouvement_declenchable) {
+                    $nbMouvementsDeclenchables++;
+                }
                 $cpt++;
                 continue;
             }
-            if ($cpt >= $compteurFacturation) {
-                $passagesDatesArray[$date]->mouvement_declenchable = boolval($this->getNbFactures() && (floatval($this->getNbFactures()) > 1));
+            if ($cpt > $compteurFacturation) {
+                $passagesDatesArray[$date]->mouvement_declenchable = boolval($this->getNbFactures() && $nbMouvementsDeclenchables < $this->getNbFactures() && (floatval($this->getNbFactures()) > 1));
                 $compteurFacturation+=$facturationInterval;
             } else {
                 $passagesDatesArray[$date]->mouvement_declenchable = 0;
             }
             $cpt++;
+            if($passagesDatesArray[$date]->mouvement_declenchable) {
+                $nbMouvementsDeclenchables++;
+            }
         }
         $cpt = 0;
         foreach ($passagesDatesArray as $date => $passage) {

@@ -1,0 +1,7 @@
+<div>
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="{% if active == "previsionnel" %}active{% endif %}" role="presentation"><a href="{{ path('facture_previsionnel') }}">Factures programmées</a></li>
+        <li class="{% if active == "mouvements" %}active{% endif %}" role="presentation"><a href="{{ path('facture_mouvements') }}">Passages réalisés à facturer</a></li>
+        <li class="{% if active == "devis" %}active{% endif %}" role="presentation"><a href="{{ path('facture_devis') }}">Devis à éditer</a></li>
+    </ul>
+</div>

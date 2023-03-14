@@ -10,13 +10,7 @@
 
         {{ include('societe/choixForm.html.twig', {'urlTarget': path('facture_societe', {'id': '_id_'}), 'autofocus': true }) }}
 
-        <div>
-            <ul class="nav nav-tabs" role="tablist">
-                <li class="active" role="presentation"><a href="#">Prévisionnel des factures</a></li>
-                <li role="presentation"><a href="{{ path('facture_mouvements') }}">Mouvements à facturer</a></li>
-                <li role="presentation"><a href="{{ path('facture_devis') }}">Devis</a></li>
-            </ul>
-        </div>
+        {{ include('facture/navIndex.html.twig', { 'active': 'previsionnel' }) }}
 
         {% if facturesEnAttente | length %}
             <h3>Prévisionnel des factures</h3>
@@ -33,9 +27,31 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {{ include('facture/factureEnAttente.html.twig', {'facture': facturesEnAttente}) }}
+                    {% for facture in facturesEnAttente|reverse(true) %}
+                        <tr>
+                                <td>{{ ((facture.isDevis) ? facture.dateDevis : facture.dateFacturation) | localizeddate("medium", "none", null, null, "d MMMM yyyy") }}</td>
+                                <td><a href="{{ path('facturable_pdf', {'document': facture.id ,'key': facture.getSecretKey() })}}">
+                    					<a data-toggle="tooltip" title="{% for ligne in facture.lignes %}{{ (ligne.libelle) ? ligne.libelle~"\n" : "Aucun" }}{% endfor %}" href="{{ path('facturable_pdf', {'document': facture.id ,'key': facture.getSecretKey() })}}">Voir le brouillon<span class="glyphicon glyphicon-file"></span></a></td>
+                                <td>
+                                    {% for origine in facture.origines %}
+                                      <a data-toggle="tooltip" title="{% for etab in origine.etablissements %}{{ etab }}<br/>{% endfor %}"
+                                          href="{{ path('contrat_visualisation', {'id': origine.id })}}">Contrat n° {{ origine.numeroArchive }}</a>
+                                    {% endfor %}
+                                </td>
+                    						<td class="col-xs-1">{{ facture.societe.raisonSociale}}</td>
+                                <td class="text-right">{{ "%0.2f" | format(facture.montantHT)  }}&nbsp;€</td>
+                                <td class="text-right">{{ "%0.2f" | format(facture.montantTTC)  }}&nbsp;€</td>
+
+
+                              </td>
+
+                                <td class="text-left">
+                                    <a class="btn btn-default btn-xs " href="{{ path('facture_en_attente_facturer', { 'factureId': facture.id })}}">Créer la facture</a>
+                                </td>
+                            </tr>
+
+                    {% endfor %}
                 </tbody>
             </table>
         {% endif %}
     {% endblock %}
-

@@ -10,13 +10,7 @@
 
         {{ include('societe/choixForm.html.twig', {'urlTarget': path('facture_societe', {'id': '_id_'}), 'autofocus': true }) }}
 
-        <div>
-            <ul class="nav nav-tabs" role="tablist">
-                <li role="presentation"><a href="{{ path('facture_previsionnel') }}">Prévisionnel des factures</a></li>
-                <li role="presentation"><a href="{{ path('facture_mouvements') }}">Mouvements à facturer</a></li>
-                <li class="active" role="presentation"><a href="#">Devis</a></li>
-            </ul>
-        </div>
+        {{ include('facture/navIndex.html.twig', { 'active': 'devis' }) }}
 
         <h3>Devis pouvant être édités</h3>
 
@@ -24,10 +18,11 @@
             <thead>
                 <tr>
                     <th class="col-xs-2">Livraison</th>
-                    <th class="col-xs-2">Plannifié</th>
+                    <th class="col-xs-2">Client</th>
                     <th class="col-xs-2">Document</th>
                     <th class="col-xs-3">Contenu</th>
                     <th class="col-xs-1 text-right">Montant TTC</th>
+                    <th class="col-xs-1 text-center">Planifié</th>
                     <th>Action</th>
                 </tr>
             </thead>
