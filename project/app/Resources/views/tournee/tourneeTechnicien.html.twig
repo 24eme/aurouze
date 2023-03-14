@@ -69,7 +69,7 @@
             {% endif %}
             {% if rendezvous.prerequis is defined and rendezvous.prerequis %}
                 <p style="color: #ff4136">
-                    Prérequis : {{ rendezvous.prerequis | nl2br }}
+                    À noter : {{ rendezvous.prerequis | nl2br }}
                 </p>
             {% endif %}
         </a>
@@ -85,7 +85,7 @@
               {{rendezvous.description | nl2br }}
               {% if rendezvous.prerequis is defined and rendezvous.prerequis %}
                   <p style="color: #ff4136">
-                      Prérequis : {{ rendezvous.prerequis | nl2br }}
+                      À noter : {{ rendezvous.prerequis | nl2br }}
                   </p>
               {% endif %}
             </div>
