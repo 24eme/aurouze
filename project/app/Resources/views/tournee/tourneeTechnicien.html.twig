@@ -3,7 +3,7 @@
 
 {% block title %}{{ application.shortname }} - {{ technicien.identite }} {% endblock title %}
 {% block body %}
-<div id="version" data-version="{{version}}" data-url="{{ path('tournee_version',{ 'technicien' : technicien.id }) }}" ></div>
+<div id="version" data-version="{{version}}" data-url="{{ path('tournee_version',{ 'technicien' : technicien.id, "date" : date | date('Y-m-d') }) }}" ></div>
 <div class="tournee_accueil" data-role="page" id="tournee_accueil">
 
 <div data-role="header" style="overflow:hidden;" data-position="fixed">
