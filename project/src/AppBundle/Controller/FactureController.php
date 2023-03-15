@@ -38,7 +38,7 @@ class FactureController extends Controller
      * @Route("/", name="facture")
      */
     public function indexAction(Request $request) {
-        return $this->redirectToRoute('facture_previsionnel');
+        return $this->redirectToRoute('facture_mouvements');
     }
 
     /**
