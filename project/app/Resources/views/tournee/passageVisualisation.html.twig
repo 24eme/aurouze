@@ -40,17 +40,17 @@
     <strong>{% if planifiable.etablissement.societe.raisonSociale != planifiable.etablissementInfos.nom %}{{ planifiable.etablissement.societe.raisonSociale }}, {% endif %}{{ planifiable.etablissementInfos.nom }}</strong><br/>
     {{ planifiable.etablissementInfos.adresse.adresse }}<br/>
     {{ planifiable.etablissementInfos.adresse.codePostal }}&nbsp;{{ planifiable.etablissementInfos.adresse.commune }}
-    {% if(planifiable.etablissement.commentaire) %}
-        <br/><br/><span class="ui-btn ui-btn-a ui-icon-info ui-btn-icon-notext ui-btn-inline ui-shadow"></span><span style="text-decoration: underline;">Etablissement : </span><br/>{{ planifiable.etablissement.commentaire | nl2br}}
-    {% endif %}
-    {% if(planifiable.commentaire) %}
-        <br/><br/><span class="ui-btn ui-btn-a ui-icon-info ui-btn-icon-notext ui-btn-inline ui-shadow"></span><span style="text-decoration: underline;">Informations : </span><br/>{{ planifiable.commentaire | nl2br}}
-    {% endif %}
+    <br/><br/><h3><span class="ui-btn ui-btn-a ui-icon-info ui-btn-icon-notext ui-btn-inline ui-shadow"></span><span style="text-decoration: underline;">Informations</span></h3>
+    <p style="margin-top: 10px; margin-bottom: 0px;">
     {% if(planifiable.rendezvous.description) %}
-        <br/><br/><span class="ui-btn ui-btn-a ui-icon-info ui-btn-icon-notext ui-btn-inline ui-shadow"></span><span style="text-decoration: underline;">Informations : </span><br/>{{ planifiable.rendezvous.description | nl2br}}
+        {{ planifiable.rendezvous.description | nl2br}}
     {% endif %}
+    {% if(not planifiable.etablissement.commentaire and not planifiable.rendezvous.description) %}
+        <span class="text-muted">Aucune</span>
+    {% endif %}
+    </p>
     {% if planifiable.etablissementInfos.telephoneFixe or planifiable.etablissementInfos.telephonePortable %}
-        <br/>{% if planifiable.etablissementInfos.telephoneFixe %}<i class="mdi mdi-call mdi-lg"></i>&nbsp;<a href="tel:{{ planifiable.etablissementInfos.telephoneFixe }}">{{ planifiable.etablissementInfos.telephoneFixe }}</a>{% endif %}
+        {% if planifiable.etablissementInfos.telephoneFixe %}<i class="mdi mdi-call mdi-lg"></i>&nbsp;<a href="tel:{{ planifiable.etablissementInfos.telephoneFixe }}">{{ planifiable.etablissementInfos.telephoneFixe }}</a>{% endif %}
         {% if planifiable.etablissementInfos.telephonePortable %}<a href="tel:{{ planifiable.etablissementInfos.telephonePortable }}">{{ planifiable.etablissementInfos.telephonePortable }}</a>{% endif %}
     {% endif %}
     <a href="tel:{{telephoneSecretariat}}">Tél Secrétariat</a>
@@ -152,21 +152,22 @@
             Passage du {{ hPassage.dateDebut | localizeddate("medium", "none", null, null, "d MMMM yyyy") }} {{hPassage.dateDebut | date("H") }}h{{hPassage.dateDebut | date("i") }}
             (
             {% for tech in hPassage.techniciens %}
-            {{ tech.identite }}{% if not loop.last %}, {% endif %}
+                {{ tech.identite }}{% if not loop.last %}, {% endif %}
             {% endfor %}
             )
           </p>
-
-          <div class="ui-body ui-body-a ui-corner-all">
-            <span style="text-decoration: underline">Commentaire</span><br/><br/>
-            {{ hPassage.commentaire | nl2br }}
-          </div>
-
-          <br>
-
           <div class="ui-body ui-body-a ui-corner-all">
             <span style="text-decoration: underline">Constat</span><br/><br/>
             {{ hPassage.description | nl2br }}
+          </div>
+          <br>
+          <div style="{% if not hPassage.commentaireInterne %}opacity: 0.75{% endif %}" class="ui-body ui-body-a ui-corner-all">
+            <span style="text-decoration: underline">Commentaire interne</span><br/><br/>
+            {% if hPassage.commentaireInterne %}
+            {{ hPassage.commentaireInterne | nl2br }}
+            {% else %}
+            Aucun
+            {% endif %}
           </div>
           <p>
             {% for prestation in hPassage.prestations %}

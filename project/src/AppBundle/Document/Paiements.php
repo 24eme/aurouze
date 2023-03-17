@@ -174,7 +174,7 @@ class Paiements {
     public function getAggregatePaiements($societe = null) {
     	$result = array();
     	foreach ($this->getPaiement() as $paiement) {
-    		if ($societe && $paiement->getFacture()->getSociete()->getId() != $societe->getId()) {
+            if ($societe && $paiement->getFacture()->getSociete()->getId() != $societe->getId() && !preg_match('/FACTURE-'.$societe->getIdentifiant().'/', $paiement->getFacture()->getId())) {
     			continue;
     		}
     		$k = ($paiement->getMoyenPaiement())? $paiement->getMoyenPaiement() : md5(microtime().rand());

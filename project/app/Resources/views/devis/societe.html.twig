@@ -37,15 +37,17 @@
       <thead>
         <tr>
           <th class="col-xs-2">Date</th>
+          <th class="col-xs-2">Client</th>
           <th class="col-xs-2">Document</th>
           <th class="col-xs-3">Contenu</th>
           <th class="col-xs-1 text-right">Montant TTC</th>
+          <th class="col-xs-1 text-center">Planifié</th>
           <th>Action</th>
         </tr>
       </thead>
       <tbody>
         {% for document in devis %}
-          {{ include('devis/ligne.html.twig', {'devis': devis, 'societe' : societe}) }}
+          {{ include('devis/ligne.html.twig', {'devis': devis }) }}
         {% endfor %}
       </tbody>
     </table>

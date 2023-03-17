@@ -167,7 +167,6 @@
             </div>
             <div class="col-xs-4 text-center">
               {% if (devis.numeroDevis) %}
-                <a class="btn btn-danger" href="{{ path('devis_annulation',{ 'societe' : devis.societe.id, 'id' : devis.id }) }}" onclick="return confirm('Êtes-vous sûr de vouloir annuler ce devis ?')"><span class="glyphicon glyphicon-remove"></span> Annuler le devis</a>
                 <a class="btn btn-default" href="{{ path('facturable_pdf', {'document': devis.id ,'key': devis.getSecretKey()}) }}">
                   <i class="glyphicon glyphicon-file"></i> Voir le PDF du devis
                 </a>

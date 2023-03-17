@@ -112,11 +112,22 @@ class PassageController extends Controller
         }
 
         $dateFinAll = new \DateTime();
-        $dateFinAll->modify("last day of next month");
+        $dateFinAll->modify("last day of +2 month");
         $dateFinAll->setTime(23,59,59);
 
         $passages = null;
         $moisPassagesArray = $passageManager->getNbPassagesToPlanPerMonth($secteur, clone $dateFinAll);
+        $morePassages = [];
+        foreach ($moisPassagesArray as $key => $values) {
+            if (strlen($key) === 4) {
+                $morePassages[$key] = \DateTimeImmutable::createFromFormat('Y', $key)->format('Y-m-d');
+            }
+        }
+        $now = new \DateTimeImmutable();
+        for ($i = 3; $i < (3+6); $i++) {
+            $date = $now->modify("+".$i." month");
+            $morePassages[$date->format('Ym')] = $date->format('Y-m-d');
+        }
 
         $passages = $passageManager->getRepository()->findToPlan($secteur, $dateDebut, clone $dateFin)->toArray();
         $devis = $devisManager->getRepository()->findToPlan($secteur, $dateDebut, clone $dateFin)->toArray();
@@ -146,6 +157,7 @@ class PassageController extends Controller
             'formEtablissement' => $formEtablissement->createView(),
             'geojson' => $geojson,
             'moisPassagesArray' => $moisPassagesArray,
+            'morePassages' => $morePassages,
             'passageManager' => $passageManager,
             'etablissementManager' => $this->get('etablissement.manager'),
             'secteur' => $secteur,
@@ -533,7 +545,7 @@ class PassageController extends Controller
         $fromEmail = $parameters['coordonnees']['email'];
         $fromName = $parameters['coordonnees']['nom'];
 
-        $replyEmail = $parameters['coordonnees']['replyemail'];
+        $replyEmail = $parameters['coordonnees']['replyEmail'];
 
         $suject = "[".ucfirst($appname)."] - Rapport de visite du ".$passage->getDateDebut()->format("d/m/Y")." à ".$passage->getDateDebut()->format("H\hi");
         $body = $this->renderView(

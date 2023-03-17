@@ -3,7 +3,6 @@
 
     $(document).ready(function ()
     {
-        $.initQueryHash();
         $.initClickInputAddon();
         $.initAjaxPost();
         $.initSelect2();
@@ -25,6 +24,7 @@
         $.initRdvLink();
         $.initSearchActif();
         $.initLinkCalendar();
+        $.initQueryHash();
         $.initMap();
         $.initTypeheadFacture();
         $.initTypeheadSearchable();
@@ -454,6 +454,18 @@
             });
             $(item).find('input, select').eq(0).focus();
             $.callbackDynamicCollection();
+
+            if (item[0].dataset.repeat !== undefined && item[0].dataset.repeat.length > 0 && item[0].previousElementSibling) {
+                const el = item[0]
+                const previous = el.previousElementSibling;
+
+                (el.dataset.repeat.split('|') || []).forEach(function (sel) {
+                    const old = previous.querySelector(sel);
+                    const newEl = el.querySelector(sel);
+                    newEl.value = old.value;
+                    newEl.dispatchEvent(new Event('change'))
+                });
+            }
         });
     }
 
@@ -973,7 +985,7 @@
                 var marker = markers[$(this).parent().parent().parent().attr('id')];
                 if(typeof marker != 'undefined' && marker){
                   if(document.location.hash != ""){
-                    document.location.hash = "";
+                    $(window).trigger('hashchange');
                   }
                   map.setZoomAround(marker._latlng,15);
                   map.panTo(marker._latlng);
@@ -1057,9 +1069,6 @@
       $(".btn-more-info").on("click", function () {
         var div = $(this).prev();
         var divInfoPassage = document.getElementById('info-passage');
-
-        var url = window.location.protocol + "//" + window.location.host + window.location.pathname +"#"+this.id;
-        window.history.pushState({ path: url }, '', url);
 
         $(divInfoPassage).html("<pre>Chargement...</pre>");
         $.get(div.data('url'), function (result) {
