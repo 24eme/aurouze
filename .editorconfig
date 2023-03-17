@@ -9,6 +9,9 @@ trim_trailing_whitespace = true
 indent_style = space
 indent_size = 4
 
+[*.markdown.twig]
+trim_trailing_whitespace = false
+
 [*.php]
 indent_style = space
 indent_size = 4

@@ -454,6 +454,18 @@
             });
             $(item).find('input, select').eq(0).focus();
             $.callbackDynamicCollection();
+
+            if (item[0].dataset.repeat !== undefined && item[0].dataset.repeat.length > 0 && item[0].previousElementSibling) {
+                const el = item[0]
+                const previous = el.previousElementSibling;
+
+                (el.dataset.repeat.split('|') || []).forEach(function (sel) {
+                    const old = previous.querySelector(sel);
+                    const newEl = el.querySelector(sel);
+                    newEl.value = old.value;
+                    newEl.dispatchEvent(new Event('change'))
+                });
+            }
         });
     }
 

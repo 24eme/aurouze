@@ -22,13 +22,19 @@
         <h3><strong>{% if planifiable.etablissement.societe.raisonSociale != planifiable.etablissementInfos.nom %}{{ planifiable.etablissement.societe.raisonSociale }}, {% endif %}{{ planifiable.etablissementInfos.nom }}</strong></h3>
         <h4><strong>{{ planifiable.etablissementInfos.adresse.adresse }}&nbsp;{{ planifiable.etablissementInfos.adresse.codePostal }}&nbsp;{{ planifiable.etablissementInfos.adresse.commune }}
         </strong>
-        {% if(planifiable.etablissement.commentaire) %}
-            <br/><br/><span class="ui-btn ui-btn-a ui-icon-info ui-btn-icon-notext ui-btn-inline ui-shadow"></span><span style="text-decoration: underline;">Etablissement : </span><br/>{{ planifiable.etablissement.commentaire | nl2br}}
-        {% endif %}
-        {% if(planifiable.commentaire) %}
-          <br/><br/><span class="ui-btn ui-btn-a ui-icon-info ui-btn-icon-notext ui-btn-inline ui-shadow"></span><span style="text-decoration: underline;">Informations : </span><br/>{{ planifiable.commentaire | nl2br}}
-        {% endif %}
         </h4>
+        <h4><span class="ui-btn ui-btn-a ui-icon-info ui-btn-icon-notext ui-btn-inline ui-shadow"></span><span style="text-decoration: underline;">Informations</span></h4>
+        <p style="margin-top: 10px; margin-bottom: 0px;">
+        {% if(planifiable.etablissement.commentaire) %}
+        <strong>Établissement</strong><br />{{ planifiable.etablissement.commentaire | nl2br}}<br /><br />
+        {% endif %}
+        {% if(planifiable.rendezvous.description) %}
+        <strong>RDV / Passage</strong><br />{{ planifiable.rendezvous.description | nl2br}}<br /><br />
+        {% endif %}
+        {% if(not planifiable.etablissement.commentaire and not planifiable.rendezvous.description) %}
+            Aucune<br /><br />
+        {% endif %}
+        </p>
         <span id="ancre-champ-duree"></span>
         <br/>
 {% set passageId = planifiable.id %}

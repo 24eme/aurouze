@@ -6,7 +6,7 @@
 
 
 {% block _paiements_paiement_entry_row %}
-<div class="row form-group dynamic-collection-item paiements alert {% if form.montant.vars.value > 0.0 %} {% if form.montant.vars.value == form.factureMontantTTC.vars.value| number_format(2, ',', ' ') |replace({' ': ''}) %}  alert-success {% else %} alert-warning {% endif %}{% endif %}" style="margin-bottom: 5px;">
+<div class="row form-group dynamic-collection-item paiements alert {% if form.montant.vars.value > 0.0 %} {% if form.montant.vars.value == form.factureMontantTTC.vars.value| number_format(2, ',', ' ') |replace({' ': ''}) %}  alert-success {% else %} alert-warning {% endif %}{% endif %}" style="margin-bottom: 5px;" data-repeat="[name*='moyenPaiement']|[name*='datePaiement']">
 	<div class="col-xs-12 paiement_row " style="padding:0px">
 		<div class="col-xs-2" style="padding: 0 2px 0 0;">
 			{{ form_widget(form.typeReglement) }}
