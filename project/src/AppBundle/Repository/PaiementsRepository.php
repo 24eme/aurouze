@@ -31,7 +31,7 @@ class PaiementsRepository extends DocumentRepository {
       $command['aggregate'] = "Paiements";
       $command['pipeline'] = array(
           array('$unwind' => '$paiement'),
-          array('$match' => array('paiement.facture' => new \MongoRegex('/^FACTURE-' . $societe->getIdentifiant() . '.*/i'))),
+          array('$match' => array('paiement.societe' => $societe->getId())),
           array('$group' => array('_id' => 'somme_montant_paye', 'montant' => array('$sum' => '$paiement.montant')))
       );
       $db = $this->getDocumentManager()->getDocumentDatabase(\AppBundle\Document\Paiements::class);
@@ -41,7 +41,7 @@ class PaiementsRepository extends DocumentRepository {
 
     public function getBySociete(Societe $societe) {
         return $this->createQueryBuilder()
-                        ->field('paiement.facture')->equals(new \MongoRegex('/^FACTURE-' . $societe->getIdentifiant() . '.*/i'))
+                        ->field('paiement.societe')->equals($societe->getId())
                         ->sort('dateCreation', 'desc')
                         ->getQuery()
                         ->execute();

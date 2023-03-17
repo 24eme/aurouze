@@ -455,6 +455,14 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
         if($this->societe->getSepa()){
             $this->setSepa($this->societe->getSepa());
         }
+
+        foreach ($this->getPaiements() as $paiements) {
+            foreach ($paiements->getPaiement() as $paiement) {
+                if($paiement->getFacture() == $this){
+                    $paiement->setFacture($this);
+                }
+            }
+        }
         return $this;
     }
 

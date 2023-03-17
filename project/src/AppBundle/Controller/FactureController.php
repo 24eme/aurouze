@@ -38,7 +38,7 @@ class FactureController extends Controller
      * @Route("/", name="facture")
      */
     public function indexAction(Request $request) {
-        return $this->redirectToRoute('facture_previsionnel');
+        return $this->redirectToRoute('facture_mouvements');
     }
 
     /**
@@ -47,7 +47,8 @@ class FactureController extends Controller
     public function previsionnelAction(Request $request)
     {
         $factureManager = $this->get('facture.manager');
-        $facturesEnAttente = $factureManager->getRepository()->findBy(array('numeroFacture' => null, 'numeroDevis' => null), array('dateFacturation' => 'desc'));
+        $dateLimite = new \DateTimeImmutable('+1 month');
+        $facturesEnAttente = $factureManager->getRepository()->findBy(['numeroFacture' => null, 'numeroDevis' => null, 'dateFacturation' => ['$lte' => new \MongoDate($dateLimite->getTimestamp())]], ['dateFacturation' => 'desc']);
 
         return $this->render('facture/previsionnel.html.twig', compact('facturesEnAttente'));
     }
@@ -97,7 +98,7 @@ class FactureController extends Controller
             $numeros[] = $facture->getNumeroDevis();
         }
 
-        $devisAFacturer = $devisManager->getRepository('AppBundle:Devis')->findBy(['numeroDevis' => ['$nin' => $numeros], 'dateAcceptation' => ['$ne' => null]], ['dateEmission' => 'desc']);
+        $devisAFacturer = $devisManager->getRepository('AppBundle:Devis')->findBy(['numeroDevis' => ['$nin' => $numeros], 'dateAcceptation' => ['$ne' => null]], ['datePrevision' => 'desc']);
 
         return $this->render('facture/devis.html.twig', compact('devisAFacturer'));
     }

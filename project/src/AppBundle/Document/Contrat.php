@@ -1024,10 +1024,6 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
           $facturationInterval = (floatval($maxNbPrestations) / floatval($this->getNbFactures()));
         }
 
-        if(floatval($this->getNbFactures()) > 1){
-          $facturationInterval = (floatval($maxNbPrestations -1) / floatval($this->getNbFactures()));
-        }
-
         $compteurFacturation = $facturationInterval;
         $cpt = 0;
         $nbMouvementsDeclenchables = 0;
@@ -1041,7 +1037,7 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
                 $cpt++;
                 continue;
             }
-            if ($cpt >= $compteurFacturation) {
+            if ($cpt > $compteurFacturation) {
                 $passagesDatesArray[$date]->mouvement_declenchable = boolval($this->getNbFactures() && $nbMouvementsDeclenchables < $this->getNbFactures() && (floatval($this->getNbFactures()) > 1));
                 $compteurFacturation+=$facturationInterval;
             } else {
