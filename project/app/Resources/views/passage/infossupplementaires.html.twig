@@ -137,12 +137,15 @@
         <div class="col-xs-6 commentaires">
           <h5 style="cursor:pointer;" class="text-primary commentaire_lien" data-url="{{ path('etablissement_commentaire', {'id': passage.etablissement.id , 'passageId': passage.id}) }}" ><i class="mdi mdi-lg mdi-comment" ></i> Commentaires :</h5>
             {% if passage.commentaire %}
+                <p>Commentaire du passage</p>
                 <div title="Commentaire du passage">{{ passage.commentaire | nl2br }}</div>
             {% endif %}
             {% if etablissement.commentaire %}
+                <p>Information technicien</p>
                 <div title="Commentaire établissement">{{ etablissement.commentaire | nl2br }}</div>
             {% endif %}
             {% if etablissement.commentairePlanification %}
+                <p>Commentaire de planification</p>
                 <div title="Commentaire plannification">{{ etablissement.commentairePlanification | nl2br }}</div>
             {% endif %}
         </div>
