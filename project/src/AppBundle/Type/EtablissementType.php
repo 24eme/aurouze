@@ -39,8 +39,8 @@ class EtablissementType extends AbstractType {
                 ->add('save', SubmitType::class, array('label' => 'Enregistrer', "attr" => array("class" => "btn btn-success pull-right")))
         		->add('adresse', AdresseType::class, array('data_class' => 'AppBundle\Document\Adresse'))
         		->add('contactCoordonnee', ContactCoordonneeType::class, array('data_class' => 'AppBundle\Document\ContactCoordonnee'))
-                ->add('commentaire', TextareaType::class, array('label' => 'Commentaire techniciens:',"required" => false,  "attr" => array("class" => "form-control", "rows" => 6), 'required' => false, 'empty_data'  => null))
-                ->add('commentairePlanification', TextareaType::class, array('label' => 'Commentaire planification:',"required" => false,  "attr" => array("class" => "form-control", "rows" => 6), 'required' => false, 'empty_data'  => null));
+                ->add('commentaire', TextareaType::class, array('label' => 'Information techniciens:',"required" => false,  "attr" => array("class" => "form-control", "rows" => 6), 'required' => false, 'empty_data'  => null))
+                ->add('commentairePlanification', TextareaType::class, array('label' => 'Commentaire de planification:',"required" => false,  "attr" => array("class" => "form-control", "rows" => 6), 'required' => false, 'empty_data'  => null));
 
                 $builder->add('sameContact', CheckboxType::class, array('label' => 'Même contact société', 'required' => false,   'empty_data'  => null, "attr" => array("class" => "collapse-checkbox", "data-target" => "#collapseContact")));
                 $builder->add('sameAdresse', CheckboxType::class, array('label' => 'Même adresse société', 'required' => false,   'empty_data'  => null, "attr" => array("class" => "collapse-checkbox", "data-target" => "#collapseAdresse")));
