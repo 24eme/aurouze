@@ -642,6 +642,8 @@ public static $export_factures_en_retards = array(
               }else{
                 $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] =  $paiement->getMoyenPaiementLibelle();
               }
+
+              $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] .= "\n(".$paiement->getDatePaiement()->format('d/m/Y').')';
             }
           }
         }
