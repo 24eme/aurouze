@@ -97,6 +97,10 @@ class Attachement
     */
    protected $visibleTechnicien;
 
+    /**
+     * @MongoDB\Field(type="string")
+     */
+    protected $annotations;
 
     /**
      * Set updatedAt
@@ -443,5 +447,15 @@ class Attachement
             } else {
                 return ($b->getUpdatedAt() > $a->getUpdatedAt())? "+1" : "-1";
             }
+    }
+
+    public function getAnnotations()
+    {
+        return $this->annotations;
+    }
+
+    public function setAnnotations($annotations)
+    {
+        $this->annotations = $annotations;
     }
 }

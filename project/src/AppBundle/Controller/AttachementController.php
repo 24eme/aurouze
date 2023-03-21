@@ -7,6 +7,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use AppBundle\Type\EtablissementChoiceType;
@@ -198,4 +199,24 @@ class AttachementController extends Controller {
       }
   }
 
+    /**
+     * @Route("/passage/attachement/{id}/annotation/get", name="passage_attachement_get_annotation")
+     */
+    public function getSerializedAnnotations(Request $request, $id)
+    {
+
+    }
+
+    /**
+     * @Route("/passage/attachement/{id}/annotation/set", name="passage_attachement_set_annotation")
+     */
+    public function setSerializedAnnotations(Request $request, $id)
+    {
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $attachement = $this->get('attachement.manager')->getRepository()->find($id);
+        $attachement->setAnnotations($request->request->get('annotations'));
+        $dm->flush();
+
+        return new JsonResponse(['status' => "OK"]);
+    }
 }

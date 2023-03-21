@@ -6,7 +6,7 @@
       </a>
     </div>
 
-  <div class="annotations" style="padding: 50px;">
+  <div class="annotations" style="padding: 50px;" data-attachement-id="{{ attachement.id }}">
     <canvas id="canva_{{ planifiable.id }}_{{ attachement.id }}" style="border:1px solid #aaa"></canvas>
     <div class="ui-grid-b">
         <div class="ui-block-a">
@@ -14,7 +14,7 @@
             <button style="width: 10%; float:left; background-color:#b0413e;" class="btn btn-info remove">X</button>
         </div>
         <div class="ui-block-b">
-            <button style="width: 50%;margin-left:25%;" id="canvasave_{{ planifiable.id }}_{{ attachement.id }}" class="btn btn-info">Sauvegarder</button>
+            <button style="width: 50%;margin-left:25%;" id="canvasave_{{ planifiable.id }}_{{ attachement.id }}" class="btn btn-info save">Sauvegarder</button>
         </div>
         <div class="ui-block-c">
             <div style="width: 50%; float:right;">
