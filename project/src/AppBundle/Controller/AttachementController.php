@@ -204,7 +204,8 @@ class AttachementController extends Controller {
      */
     public function getSerializedAnnotations(Request $request, $id)
     {
-
+        $attachement = $this->get('attachement.manager')->getRepository()->find($id);
+        return new JsonResponse(['annotations' => json_decode($attachement->getAnnotations())]);
     }
 
     /**

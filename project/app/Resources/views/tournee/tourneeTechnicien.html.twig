@@ -117,6 +117,21 @@ document.addEventListener("DOMContentLoaded", function() {
     const lineColor = '#ecda3c';
     const lineWidth = 3;
 
+    function loadAnnotations(id, canvas) {
+        let route = "{{ path('passage_attachement_get_annotation', { id: '__id__' }) }}"
+        route = route.replace('__id__', id)
+        let annotations = [];
+
+        $.ajax({
+            url: route,
+            success: function (data) {
+                annotations = data.annotations
+                let groups = (annotations !== null && annotations.length) ? annotations : []
+                canvas.loadFromJSON({objects: groups});
+            }
+        })
+    }
+
     $('.annotations').each(function() {
         const _attachement_id = $(this).data('attachementId')
         var image = new fabric.Image(document.getElementById($(this).find('img:first').attr('id')), {
@@ -125,6 +140,8 @@ document.addEventListener("DOMContentLoaded", function() {
           opacity: 1
         });
         var canvas = this.__canvas = new fabric.Canvas($(this).find('canvas:first').attr('id'));
+        loadAnnotations(_attachement_id, canvas);
+
         window.addEventListener('resize', resizeCanvas, false);
         function resizeCanvas() {
           canvas.setHeight(window.innerHeight-200);
