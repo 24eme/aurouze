@@ -49,6 +49,7 @@
         $.initMapForAdresse();
         $.initHighLight();
         $.initFacture();
+        $.initPassageOpen();
     });
 
     $.initClickInputAddon = function(){
@@ -1086,7 +1087,21 @@
         }
         $(this).css("border-color","black");
         $(this).addClass("clicked-div");
+
+        var parameters = new URLSearchParams(window.location.search)
+        parameters.set("id_passage", this.id);
+        var refresh = window.location.pathname + '?' + parameters.toString();
+        window.history.pushState({ path: refresh }, '', refresh);
+
       });
+    }
+
+    $.initPassageOpen = function(){
+      var parameters = new URLSearchParams(window.location.search);
+      var clicked = parameters.get("id_passage");
+      if(clicked){
+        $(document.getElementById(clicked)).trigger('click');
+      }
     }
 
     $.initTourneeDatepicker = function () {
