@@ -1003,7 +1003,11 @@
               map.on('moveend', function(){
                 var center = map.getCenter();
                 var hash = window.location.hash;
-                history.pushState(null, null, "?lat="+center.lat+"&lon="+center.lng+"&zoom="+ map.getZoom()+hash);
+
+                var parameters = new URLSearchParams(window.location.search);
+                var passage = parameters.get("id_passage");
+
+                history.pushState(null, null, "?lat="+center.lat+"&lon="+center.lng+"&zoom="+ map.getZoom()+hash+"&id_passage="+passage);
                 refreshListFromMapBounds();
               });
             }
@@ -1098,9 +1102,9 @@
 
     $.initPassageOpen = function(){
       var parameters = new URLSearchParams(window.location.search);
-      var clicked = parameters.get("id_passage");
-      if(clicked){
-        $(document.getElementById(clicked)).trigger('click');
+      var passage = parameters.get("id_passage");
+      if(passage){
+        $(document.getElementById(passage)).trigger('click');
       }
     }
 
