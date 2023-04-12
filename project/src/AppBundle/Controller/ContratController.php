@@ -568,9 +568,13 @@ class ContratController extends Controller {
             'page-size' => "A4"
         ]);
 
-        exec(escapeshellcmd('pdftk '.$tmpfile.' '.$this->get('kernel')->getRootDir().'/../data/CGV.pdf cat output '.$tmpfile.'.pdf'), $output, $exitcode);
-        if ($exitcode !== 0) {
-            throw new \Exception('pdftk failed with error: '.implode(', ', $output));
+        if(file_exists($this->get('kernel')->getRootDir().'/../data/CGV.pdf')) {
+            exec(escapeshellcmd('pdftk '.$tmpfile.' '.$this->get('kernel')->getRootDir().'/../data/CGV.pdf cat output '.$tmpfile.'.pdf'), $output, $exitcode);
+            if ($exitcode !== 0) {
+                throw new \Exception('pdftk failed with error: '.implode(', ', $output));
+            }
+        } else {
+            copy($tmpfile, $tmpfile.'.pdf');
         }
 
         return new Response(file_get_contents($tmpfile.'.pdf'), 200, array(

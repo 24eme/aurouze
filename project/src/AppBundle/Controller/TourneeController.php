@@ -103,6 +103,7 @@ class TourneeController extends Controller {
           }
         return $this->render('tournee/tourneeTechnicien.html.twig', array('rendezVousByTechnicien' => $rendezVousByTechnicien,
                                                                           "technicien" => $technicienObj,
+                                                                          "isAdmin" => array_key_exists('PHP_AUTH_USER', $_SERVER) && preg_match('/^[a-zA-Z]+$/', $_SERVER['PHP_AUTH_USER']) === 1,
                                                                           "date" => $date,
                                                                           "version" => $version,
                                                                           "historiqueAllPassages" => $historiqueAllPassages,

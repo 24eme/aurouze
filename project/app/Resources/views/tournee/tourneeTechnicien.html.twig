@@ -8,11 +8,12 @@
 
 <div data-role="header" style="overflow:hidden;" data-position="fixed">
 <h1>Tournée {{ technicien.identite }}</h1>
+
+<a href="{{ path('tournees') }}" class="ui-btn ui-icon-arrow-l ui-btn-icon-left" {% if isAdmin %}style="display: none"{% endif %}> Retour</a>
+
 <a href="{{path('tournee_technicien',{ 'technicien' : technicien.id })}}" class="ui-btn ui-btn-right ui-icon-back ui-btn-icon-left" >
       &nbsp;Recharger
 </a>
-
-
 <div class="reloadWarning ui-bar ui-bar-b" style="display:none;">
 	<h3>Votre tournée a été modifiée. Il est préférable de la recharger.&nbsp;
       <a onclick="window.location.reload()" class="ui-btn ui-btn-right ui-icon-back ui-btn-icon-left" data-role="button" data-mini="true" >

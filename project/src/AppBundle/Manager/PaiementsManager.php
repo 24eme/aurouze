@@ -25,6 +25,8 @@ class PaiementsManager {
     const MOYEN_PAIEMENT_TRAITE = 'TRAITE';
     const MOYEN_PAIEMENT_CB = 'CB';
     const MOYEN_PAIEMENT_REGULARISATION_COMPTABLE = 'REGUL_COMPTA';
+    const MOYEN_PAIEMENT_VIREMENT_REMBOURSEMENT = 'REMBOURSEMENT_VIREMENT';
+    const MOYEN_PAIEMENT_CHEQUE_REMBOURSEMENT = 'REMBOURSEMENT_CHEQUE';
 
     const EXPORT_DATE_PAIEMENT = 0;
     const EXPORT_CODE_COMPTABLE_TRONQ = 1;
@@ -84,7 +86,10 @@ class PaiementsManager {
         self::MOYEN_PAIEMENT_ESPECE => "Espèces",
         self::MOYEN_PAIEMENT_TRAITE => "Traite",
         self::MOYEN_PAIEMENT_CB => "Carte Bleue",
-        self::MOYEN_PAIEMENT_REGULARISATION_COMPTABLE => "Régularisation comptable");
+        self::MOYEN_PAIEMENT_REGULARISATION_COMPTABLE => "Régularisation comptable",
+        self::MOYEN_PAIEMENT_VIREMENT_REMBOURSEMENT => "Virement de remboursement",
+        self::MOYEN_PAIEMENT_CHEQUE_REMBOURSEMENT => "Chèque de remboursement"
+    );
     public static $moyens_paiement_index = array(
         "1" => self::MOYEN_PAIEMENT_CHEQUE,
         "2" => self::MOYEN_PAIEMENT_VIREMENT,

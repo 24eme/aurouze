@@ -36,10 +36,17 @@ class AttachementRepository extends DocumentRepository {
         return $attachments;
     }
 
-    public function findByEtablissement($etablissement)
+    public function findByEtablissement($etablissement, $date = null)
 	{
         $attachments = array();
-		foreach($this->createQueryBuilder()->select('_id', 'updatedAt', 'imageName', 'titre', 'originalName', 'etablissement', 'societe', 'visibleTechnicien', 'ext')->field('etablissement')->equals($etablissement)->getQuery()->execute() as $attachement) {
+        $query = $this->createQueryBuilder()->select('_id', 'updatedAt', 'imageName', 'titre', 'originalName', 'etablissement', 'societe', 'visibleTechnicien', 'ext')
+                                            ->field('etablissement')->equals($etablissement);
+
+        if ($date) {
+            $query->field('updatedAt')->range($date->modify('today'), $date->modify('tomorrow'));
+        }
+
+		foreach($query->getQuery()->execute() as $attachement) {
             $attachments[$attachement->getId()] = $attachement;
         }
 
