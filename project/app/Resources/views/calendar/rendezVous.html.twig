@@ -149,6 +149,18 @@
                               </div>
                           </div>
                         {% endif %}
+
+                        <div class="form-group" style="margin-bottom: 0">
+                            <label class="control-label col-xs-2">Documents</label>
+                            <div class="col-xs-10">
+                                <p class="form-control-static">
+                                    <a href="{{ path('attachements_etablissement', { id: rdv.passage.etablissement.id })}}">
+                                        {{ documents | length }} document(s) pour ce passage
+                                    </a>
+                                </p>
+                            </div>
+                        </div>
+
                         {% if(rdv.passage.prerequis is defined and rdv.passage.prerequis) %}
                         <div class="form-group" style="margin-bottom: 0">
                               <label class="control-label col-xs-2">Prérequis</label>
