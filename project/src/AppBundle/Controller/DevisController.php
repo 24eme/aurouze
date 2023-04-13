@@ -121,6 +121,8 @@ class DevisController extends Controller
         $cm = $this->get('configuration.manager');
         $appConf = $this->container->getParameter('application');
 
+        $dm->persist($devis);
+
         $produitsSuggestion = $this->getProduitsSuggestion($cm->getConfiguration()->getProduits());
 
         $factureManager = $this->get('facture.manager');
