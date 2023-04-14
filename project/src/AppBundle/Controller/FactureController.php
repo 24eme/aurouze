@@ -236,6 +236,8 @@ class FactureController extends Controller
         $hasDevis = $fm->hasDevisSociete($societe);
         $mouvements = $fm->getMouvementsBySociete($societe);
         $solde = $fm->getSolde($societe);
+        $totalFacture = $fm->getTotalFacture($societe);
+        $totalPaye = $fm->getTotalPaye($societe);
 
         $exportSocieteForm = $this->createExportSocieteForm($societe);
 
@@ -245,7 +247,7 @@ class FactureController extends Controller
             $defaultDate = new \DateTime($this->container->getParameter('date_facturation'));
         }
 
-        return $this->render('facture/societe.html.twig', array('societe' => $societe, 'mouvements' => $mouvements,'hasDevis' => $hasDevis,  'factures' => $factures, 'exportSocieteForm' => $exportSocieteForm->createView(), 'solde' => $solde, 'defaultDate' => $defaultDate));
+        return $this->render('facture/societe.html.twig', array('societe' => $societe, 'mouvements' => $mouvements,'hasDevis' => $hasDevis,  'factures' => $factures, 'exportSocieteForm' => $exportSocieteForm->createView(), 'solde' => $solde, 'totalFacture' => $totalFacture, 'totalPaye' => $totalPaye, 'defaultDate' => $defaultDate));
     }
 
     /**
