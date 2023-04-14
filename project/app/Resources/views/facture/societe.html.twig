@@ -32,6 +32,7 @@
         </div>
         </div>
 
+    {% if(facturesPrevisionnel | length > 0) %}
     <h3>Prévisionnel des factures </h3>
     <table class="table table-bordered table-striped text-muted">
         <thead>
@@ -49,16 +50,16 @@
         </thead>
         <tbody>
             {% set totalRestant = 0.0 %}
-            {% for facture in factures %}
-             {% if not facture.isDevis and not (facture.paye or facture.isAvoir or facture.isRedressee) and not facture.numeroFacture %}
+            {% for facture in facturesPrevisionnel %}
                 {% set totalRestant = totalRestant + facture.montantAPayer %}
-              {{ include('facture/factureLigne.html.twig', {'facture': facture, 'societe' : societe}) }}
-              {% endif %}
+                {{ include('facture/factureLigne.html.twig', {'facture': facture, 'societe' : societe}) }}
             {% endfor %}
         </tbody>
       </table>
+    {% endif %}
+
     {% if(mouvements | length > 0) %}
-        <form action="{{ path('facture_societe_generation', { 'id': societe.id })}}" method="GET" class="form-inline">
+    <form action="{{ path('facture_societe_generation', { 'id': societe.id })}}" method="GET" class="form-inline">
           <div class="row">
           <div class="col-xs-4"><h3 style="margin-top: 0;">Mouvements à facturer</h3></div>
           <div class="col-xs-8 text-right" style="margin:0 0 10px 0;padding-right: 20px;">
@@ -105,8 +106,6 @@
             </tbody>
         </table>
     </form>
-    {% else %}
-        <p class="text-muted"><i>Aucun mouvement</i></p>
     {% endif %}
 
 {% if hasDevis %}
