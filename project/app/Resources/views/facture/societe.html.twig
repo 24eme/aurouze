@@ -60,7 +60,7 @@
 
     {% if(mouvements | length > 0) %}
     <form action="{{ path('facture_societe_generation', { 'id': societe.id })}}" method="GET" class="form-inline">
-          <div class="row">
+          <div class="row" style="margin-top: 20px;">
           <div class="col-xs-4"><h3 style="margin-top: 0;">Mouvements à facturer</h3></div>
           <div class="col-xs-8 text-right" style="margin:0 0 10px 0;padding-right: 20px;">
             <span>Date de facturation</span>
