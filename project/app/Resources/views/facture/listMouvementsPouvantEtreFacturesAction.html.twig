@@ -18,7 +18,7 @@
         {% for mouvement in mouvements %}
             <tr class="{{ mouvement.origineDocumentGeneration.contrat.statutCouleur }}">
                 <td><small>{{ mouvement.origineDocumentGeneration.dateDebut | localizeddate("medium", "none", null, null, "dd/MM/yyyy") }}</small></td>
-                <td><small><a href="{{ path('contrats_societe', {'id': mouvement.societe.id }) }}">{{ mouvement.societe.raisonSociale }}</a></small></td>
+                <td><small><a href="{{ path('facture_societe', {'id': mouvement.societe.id }) }}">{{ mouvement.societe.raisonSociale }}</a></small></td>
                 <td>
                     {% for prestation in mouvement.origineDocumentGeneration.prestations %}
                         {% if(prestation.wordToPicto) %}
@@ -42,7 +42,7 @@
                     75
                 {% endif %}
                 </td>
-                <td><a class="btn btn-sm" href="{{path('facture_societe', {'id': mouvement.societe.id} )}}" title="Facturer"><i class="glyphicon glyphicon-arrow-right"></i></a></td>
+                <td><a class="btn btn-sm" href="{{path('facture_societe', {'id': mouvement.societe.id} )}}" title="Voir l'espace facture de la société"><i class="glyphicon glyphicon-arrow-right"></i></a></td>
             </tr>
 
         {% endfor %}

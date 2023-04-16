@@ -135,6 +135,12 @@ class DevisController extends Controller
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            if($devis->getRendezvous()) {
+                $devis->getRendezVous()->removeAllParticipants();
+                foreach($devis->getTechniciens() as $technicien) {
+                    $devis->getRendezVous()->addParticipant($technicien);
+                }
+            }
             $devis->update();
             if($this->container->getParameter("commercial_seine_et_marne")){
               $devis->setZone($this->container->getParameter("commercial_seine_et_marne"));
@@ -143,7 +149,7 @@ class DevisController extends Controller
             $dm->flush();
 
             if ($form->get('edit')->isClicked()) {
-                return $this->redirectToRoute('devis_societe', array('id' => $devis->getSociete()->getId()));
+                return $this->redirectToRoute('devis_modification', array('id' => $devis->getId()));
             } elseif ($form->get('plan')->isClicked()) {
                 return $this->redirectToRoute('calendar', array(
                     'planifiable' => $devis->getId(),

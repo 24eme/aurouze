@@ -184,7 +184,7 @@
               </a>
             {% endif %}
               {% if devis.rendezVous %}
-              déjà plannifié
+              <a href="{{ path('calendar', {'id': 0, 'technicien': devis.rendezVous.participants.first.id, 'date': devis.rendezVous.dateDebut | date('Y-m-d') }) }}">Planifié le {{ devis.rendezVous.dateDebut | localizeddate('medium', 'none', null, null, 'd MMMM yyyy') }}</a>
               {% else %}
               {{ form_widget(form.plan) }}
               {% endif %}

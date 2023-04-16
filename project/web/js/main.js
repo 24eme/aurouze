@@ -49,6 +49,7 @@
         $.initMapForAdresse();
         $.initHighLight();
         $.initFacture();
+        $.initPassageOpen();
     });
 
     $.initClickInputAddon = function(){
@@ -1002,7 +1003,11 @@
               map.on('moveend', function(){
                 var center = map.getCenter();
                 var hash = window.location.hash;
-                history.pushState(null, null, "?lat="+center.lat+"&lon="+center.lng+"&zoom="+ map.getZoom()+hash);
+
+                var parameters = new URLSearchParams(window.location.search);
+                var passage = parameters.get("id_passage");
+
+                history.pushState(null, null, "?lat="+center.lat+"&lon="+center.lng+"&zoom="+ map.getZoom()+hash+"&id_passage="+passage);
                 refreshListFromMapBounds();
               });
             }
@@ -1086,7 +1091,21 @@
         }
         $(this).css("border-color","black");
         $(this).addClass("clicked-div");
+
+        var parameters = new URLSearchParams(window.location.search)
+        parameters.set("id_passage", this.id);
+        var refresh = window.location.pathname + '?' + parameters.toString();
+        window.history.pushState({ path: refresh }, '', refresh);
+
       });
+    }
+
+    $.initPassageOpen = function(){
+      var parameters = new URLSearchParams(window.location.search);
+      var passage = parameters.get("id_passage");
+      if(passage){
+        $(document.getElementById(passage)).trigger('click');
+      }
     }
 
     $.initTourneeDatepicker = function () {

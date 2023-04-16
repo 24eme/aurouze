@@ -43,11 +43,12 @@
                 </div>
             {% endif %}
         </div>
-    	<div class="col-sm-4 text-right">
-        <div class = "btn-group">
-            <button data-toggle="modal" data-container="body" data-target="#choix_technicien" class="btn btn-default"><span class="glyphicon glyphicon-check"></span> Filtrer les techniciens</button>
-          </div>
-      </div>
+        <div class="col-sm-4 text-right">
+            <a href="#" class="btn btn-default datepicker" id="datepicker-calendar-global" /><span class="glyphicon glyphicon-calendar"></span></a>
+            <div class="btn-group">
+                <button data-toggle="modal" data-container="body" data-target="#choix_technicien" class="btn btn-default"><span class="glyphicon glyphicon-check"></span> Filtrer les techniciens</button>
+            </div>
+        </div>
 </div>
 <div id="choix_technicien" class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-sm" role="document">
@@ -221,4 +222,23 @@
 	<script type="text/javascript">
 	    //setTimeout(function () { document.location.reload();}, 20 * 1000);
 	</script>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        $(document).ready(function () {
+            const calendar = document.getElementById('datepicker-calendar-global')
+            const url = new URL(window.location.href)
+            const params = url.searchParams
+
+            $("#datepicker-calendar-global").datepicker().on('changeDate', function (e) {
+                const offset = e.date.getTimezoneOffset()
+                const date = new Date(e.date.getTime() - (offset*60*1000)).toISOString().split('T')[0]
+
+                params.set('date', date)
+
+                return window.location = url
+            })
+        })
+    </script>
 {% endblock %}

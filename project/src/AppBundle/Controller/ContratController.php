@@ -439,15 +439,14 @@ class ContratController extends Controller {
             }
         }
 
-        $lastPassages = $this->get('contrat.manager')->getPassagesByNumeroArchiveContrat($contrat, true);
-        $lastEmailTransmission = null;
-        foreach ($lastPassages as $etab => $ps) {
+        $lastPassageRealise = null;
+        foreach ($this->get('contrat.manager')->getPassagesByNumeroArchiveContrat($contrat, true) as $etab => $ps) {
             foreach ($ps as $p) {
-                if ($p->getEmailTransmission()) { $lastEmailTransmission = $p->getEmailTransmission(); break; }
+                if ($p->isRealise()) { $lastPassageRealise = $p; break; }
             }
         }
 
-        return $this->render('contrat/visualisation.html.twig', array('contrat' => $contrat, 'factures' => $factures, 'societe' => $contrat->getSociete(), 'recapProduits' => $recapProduits, 'lastEmailTransmission' => $lastEmailTransmission));
+        return $this->render('contrat/visualisation.html.twig', array('contrat' => $contrat, 'factures' => $factures, 'societe' => $contrat->getSociete(), 'recapProduits' => $recapProduits, 'lastPassageRealise' => $lastPassageRealise));
     }
 
     /**
@@ -568,9 +567,13 @@ class ContratController extends Controller {
             'page-size' => "A4"
         ]);
 
-        exec(escapeshellcmd('pdftk '.$tmpfile.' '.$this->get('kernel')->getRootDir().'/../data/CGV.pdf cat output '.$tmpfile.'.pdf'), $output, $exitcode);
-        if ($exitcode !== 0) {
-            throw new \Exception('pdftk failed with error: '.implode(', ', $output));
+        if(file_exists($this->get('kernel')->getRootDir().'/../data/CGV.pdf')) {
+            exec(escapeshellcmd('pdftk '.$tmpfile.' '.$this->get('kernel')->getRootDir().'/../data/CGV.pdf cat output '.$tmpfile.'.pdf'), $output, $exitcode);
+            if ($exitcode !== 0) {
+                throw new \Exception('pdftk failed with error: '.implode(', ', $output));
+            }
+        } else {
+            copy($tmpfile, $tmpfile.'.pdf');
         }
 
         return new Response(file_get_contents($tmpfile.'.pdf'), 200, array(
