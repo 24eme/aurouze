@@ -42,7 +42,7 @@
                         Commercial : <strong>{{ contrat.getCommercial().getIdentite() }}</strong><br />
                         Nombre de technicien : <strong>{% if contrat.getMultiTechnicien() > 1 %} {{ contrat.getMultiTechnicien() }} {% else %}Non défini{% endif %}</strong><br />
                         Technicien : <strong>{% if contrat.getTechnicien() %}{{ contrat.getTechnicien().getIdentite() }}{% else %}Non défini{% endif %}</strong><br /><br/>
-                        {% if lastPassageRealise is defined %}
+                        {% if lastPassageRealise is defined and lastPassageRealise %}
                             Dernier mail de rapport : <strong>{{ lastPassageRealise.emailTransmission }}</strong> <a href="{{ path('passage_edition', { id: lastPassageRealise.id })}}">(modifier)</a><br />
                         {% endif %}
                     </div>
