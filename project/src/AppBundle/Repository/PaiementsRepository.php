@@ -31,7 +31,7 @@ class PaiementsRepository extends DocumentRepository {
       $command['aggregate'] = "Paiements";
       $command['pipeline'] = array(
           array('$unwind' => '$paiement'),
-          array('$match' => array('paiement.societe' => $societe->getId())),
+          array('$match' => array('paiement.societe' => $societe->getId(), 'paiement.typeReglement' => ['$ne' => 'REGULARISATION_AVOIR'])),
           array('$group' => array('_id' => 'somme_montant_paye', 'montant' => array('$sum' => '$paiement.montant')))
       );
       $db = $this->getDocumentManager()->getDocumentDatabase(\AppBundle\Document\Paiements::class);
