@@ -1007,7 +1007,7 @@
                 var parameters = new URLSearchParams(window.location.search);
                 var passage = parameters.get("id_passage");
 
-                history.pushState(null, null, "?lat="+center.lat+"&lon="+center.lng+"&zoom="+ map.getZoom()+hash+"&id_passage="+passage);
+                history.pushState(null, null, "?lat="+center.lat+"&lon="+center.lng+"&zoom="+ map.getZoom()+"&id_passage="+passage+hash);
                 refreshListFromMapBounds();
               });
             }
