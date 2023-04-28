@@ -1092,10 +1092,10 @@
         $(this).css("border-color","black");
         $(this).addClass("clicked-div");
 
-        var parameters = new URLSearchParams(window.location.search)
-        parameters.set("id_passage", this.id);
-        var refresh = window.location.pathname + '?' + parameters.toString();
-        window.history.pushState({ path: refresh }, '', refresh);
+        var hash = window.location.hash;
+        var parameters = new URLSearchParams(window.location.search);
+
+        history.pushState(null, null, "?id_passage="+this.id+hash);
 
       });
     }
