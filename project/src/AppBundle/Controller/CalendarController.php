@@ -442,8 +442,11 @@ class CalendarController extends Controller {
             throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException(sprintf("Le rendez-vous \"%s\" n'a pas été trouvé", $request->get('id')));
         }
 
-        $documents = $this->get('attachement.manager')->getRepository()
-                     ->findByEtablissement($rdv->getPassage()->getEtablissement(), \DateTimeImmutable::createFromMutable($rdv->getDateDebut()));
+        $documents = [];
+        if ($rdv->getPassage()) {
+            $documents = $this->get('attachement.manager')->getRepository()
+                         ->findByEtablissement($rdv->getPassage()->getEtablissement(), \DateTimeImmutable::createFromMutable($rdv->getDateDebut()));
+        }
 
         if ($rdv->getPlanifiable() && $rdv->getPlanifiable()->getTypePlanifiable() === Devis::DOCUMENT_TYPE) {
             $template = 'calendar/rendezVousDevis.html.twig';

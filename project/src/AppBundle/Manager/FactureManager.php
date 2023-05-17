@@ -254,10 +254,18 @@ public static $export_factures_en_retards = array(
     }
 
     public function getSolde(Societe $societe) {
-        $montantFacure = $this->getRepository()->getMontantFacture($societe);
-        $montantPaye = $this->dm->getRepository('AppBundle:Paiements')->getMontantPaye($societe);
 
-        return round($montantPaye - $montantFacure,2);
+        return round($this->getTotalPaye($societe) - $this->getTotalFacture($societe),2);
+    }
+
+    public function getTotalFacture(Societe $societe) {
+
+        return round($this->getRepository()->getMontantFacture($societe), 2);
+    }
+
+    public function getTotalPaye(Societe $societe) {
+
+        return round($this->dm->getRepository('AppBundle:Paiements')->getMontantPaye($societe), 2);
     }
 
     public function getStatsForCsv($dateDebut = null, $dateFin = null, $commercialFiltre = null){
