@@ -968,7 +968,7 @@ class FactureController extends Controller
       $dateFactureHaute = null;
       $nbRelances = null;
       $commerciaux = null;
-      $formFacturesEnRetard = $this->createForm(new FacturesEnRetardFiltresType($this->container, $this->get('doctrine_mongodb')->getManager()), null, array(
+      $formFacturesEnRetard = $this->createForm(new FacturesEnRetardFiltresType($this->container, $this->get('doctrine_mongodb')->getManager(),$societe), null, array(
           'action' => $this->generateUrl('factures_retard'),
           'method' => 'GET',
       ));
