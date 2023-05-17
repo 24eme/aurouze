@@ -3,3 +3,5 @@ parameters:
     calendar_extra: true
     certification_bois: true
     date_facturation: null
+    code_comptable_auto: false
+    code_comptable_particulier: false
