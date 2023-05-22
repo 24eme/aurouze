@@ -32,15 +32,11 @@ class DevisController extends Controller
     {
         $devisManager = $this->get('devis.manager');
 
-        $devisEnAttenteAcceptation = $devisManager->getRepository('AppBundle:Devis')->findBy(
-            ['statut' => PassageManager::STATUT_A_ACCEPTER], ['dateEmission' => 'asc']
-        );
-
         $devisAPlanifier = $devisManager->getRepository('AppBundle:Devis')->findBy(
             ['statut' => PassageManager::STATUT_A_PLANIFIER], ['dateEmission' => 'asc']
         );
 
-        return $this->render('devis/index.html.twig', array('devisEnAttenteAcceptation' => $devisEnAttenteAcceptation, 'devisAPlanifier' => $devisAPlanifier));
+        return $this->render('devis/index.html.twig', array('devisAPlanifier' => $devisAPlanifier));
     }
 
     /**
