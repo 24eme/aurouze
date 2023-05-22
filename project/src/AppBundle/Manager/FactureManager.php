@@ -629,9 +629,13 @@ public static $export_factures_en_retards = array(
 
     public function buildFactureSocieteLigne($facture){
       $factureLigne = array();
+      $credit = 0;
       foreach ($facture->getPaiements() as $paiements) {
             foreach ($paiements->getPaiement() as $paiement) {
             if ($paiement->getFacture()->getId() == $facture->getId()) {
+              if($paiement->getMontant()){
+                    $credit += $paiement->getMontant();
+              }
               $factureLigne[self::EXPORT_SOCIETE_DATE] = $facture->getDateFacturation()->format('d/m/Y');
               $factureLigne[self::EXPORT_SOCIETE_PIECE] =  $facture->getNumeroFacture();
               if($facture->isAvoir()){
@@ -644,7 +648,7 @@ public static $export_factures_en_retards = array(
               }
               $factureLigne[self::EXPORT_SOCIETE_ECHEANCE] =  $facture->getDateLimitePaiement()->format('d/m/Y');
               $factureLigne[self::EXPORT_SOCIETE_DEBIT] =  number_format($facture->getMontantTTC(), 2, ",", "");
-              $factureLigne[self::EXPORT_SOCIETE_CREDIT] =  ($facture->isAvoir())? number_format($facture->getMontantTTC() , 2, ",", "") : number_format($paiement->getMontant() , 2, ",", "");
+              $factureLigne[self::EXPORT_SOCIETE_CREDIT] =  ($facture->isAvoir())? number_format($facture->getMontantTTC() , 2, ",", "") : number_format($credit , 2, ",", "");
               if($facture->isAvoir() && $facture->getAvoirPartielRemboursementCheque()){
                 $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] =  $paiement->getMoyenPaiementLibelle();
               }else{
