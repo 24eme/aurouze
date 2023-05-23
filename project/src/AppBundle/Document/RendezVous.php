@@ -187,6 +187,8 @@ class RendezVous {
 
         if ($this->getPlanifiable()->getTypePlanifiable() === Devis::DOCUMENT_TYPE) {
             $this->getPlanifiable()->setDatePrevision($this->getDateDebut());
+            $this->getPlanifiable()->setCommentaireInterne($this->getDescription());
+
         } elseif ($this->getPlanifiable()->getTypePlanifiable() === Passage::DOCUMENT_TYPE) {
             $this->getPlanifiable()->setCommentaire($this->getDescription());
         }
