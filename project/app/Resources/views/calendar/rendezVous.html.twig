@@ -164,10 +164,10 @@
                                     <a href="{{ path('attachements_etablissement', { id: rdv.passage.etablissement.id })}}">
                                         {{ documents | length }} document(s) pour ce passage
                                     </a>
+                                    ( <span class="glyphicon glyphicon-warning-sign"> </span> les documents <button class="btn btn-default btn-xs btn-success" style="border-radius: 100%; z-index: 10; cursor:pointer;" title="Changer la visibilité"><span class="glyphicon glyphicon-eye-open"></span></button> seront joints au rapport</> )
                                 </p>
                             </div>
                         </div>
-
                         {% if(rdv.passage.prerequis is defined and rdv.passage.prerequis) %}
                         <div class="form-group" style="margin-bottom: 0">
                               <label class="control-label col-xs-2">Prérequis</label>

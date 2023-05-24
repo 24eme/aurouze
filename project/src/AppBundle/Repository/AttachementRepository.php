@@ -39,7 +39,7 @@ class AttachementRepository extends DocumentRepository {
     public function findByEtablissement($etablissement, $date = null)
 	{
         $attachments = array();
-        $query = $this->createQueryBuilder()->select('_id', 'updatedAt', 'imageName', 'titre', 'originalName', 'etablissement', 'societe', 'visibleTechnicien', 'ext','visibleClient')
+        $query = $this->createQueryBuilder()->select('_id', 'updatedAt', 'imageName', 'titre', 'originalName', 'etablissement', 'societe', 'visibleTechnicien', 'ext','visibleClient','base64')
                                             ->field('etablissement')->equals($etablissement);
 
         if ($date) {

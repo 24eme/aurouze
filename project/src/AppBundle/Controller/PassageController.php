@@ -749,11 +749,21 @@ class PassageController extends Controller
         $fm = $this->get('facture.manager');
         $pm = $this->get('passage.manager');
         $prestationArray = $dm->getRepository('AppBundle:Configuration')->findConfiguration()->getPrestationsArray();
+
+        $documents = $this->get('attachement.manager')->getRepository()
+                         ->findByEtablissement($passage->getEtablissement(), \DateTimeImmutable::createFromMutable($passage->getDateDebut()));
+
+        $images = [];
+        foreach($documents as $document){
+            $attachement = $this->get('attachement.manager')->getRepository()->find($document->getId());
+            $images[] = $attachement->getBase64Src();
+        }
         $createRapportVisitePdf->html = $this->renderView('passage/pdfRapport.html.twig', array(
             'passage' => $passage,
             'parameters' => $fm->getParameters(),
             'pm' => $pm,
-            'prestationArray' => $prestationArray
+            'prestationArray' => $prestationArray,
+            'images' => $images
         ));
 
         $createRapportVisitePdf->filename = sprintf("passage_rapport_%s_%s.pdf", $passage->getDateDebut()->format("Y-m-d_H:i"), strtoupper(Transliterator::urlize($passage->getEtablissement()->getIntitule())));
