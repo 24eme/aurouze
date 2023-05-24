@@ -756,7 +756,9 @@ class PassageController extends Controller
         $images = [];
         foreach($documents as $document){
             $attachement = $this->get('attachement.manager')->getRepository()->find($document->getId());
-            $images[] = $attachement->getBase64Src();
+            if($attachement->getVisibleClient() or ($attachement->getVisibleClient() === null and $attachement->getVisibleTechnicien())){
+                $images[] = $attachement->getBase64Src();
+            }
         }
         $createRapportVisitePdf->html = $this->renderView('passage/pdfRapport.html.twig', array(
             'passage' => $passage,
