@@ -16,7 +16,14 @@
                         <span><span class="glyphicon glyphicon-print"></span> Bon Imprimé</span>
                     {% endif %}
                 {% elseif (rdv.passage and rdv.passage.realise) %}
-                      {% if (rdv.passage.getPdfNonEnvoye) %}
+                      {% if (not rdv.passage.emailTransmission and not rdv.passage.getPdfNonEnvoye)%}
+                      <button class="btn btn-md btn-block" style="background-color:{{rdv.calculateTilesColors().background}}; color:{{rdv.calculateTilesColors().text}};">
+                        Pdf imprimé <br>
+                        le {{ rdv.passage.getPdfRapportDateEnvoi | date('d/m/Y') }}
+                      </button>
+                  {% elseif (not rdv.passage.emailTransmission and rdv.passage.getPdfNonEnvoye) %}
+                        <button class="btn btn-sm btn-block" style="background-color:{{rdv.calculateTilesColors().background}}; color:{{rdv.calculateTilesColors().text}};">Pdf non imprimé</button>
+                      {% elseif (rdv.passage.getPdfNonEnvoye) %}
                         <button class="btn btn-md btn-block" style="background-color:{{rdv.calculateTilesColors().background}}; color:{{rdv.calculateTilesColors().text}};">
                           Pdf non envoyé
                         </button>
@@ -299,6 +306,10 @@
                             {% if (rdv.passage and not rdv.id) %}
                                 <a href="{{ path('passage_annulation',{ 'id': rdv.passage.id, 'service': service }) }}" class="btn btn-sm btn-default text-danger" onclick="return confirm('Êtes vous sûr de vouloir passer ce passage en annuler ?')"><span class="text-danger">Annuler le passage</span></a>
                             {% endif %}
+                            {% if (rdv.passage and rdv.passage.isValideTechnicien and rdv.passage.isSaisieTechnicien) %}
+                                <a class="btn btn-sm btn-default" href="{{ path('passage_pdf_rapport_download', {'id': rdv.passage.id, 'service': service })}}"
+                                      data-toggle="tooltip" ><span class="glyphicon glyphicon-file"></span> Télécharger le rapport de visite</a>
+                            {% endif %}
                         </div>
                     </div>
                     <div class="col-xs-3 text-right">
@@ -309,8 +320,6 @@
                         {% endif %}
                       {% if (rdv.passage and rdv.passage.isValideTechnicien and rdv.passage.isSaisieTechnicien) %}
                         <div class="btn-group">
-                            <a class="btn btn-sm {% if (rdv.passage.emailTransmission) %}btn-default{% else %}btn-success{% endif %}" href="{{ path('passage_pdf_rapport', {'id': rdv.passage.id, 'service': service })}}" title="Pdf du rapport de visite"
-                                  data-toggle="tooltip" ><span class="glyphicon glyphicon-file"></span></a>
                             {% if (rdv.passage.emailTransmission) %}
                             {% set msgconfirm %}
                               {% if (rdv.passage.secondEmailTransmission) %}
@@ -325,6 +334,9 @@
                               href="{{ path('passage_transmission_email', {'id': rdv.passage.id, 'service': service })}}">
                                 <span class="glyphicon glyphicon-send"></span> Envoyer mail
                             </a>
+                            {% else %}
+                            <a class="btn btn-sm {% if rdv.passage.isPdfNonEnvoye() %}btn-success{% else %}btn-default{% endif %}" href="{{ path('passage_pdf_rapport_print', {'id': rdv.passage.id, 'service': service })}}"
+                                  data-toggle="tooltip" ><span class="glyphicon glyphicon-print"></span> Imprimer le rapport</a>
                             {% endif %}
                           </div>
                         {% endif %}

@@ -491,16 +491,17 @@ class PassageController extends Controller
     }
 
     /**
-     * @Route("/passage/pdf-rapport/{id}", name="passage_pdf_rapport")
+     * @Route("/passage/pdf-rapport-print/{id}", name="passage_pdf_rapport_print")
      * @ParamConverter("passage", class="AppBundle:Passage")
      */
-    public function pdfRapportAction(Request $request, Passage $passage) {
+    public function pdfRapportPrintAction(Request $request, Passage $passage) {
         $rapportVisitePdf = $this->createRapportVisitePdf($passage);
 
         if ($request->get('output') == 'html') {
 
             return new Response($rapportVisitePdf->html, 200);
         }
+
         if(!$passage->getEmailTransmission()){
             $dm = $this->get('doctrine_mongodb')->getManager();
             $passage->setPdfNonEnvoye(false);
@@ -514,6 +515,32 @@ class PassageController extends Controller
                 'Content-Disposition' => 'attachment; filename="' . $rapportVisitePdf->filename . '"'
             )
         );
+        if($request->get('service')) {
+
+            return $this->redirect($request->get('service'));
+        }
+
+    }
+
+    /**
+     * @Route("/passage/pdf-rapport-download/{id}", name="passage_pdf_rapport_download")
+     * @ParamConverter("passage", class="AppBundle:Passage")
+     */
+    public function pdfRapportDownloadAction(Request $request, Passage $passage) {
+        $rapportVisitePdf = $this->createRapportVisitePdf($passage);
+
+        if ($request->get('output') == 'html') {
+
+            return new Response($rapportVisitePdf->html, 200);
+        }
+
+        return new Response(
+            $this->get('knp_snappy.pdf')->getOutputFromHtml($rapportVisitePdf->html, $this->getPdfGenerationOptions()), 200, array(
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="' . $rapportVisitePdf->filename . '"'
+            )
+        );
+
         if($request->get('service')) {
 
             return $this->redirect($request->get('service'));
