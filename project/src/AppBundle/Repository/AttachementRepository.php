@@ -17,7 +17,7 @@ class AttachementRepository extends DocumentRepository {
     public function findLast() {
 
         return $this->createQueryBuilder()
-             ->select('_id', 'updatedAt', 'imageName', 'titre', 'originalName', 'etablissement', 'societe', 'visibleTechnicien', 'ext')
+             ->select('_id', 'updatedAt', 'imageName', 'titre', 'originalName', 'etablissement', 'societe', 'visibleTechnicien', 'ext','visibleClient')
              ->limit(10)
              ->sort(array('_id' => -1))
              ->getQuery()
@@ -27,7 +27,7 @@ class AttachementRepository extends DocumentRepository {
     public function findBySociete($societe)
 	{
         $attachments = array();
-		foreach($this->createQueryBuilder()->select('_id', 'updatedAt', 'imageName', 'titre', 'originalName', 'etablissement', 'societe', 'visibleTechnicien', 'ext')->field('societe')->equals($societe)->getQuery()->execute() as $attachement) {
+		foreach($this->createQueryBuilder()->select('_id', 'updatedAt', 'imageName', 'titre', 'originalName', 'etablissement', 'societe', 'visibleTechnicien', 'ext','visibleClient')->field('societe')->equals($societe)->getQuery()->execute() as $attachement) {
             $attachments[$attachement->getId()] = $attachement;
         }
 
@@ -39,7 +39,7 @@ class AttachementRepository extends DocumentRepository {
     public function findByEtablissement($etablissement, $date = null)
 	{
         $attachments = array();
-        $query = $this->createQueryBuilder()->select('_id', 'updatedAt', 'imageName', 'titre', 'originalName', 'etablissement', 'societe', 'visibleTechnicien', 'ext')
+        $query = $this->createQueryBuilder()->select('_id', 'updatedAt', 'imageName', 'titre', 'originalName', 'etablissement', 'societe', 'visibleTechnicien', 'ext','visibleClient')
                                             ->field('etablissement')->equals($etablissement);
 
         if ($date) {

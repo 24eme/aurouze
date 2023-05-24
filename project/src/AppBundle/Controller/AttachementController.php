@@ -141,6 +141,35 @@ class AttachementController extends Controller {
    }
 
    /**
+   * @Route("/attachement/{id}/updateVisibleClient", name="attachement_update_visible_client")
+   */
+   public function attachementUpdateVisibleClientAction(Request $request, $id) {
+      $dm = $this->get('doctrine_mongodb')->getManager();
+      $attachement = $dm->getRepository('AppBundle:Attachement')->findOneById($request->get('id'));
+
+      $entite = $attachement->getSociete();
+
+      if(!$entite){
+        $entite = $attachement->getEtablissement();
+      }
+      if(!$entite){
+        throw new \Exception('Une erreur s\'est produite : le document '.$attachement->getId().' ne semble être relié à rien!');
+
+      }
+
+      if($attachement->getVisibleClient() === null and $attachement->getVisibleTechnicien()){
+          $attachement->setVisibleClient(true);
+      }
+
+      $attachement->setVisibleClient(!$attachement->getVisibleClient());
+
+      $dm->persist($attachement);
+      $dm->flush();
+
+      return $this->redirectToRoute('attachements_entite', array('id' => $entite->getId()));
+  }
+
+   /**
    * @Route("/societe/attachement/{id}/ajout", name="societe_upload_attachement")
    */
    public function attachementSocieteUploadAction(Request $request, $id) {

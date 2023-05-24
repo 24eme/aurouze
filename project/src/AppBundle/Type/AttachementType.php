@@ -16,10 +16,12 @@ class AttachementType extends AbstractType {
 
     protected $dm;
     protected $visibleTechnicienOption;
+    protected $visibleClientOption;
 
-    public function __construct(DocumentManager $documentManager, $visibleTechnicienOption = true) {
+    public function __construct(DocumentManager $documentManager, $visibleTechnicienOption = true, $visibleClientOption = true) {
         $this->dm = $documentManager;
         $this->visibleTechnicienOption = $visibleTechnicienOption;
+        $this->visibleClientOption = $visibleClientOption;
     }
 
     /**
@@ -35,6 +37,9 @@ class AttachementType extends AbstractType {
           ->add('titre', TextType::class, array('label' => 'Nom* :','required' => false));
           if($this->visibleTechnicienOption){
               $builder->add('visibleTechnicien', CheckboxType::class, array('label' => ' ', 'required' => false, "attr" => array("class" => "switcher", "data-size" => "mini")));
+          }
+          if($this->visibleClientOption){
+              $builder->add('visibleClient', CheckboxType::class, array('label' => ' ', 'required' => false, "attr" => array("class" => "switcher", "data-size" => "mini")));
           }
     }
 

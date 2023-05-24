@@ -7,7 +7,8 @@
                     <th class="col-xs-3">Titre</th>
                     <th class="col-xs-4">Société/Lieu</th>
                     <th class="col-xs-1">Document</th>
-                    <th class="col-xs-1 text-center"><span class="glyphicon glyphicon-user"></th>
+                    <th class="col-xs-1 text-center" title="Visible technicien"><span class="glyphicon glyphicon-user"></th>
+                    <th class="col-xs-1 text-center" title="Visible client"><span class="glyphicon glyphicon-eye-open"></th>
                     <th class="col-xs-1 text-center"></th>
                 </tr>
             </thead>
@@ -39,6 +40,9 @@
                 </td>
                 <td class="text-center">
                     {% if attachement.visibleTechnicien %}<span class="glyphicon glyphicon-ok"></span>{% endif %}
+                </td>
+                <td class="text-center">
+            <a href="{{ path('attachement_update_visible_client', {'id': attachement.id }) }}" class="btn btn-default btn-xs" style="border-radius: 10%; z-index: 10; cursor:pointer;" title="Changer la visibilité" ><span class="glyphicon {% if (attachement.visibleClient or (attachement.visibleTechnicien and attachement.visibleClient is same as (null))) %}glyphicon-eye-open{% else %}glyphicon-eye-close{% endif %}"></span></a>
                 </td>
                 <td class="text-center">
                     <a href="{{ path('attachement_delete', {'id': attachement.id }) }}" onclick="return confirm('Êtes vous sûr de vouloir supprimer ce document?')" class="attachement-remove btn btn-default btn-xs" style="border-radius: 10%; z-index: 10; cursor:pointer;" ><span class="glyphicon glyphicon-remove"></a>
