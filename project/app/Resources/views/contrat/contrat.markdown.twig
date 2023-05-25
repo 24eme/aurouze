@@ -4,7 +4,7 @@
 >{{ contrat.devisAdresse.adresseFormatee | nl2br|trim|raw }}  
 >{{ contrat.devisAdresse.codePostal }} {{ contrat.devisAdresse.commune|trim|raw }}
 
-# PROPOSITION {% if certification_bois and constant('AppBundle\\Manager\\ContratManager::MOYEN_3D') not in contrat.moyens %}COMMERCIALE{% else %}DE PREVENTION ET LUTTE CONTRE LES NUISIBLES ET PARASITES{% endif %}
+# {% if contrat.typeContrat is same as (constant('AppBundle\\Manager\\ContratManager::TYPE_CONTRAT_PONCTUEL')) %}PROPOSITION PONCTUELLE {% elseif (contrat.typeContrat is same as (constant('AppBundle\\Manager\\ContratManager::TYPE_CONTRAT_RECONDUCTION_TACITE'))) %}CONTRAT {% else %}PROPOSITION {% endif %}{% if certification_bois and constant('AppBundle\\Manager\\ContratManager::MOYEN_3D') not in contrat.moyens %}COMMERCIALE{% else %}DE PREVENTION ET LUTTE CONTRE LES NUISIBLES ET PARASITES{% endif %}
 
 entre
 
