@@ -51,6 +51,11 @@ parameters:
         numero : '00000000'
         replyemail : "emailReplyTransmission@dns.fr"
     commercial_seine_et_marne: "nom_commercial"
+    contrat_seine_et_marne:
+        adresse_libelle: ''
+        adresse_adresse: ''
+        adresse_cp: ''
+        adresse_commune: ''
     facture:
         emetteur:
             nom: ""
