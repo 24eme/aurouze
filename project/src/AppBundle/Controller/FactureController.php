@@ -143,6 +143,19 @@ class FactureController extends Controller
             $facture->addLigne($factureLigne);
         }
 
+        if($contrat) {
+            if($contrat->getZone() == "77"){
+                $parameters = $this->container->getParameter('facture');
+                $facture->getEmetteur()->setNom($parameters['emetteur_SEINE_ET_MARNE']['nom']);
+                $facture->getEmetteur()->setAdresse($parameters['emetteur_SEINE_ET_MARNE']['adresse']);
+                $facture->getEmetteur()->setCodePostal($parameters['emetteur_SEINE_ET_MARNE']['code_postal']);
+                $facture->getEmetteur()->setCommune($parameters['emetteur_SEINE_ET_MARNE']['commune']);
+                $facture->getEmetteur()->setTelephone($parameters['emetteur_SEINE_ET_MARNE']['telephone']);
+                $facture->getEmetteur()->setFax($parameters['emetteur_SEINE_ET_MARNE']['fax']);
+                $facture->getEmetteur()->setEmail($parameters['emetteur_SEINE_ET_MARNE']['email']);
+            }
+        }
+
         $facture->setSociete($societe);
 
         if(!$facture->getId()) {
@@ -282,9 +295,20 @@ class FactureController extends Controller
             }
             $facture = $fm->create($societe, array($mouvement), $date);
             $facture->setDateFacturation($date);
+
             $contrat =  $facture->getContrat();
             if($contrat && $contrat->isBonbleu()){
               $facture->setDescription($contrat->getDescription());
+            }
+            if($contrat->getZone() == "77"){
+                $parameters = $this->container->getParameter('facture');
+                $facture->getEmetteur()->setNom($parameters['emetteur_SEINE_ET_MARNE']['nom']);
+                $facture->getEmetteur()->setAdresse($parameters['emetteur_SEINE_ET_MARNE']['adresse']);
+                $facture->getEmetteur()->setCodePostal($parameters['emetteur_SEINE_ET_MARNE']['code_postal']);
+                $facture->getEmetteur()->setCommune($parameters['emetteur_SEINE_ET_MARNE']['commune']);
+                $facture->getEmetteur()->setTelephone($parameters['emetteur_SEINE_ET_MARNE']['telephone']);
+                $facture->getEmetteur()->setFax($parameters['emetteur_SEINE_ET_MARNE']['fax']);
+                $facture->getEmetteur()->setEmail($parameters['emetteur_SEINE_ET_MARNE']['email']);
             }
             $dm->persist($facture);
             $dm->flush();
