@@ -1323,4 +1323,16 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
       return $this->dateEnvoiMail;
     }
 
+    public function getPaiementsForMe(){
+    $arrayPaiements = array();
+        foreach ($this->getPaiements() as $paiements) {
+          foreach ($paiements->getPaiement() as $paiement) {
+              if ($paiement->getFacture()->getId() == $this->getId()) {
+                $arrayPaiements[] = $paiement;
+              }
+          }
+        }
+    return $arrayPaiements;
+    }
+
 }

@@ -109,7 +109,50 @@
                                 {% endif %}
                             {% endif %}
                     {% endif %}
+
+                    <li>
+                    <a type="button" data-toggle="modal" data-target="#modal{{facture.id}}">
+                      Voir le détail des paiements
+                    </a>
+                    </li>
                   </ul>
+                  <div class="modal fade" id="modal{{facture.id}}" tabindex="-1" role="dialog" aria-labelledby="modalLabel{{facture.id}}" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                         <h4 class="modal-title" id="modalLabel{{facture.id}}">Paiements de la Facture n°{{ facture.numeroFacture }}</h4>
+                        </div>
+                        <div class="modal-body">
+                        <table class="table table-striped">
+                        <thead>
+                            <tr>
+                              <th scope="col">Date</th>
+                              <th class="col-xs-3">Libellé</th>
+                              <th scope="col">Moyen</th>
+                              <th scope="col" class="text-right">MontantTTC</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                          {% for paiement in facture.getPaiementsForMe() %}
+                              <tr>
+                              <td>{{ paiement.datePaiement | date("d-m-Y") }}</td>
+                              <td>{{ paiement.libelle }}</td>
+                              <td>{{ paiement.moyenPaiement }}</td>
+                              <td class="text-right">{{ paiement.montant | number_format(2, ',', ' ')}}&nbsp;€</td>
+                              </tr>
+                          {% endfor %}
+                          </tbody>
+                          </table>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                  </div>
               {% endif %}
               {% if not facture.numeroFacture and not facture.isDevis %}
