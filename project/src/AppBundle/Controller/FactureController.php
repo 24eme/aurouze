@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Manager\FactureManager;
 use AppBundle\Manager\DevisManager;
 use AppBundle\Manager\PassageManager;
+use AppBundle\Manager\ContratManager;
 use AppBundle\Model\FacturableControllerTrait;
 use AppBundle\Document\Facture;
 use AppBundle\Document\LigneFacturable;
@@ -143,19 +144,6 @@ class FactureController extends Controller
             $facture->addLigne($factureLigne);
         }
 
-        if($contrat) {
-            if($contrat->getZone() == "77"){
-                $parameters = $this->container->getParameter('facture');
-                $facture->getEmetteur()->setNom($parameters['emetteur_SEINE_ET_MARNE']['nom']);
-                $facture->getEmetteur()->setAdresse($parameters['emetteur_SEINE_ET_MARNE']['adresse']);
-                $facture->getEmetteur()->setCodePostal($parameters['emetteur_SEINE_ET_MARNE']['code_postal']);
-                $facture->getEmetteur()->setCommune($parameters['emetteur_SEINE_ET_MARNE']['commune']);
-                $facture->getEmetteur()->setTelephone($parameters['emetteur_SEINE_ET_MARNE']['telephone']);
-                $facture->getEmetteur()->setFax($parameters['emetteur_SEINE_ET_MARNE']['fax']);
-                $facture->getEmetteur()->setEmail($parameters['emetteur_SEINE_ET_MARNE']['email']);
-            }
-        }
-
         $facture->setSociete($societe);
 
         if(!$facture->getId()) {
@@ -213,6 +201,19 @@ class FactureController extends Controller
         if ($origine = $facture->getOrigineAvoir()) {
             $origine->setAvoirObject($facture);
             $origine->updateMontantPaye();
+        }
+
+        $commercialSeineEtMarne = $this->container->getParameter('commercial_seine_et_marne') ? $this->container->getParameter('commercial_seine_et_marne') : null;
+
+        if($facture->getCommercial()->getNom() == $commercialSeineEtMarne or ($contrat and $contrat->getZone() == ContratManager::ZONE_SEINE_ET_MARNE)) {
+            $parameters = $this->container->getParameter('facture');
+            $facture->getEmetteur()->setNom($parameters['emetteur_SEINE_ET_MARNE']['nom']);
+            $facture->getEmetteur()->setAdresse($parameters['emetteur_SEINE_ET_MARNE']['adresse']);
+            $facture->getEmetteur()->setCodePostal($parameters['emetteur_SEINE_ET_MARNE']['code_postal']);
+            $facture->getEmetteur()->setCommune($parameters['emetteur_SEINE_ET_MARNE']['commune']);
+            $facture->getEmetteur()->setTelephone($parameters['emetteur_SEINE_ET_MARNE']['telephone']);
+            $facture->getEmetteur()->setFax($parameters['emetteur_SEINE_ET_MARNE']['fax']);
+            $facture->getEmetteur()->setEmail($parameters['emetteur_SEINE_ET_MARNE']['email']);
         }
 
         $dm->flush();
@@ -297,10 +298,13 @@ class FactureController extends Controller
             $facture->setDateFacturation($date);
 
             $contrat =  $facture->getContrat();
+
             if($contrat && $contrat->isBonbleu()){
               $facture->setDescription($contrat->getDescription());
             }
-            if($contrat->getZone() == "77"){
+            $commercialSeineEtMarne = $this->container->getParameter('commercial_seine_et_marne') ? $this->container->getParameter('commercial_seine_et_marne') : null;
+
+            if($facture->getCommercial()->getNom() == $commercialSeineEtMarne or ($contrat and $contrat->getZone() == ContratManager::ZONE_SEINE_ET_MARNE)) {
                 $parameters = $this->container->getParameter('facture');
                 $facture->getEmetteur()->setNom($parameters['emetteur_SEINE_ET_MARNE']['nom']);
                 $facture->getEmetteur()->setAdresse($parameters['emetteur_SEINE_ET_MARNE']['adresse']);
@@ -310,6 +314,7 @@ class FactureController extends Controller
                 $facture->getEmetteur()->setFax($parameters['emetteur_SEINE_ET_MARNE']['fax']);
                 $facture->getEmetteur()->setEmail($parameters['emetteur_SEINE_ET_MARNE']['email']);
             }
+
             $dm->persist($facture);
             $dm->flush();
         }

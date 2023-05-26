@@ -8,6 +8,7 @@ use AppBundle\Document\Societe;
 use MongoDate as MongoDate;
 use AppBundle\Manager\EtablissementManager;
 use AppBundle\Manager\PassageManager;
+use AppBundle\Manager\ContratManager;
 
 /**
  * DevisRepository
@@ -62,9 +63,9 @@ class DevisRepository extends DocumentRepository {
       }
 
       if ($secteur == EtablissementManager::SECTEUR_PARIS) {
-        $q->field('zone')->notEqual("77");
+        $q->field('zone')->notEqual(ContratManager::ZONE_SEINE_ET_MARNE);
       } elseif($secteur == EtablissementManager::SECTEUR_SEINE_ET_MARNE) {
-         $q->field('zone')->equals("77");
+         $q->field('zone')->equals(ContratManager::ZONE_PARIS);
       }
       $query = $q->sort('zone', 'asc')->getQuery();
 

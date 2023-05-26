@@ -1,4 +1,4 @@
-{% if(contrat.zone is same as ("77")) %}{{ enteteSeineEtMarne.adresse_commune }}{% else %}{{ application.adresse_commune }}{% endif %}, le {{ contrat.dateCreation|date("d/m/Y") }}
+{% if(contrat.zone is same as (constant('AppBundle\\Manager\\ContratManager::ZONE_SEINE_ET_MARNE'))) %}{{ enteteSeineEtMarne.adresse_commune }}{% else %}{{ application.adresse_commune }}{% endif %}, le {{ contrat.dateCreation|date("d/m/Y") }}
 
 >{{ contrat.devisDestinataire|trim|replace({',': ',</br>'})|raw }}  
 >{{ contrat.devisAdresse.adresseFormatee | nl2br|trim|raw }}  
@@ -9,7 +9,7 @@
 entre
 
 ```
-{% if(contrat.zone and contrat.zone is same as ("77")) %}
+{% if(contrat.zone and contrat.zone is same as (constant('AppBundle\\Manager\\ContratManager::ZONE_SEINE_ET_MARNE'))) %}
 {{ enteteSeineEtMarne.adresse_libelle }}
 {{ enteteSeineEtMarne.adresse_adresse }}
 {{ enteteSeineEtMarne.adresse_cp }} {{ enteteSeineEtMarne.adresse_commune }}

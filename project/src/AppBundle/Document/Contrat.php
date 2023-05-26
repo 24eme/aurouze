@@ -773,10 +773,10 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
      */
     public function setZone($commercialSeineEtMarne){
       if($this->getCommercial()->getNom() == $commercialSeineEtMarne){
-        $this->zone = "77";
+        $this->zone = ContratManager::ZONE_SEINE_ET_MARNE;
       }
       else{
-        $this->zone = "75";
+        $this->zone = ContratManager::ZONE_PARIS;
       }
 
       foreach($this->getContratPassages() as $cp){
