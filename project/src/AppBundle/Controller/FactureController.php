@@ -1197,11 +1197,18 @@ class FactureController extends Controller
         $fromName = $parameters['coordonnees']['nom'];
         $subject = "FACTURE NON PAYEE ( FACTURE n°".$facture->getNumeroFacture()." de ".$facture->getMontantTTC()." € )";
 
+        $email_footer = $this->container->getParameter('email_footer');
+
+        $commercial_SEINE_ET_MARNE = ($this->container->getParameter("commercial_seine_et_marne")) ? $this->container->getParameter("commercial_seine_et_marne") : null;
+        if(($facture->getCommercial()->getNom() == $commercial_SEINE_ET_MARNE )or ($facture->getContrat() && $facture->getContrat()->getZone() == ContratManager::ZONE_SEINE_ET_MARNE)){
+            $email_footer = $this->container->getParameter('email_footer_SEINE_ET_MARNE');
+        }
+
         if( !$facture->getNbRelance()){
-            $body = $this->render('facture/mailPremiereRelance.html.twig', ['facture' => $facture, 'dateLimite' => date('d/m/Y', strtotime(' + 10 days'))])->getContent();
+            $body = $this->render('facture/mailPremiereRelance.html.twig', ['facture' => $facture, 'dateLimite' => date('d/m/Y', strtotime(' + 10 days')),'email_footer' => $email_footer])->getContent();
         }
         else{
-            $body = $this->render('facture/mailDeuxiemeRelance.html.twig', ['facture' => $facture, 'dateLimite' => date('d/m/Y', strtotime(' + 8 days'))])->getContent();
+            $body = $this->render('facture/mailDeuxiemeRelance.html.twig', ['facture' => $facture, 'dateLimite' => date('d/m/Y', strtotime(' + 8 days')),'email_footer' => $email_footer])->getContent();
         }
 
         if($facture->getSociete()->getContactCoordonnee()->getEmailFacturation()){
@@ -1278,13 +1285,21 @@ class FactureController extends Controller
           $fromName = $parameters['coordonnees']['nom'];
           $prefix_subject =  $parameters['coordonnees']['prefix_objet'];
 
+          $email_footer = $this->container->getParameter('email_footer');
+
+          $commercial_SEINE_ET_MARNE = ($this->container->getParameter("commercial_seine_et_marne")) ? $this->container->getParameter("commercial_seine_et_marne") : null;
+          if(($facture->getCommercial()->getNom() == $commercial_SEINE_ET_MARNE )or ($facture->getContrat() && $facture->getContrat()->getZone() == ContratManager::ZONE_SEINE_ET_MARNE)){
+              $email_footer = $this->container->getParameter('email_footer_SEINE_ET_MARNE');
+          }
+
           $subject = $prefix_subject." Facture n°".$facture->getNumeroFacture();
           if($facture->isAvoir()){
-            $body = $this->render('facture/mailAvoir.html.twig', ['facture' => $facture])->getContent();
+            $body = $this->render('facture/mailAvoir.html.twig', ['facture' => $facture,'email_footer' => $email_footer])->getContent();
           }
           else{
-            $body = $this->render('facture/mailFacture.html.twig', ['facture' => $facture])->getContent();
+            $body = $this->render('facture/mailFacture.html.twig', ['facture' => $facture,'email_footer' => $email_footer])->getContent();
           }
+
           if($facture->getSociete()->getContactCoordonnee()->getEmailFacturation()){
             $toEmail = $facture->getSociete()->getContactCoordonnee()->getEmailFacturation();
           }

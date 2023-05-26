@@ -27,7 +27,7 @@ parameters:
     knp_snappy_pdfbinary: xvfb-run wkhtmltopdf
     knp_snappy_imagebinary: xvfb-run wkhtmltoimage
     email_footer: |-
-
+    email_footer_SEINE_ET_MARNE: |-
     banque:
         creditorId: 'XXXXXXXXXXX'
         creditorName: 'ETABLISSEMENTS XXXX XXXXXXXXX'
