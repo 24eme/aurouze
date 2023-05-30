@@ -249,6 +249,8 @@ class FactureController extends Controller
         $solde = $fm->getSolde($societe);
         $totalFacture = $fm->getTotalFacture($societe);
         $totalPaye = $fm->getTotalPaye($societe);
+        $resteTropPaye = $fm->getResteTropPercu($societe); //ce qu'il me doit - ce qu'il a paye - toutes les factures qui ont été cloturé.
+
 
         $exportSocieteForm = $this->createExportSocieteForm($societe);
 
@@ -258,7 +260,7 @@ class FactureController extends Controller
             $defaultDate = new \DateTime($this->container->getParameter('date_facturation'));
         }
 
-        return $this->render('facture/societe.html.twig', array('societe' => $societe, 'mouvements' => $mouvements,'hasDevis' => $hasDevis,  'factures' => $factures, 'facturesPrevisionnel' => $facturesPrevisionnel, 'exportSocieteForm' => $exportSocieteForm->createView(), 'solde' => $solde, 'totalFacture' => $totalFacture, 'totalPaye' => $totalPaye, 'defaultDate' => $defaultDate));
+        return $this->render('facture/societe.html.twig', array('societe' => $societe, 'mouvements' => $mouvements,'hasDevis' => $hasDevis,  'factures' => $factures, 'facturesPrevisionnel' => $facturesPrevisionnel, 'exportSocieteForm' => $exportSocieteForm->createView(), 'solde' => $solde, 'totalFacture' => $totalFacture, 'totalPaye' => $totalPaye, 'defaultDate' => $defaultDate, 'resteTropPaye' => $resteTropPaye));
     }
 
     /**
@@ -323,6 +325,32 @@ class FactureController extends Controller
         }
         return $this->redirectToRoute('facture_societe', array('id' => $societe->getId()));
     }
+
+
+    /**
+     * @Route("/payer-avec-trop-percu/{id}/{factureId}", name="facture_cloturer_payer_avec_trop_percu")
+     * @ParamConverter("societe", class="AppBundle:Societe")
+     */
+    public function cloturerEtPayerAvecTropPercuAction(Request $request, Societe $societe, $factureId) {
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $retour = ($request->get('retour', null));
+        $facture = $this->get('facture.manager')->getRepository()->findOneById($factureId);
+        $facture->cloturer();
+        $facture->payerAvecTropPercu();
+        $dm->persist($facture);
+        $dm->flush();
+
+        if($request->isXmlHttpRequest()) {
+
+            return new Response();
+        }
+
+        if($retour && ($retour == "relance")){
+          return $this->redirectToRoute('factures_retard');
+        }
+        return $this->redirectToRoute('facture_societe', array('id' => $societe->getId()));
+    }
+
 
     /**
      * @Route("/facture-en-attente/{factureId}/facturer", name="facture_en_attente_facturer")

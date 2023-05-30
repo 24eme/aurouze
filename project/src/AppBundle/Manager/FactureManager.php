@@ -268,6 +268,10 @@ public static $export_factures_en_retards = array(
         return round($this->dm->getRepository('AppBundle:Paiements')->getMontantPaye($societe), 2);
     }
 
+    public function getResteTropPercu(Societe $societe){
+        return ($this->dm->getRepository('AppBundle:Facture')->getMontantTropPaye($societe)) - (round($this->dm->getRepository('AppBundle:Facture')->getMontantFacturePayeeAvecTropPercu($societe),2));
+    }
+
     public function getStatsForCsv($dateDebut = null, $dateFin = null, $commercialFiltre = null){
       if(!$dateDebut){
         $dateDebut = new \DateTime();

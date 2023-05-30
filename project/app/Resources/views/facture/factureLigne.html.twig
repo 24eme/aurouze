@@ -99,6 +99,9 @@
                             {% endif %}
                             {% if(not facture.isAvoir) %}
                               {% if(not facture.iscloture) %}
+                                  {% if (resteTropPaye and facture.montantTTC < resteTropPaye) %}
+                                      <li><a onclick="return confirm('Êtes vous sûr de vouloir de payer avec le solde et de cloturer cette facture ?')" href="{{ path('facture_cloturer_payer_avec_trop_percu', {'id': facture.societe.id, 'factureId': facture.id }) }}">Payer avec le trop perçu restant et cloturer les paiements</a></li>
+                                  {% endif %}
                                 <li><a onclick="return confirm('Êtes vous sûr de vouloir cloturer cette facture ?')" href="{{ path('facture_cloturer', {'id': facture.societe.id, 'factureId': facture.id }) }}">Cloturer les paiements</a></li>
                               {% endif %}
                                 <li><a onclick="return confirm('Êtes vous sûr de vouloir décloturer cette facture ?')" href="{{ path('facture_decloturer', {'id': facture.societe.id, 'factureId': facture.id }) }}">Décloturer (remettre les paiements à 0)</a></li>
@@ -132,8 +135,10 @@
                          <h4 class="modal-title" id="modalLabel{{facture.id}}">Paiements de la Facture n°{{ facture.numeroFacture }}</h4>
                         </div>
                         <div class="modal-body">
-                        {% if facture.payeeAvecSolde %}
-                          <p>A été cloturé</p>
+                        {% if facture.payeeAvecTropPercu %}
+                          <p>Payée avec le <b>trop perçu</b> et cloturée</p>
+                        {% elseif facture.cloture and not facture.getMesPaiements()%}
+                          <p>A été <b>cloturée</b></p>
                         {% else %}
                         <table class="table table-striped">
                         <thead>
@@ -145,12 +150,12 @@
                             </tr>
                           </thead>
                           <tbody>
-                          {% for paiement in facture.getPaiementsForMe() %}
+                          {% for paiement in facture.getMesPaiements() %}
                               <tr>
                               <td>{{ paiement.datePaiement | date("d-m-Y") }}</td>
                               <td>{{ paiement.libelle }}</td>
                               <td>{{ paiement.moyenPaiement }}</td>
-                              <td class="text-right">{{ paiement.montant | number_format(2, ',', ' ')}}&nbsp;€</td>
+                              <td class="text-right">{{ paiement.montant | number_format(2, ',', ' ')}}&nbsp;€ </td>
                               </tr>
                           {% endfor %}
                           </tbody>
