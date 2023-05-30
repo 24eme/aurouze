@@ -49,7 +49,11 @@
               {% elseif not(facture.numeroFacture) %}
                 <span class="text-muted"></span>
               {% else %}
-                <span class="text-muted">{{ "%0.2f" | format(facture.montantPaye)  }}&nbsp;€</span>
+                <span class="text-muted">
+                    {% if (facture.numeroFacture and facture.paye and not facture.isAvoir) %}
+                        <a type="button" data-toggle="modal" data-target="#modal{{facture.id}}">{{ "%0.2f" | format(facture.montantPaye)  }}&nbsp;€</a>
+                    {% endif %}
+                </span>
               {% endif %}
             {% endif %}
           </td>
@@ -109,13 +113,15 @@
                                 {% endif %}
                             {% endif %}
                     {% endif %}
-
+                    {% if (facture.numeroFacture and facture.paye and not facture.isAvoir) %}
                     <li>
                     <a type="button" data-toggle="modal" data-target="#modal{{facture.id}}">
                       Voir le détail des paiements
                     </a>
                     </li>
+                    {% endif %}
                   </ul>
+                  {% if (facture.numeroFacture and facture.paye) %}
                   <div class="modal fade" id="modal{{facture.id}}" tabindex="-1" role="dialog" aria-labelledby="modalLabel{{facture.id}}" aria-hidden="true">
                     <div class="modal-dialog" role="document">
                       <div class="modal-content">
@@ -126,6 +132,9 @@
                          <h4 class="modal-title" id="modalLabel{{facture.id}}">Paiements de la Facture n°{{ facture.numeroFacture }}</h4>
                         </div>
                         <div class="modal-body">
+                        {% if facture.payeeAvecSolde %}
+                          <p>A été cloturé</p>
+                        {% else %}
                         <table class="table table-striped">
                         <thead>
                             <tr>
@@ -146,6 +155,7 @@
                           {% endfor %}
                           </tbody>
                           </table>
+                        {% endif %}
                         </div>
                         <div class="modal-footer">
                           <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
@@ -153,6 +163,7 @@
                       </div>
                     </div>
                   </div>
+                  {% endif %}
                  </div>
               {% endif %}
               {% if not facture.numeroFacture and not facture.isDevis %}
