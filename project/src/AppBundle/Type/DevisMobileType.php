@@ -45,8 +45,8 @@ class DevisMobileType extends AbstractType
          $defaultNomResp = $builder->getData()->getNomTransmission();
 
         $builder->add('emailTransmission', EmailType::class, array(
-          'label' => 'Email :',
-          'required' => false,
+          'label' => 'Email *:',
+          'required' => true,
           'data' => $defaultEmail,
           'attr' => array('class' => " phoenix","placeholder" => 'Email de transmission')));
 
