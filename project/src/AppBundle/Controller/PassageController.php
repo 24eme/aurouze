@@ -407,7 +407,7 @@ class PassageController extends Controller
      */
     public function editionAction(Request $request, Passage $passage) {
         $dm = $this->get('doctrine_mongodb')->getManager();
-
+        $cm = $this->get('contrat.manager');
 
         $form = $this->createForm(new PassageType($dm), $passage, array(
             'action' => $this->generateUrl('passage_edition', array('id' => $passage->getId(), 'service' => $request->get('service'))),
@@ -418,13 +418,22 @@ class PassageController extends Controller
 
         $contrat = $dm->getRepository('AppBundle:Contrat')->findOneById($passage->getContrat()->getId());
 
+        $lastPassageRealise = null;
+        foreach ($cm->getPassagesByNumeroArchiveContrat($contrat, true) as $etab => $ps) {
+            foreach ($ps as $p) {
+                if ($p->isRealise()) { $lastPassageRealise = $p; break; }
+            }
+        }
 
         if(!$passage->getEmailTransmission()){
-            if($contrat->getSociete()->getContactCoordonnee()->getEmail()){
-                $passage->setEmailTransmission($contrat->getSociete()->getContactCoordonnee()->getEmail());
+            if($lastPassageRealise){
+                $passage->setEmailTransmission($lastPassageRealise->getEmailTransmission());
             }
             elseif($passage->getEtablissement()->getEmail()){
                 $passage->setEmailTransmission($passage->getEtablissement()->getEmail());
+            }
+            elseif($contrat->getSociete()->getContactCoordonnee()->getEmail()){
+                $passage->setEmailTransmission($contrat->getSociete()->getContactCoordonnee()->getEmail());
             }
             $dm->persist($passage);
             $dm->persist($contrat);
