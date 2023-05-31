@@ -31,9 +31,6 @@
             <a data-toggle="modal" data-target="#exportSocieteForm" class="btn btn-default btn-block"><span class="glyphicon glyphicon-list"></span> Export des factures</a>
         </div>
     </div>
-    <div class="row">
-        <div class="col-xs-5"><h3 style="margin-top: 0;">Trop perçu restant : <strong>{{ resteTropPaye | number_format(2, '.', ' ') }} €</strong></h3></div>
-    </div>
     {% if(facturesPrevisionnel | length > 0) %}
     <h3>Factures en prévision</h3>
     <table class="table table-bordered table-striped text-muted">
@@ -165,7 +162,7 @@
             {% endfor %}
         </tbody>
       </table>
-
+  {% if resteTropPaye %}<h4 class="text-right" style="margin-top: 0;">Trop perçu restant à allouer : <strong>{{ resteTropPaye | number_format(2, '.', ' ') }} €</strong></h4>{% endif %}
       <h3>Factures payées</h3>
       <table class="table table-bordered table-striped">
           <thead>
