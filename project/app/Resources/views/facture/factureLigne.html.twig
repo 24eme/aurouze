@@ -108,6 +108,9 @@
                                   {% endif %}
                                 <li><a onclick="return confirm('Êtes vous sûr de vouloir cloturer cette facture ?')" href="{{ path('facture_cloturer', {'id': facture.societe.id, 'factureId': facture.id }) }}">Cloturer les paiements</a></li>
                               {% endif %}
+                              {% if (facture.payeeAvecTropPercu is same as (true)) %}
+                                <li><a onclick="return confirm('Êtes vous sûr de vouloir décloturer cette facture et mettre à jour le trop perçu ?')" href="{{ path('facture_decloturer', {'id': facture.societe.id, 'factureId': facture.id }) }}">Décloturer et mettre à jour le trop perçu (remettre les paiements à 0)</a></li>
+                              {% endif %}
                                 <li><a onclick="return confirm('Êtes vous sûr de vouloir décloturer cette facture ?')" href="{{ path('facture_decloturer', {'id': facture.societe.id, 'factureId': facture.id }) }}">Décloturer (remettre les paiements à 0)</a></li>
                                 {% if not facture.isRedressee %}
                                   <li>
