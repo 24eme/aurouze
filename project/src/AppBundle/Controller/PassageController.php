@@ -419,14 +419,26 @@ class PassageController extends Controller
         $contrat = $dm->getRepository('AppBundle:Contrat')->findOneById($passage->getContrat()->getId());
 
 
-        if (!$form->isSubmitted() || !$form->isValid()) {
-          if($this->container->getParameter("commercial_seine_et_marne")){
-            $contrat->setZone($this->container->getParameter("commercial_seine_et_marne"));
-            $passage->setZone($contrat->getZone());
+        if(!$passage->getEmailTransmission()){
+            if($contrat->getSociete()->getContactCoordonnee()->getEmail()){
+                $passage->setEmailTransmission($contrat->getSociete()->getContactCoordonnee()->getEmail());
+            }
+            elseif($passage->getEtablissement()->getEmail()){
+                $passage->setEmailTransmission($passage->getEtablissement()->getEmail());
+            }
             $dm->persist($passage);
             $dm->persist($contrat);
             $dm->flush();
-          }
+        }
+
+        if (!$form->isSubmitted() || !$form->isValid()) {
+            if($this->container->getParameter("commercial_seine_et_marne")){
+                $contrat->setZone($this->container->getParameter("commercial_seine_et_marne"));
+                $passage->setZone($contrat->getZone());
+                $dm->persist($passage);
+                $dm->persist($contrat);
+                $dm->flush();
+            }
             return $this->render('passage/edition.html.twig', array('passage' => $passage, 'form' => $form->createView(), 'service' => $request->get('service')));
         }
         $passageManager = $this->get('passage.manager');
