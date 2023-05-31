@@ -237,10 +237,15 @@ class FactureController extends Controller
         ));
         $factures = $fm->findBySociete($societe);
 
+        $sommeMontantPayeReelParmiCeuxQuiUtiliseTropPercu = 0;
         $facturesPrevisionnel = array();
+
         foreach($factures as $facture) {
             if (!$facture->isDevis() && !($facture->isPaye() || $facture->isAvoir() || $facture->isRedressee()) && !$facture->getNumeroFacture()) {
                 $facturesPrevisionnel[] = $facture;
+            }
+            if($facture->getMesPaiements() and $facture->getPayeeAvecTropPercu()){
+                $sommeMontantPayeReelParmiCeuxQuiUtiliseTropPercu += $facture->getMontantReelPaye();
             }
         }
 
@@ -249,8 +254,7 @@ class FactureController extends Controller
         $solde = $fm->getSolde($societe);
         $totalFacture = $fm->getTotalFacture($societe);
         $totalPaye = $fm->getTotalPaye($societe);
-        $resteTropPaye = $fm->getResteTropPercu($societe); //ce qu'il me doit - ce qu'il a paye - toutes les factures qui ont été cloturé.
-
+        $resteTropPaye = $fm->getResteTropPercu($societe) + $sommeMontantPayeReelParmiCeuxQuiUtiliseTropPercu;
 
         $exportSocieteForm = $this->createExportSocieteForm($societe);
 

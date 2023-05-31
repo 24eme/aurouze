@@ -1349,6 +1349,18 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
     return $arrayPaiements;
     }
 
+    public function getMontantReelPaye(){
+    $paiementReel = 0;
+        foreach ($this->getPaiements() as $paiements) {
+          foreach ($paiements->getPaiement() as $paiement) {
+              if ($paiement->getFacture()->getId() == $this->getId()) {
+                $paiementReel += $paiement->getMontant();
+              }
+          }
+        }
+    return $paiementReel;
+    }
+
 
     /**
      * Set payeeAvecTropPercu

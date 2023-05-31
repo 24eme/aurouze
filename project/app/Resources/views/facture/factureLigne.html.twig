@@ -45,15 +45,18 @@
                   <span title="Remboursé par chèque" style="cursor: help" class="pull-right label label-xs label-info">Chq</span>
                 {% endif %}
               {% elseif(not facture.getMesPaiements and facture.cloture or facture.getPayeeAvecTropPercu)%}
-                  <a type="button" data-toggle="modal" data-target="#modal{{facture.id}}" title="Cloturé">{{ "%0.2f" | format(0)  }}&nbsp;€</a>
+                  <a type="button" data-toggle="modal" data-target="#modal{{facture.id}}" title="Cloturé" style="cursor:pointer;text-decoration: none;"><span class="text-muted">{{ "%0.2f" | format(facture.getMontantReelPaye())  }}&nbsp;€</span></a>
               {% elseif(facture.isRedressee) %}
-                <a type="button" data-toggle="modal" data-target="#modal{{facture.id}}">{{ "%0.2f" | format(facture.montantPaye)  }}&nbsp;€</a>
+                <a type="button" data-toggle="modal" data-target="#modal{{facture.id}}" style="cursor:pointer;text-decoration: none;"><span class="text-muted">{{ "%0.2f" | format(facture.montantPaye)  }}&nbsp;€</span></a>
               {% elseif not(facture.numeroFacture) %}
                 <span class="text-muted"></span>
               {% else %}
                 <span class="text-muted">
                     {% if (facture.numeroFacture and facture.paye and not facture.isAvoir) %}
-                        <a type="button" data-toggle="modal" data-target="#modal{{facture.id}}">{{ "%0.2f" | format(facture.montantPaye)  }}&nbsp;€</a>
+                        <a type="button" data-toggle="modal" data-target="#modal{{facture.id}}" style="cursor:pointer;text-decoration: none;"><span class="text-muted">{{ "%0.2f" | format(facture.montantPaye)  }}&nbsp;€</span></a>
+                    {% endif %}
+                    {% if facture.getMesPaiements() and not facture.paye %}
+                        <a type="button" data-toggle="modal" data-target="#modal{{facture.id}}" style="cursor:pointer;text-decoration: none;"><span class="text-muted">{{ "%0.2f" | format(facture.montantPaye)  }}&nbsp;€</span></a>
                     {% endif %}
                 </span>
               {% endif %}
@@ -62,12 +65,14 @@
           <td class="col-xs-1 text-right">
             {% if not facture.isAvoir %}
               {% if facture.numeroFacture %}
-                 {% if (facture.getPayeeAvecTropPercu)  %}
-                      <span data-toggle="tooltip" title="Déduction trop perçu {{ "%0.2f" | format(facture.montantTTC*-1) }} €">{{ "%0.2f" | format(facture.montantTTC *-1) }}&nbsp;€</span>
+                 {% if (facture.getPayeeAvecTropPercu) %}
+                      <span data-toggle="tooltip" title="Déduction trop perçu {{ "%0.2f" | format((facture.montantTTC- facture.getMontantReelPaye)*-1) }} €">{{ "%0.2f" | format((facture.montantTTC- facture.getMontantReelPaye) *-1) }}&nbsp;€</span>
                  {% elseif facture.montantAPayer < 0 %}
                      <span data-toggle="tooltip" title="Trop perçu {{ "%0.2f" | format(facture.montantAPayer*-1) }} €">
                      {% if facture.montantAPayer < 0 %}{{ "%0.2f" | format(facture.montantAPayer*-1) }}&nbsp;€{% endif %}
                      </span>
+                {% elseif facture.montantAPayer > 0%}
+                <span data-toggle="tooltip">{{ "%0.2f" | format(facture.montantAPayer) }}&nbsp;€</span>
                  {% endif %}
              {% else %}
                 <span class="text-muted"></span>
@@ -128,7 +133,7 @@
               {% if not facture.numeroFacture and not facture.isDevis %}
                 <a class="btn btn-default btn-xs" onclick="return confirm('Êtes vous sûr de vouloir facturer ?')" href="{{ path('facture_en_attente_facturer', { 'factureId': facture.id }) }}"> Créer la facture </a>
               {% endif %}
-              {% if (facture.numeroFacture and facture.paye) %}
+              {% if (facture.numeroFacture) %}
               <div class="modal fade" id="modal{{facture.id}}" tabindex="-1" role="dialog" aria-labelledby="modalLabel{{facture.id}}" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                   <div class="modal-content">
@@ -139,11 +144,7 @@
                      <h4 class="modal-title" id="modalLabel{{facture.id}}">Paiements de la Facture n°{{ facture.numeroFacture }}</h4>
                     </div>
                     <div class="modal-body">
-                    {% if facture.getPayeeAvecTropPercu %}
-                      <p>Payée avec le <b>trop perçu</b> et cloturée</p>
-                    {% elseif facture.cloture and not facture.getMesPaiements()%}
-                      <p>A été <b>cloturée</b></p>
-                    {% else %}
+                    {% if facture.getMesPaiements() %}
                     <table class="table table-striped">
                     <thead>
                         <tr>
@@ -164,6 +165,11 @@
                       {% endfor %}
                       </tbody>
                       </table>
+                    {% endif %}
+                    {% if facture.getPayeeAvecTropPercu %}
+                      <p>Utilisation du <b>trop perçu</b> et cloturée</p>
+                    {% elseif facture.cloture and not facture.getMesPaiements()%}
+                      <p>A été <b>cloturée</b></p>
                     {% endif %}
                     </div>
                     <div class="modal-footer">
@@ -186,5 +192,4 @@
                     {% endif %}
                   {% endif %}
               </td>
-              <td>
         </tr>
