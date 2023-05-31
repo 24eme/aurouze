@@ -133,6 +133,13 @@
                 <th colspan="5" class="text-right"><a href="javascript:void(0);" data-collection-target="#facture_lignes_collection"  class="btn btn-primary dynamic-collection-add"><span class="glyphicon glyphicon-plus-sign"></span></a></th>
             </tfoot>
         </table>
+        <td></td>
+        <td></td>
+        <div class="clearfix">
+          <p class="pull-right">
+            <strong>Total :</strong> <span id="totalFacture"></span> € TTC
+          </p>
+        </div>
         <div class="form-group">
             {{ form_errors(form.description) }}
             {{ form_label(form.description, "Informations complémentaires", {'label_attr': {'class': 'col-xs-2 control-label'}}) }}
@@ -179,5 +186,22 @@
         return false;
       }
     });
+    $('form').change(function(){
+        somme = 0
+        var table = document.getElementById("facture_lignes_collection");
+        for (var i = 0, row; row = table.rows[i]; i++) {
+            var quantite = parseFloat($(row.cells[1]).find('input').val().replace(",", "."))
+            console.log(quantite);
+            var prix_unitaire = parseFloat($(row.cells[2]).find('input').val().replace(",", "."))
+            console.log(prix_unitaire);
+            var taux_tva = parseFloat($(row.cells[3]).find('input').val().replace(",", "."))
+            console.log(taux_tva);
+            var s = quantite*(prix_unitaire+(prix_unitaire*taux_tva))
+            if(quantite && prix_unitaire && taux_tva){
+                somme += Math.round(s * 100) / 100
+            }
+        }
+        document.getElementById("totalFacture").innerHTML = somme;
+    })
     </script>
 {% endblock %}
