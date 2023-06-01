@@ -105,6 +105,10 @@ class Devis implements DocumentSocieteInterface, DocumentPlanifiableInterface, F
      */
     protected $zone;
 
+    /**
+     * @MongoDB\Field(type="bool")
+     */
+    protected $pdfTelecharge;
 
     public function __construct() {
         $this->etablissementInfos = new EtablissementInfos();
@@ -670,4 +674,23 @@ class Devis implements DocumentSocieteInterface, DocumentPlanifiableInterface, F
       return $this;
     }
 
+    /**
+     * Set pdfTelecharge
+     *
+     * @param boolean $pdfTelecharge
+     * @return self
+     */
+    public function setPdfTelecharge($pdfTelecharge) {
+        $this->pdfTelecharge = $pdfTelecharge;
+        return $this;
+    }
+
+    /**
+     * Get pdfTelecharge
+     *
+     * @return boolean $pdfTelecharge
+     */
+    public function getPdfTelecharge() {
+        return $this->pdfTelecharge;
+    }
 }

@@ -186,6 +186,10 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
      */
     protected $payeeAvecTropPercu;
 
+    /**
+     * @MongoDB\Field(type="bool")
+     */
+    protected $pdfTelecharge;
 
     public function __construct() {
         $this->lignes = new \Doctrine\Common\Collections\ArrayCollection();
@@ -1382,5 +1386,25 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
         return $this->payeeAvecTropPercu;
     }
 
+
+    /**
+     * Set pdfTelecharge
+     *
+     * @param boolean $pdfTelecharge
+     * @return self
+     */
+    public function setPdfTelecharge($pdfTelecharge) {
+        $this->pdfTelecharge = $pdfTelecharge;
+        return $this;
+    }
+
+    /**
+     * Get pdfTelecharge
+     *
+     * @return boolean $pdfTelecharge
+     */
+    public function getPdfTelecharge() {
+        return $this->pdfTelecharge;
+    }
 
 }

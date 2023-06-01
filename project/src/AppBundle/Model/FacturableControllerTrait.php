@@ -20,11 +20,16 @@ trait FacturableControllerTrait
         $manager = $this->get($type.'.manager');
         $repository = $manager->getRepository('AppBundle:'.ucfirst($type));
         $doc = $repository->findOneById($document);
+        $dm = $this->get('doctrine_mongodb')->getManager();
 
         $urlKey= basename( $this->uri = $_SERVER['REQUEST_URI']);
         if($doc->getSecretKey()  == $urlKey){
-         return $this->createPdfFacture($request,$document);
-
+            if(!$doc->getPdfTelecharge()){
+                $doc->setPdfTelecharge(true);
+                $dm->persist($doc);
+                $dm->flush();
+            }
+            return $this->createPdfFacture($request,$document);
         }
           else{
               throw new NotFoundHttpException();
