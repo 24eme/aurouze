@@ -436,7 +436,6 @@ class PassageController extends Controller
                 $passage->setEmailTransmission($contrat->getSociete()->getContactCoordonnee()->getEmail());
             }
             $dm->persist($passage);
-            $dm->persist($contrat);
             $dm->flush();
         }
 
