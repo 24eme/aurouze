@@ -1090,7 +1090,6 @@ class FactureController extends Controller
           $nbRelance = intval($facture->getNbRelance()) + 1;
           $facture->setNbRelance($nbRelance);
           $dm->flush();
-          $this->updateEmetteur($facture,$facture->getContrat());
           $relance = new Relance();
           $relance->setDateRelance(new \DateTime());
           $relance->setNumeroRelance($nbRelance);
@@ -1140,7 +1139,6 @@ class FactureController extends Controller
       if($relance){
         $fileDate = $relance->getDateRelance()->format("Y-m-d_His");
       }
-      $this->updateEmetteur($facture,$facture->getContrat());
       $html = $this->renderView('facture/pdfGeneriqueRelance.html.twig', array(
           'facture' => $facture,
           'lignes' => $lignes,
