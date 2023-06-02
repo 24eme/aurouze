@@ -24,9 +24,8 @@
         {% set techIdentite = passage.techniciens[0].identiteCourt %}
     {% endif %}
     {% if etablissement.commentairePlanification %}
-    <div class="well">
-        <b>Commentaire de planification : <span style="cursor:pointer;" class="glyphicon glyphicon-pencil text-primary commentaire_lien" data-url="{{ path('etablissement_commentaire', {'id': passage.etablissement.id , 'passageId': passage.id}) }}"></span></b>
-        <p title="Commentaire plannification">{{ etablissement.commentairePlanification | nl2br }}</p>
+    <div>
+        <p title="Commentaire plannification">{{ etablissement.commentairePlanification | nl2br }} <small><span style="cursor:pointer;" class="glyphicon glyphicon-pencil text-primary commentaire_lien" data-url="{{ path('etablissement_commentaire', {'id': passage.etablissement.id , 'passageId': passage.id}) }}"></span><small></p>
     </div>
     {% endif %}
     <div class="clearfix">
