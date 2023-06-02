@@ -69,7 +69,7 @@
                       <span data-toggle="tooltip" title="Déduction trop perçu {{ "%0.2f" | format((facture.montantTTC- facture.getMontantReelPaye)*-1) }} €">{{ "%0.2f" | format((facture.montantTTC- facture.getMontantReelPaye) *-1) }}&nbsp;€</span>
                  {% elseif facture.montantAPayer < 0 %}
                      <span data-toggle="tooltip" title="Trop perçu {{ "%0.2f" | format(facture.montantAPayer*-1) }} €">
-                     {% if facture.montantAPayer < 0 %}{{ "%0.2f" | format(facture.montantAPayer*-1) }}&nbsp;€{% endif %}
+                 {% if facture.montantAPayer < 0 %}+{{ "%0.2f" | format(facture.montantAPayer*-1) }}&nbsp;€{% endif %}
                      </span>
                 {% elseif facture.montantAPayer > 0%}
                 <span data-toggle="tooltip">{{ "%0.2f" | format(facture.montantAPayer) }}&nbsp;€</span>
@@ -108,7 +108,7 @@
                                   {% endif %}
                                 <li><a onclick="return confirm('Êtes vous sûr de vouloir cloturer cette facture ?')" href="{{ path('facture_cloturer', {'id': facture.societe.id, 'factureId': facture.id }) }}">Cloturer les paiements</a></li>
                               {% endif %}
-                              {% if (facture.payeeAvecTropPercu is same as (true)) %}
+                              {% if (facture.payeeAvecTropPercu) %}
                                 <li><a onclick="return confirm('Êtes vous sûr de vouloir décloturer cette facture et mettre à jour le trop perçu ?')" href="{{ path('facture_decloturer', {'id': facture.societe.id, 'factureId': facture.id }) }}">Décloturer et mettre à jour le trop perçu (remettre les paiements à 0)</a></li>
                               {% endif %}
                                 <li><a onclick="return confirm('Êtes vous sûr de vouloir décloturer cette facture ?')" href="{{ path('facture_decloturer', {'id': facture.societe.id, 'factureId': facture.id }) }}">Décloturer (remettre les paiements à 0)</a></li>
