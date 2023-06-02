@@ -265,6 +265,7 @@ class TourneeController extends Controller {
              $f = $uploadAttachementForm->getData()->getImageFile();
              if($f){
                  $attachement->setVisibleTechnicien(true);
+                 $attachement->setVisibleClient(true);
                  $attachement->setEtablissement($etablissement);
                  $dm->persist($attachement);
                  $etablissement->addAttachement($attachement);

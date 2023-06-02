@@ -445,7 +445,7 @@ class CalendarController extends Controller {
         $documents = [];
         if ($rdv->getPassage()) {
             $documents = $this->get('attachement.manager')->getRepository()
-                         ->findByEtablissement($rdv->getPassage()->getEtablissement(), \DateTimeImmutable::createFromMutable($rdv->getDateDebut()));
+                         ->findByPassageAndVisibleClient($rdv->getPassage());
         }
 
         $is_devis = false;

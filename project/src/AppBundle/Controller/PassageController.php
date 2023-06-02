@@ -774,14 +774,12 @@ class PassageController extends Controller
         $prestationArray = $dm->getRepository('AppBundle:Configuration')->findConfiguration()->getPrestationsArray();
 
         $documents = $this->get('attachement.manager')->getRepository()
-                         ->findByEtablissement($passage->getEtablissement(), \DateTimeImmutable::createFromMutable($passage->getDateDebut()));
+                         ->findByPassageAndVisibleClient($passage);
 
         $images = [];
         foreach($documents as $document){
             $attachement = $this->get('attachement.manager')->getRepository()->find($document->getId());
-            if($attachement->getVisibleClient() or ($attachement->getVisibleClient() === null and $attachement->getVisibleTechnicien())){
-                $images[] = $attachement->getBase64Src();
-            }
+            $images[] = $attachement->getBase64Src();
         }
         $createRapportVisitePdf->html = $this->renderView('passage/pdfRapport.html.twig', array(
             'passage' => $passage,

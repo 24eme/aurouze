@@ -157,8 +157,8 @@ class AttachementController extends Controller {
 
       }
 
-      if($attachement->getVisibleClient() === null and $attachement->getVisibleTechnicien()){
-          $attachement->setVisibleClient(true);
+      if($attachement->getVisibleClient() === null){
+          $attachement->setVisibleClient(false);
       }
 
       $attachement->setVisibleClient(!$attachement->getVisibleClient());
