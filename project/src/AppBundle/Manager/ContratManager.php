@@ -37,6 +37,8 @@ class ContratManager implements MouvementManagerInterface {
     const FREQUENCE_30JMOIS = '30JMOIS';
     const FREQUENCE_45JMOIS = '45JMOIS';
     const FREQUENCE_60J = '60J';
+    const ZONE_SEINE_ET_MARNE = "77";
+    const ZONE_PARIS = "75";
 
     const EXPORT_PCA_CLIENT = 0;
     const EXPORT_PCA_NUMERO_CONTRAT = 1;

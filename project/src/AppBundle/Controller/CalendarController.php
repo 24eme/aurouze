@@ -445,11 +445,13 @@ class CalendarController extends Controller {
         $documents = [];
         if ($rdv->getPassage()) {
             $documents = $this->get('attachement.manager')->getRepository()
-                         ->findByEtablissement($rdv->getPassage()->getEtablissement(), \DateTimeImmutable::createFromMutable($rdv->getDateDebut()));
+                         ->findByPassageAndVisibleClient($rdv->getPassage());
         }
 
+        $is_devis = false;
         if ($rdv->getPlanifiable() && $rdv->getPlanifiable()->getTypePlanifiable() === Devis::DOCUMENT_TYPE) {
             $template = 'calendar/rendezVousDevis.html.twig';
+            $is_devis = true;
         } else {
             $template = 'calendar/rendezVous.html.twig';
         }
@@ -469,9 +471,11 @@ class CalendarController extends Controller {
             'method' => 'POST',
             'attr' => array('id' => 'eventForm'),
             'rdv_libre' => !$rdv->getPlanifiable(),
+            'is_devis' => $is_devis,
         ));
 
         $form->handleRequest($request);
+
 
         if (!$form->isSubmitted() || !$form->isValid()) {
             return $this->render($template, array('rdv' => $rdv, 'form' => $form->createView(), 'service' => $request->get('service')));

@@ -67,7 +67,9 @@ class RendezVousType extends AbstractType {
         $builder->add('rendezVousConfirme', CheckboxType::class, array('label' => 'Rendez-vous confirmé ?', 'required' => false, 'label_attr' => array('class' => 'control-label')));
         $builder->add('all', CheckboxType::class, array('label' => 'Appliquer à tous les calendriers', 'required' => false, 'label_attr' => array('class' => 'control-label'), 'empty_data' => null, 'mapped' => false, 'data' => false));
 
-        $builder->add('prerequis', TextType::class, ['label' => 'Prérequis', 'required' => false, 'label_attr' => ['class' => 'control-label'], 'attr' => ['placeholder' => 'Récupérer les clés au bureau, appeler le client avant, etc ...']]);
+        if( !$options['is_devis']) {
+            $builder->add('prerequis', TextType::class, ['label' => 'Prérequis', 'required' => false, 'label_attr' => ['class' => 'control-label'], 'attr' => ['placeholder' => 'Récupérer les clés au bureau, appeler le client avant, etc ...']]);
+        }
     }
 
     /**
@@ -77,7 +79,8 @@ class RendezVousType extends AbstractType {
     {
         $resolver->setDefaults(array(
             'data_class' => 'AppBundle\Document\RendezVous',
-            'rdv_libre' => false
+            'rdv_libre' => false,
+            'is_devis' =>false,
         ));
     }
 

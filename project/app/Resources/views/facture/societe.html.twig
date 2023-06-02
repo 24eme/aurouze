@@ -30,8 +30,7 @@
         <div class="col-xs-3">
             <a data-toggle="modal" data-target="#exportSocieteForm" class="btn btn-default btn-block"><span class="glyphicon glyphicon-list"></span> Export des factures</a>
         </div>
-        </div>
-
+    </div>
     {% if(facturesPrevisionnel | length > 0) %}
     <h3>Factures en prévision</h3>
     <table class="table table-bordered table-striped text-muted">
@@ -52,7 +51,7 @@
             {% set totalRestant = 0.0 %}
             {% for facture in facturesPrevisionnel %}
                 {% set totalRestant = totalRestant + facture.montantAPayer %}
-                {{ include('facture/factureLigne.html.twig', {'facture': facture, 'societe' : societe}) }}
+                {{ include('facture/factureLigne.html.twig', {'facture': facture, 'societe' : societe, 'resteTropPaye' : resteTropPaye}) }}
             {% endfor %}
         </tbody>
       </table>
@@ -127,7 +126,7 @@
         <tbody>
             {% for facture in factures %}
              {% if facture.isDevis %}
-              {{ include('facture/factureLigne.html.twig', {'facture': facture, 'societe' : societe}) }}
+              {{ include('facture/factureLigne.html.twig', {'facture': facture, 'societe' : societe, 'resteTropPaye' : resteTropPaye}) }}
               {% endif %}
             {% endfor %}
         </tbody>
@@ -158,12 +157,12 @@
             {% for facture in factures %}
              {% if not facture.isDevis and not (facture.paye or facture.isAvoir or facture.isRedressee) and facture.numeroFacture %}
                 {% set totalRestant = totalRestant + facture.montantAPayer %}
-              {{ include('facture/factureLigne.html.twig', {'facture': facture, 'societe' : societe}) }}
+              {{ include('facture/factureLigne.html.twig', {'facture': facture, 'societe' : societe,'resteTropPaye' : resteTropPaye}) }}
               {% endif %}
             {% endfor %}
         </tbody>
       </table>
-
+  {% if resteTropPaye %}<h4 class="text-right" style="margin-top: 0;">Trop perçu restant à allouer : <strong>{{ resteTropPaye | number_format(2, '.', ' ') }} €</strong></h4>{% endif %}
       <h3>Factures payées</h3>
       <table class="table table-bordered table-striped">
           <thead>
@@ -174,7 +173,7 @@
                   <th class="col-xs-1">Écheance</th>
                   <th class="col-xs-1 text-right">Montant&nbsp;TTC</th>
                   <th class="col-xs-1 text-right">Montant&nbsp;payé</th>
-                  <th class="col-xs-1 text-right">Restant</th>
+                  <th class="col-xs-1 text-right">Trop perçu</th>
                   <th class="col-xm-1 text-right"></th>
                   <th class="col-xm-1 text-center"></th>
               </tr>
@@ -182,7 +181,7 @@
           <tbody>
               {% for facture in factures %}
                {% if facture.paye or facture.isAvoir or facture.isRedressee %}
-                  {{ include('facture/factureLigne.html.twig', {'facture': facture, 'societe' : societe}) }}
+                  {{ include('facture/factureLigne.html.twig', {'facture': facture, 'societe' : societe,'resteTropPaye' : resteTropPaye}) }}
                 {% endif %}
               {% endfor %}
           </tbody>

@@ -17,7 +17,7 @@ class AttachementRepository extends DocumentRepository {
     public function findLast() {
 
         return $this->createQueryBuilder()
-             ->select('_id', 'updatedAt', 'imageName', 'titre', 'originalName', 'etablissement', 'societe', 'visibleTechnicien', 'ext')
+             ->select('_id', 'updatedAt', 'imageName', 'titre', 'originalName', 'etablissement', 'societe', 'visibleTechnicien', 'ext','visibleClient')
              ->limit(10)
              ->sort(array('_id' => -1))
              ->getQuery()
@@ -27,7 +27,7 @@ class AttachementRepository extends DocumentRepository {
     public function findBySociete($societe)
 	{
         $attachments = array();
-		foreach($this->createQueryBuilder()->select('_id', 'updatedAt', 'imageName', 'titre', 'originalName', 'etablissement', 'societe', 'visibleTechnicien', 'ext')->field('societe')->equals($societe)->getQuery()->execute() as $attachement) {
+		foreach($this->createQueryBuilder()->select('_id', 'updatedAt', 'imageName', 'titre', 'originalName', 'etablissement', 'societe', 'visibleTechnicien', 'ext','visibleClient')->field('societe')->equals($societe)->getQuery()->execute() as $attachement) {
             $attachments[$attachement->getId()] = $attachement;
         }
 
@@ -36,17 +36,29 @@ class AttachementRepository extends DocumentRepository {
         return $attachments;
     }
 
-    public function findByEtablissement($etablissement, $date = null)
+    public function findByEtablissement($etablissement)
 	{
         $attachments = array();
-        $query = $this->createQueryBuilder()->select('_id', 'updatedAt', 'imageName', 'titre', 'originalName', 'etablissement', 'societe', 'visibleTechnicien', 'ext')
-                                            ->field('etablissement')->equals($etablissement);
-
-        if ($date) {
-            $query->field('updatedAt')->range($date->modify('today'), $date->modify('tomorrow'));
+        foreach($this->createQueryBuilder()->select('_id', 'updatedAt', 'imageName', 'titre', 'originalName', 'etablissement', 'societe', 'visibleTechnicien', 'ext','visibleClient')->field('etablissement')->equals($etablissement)->getQuery()->execute() as $attachement) {
+            $attachments[$attachement->getId()] = $attachement;
         }
 
-		foreach($query->getQuery()->execute() as $attachement) {
+        uasort($attachments,array("AppBundle\Document\Attachement", "cmpUpdateAt"));
+
+        return $attachments;
+    }
+
+    public function findByPassageAndVisibleClient($passage)
+    {
+        $attachments = array();
+        $query = $this->createQueryBuilder()->select('_id', 'updatedAt', 'imageName', 'titre', 'originalName', 'etablissement', 'societe', 'visibleTechnicien', 'ext','visibleClient','base64')
+                                            ->field('etablissement')->equals($passage->getEtablissement())
+                                            ->field('visibleClient')->equals(true);
+
+        $query->field('updatedAt')->range($passage->getDateDebut()->modify('today'), $passage->getDateDebut()->modify('tomorrow'));
+
+
+        foreach($query->getQuery()->execute() as $attachement) {
             $attachments[$attachement->getId()] = $attachement;
         }
 

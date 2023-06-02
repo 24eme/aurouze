@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Manager\FactureManager;
 use AppBundle\Manager\DevisManager;
 use AppBundle\Manager\PassageManager;
+use AppBundle\Manager\ContratManager;
 use AppBundle\Model\FacturableControllerTrait;
 use AppBundle\Document\Facture;
 use AppBundle\Document\LigneFacturable;
@@ -202,6 +203,8 @@ class FactureController extends Controller
             $origine->updateMontantPaye();
         }
 
+        $this->updateEmetteur($facture,$contrat);
+
         $dm->flush();
 
         return $this->redirectToRoute('facture_societe', array('id' => $societe->getId()));
@@ -234,10 +237,15 @@ class FactureController extends Controller
         ));
         $factures = $fm->findBySociete($societe);
 
+        $sommeMontantPayeReelParmiCeuxQuiUtiliseTropPercu = 0;
         $facturesPrevisionnel = array();
+
         foreach($factures as $facture) {
             if (!$facture->isDevis() && !($facture->isPaye() || $facture->isAvoir() || $facture->isRedressee()) && !$facture->getNumeroFacture()) {
                 $facturesPrevisionnel[] = $facture;
+            }
+            if($facture->getMesPaiements() and $facture->getPayeeAvecTropPercu()){
+                $sommeMontantPayeReelParmiCeuxQuiUtiliseTropPercu += $facture->getMontantReelPaye();
             }
         }
 
@@ -246,6 +254,7 @@ class FactureController extends Controller
         $solde = $fm->getSolde($societe);
         $totalFacture = $fm->getTotalFacture($societe);
         $totalPaye = $fm->getTotalPaye($societe);
+        $resteTropPaye = $fm->getResteTropPercu($societe) + $sommeMontantPayeReelParmiCeuxQuiUtiliseTropPercu;
 
         $exportSocieteForm = $this->createExportSocieteForm($societe);
 
@@ -255,7 +264,7 @@ class FactureController extends Controller
             $defaultDate = new \DateTime($this->container->getParameter('date_facturation'));
         }
 
-        return $this->render('facture/societe.html.twig', array('societe' => $societe, 'mouvements' => $mouvements,'hasDevis' => $hasDevis,  'factures' => $factures, 'facturesPrevisionnel' => $facturesPrevisionnel, 'exportSocieteForm' => $exportSocieteForm->createView(), 'solde' => $solde, 'totalFacture' => $totalFacture, 'totalPaye' => $totalPaye, 'defaultDate' => $defaultDate));
+        return $this->render('facture/societe.html.twig', array('societe' => $societe, 'mouvements' => $mouvements,'hasDevis' => $hasDevis,  'factures' => $factures, 'facturesPrevisionnel' => $facturesPrevisionnel, 'exportSocieteForm' => $exportSocieteForm->createView(), 'solde' => $solde, 'totalFacture' => $totalFacture, 'totalPaye' => $totalPaye, 'defaultDate' => $defaultDate, 'resteTropPaye' => $resteTropPaye));
     }
 
     /**
@@ -282,10 +291,15 @@ class FactureController extends Controller
             }
             $facture = $fm->create($societe, array($mouvement), $date);
             $facture->setDateFacturation($date);
+
             $contrat =  $facture->getContrat();
+
             if($contrat && $contrat->isBonbleu()){
               $facture->setDescription($contrat->getDescription());
             }
+
+            $this->updateEmetteur($facture,$contrat);
+
             $dm->persist($facture);
             $dm->flush();
         }
@@ -315,6 +329,32 @@ class FactureController extends Controller
         }
         return $this->redirectToRoute('facture_societe', array('id' => $societe->getId()));
     }
+
+
+    /**
+     * @Route("/payer-avec-trop-percu/{id}/{factureId}", name="facture_cloturer_payer_avec_trop_percu")
+     * @ParamConverter("societe", class="AppBundle:Societe")
+     */
+    public function cloturerEtPayerAvecTropPercuAction(Request $request, Societe $societe, $factureId) {
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $retour = ($request->get('retour', null));
+        $facture = $this->get('facture.manager')->getRepository()->findOneById($factureId);
+        $facture->cloturer();
+        $facture->payerAvecTropPercu();
+        $dm->persist($facture);
+        $dm->flush();
+
+        if($request->isXmlHttpRequest()) {
+
+            return new Response();
+        }
+
+        if($retour && ($retour == "relance")){
+          return $this->redirectToRoute('factures_retard');
+        }
+        return $this->redirectToRoute('facture_societe', array('id' => $societe->getId()));
+    }
+
 
     /**
      * @Route("/facture-en-attente/{factureId}/facturer", name="facture_en_attente_facturer")
@@ -978,7 +1018,7 @@ class FactureController extends Controller
       $dateFactureHaute = null;
       $nbRelances = null;
       $commerciaux = null;
-      $formFacturesEnRetard = $this->createForm(new FacturesEnRetardFiltresType($this->container, $this->get('doctrine_mongodb')->getManager()), null, array(
+      $formFacturesEnRetard = $this->createForm(new FacturesEnRetardFiltresType($this->container, $this->get('doctrine_mongodb')->getManager(),$societe), null, array(
           'action' => $this->generateUrl('factures_retard'),
           'method' => 'GET',
       ));
@@ -1050,7 +1090,6 @@ class FactureController extends Controller
           $nbRelance = intval($facture->getNbRelance()) + 1;
           $facture->setNbRelance($nbRelance);
           $dm->flush();
-
           $relance = new Relance();
           $relance->setDateRelance(new \DateTime());
           $relance->setNumeroRelance($nbRelance);
@@ -1100,7 +1139,6 @@ class FactureController extends Controller
       if($relance){
         $fileDate = $relance->getDateRelance()->format("Y-m-d_His");
       }
-
       $html = $this->renderView('facture/pdfGeneriqueRelance.html.twig', array(
           'facture' => $facture,
           'lignes' => $lignes,
@@ -1168,11 +1206,18 @@ class FactureController extends Controller
         $fromName = $parameters['coordonnees']['nom'];
         $subject = "FACTURE NON PAYEE ( FACTURE n°".$facture->getNumeroFacture()." de ".$facture->getMontantTTC()." € )";
 
+        $email_footer = $this->container->getParameter('email_footer');
+
+        $commercial_SEINE_ET_MARNE = ($this->container->getParameter("commercial_seine_et_marne")) ? $this->container->getParameter("commercial_seine_et_marne") : null;
+        if(($facture->getCommercial()->getNom() == $commercial_SEINE_ET_MARNE )or ($facture->getContrat() && $facture->getContrat()->getZone() == ContratManager::ZONE_SEINE_ET_MARNE)){
+            $email_footer = $this->container->getParameter('email_footer_SEINE_ET_MARNE');
+        }
+
         if( !$facture->getNbRelance()){
-            $body = $this->render('facture/mailPremiereRelance.html.twig', ['facture' => $facture, 'dateLimite' => date('d/m/Y', strtotime(' + 10 days'))])->getContent();
+            $body = $this->render('facture/mailPremiereRelance.html.twig', ['facture' => $facture, 'dateLimite' => date('d/m/Y', strtotime(' + 10 days')),'email_footer' => $email_footer])->getContent();
         }
         else{
-            $body = $this->render('facture/mailDeuxiemeRelance.html.twig', ['facture' => $facture, 'dateLimite' => date('d/m/Y', strtotime(' + 8 days'))])->getContent();
+            $body = $this->render('facture/mailDeuxiemeRelance.html.twig', ['facture' => $facture, 'dateLimite' => date('d/m/Y', strtotime(' + 8 days')),'email_footer' => $email_footer])->getContent();
         }
 
         if($facture->getSociete()->getContactCoordonnee()->getEmailFacturation()){
@@ -1249,13 +1294,21 @@ class FactureController extends Controller
           $fromName = $parameters['coordonnees']['nom'];
           $prefix_subject =  $parameters['coordonnees']['prefix_objet'];
 
+          $email_footer = $this->container->getParameter('email_footer');
+
+          $commercial_SEINE_ET_MARNE = ($this->container->getParameter("commercial_seine_et_marne")) ? $this->container->getParameter("commercial_seine_et_marne") : null;
+          if(($facture->getCommercial()->getNom() == $commercial_SEINE_ET_MARNE )or ($facture->getContrat() && $facture->getContrat()->getZone() == ContratManager::ZONE_SEINE_ET_MARNE)){
+              $email_footer = $this->container->getParameter('email_footer_SEINE_ET_MARNE');
+          }
+
           $subject = $prefix_subject." Facture n°".$facture->getNumeroFacture();
           if($facture->isAvoir()){
-            $body = $this->render('facture/mailAvoir.html.twig', ['facture' => $facture])->getContent();
+            $body = $this->render('facture/mailAvoir.html.twig', ['facture' => $facture,'email_footer' => $email_footer])->getContent();
           }
           else{
-            $body = $this->render('facture/mailFacture.html.twig', ['facture' => $facture])->getContent();
+            $body = $this->render('facture/mailFacture.html.twig', ['facture' => $facture,'email_footer' => $email_footer])->getContent();
           }
+
           if($facture->getSociete()->getContactCoordonnee()->getEmailFacturation()){
             $toEmail = $facture->getSociete()->getContactCoordonnee()->getEmailFacturation();
           }
@@ -1317,5 +1370,19 @@ class FactureController extends Controller
             return $this->render('facture/listMouvementsPouvantEtreFacturesAction.html.twig',array('mouvements'=>$mouvements, 'secteur'=>$secteur));
         }
 
+
+        private function updateEmetteur(Facture $facture,Contrat $contrat = null){
+            $commercialSeineEtMarne = $this->container->getParameter('commercial_seine_et_marne') ? $this->container->getParameter('commercial_seine_et_marne') : null;
+            if($facture->getCommercial() && $facture->getCommercial()->getNom() == $commercialSeineEtMarne or ($contrat and $contrat->getZone() == ContratManager::ZONE_SEINE_ET_MARNE)) {
+                $parameters = $this->container->getParameter('facture');
+                $facture->getEmetteur()->setNom($parameters['emetteur_SEINE_ET_MARNE']['nom']);
+                $facture->getEmetteur()->setAdresse($parameters['emetteur_SEINE_ET_MARNE']['adresse']);
+                $facture->getEmetteur()->setCodePostal($parameters['emetteur_SEINE_ET_MARNE']['code_postal']);
+                $facture->getEmetteur()->setCommune($parameters['emetteur_SEINE_ET_MARNE']['commune']);
+                $facture->getEmetteur()->setTelephone($parameters['emetteur_SEINE_ET_MARNE']['telephone']);
+                $facture->getEmetteur()->setFax($parameters['emetteur_SEINE_ET_MARNE']['fax']);
+                $facture->getEmetteur()->setEmail($parameters['emetteur_SEINE_ET_MARNE']['email']);
+            }
+        }
 
 }

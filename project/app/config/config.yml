@@ -46,7 +46,6 @@ twig:
         application: "%application%"
         calendar_extra: "%calendar_extra%"
         certification_bois: "%certification_bois%"
-        email_footer: '%email_footer%'
         banque: '%banque%'
 doctrine_mongodb:
     connections:

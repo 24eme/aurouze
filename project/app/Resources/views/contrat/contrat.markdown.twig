@@ -1,18 +1,23 @@
-{{ application.adresse_commune }}, le {{ contrat.dateCreation|date("d/m/Y") }}
+{% if(contrat.zone is same as (constant('AppBundle\\Manager\\ContratManager::ZONE_SEINE_ET_MARNE'))) %}{{ enteteSeineEtMarne.adresse_commune }}{% else %}{{ application.adresse_commune }}{% endif %}, le {{ contrat.dateCreation|date("d/m/Y") }}
 
 >{{ contrat.devisDestinataire|trim|replace({',': ',</br>'})|raw }}  
 >{{ contrat.devisAdresse.adresseFormatee | nl2br|trim|raw }}  
 >{{ contrat.devisAdresse.codePostal }} {{ contrat.devisAdresse.commune|trim|raw }}
 
-# PROPOSITION {% if certification_bois and constant('AppBundle\\Manager\\ContratManager::MOYEN_3D') not in contrat.moyens %}COMMERCIALE{% else %}DE PREVENTION ET LUTTE CONTRE LES NUISIBLES ET PARASITES{% endif %}
+# {% if contrat.typeContrat is same as (constant('AppBundle\\Manager\\ContratManager::TYPE_CONTRAT_PONCTUEL')) %}PROPOSITION PONCTUELLE {% elseif (contrat.typeContrat is same as (constant('AppBundle\\Manager\\ContratManager::TYPE_CONTRAT_RECONDUCTION_TACITE'))) %}CONTRAT {% else %}PROPOSITION {% endif %}{% if certification_bois and constant('AppBundle\\Manager\\ContratManager::MOYEN_3D') not in contrat.moyens %}COMMERCIALE{% else %}DE PREVENTION ET LUTTE CONTRE LES NUISIBLES ET PARASITES{% endif %}
 
 entre
 
 ```
-
+{% if(contrat.zone and contrat.zone is same as (constant('AppBundle\\Manager\\ContratManager::ZONE_SEINE_ET_MARNE'))) %}
+{{ enteteSeineEtMarne.adresse_libelle }}
+{{ enteteSeineEtMarne.adresse_adresse }}
+{{ enteteSeineEtMarne.adresse_cp }} {{ enteteSeineEtMarne.adresse_commune }}
+{% else %}
 {{ application.adresse_libelle }}
 {{ application.adresse_adresse }}
 {{ application.adresse_cp }} {{ application.adresse_commune }}
+{% endif %}
 
 ```
 

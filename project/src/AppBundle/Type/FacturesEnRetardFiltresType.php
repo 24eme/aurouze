@@ -18,10 +18,12 @@ class FacturesEnRetardFiltresType extends AbstractType {
 
     protected $container;
     protected $dm;
+    protected $societe;
 
-    public function __construct(ContainerInterface $container, DocumentManager $documentManager) {
+    public function __construct(ContainerInterface $container, DocumentManager $documentManager,$societe) {
         $this->container = $container;
         $this->dm = $documentManager;
+        $this->societe = $societe;
     }
 
 	/**
@@ -31,12 +33,14 @@ class FacturesEnRetardFiltresType extends AbstractType {
 	public function buildForm(FormBuilderInterface $builder, array $options)
 	{
 		$nbRelances = array_merge(array("Toutes les factures"), FactureManager::$types_nb_relance);
-		//$dateFactureHaute = new \DateTime();
-    //$dateFactureBasse = new \DateTime();
 
-        $date = new \DateTime();
-        $interval = new \DateInterval('P2Y');
-        $dateFactureBasse = $date->sub($interval);; //mettre la date du jour - 2 ans
+        $dateFactureBasse = null;
+
+        if(!$this->societe){
+            $date = new \DateTime();
+            $interval = new \DateInterval('P2Y');
+            $dateFactureBasse = $date->sub($interval); //mettre la date du jour - 2 ans
+        }
 
 
 		$builder->add('nbRelances', ChoiceType::class, array('label' => 'Nombre de relance',

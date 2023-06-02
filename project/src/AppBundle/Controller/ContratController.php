@@ -456,8 +456,11 @@ class ContratController extends Controller {
     public function markdownAction(Request $request, Contrat $contrat) {
         $dm = $this->get('doctrine_mongodb')->getManager();
         $cm = $this->get('contrat.manager');
+
+        $contratConfSeineEtMarne = $this->container->getParameter('contrat_seine_et_marne') ? $this->container->getParameter('contrat_seine_et_marne') : null;
+
         if (!$contrat->getMarkdown()) {
-            $contrat->setMarkdown($this->renderView('contrat/contrat.markdown.twig', array('contrat' => $contrat, 'societe' => $contrat->getSociete(), 'contratManager' => $cm)));
+            $contrat->setMarkdown($this->renderView('contrat/contrat.markdown.twig', array('contrat' => $contrat, 'societe' => $contrat->getSociete(), 'contratManager' => $cm, 'enteteSeineEtMarne' => $contratConfSeineEtMarne)));
             $dm->persist($contrat);
             $dm->flush();
         }
@@ -475,14 +478,14 @@ class ContratController extends Controller {
         }
 
         $formGenerator = $this->createForm(new ContratGeneratorType(), $contrat, array(
-            'action' => $this->generateUrl('contrat_markdown', array('id' => $contrat->getId())),
+            'action' => $this->generateUrl('contrat_markdown', array('id' => $contrat->getId(),'enteteSeineEtMarne' => $contratConfSeineEtMarne)),
             'method' => 'POST',
         ));
 
         $formGenerator->handleRequest($request);
         if ($formGenerator->isSubmitted() && $formGenerator->isValid()) {
             $contrat = $formGenerator->getData();
-            $contrat->setMarkdown($this->renderView('contrat/contrat.markdown.twig', array('contrat' => $contrat, 'contratManager' => $cm)));
+            $contrat->setMarkdown($this->renderView('contrat/contrat.markdown.twig', array('contrat' => $contrat, 'contratManager' => $cm, 'enteteSeineEtMarne' => $contratConfSeineEtMarne)));
             $dm->persist($contrat);
             $dm->flush();
         }

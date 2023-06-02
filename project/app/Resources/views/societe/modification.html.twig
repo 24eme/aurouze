@@ -34,7 +34,11 @@
                 </div>
                 <div class="row">
                     <div class="col-xs-5">
+                    {% if autoCodeComptable %}
+                        {{ form_row(form.codeComptable,{attr: { "readonly" : "readonly", "placeholder":"Généré automatiquement"}}) }}
+                    {% else %}
                         {{ form_row(form.codeComptable) }}
+                    {% endif %}
                     </div>
                     <div class="col-xs-5">
                         {{ form_row(form.provenance) }}

@@ -27,7 +27,7 @@ parameters:
     knp_snappy_pdfbinary: xvfb-run wkhtmltopdf
     knp_snappy_imagebinary: xvfb-run wkhtmltoimage
     email_footer: |-
-
+    email_footer_SEINE_ET_MARNE: |-
     banque:
         creditorId: 'XXXXXXXXXXX'
         creditorName: 'ETABLISSEMENTS XXXX XXXXXXXXX'
@@ -51,6 +51,11 @@ parameters:
         numero : '00000000'
         replyemail : "emailReplyTransmission@dns.fr"
     commercial_seine_et_marne: "nom_commercial"
+    contrat_seine_et_marne:
+        adresse_libelle: ''
+        adresse_adresse: ''
+        adresse_cp: ''
+        adresse_commune: ''
     facture:
         emetteur:
             nom: ""

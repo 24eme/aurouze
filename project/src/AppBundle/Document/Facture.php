@@ -181,6 +181,16 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
      */
     protected $dateEnvoiMail;
 
+    /**
+     * @MongoDB\Field(type="bool")
+     */
+    protected $payeeAvecTropPercu;
+
+    /**
+     * @MongoDB\Field(type="date")
+     */
+    protected $pdfTelecharge;
+
     public function __construct() {
         $this->lignes = new \Doctrine\Common\Collections\ArrayCollection();
         $this->emetteur = new Soussigne();
@@ -1040,7 +1050,15 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
 
     public function decloturer() {
         $this->updateMontantPaye();
+        if($this->getPayeeAvecTropPercu()){
+            $this->setPayeeAvecTropPercu(false);
+        }
     }
+
+    public function payerAvecTropPercu(){ //signifie qu'il a été cloturé pour le solde
+        $this->setPayeeAvecTropPercu(true);
+    }
+
     public function isDecloturable() {
        return $this->getMontantPayeCalcule() != $this->getMontantTTC();
     }
@@ -1321,6 +1339,72 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
      */
     public function getDateEnvoiMail() {
       return $this->dateEnvoiMail;
+    }
+
+    public function getMesPaiements(){
+    $arrayPaiements = array();
+        foreach ($this->getPaiements() as $paiements) {
+          foreach ($paiements->getPaiement() as $paiement) {
+              if ($paiement->getFacture()->getId() == $this->getId()) {
+                $arrayPaiements[] = $paiement;
+              }
+          }
+        }
+    return $arrayPaiements;
+    }
+
+    public function getMontantReelPaye(){
+    $paiementReel = 0;
+        foreach ($this->getPaiements() as $paiements) {
+          foreach ($paiements->getPaiement() as $paiement) {
+              if ($paiement->getFacture()->getId() == $this->getId()) {
+                $paiementReel += $paiement->getMontant();
+              }
+          }
+        }
+    return $paiementReel;
+    }
+
+
+    /**
+     * Set payeeAvecTropPercu
+     *
+     * @param boolean $payeeAvecTropPercu
+     * @return self
+     */
+    public function setPayeeAvecTropPercu($payeeAvecTropPercu) {
+        $this->payeeAvecTropPercu = $payeeAvecTropPercu;
+        return $this;
+    }
+
+    /**
+     * Get payeeAvecTropPercu
+     *
+     * @return boolean $payeeAvecTropPercu
+     */
+    public function getPayeeAvecTropPercu() {
+        return $this->payeeAvecTropPercu;
+    }
+
+
+    /**
+     * Set pdfTelecharge
+     *
+     * @param date $pdfTelecharge
+     * @return self
+     */
+    public function setPdfTelecharge($pdfTelecharge) {
+        $this->pdfTelecharge = $pdfTelecharge;
+        return $this;
+    }
+
+    /**
+     * Get pdfTelecharge
+     *
+     * @return date $pdfTelecharge
+     */
+    public function getPdfTelecharge() {
+        return $this->pdfTelecharge;
     }
 
 }
