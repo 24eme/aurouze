@@ -191,11 +191,8 @@
         var table = document.getElementById("facture_lignes_collection");
         for (var i = 0, row; row = table.rows[i]; i++) {
             var quantite = parseFloat($(row.cells[1]).find('input').val().replace(",", "."))
-            console.log(quantite);
             var prix_unitaire = parseFloat($(row.cells[2]).find('input').val().replace(",", "."))
-            console.log(prix_unitaire);
             var taux_tva = parseFloat($(row.cells[3]).find('input').val().replace(",", "."))
-            console.log(taux_tva);
             var s = quantite*(prix_unitaire+(prix_unitaire*taux_tva))
             if(quantite && prix_unitaire && taux_tva){
                 somme += Math.round(s * 100) / 100
