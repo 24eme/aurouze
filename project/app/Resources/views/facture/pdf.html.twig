@@ -65,7 +65,7 @@
     {% for ligne in lignes %}
         <tr>
             <td>
-                {% if(ligne.libelle is defined) %}{{ ligne.libelle|replace({'1/1': ''}) }}<br />{% endif %}
+                {% if(ligne.libelle is defined) %}{{ ligne.libelle|replace({' 1/1 ': ' '}) }}<br />{% endif %}
                 {% if ligne.referenceClient is defined and ligne.referenceClient %}<small><small>Votre Réf CDE : {{ ligne.referenceClient }}</small><br /></small>{% endif %}
                 {% if ligne.details is defined %}
                 <small>
