@@ -44,7 +44,7 @@
                   <span class="text-muted">{{ "%0.2f" | format(facture.montantTTC)  }}&nbsp;€</span>
                   <span title="Remboursé par chèque" style="cursor: help" class="pull-right label label-xs label-info">Chq</span>
                 {% endif %}
-              {% elseif(not facture.getMesPaiements and facture.cloture or facture.getPayeeAvecTropPercu)%}
+              {% elseif((not facture.getMesPaiements and facture.getPayeeAvecTropPercu) or facture.cloture)%}
                   <a type="button" data-toggle="modal" data-target="#modal{{facture.id}}" title="Cloturé" style="cursor:pointer;text-decoration: none;"><span class="text-muted">{{ "%0.2f" | format(facture.getMontantReelPaye())  }}&nbsp;€</span></a>
               {% elseif(facture.isRedressee) %}
                 <a type="button" data-toggle="modal" data-target="#modal{{facture.id}}" style="cursor:pointer;text-decoration: none;"><span class="text-muted">{{ "%0.2f" | format(facture.montantPaye)  }}&nbsp;€</span></a>
@@ -104,7 +104,7 @@
                             {% if(not facture.isAvoir) %}
                               {% if(not facture.iscloture) %}
                                   {% if (resteTropPaye and facture.montantTTC < resteTropPaye) %}
-                                      <li><a onclick="return confirm('Êtes vous sûr de vouloir de payer avec le solde et de cloturer cette facture ?')" href="{{ path('facture_cloturer_payer_avec_trop_percu', {'id': facture.societe.id, 'factureId': facture.id }) }}">Payer avec le trop perçu restant et cloturer les paiements</a></li>
+                                      <li><a onclick="return confirm('Êtes vous sûr de vouloir de payer avec le trop perçu restant et de cloturer cette facture ?')" href="{{ path('facture_cloturer_payer_avec_trop_percu', {'id': facture.societe.id, 'factureId': facture.id }) }}">Payer avec le trop perçu restant et cloturer les paiements</a></li>
                                   {% endif %}
                                 <li><a onclick="return confirm('Êtes vous sûr de vouloir cloturer cette facture ?')" href="{{ path('facture_cloturer', {'id': facture.societe.id, 'factureId': facture.id }) }}">Cloturer les paiements</a></li>
                               {% endif %}
@@ -147,7 +147,6 @@
                      <h4 class="modal-title" id="modalLabel{{facture.id}}">Paiements de la Facture n°{{ facture.numeroFacture }}</h4>
                     </div>
                     <div class="modal-body">
-                    {% if facture.getMesPaiements() %}
                     <table class="table table-striped">
                     <thead>
                         <tr>
@@ -158,6 +157,7 @@
                         </tr>
                       </thead>
                       <tbody>
+                      {% if facture.getMesPaiements() %}
                       {% for paiement in facture.getMesPaiements() %}
                           <tr>
                           <td>{{ paiement.datePaiement | date("d-m-Y") }}</td>
@@ -166,14 +166,25 @@
                           <td class="text-right">{{ paiement.montant | number_format(2, ',', ' ')}}&nbsp;€ </td>
                           </tr>
                       {% endfor %}
+                      {% endif %}
+                      {% if facture.getPayeeAvecTropPercu %}
+                          <tr>
+                          <td></td>
+                          <td></td>
+                          <td>Trop perçu et Cloture</td>
+                          <td class="text-right">{{ "%0.2f" | format((facture.montantTTC- facture.getMontantReelPaye)) }}&nbsp;€</td>
+                          </tr>
+                      {% elseif facture.cloture %}
+                          <tr>
+                          <td></td>
+                          <td></td>
+                          <td>CLOTURE</td>
+                          <td class="text-right">0.00&nbsp;€ </td>
+                          </tr>
+                      {% endif %}
                       </tbody>
                       </table>
-                    {% endif %}
-                    {% if facture.getPayeeAvecTropPercu %}
-                      <p>Utilisation du <b>trop perçu</b> et cloturée</p>
-                    {% elseif facture.cloture and not facture.getMesPaiements()%}
-                      <p>A été <b>cloturée</b></p>
-                    {% endif %}
+
                     </div>
                     <div class="modal-footer">
                       <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
