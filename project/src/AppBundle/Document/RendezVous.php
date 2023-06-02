@@ -142,7 +142,7 @@ class RendezVous {
         }
 
         if ($planifiable->isSaisieTechnicien()) {
-            if ($planifiable->isPdfNonEnvoye()) {
+            if ($planifiable->isPdfNonEnvoye() || $planifiable->isPdfNonEnvoye() === null) {
                 $colors['text'] = self::COLOR_TEXT_BROWN;
                 $colors['background'] = self::COLOR_STATUS_GOLD;
             } else {

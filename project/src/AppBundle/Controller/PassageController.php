@@ -449,8 +449,9 @@ class PassageController extends Controller
             }
             return $this->render('passage/edition.html.twig', array('passage' => $passage, 'form' => $form->createView(), 'service' => $request->get('service')));
         }
-        $passageManager = $this->get('passage.manager');
 
+
+        $passageManager = $this->get('passage.manager');
 
         if ($passage->getMouvementDeclenchable() && !$passage->getMouvementDeclenche()) {
             if ($contrat->generateMouvement($passage)) {
@@ -458,6 +459,8 @@ class PassageController extends Controller
             }
         }
         $passage->setDateRealise($passage->getDateDebut());
+        $passage->setSaisieTechnicien(($passage->getEmailTransmission() || $passage->getNomTransmission() || $passage->getSignatureBase64()) && $passage->getDescription());
+
         $dm->persist($passage);
         $dm->persist($contrat);
         $dm->flush();

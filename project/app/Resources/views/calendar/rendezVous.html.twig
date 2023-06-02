@@ -23,7 +23,7 @@
                       </button>
                   {% elseif (not rdv.passage.emailTransmission and rdv.passage.getPdfNonEnvoye) %}
                         <button class="btn btn-sm btn-block" style="background-color:{{rdv.calculateTilesColors().background}}; color:{{rdv.calculateTilesColors().text}};">Pdf non imprimé</button>
-                      {% elseif (rdv.passage.getPdfNonEnvoye) %}
+                    {% elseif (rdv.passage.getPdfNonEnvoye or rdv.passage.getPdfNonEnvoye is same as (null)) %}
                         <button class="btn btn-md btn-block" style="background-color:{{rdv.calculateTilesColors().background}}; color:{{rdv.calculateTilesColors().text}};">
                           Pdf non envoyé
                         </button>
