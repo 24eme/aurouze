@@ -106,7 +106,7 @@ class Devis implements DocumentSocieteInterface, DocumentPlanifiableInterface, F
     protected $zone;
 
     /**
-     * @MongoDB\Field(type="bool")
+     * @MongoDB\Field(type="date")
      */
     protected $pdfTelecharge;
 
@@ -677,7 +677,7 @@ class Devis implements DocumentSocieteInterface, DocumentPlanifiableInterface, F
     /**
      * Set pdfTelecharge
      *
-     * @param boolean $pdfTelecharge
+     * @param date $pdfTelecharge
      * @return self
      */
     public function setPdfTelecharge($pdfTelecharge) {
@@ -688,7 +688,7 @@ class Devis implements DocumentSocieteInterface, DocumentPlanifiableInterface, F
     /**
      * Get pdfTelecharge
      *
-     * @return boolean $pdfTelecharge
+     * @return date $pdfTelecharge
      */
     public function getPdfTelecharge() {
         return $this->pdfTelecharge;

@@ -15,7 +15,27 @@ trait FacturableControllerTrait
      */
     public function pdfAction(Request $request, $document)
     {
+        $type = strtolower(strtok($document, '-'));
+        $manager = $this->get($type.'.manager');
+        $repository = $manager->getRepository('AppBundle:'.ucfirst($type));
+        $doc = $repository->findOneById($document);
 
+        $urlKey= basename( $this->uri = $_SERVER['REQUEST_URI']);
+
+        if($doc->getSecretKey() == $urlKey){
+            return $this->render('facture/telechargementPdf.html.twig', array('doc' => $doc));
+        }
+          else{
+              throw new NotFoundHttpException();
+        }
+    }
+
+
+    /**
+    *@Route("/public/download/{document}/pdf/{key}", name="facturable_telechargement_pdf")
+    */
+    public function telechargementPdfAction(Request $request, $document)
+    {
         $type = strtolower(strtok($document, '-'));
         $manager = $this->get($type.'.manager');
         $repository = $manager->getRepository('AppBundle:'.ucfirst($type));
@@ -23,18 +43,19 @@ trait FacturableControllerTrait
         $dm = $this->get('doctrine_mongodb')->getManager();
 
         $urlKey= basename( $this->uri = $_SERVER['REQUEST_URI']);
-        if($doc->getSecretKey()  == $urlKey){
+
+        if($doc->getSecretKey() == $urlKey){
             if(!$doc->getPdfTelecharge()){
-                $doc->setPdfTelecharge(true);
+                $doc->setPdfTelecharge(new \DateTime());
                 $dm->persist($doc);
                 $dm->flush();
             }
             return $this->createPdfFacture($request,$document);
         }
-          else{
-              throw new NotFoundHttpException();
-        }
+
+        throw new NotFoundHttpException();
     }
+
 
 
     public function createPdfFacture(Request $request, $document){

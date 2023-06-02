@@ -187,7 +187,7 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
     protected $payeeAvecTropPercu;
 
     /**
-     * @MongoDB\Field(type="bool")
+     * @MongoDB\Field(type="date")
      */
     protected $pdfTelecharge;
 
@@ -1390,7 +1390,7 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
     /**
      * Set pdfTelecharge
      *
-     * @param boolean $pdfTelecharge
+     * @param date $pdfTelecharge
      * @return self
      */
     public function setPdfTelecharge($pdfTelecharge) {
@@ -1401,7 +1401,7 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
     /**
      * Get pdfTelecharge
      *
-     * @return boolean $pdfTelecharge
+     * @return date $pdfTelecharge
      */
     public function getPdfTelecharge() {
         return $this->pdfTelecharge;
