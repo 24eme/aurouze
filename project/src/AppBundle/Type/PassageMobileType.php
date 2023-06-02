@@ -124,8 +124,8 @@ class PassageMobileType extends AbstractType
           }
         }
         $builder->add('emailTransmission', EmailType::class, array(
-          'label' => 'Email * :',
-          'required' => true,
+          'label' => 'Email :',
+          'required' => false,
           'data' => $defaultEmail,
           'attr' => array('class' => " phoenix","placeholder" => 'Email de transmission')));
 
