@@ -174,7 +174,7 @@
                           <td>Trop perçu et Cloture</td>
                           <td class="text-right">{{ "%0.2f" | format((facture.montantTTC- facture.getMontantReelPaye)) }}&nbsp;€</td>
                           </tr>
-                      {% elseif facture.cloture %}
+                      {% elseif facture.cloture and not facture.getMesPaiements()%}
                           <tr>
                           <td></td>
                           <td></td>
