@@ -55,7 +55,7 @@ class AttachementRepository extends DocumentRepository {
                                             ->field('etablissement')->equals($passage->getEtablissement())
                                             ->field('visibleClient')->equals(true);
 
-        $query->field('updatedAt')->range($passage->getDateDebut()->modify('today'), $passage->getDateDebut()->modify('tomorrow'));
+        $query->field('updatedAt')->range(\DateTimeImmutable::createFromMutable($passage->getDateDebut())->modify('today'), \DateTimeImmutable::createFromMutable($passage->getDateDebut())->modify('tomorrow'));
 
 
         foreach($query->getQuery()->execute() as $attachement) {
