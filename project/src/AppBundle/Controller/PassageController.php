@@ -24,6 +24,7 @@ use AppBundle\Manager\ContratManager;
 use AppBundle\Document\Prestation;
 use AppBundle\Manager\EtablissementManager;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Doctrine\ODM\MongoDB\LockMode;
 
 class PassageController extends Controller
 {
