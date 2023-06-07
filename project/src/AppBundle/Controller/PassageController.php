@@ -532,12 +532,37 @@ class PassageController extends Controller
             $dm->flush();
         }
 
-        return new Response(
-            $this->get('knp_snappy.pdf')->getOutputFromHtml($rapportVisitePdf->html, $this->getPdfGenerationOptions()), 200, array(
+        if( !$rapportVisitePdf->pdfs){
+            return new Response(
+                $this->get('knp_snappy.pdf')->getOutputFromHtml($rapportVisitePdf->html, $this->getPdfGenerationOptions()), 200, array(
+                    'Content-Type' => 'application/pdf',
+                    'Content-Disposition' => 'attachment; filename="' . $rapportVisitePdf->filename . '"'
+                )
+            );
+        }
+
+        $tmpfile = $this->container->getParameter('kernel.cache_dir').'/PDFRAPPORT_'.$passage->getId().uniqid();
+        $this->get('knp_snappy.pdf')->generateFromHtml($rapportVisitePdf->html,$tmpfile,$this->getPdfGenerationOptions());
+
+        foreach($rapportVisitePdf->pdfs as $pdf){
+            $filename  = '/tmp/output-pdf-'.$passage->getId().rand().'.pdf';
+            $concat = "/tmp/output-pdf-concact-".$passage->getId().rand();
+            file_put_contents($filename,base64_decode($pdf->getBase64()));
+            exec(escapeshellcmd('pdftk '.$tmpfile.' '.$filename.' cat output '.$concat), $output, $exitcode);
+            $tmpfile = $concat;
+            unlink($filename);
+        }
+
+        if ($exitcode !== 0) {
+            throw new \Exception('pdftk failed with error: '.implode(', ', $output));
+        }
+
+        return new Response(file_get_contents($tmpfile), 200, array(
                 'Content-Type' => 'application/pdf',
                 'Content-Disposition' => 'attachment; filename="' . $rapportVisitePdf->filename . '"'
             )
         );
+
         if($request->get('service')) {
 
             return $this->redirect($request->get('service'));
@@ -551,14 +576,41 @@ class PassageController extends Controller
      */
     public function pdfRapportDownloadAction(Request $request, Passage $passage) {
         $rapportVisitePdf = $this->createRapportVisitePdf($passage);
-
         if ($request->get('output') == 'html') {
 
             return new Response($rapportVisitePdf->html, 200);
         }
 
-        return new Response(
-            $this->get('knp_snappy.pdf')->getOutputFromHtml($rapportVisitePdf->html, $this->getPdfGenerationOptions()), 200, array(
+        if (! shell_exec(sprintf("which %s", escapeshellarg('pdftk')))) {
+            throw new \LogicException('missing pdftk binary');
+        }
+
+        if( !$rapportVisitePdf->pdfs){
+            return new Response(
+                $this->get('knp_snappy.pdf')->getOutputFromHtml($rapportVisitePdf->html, $this->getPdfGenerationOptions()), 200, array(
+                    'Content-Type' => 'application/pdf',
+                    'Content-Disposition' => 'attachment; filename="' . $rapportVisitePdf->filename . '"'
+                )
+            );
+        }
+
+        $tmpfile = $this->container->getParameter('kernel.cache_dir').'/PDFRAPPORT_'.$passage->getId().uniqid();
+        $this->get('knp_snappy.pdf')->generateFromHtml($rapportVisitePdf->html,$tmpfile,$this->getPdfGenerationOptions());
+
+        foreach($rapportVisitePdf->pdfs as $pdf){
+            $filename  = '/tmp/output-pdf-'.$passage->getId().rand().'.pdf';
+            $concat = "/tmp/output-pdf-concact-".$passage->getId().rand();
+            file_put_contents($filename,base64_decode($pdf->getBase64()));
+            exec(escapeshellcmd('pdftk '.$tmpfile.' '.$filename.' cat output '.$concat), $output, $exitcode);
+            $tmpfile = $concat;
+            unlink($filename);
+        }
+
+        if ($exitcode !== 0) {
+            throw new \Exception('pdftk failed with error: '.implode(', ', $output));
+        }
+
+        return new Response(file_get_contents($tmpfile), 200, array(
                 'Content-Type' => 'application/pdf',
                 'Content-Disposition' => 'attachment; filename="' . $rapportVisitePdf->filename . '"'
             )
@@ -617,7 +669,27 @@ class PassageController extends Controller
             $message->setTo($to);
         }
 
-        $attachment = \Swift_Attachment::newInstance($this->get('knp_snappy.pdf')->getOutputFromHtml($rapportVisitePdf->html, $this->getPdfGenerationOptions()), $rapportVisitePdf->filename, 'application/pdf');
+        if( !$rapportVisitePdf->pdfs){
+            $attachment = \Swift_Attachment::newInstance($this->get('knp_snappy.pdf')->getOutputFromHtml($rapportVisitePdf->html, $this->getPdfGenerationOptions()), $rapportVisitePdf->filename, 'application/pdf');
+        }else{
+            $tmpfile = $this->container->getParameter('kernel.cache_dir').'/PDFRAPPORT_'.$passage->getId().uniqid();
+            $this->get('knp_snappy.pdf')->generateFromHtml($rapportVisitePdf->html,$tmpfile,$this->getPdfGenerationOptions());
+
+            foreach($rapportVisitePdf->pdfs as $pdf){
+                $filename  = '/tmp/output-pdf-'.$passage->getId().rand().'.pdf';
+                $concat = "/tmp/output-pdf-concact-".$passage->getId().rand().'.pdf';
+                file_put_contents($filename,base64_decode($pdf->getBase64()));
+                exec(escapeshellcmd('pdftk '.$tmpfile.' '.$filename.' cat output '.$concat), $output, $exitcode);
+                $tmpfile = $concat;
+            }
+            if ($exitcode !== 0) {
+                throw new \Exception('pdftk failed with error: '.implode(', ', $output));
+            }
+
+            $attachment = \Swift_Attachment::newInstance(file_get_contents($tmpfile), $rapportVisitePdf->filename, 'application/pdf');
+        }
+
+
         $message->attach($attachment);
 
         try {
@@ -625,6 +697,7 @@ class PassageController extends Controller
             $passage->setPdfNonEnvoye(false);
             $passage->setPdfRapportDateEnvoi(new \DateTime());
             $dm->flush();
+
         }
         catch(Exception $e) {
             var_dump('NO mailer config'); exit;
@@ -775,11 +848,18 @@ class PassageController extends Controller
 
         $documents = $this->get('attachement.manager')->getRepository()
                          ->findByPassageAndVisibleClient($passage);
-
+        $dm->clear();
         $images = [];
+        $pdfs = [];
+
         foreach($documents as $document){
-            $attachement = $this->get('attachement.manager')->getRepository()->find($document->getId());
-            $images[] = $attachement->getBase64Src();
+            $attachement = $this->get('attachement.manager')->getRepository()->find($document->getId(),LockMode::PESSIMISTIC_READ);
+            if($attachement->isPdf()){
+                $pdfs[] = $attachement;
+            }
+            else{
+                $images[] = $attachement->getBase64Src();
+            }
         }
         $createRapportVisitePdf->html = $this->renderView('passage/pdfRapport.html.twig', array(
             'passage' => $passage,
@@ -788,6 +868,8 @@ class PassageController extends Controller
             'prestationArray' => $prestationArray,
             'images' => $images
         ));
+
+        $createRapportVisitePdf->pdfs = $pdfs;
 
         $createRapportVisitePdf->filename = sprintf("passage_rapport_%s_%s.pdf", $passage->getDateDebut()->format("Y-m-d_H:i"), strtoupper(Transliterator::urlize($passage->getEtablissement()->getIntitule())));
 

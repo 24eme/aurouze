@@ -14,6 +14,12 @@ use Doctrine\Common\Collections\ArrayCollection;
  */
 class AttachementRepository extends DocumentRepository {
 
+    public function find($id, $lockMode = LockMode::NONE, $lockVersion = null){
+        $doc = parent::find($id, $lockMode, $lockVersion);
+        $this->getDocumentManager()->getUnitOfWork()->clear("AppBundle\Document\Attachement"); //sinon le document attachement est modifié
+        return $doc;
+    }
+
     public function findLast() {
 
         return $this->createQueryBuilder()
@@ -32,7 +38,8 @@ class AttachementRepository extends DocumentRepository {
         }
 
         uasort($attachments,array("AppBundle\Document\Attachement", "cmpUpdateAt"));
-
+        $this->getDocumentManager()->getUnitOfWork()->clear("AppBundle\Document\Attachement");
+        // $this->getDocumentManager()->clear(); //sinon le document attachement est modifié
         return $attachments;
     }
 
@@ -44,7 +51,7 @@ class AttachementRepository extends DocumentRepository {
         }
 
         uasort($attachments,array("AppBundle\Document\Attachement", "cmpUpdateAt"));
-
+        $this->getDocumentManager()->getUnitOfWork()->clear("AppBundle\Document\Attachement");//sinon le document attachement est modifié
         return $attachments;
     }
 
@@ -53,17 +60,16 @@ class AttachementRepository extends DocumentRepository {
         $attachments = array();
         $query = $this->createQueryBuilder()->select('_id', 'updatedAt', 'imageName', 'titre', 'originalName', 'etablissement', 'societe', 'visibleTechnicien', 'ext','visibleClient','base64')
                                             ->field('etablissement')->equals($passage->getEtablissement())
-                                            ->field('visibleClient')->equals(true);
+                                            ->field('visibleClient')->equals(true)
+                                            ->field('updatedAt')->range(\DateTimeImmutable::createFromMutable($passage->getDateDebut())->modify('today'), \DateTimeImmutable::createFromMutable($passage->getDateDebut())->modify('tomorrow'));
+        foreach( $query->getQuery()->execute() as $attachement) {
 
-        $query->field('updatedAt')->range(\DateTimeImmutable::createFromMutable($passage->getDateDebut())->modify('today'), \DateTimeImmutable::createFromMutable($passage->getDateDebut())->modify('tomorrow'));
-
-
-        foreach($query->getQuery()->execute() as $attachement) {
             $attachments[$attachement->getId()] = $attachement;
         }
 
         uasort($attachments,array("AppBundle\Document\Attachement", "cmpUpdateAt"));
 
+        $this->getDocumentManager()->getUnitOfWork()->clear("AppBundle\Document\Attachement");//sinon le document attachement est modifié
         return $attachments;
     }
 
