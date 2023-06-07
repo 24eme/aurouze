@@ -11,9 +11,9 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 trait FacturableControllerTrait
 {
     /**
-     * @Route("/public/{document}/pdf/{key}", name="facturable_pdf")
+     * @Route("/public/{document}/pdf/{key}", name="facturable_public_pdf")
      */
-    public function pdfAction(Request $request, $document)
+    public function publicPdfAction(Request $request, $document)
     {
         $type = strtolower(strtok($document, '-'));
         $manager = $this->get($type.'.manager');
@@ -32,9 +32,9 @@ trait FacturableControllerTrait
 
 
     /**
-    *@Route("/public/download/{document}/pdf/{key}", name="facturable_telechargement_pdf")
+    *@Route("/public/download/{document}/pdf/{key}", name="facturable_telechargement_public_pdf")
     */
-    public function telechargementPdfAction(Request $request, $document)
+    public function telechargementPublicPdfAction(Request $request, $document)
     {
         $type = strtolower(strtok($document, '-'));
         $manager = $this->get($type.'.manager');
@@ -54,6 +54,22 @@ trait FacturableControllerTrait
         }
 
         throw new NotFoundHttpException();
+    }
+
+    /**
+    *@Route("/pdf/{document}", name="facturable_pdf")
+    */
+    public function pdfAction(Request $request, $document)
+    {
+        $type = strtolower(strtok($document, '-'));
+        $manager = $this->get($type.'.manager');
+        $repository = $manager->getRepository('AppBundle:'.ucfirst($type));
+        $doc = $repository->findOneById($document);
+        $dm = $this->get('doctrine_mongodb')->getManager();
+
+        $urlKey= basename( $this->uri = $_SERVER['REQUEST_URI']);
+
+        return $this->createPdfFacture($request,$document);
     }
 
 
