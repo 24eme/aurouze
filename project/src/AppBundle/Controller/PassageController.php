@@ -854,7 +854,7 @@ class PassageController extends Controller
         $pdfs = [];
 
         foreach($documents as $document){
-            $attachement = $this->get('attachement.manager')->getRepository()->find($document->getId(),LockMode::PESSIMISTIC_READ);
+            $attachement = $this->get('attachement.manager')->getRepository()->findForAttachements($document->getId(),LockMode::PESSIMISTIC_READ);
             if($attachement->isPdf()){
                 $pdfs[] = $attachement;
             }

@@ -5,6 +5,7 @@ namespace AppBundle\Repository;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use AppBundle\Document\Attachement;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ODM\MongoDB\LockMode;
 
 /**
  * AttachementRepository
@@ -14,7 +15,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  */
 class AttachementRepository extends DocumentRepository {
 
-    public function find($id, $lockMode = LockMode::NONE, $lockVersion = null){
+    public function findForAttachements($id, $lockMode = LockMode::NONE, $lockVersion = null){
         $doc = parent::find($id, $lockMode, $lockVersion);
         $this->getDocumentManager()->getUnitOfWork()->clear("AppBundle\Document\Attachement"); //sinon le document attachement est modifié
         return $doc;
