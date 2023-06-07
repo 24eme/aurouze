@@ -1000,7 +1000,7 @@ class Passage implements DocumentEtablissementInterface, DocumentSocieteInterfac
     {
       if(!count($this->niveauInfestation)){
           foreach ($this->getPrestations() as $prestation) {
-            $niveauInfestation = new niveauInfestation();
+            $niveauInfestation = new \AppBundle\Document\NiveauInfestation();
             $niveauInfestation->setIdentifiant($prestation->getIdentifiant());
             $this->addNiveauInfestation($niveauInfestation);
           }
