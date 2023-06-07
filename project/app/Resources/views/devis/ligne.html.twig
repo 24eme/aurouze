@@ -4,13 +4,14 @@
       <a href="{{ path('devis_societe', { 'id': document.societe.id }) }}">{{ document.societe.raisonSociale }}</a>
   </td>
   <td>
+    <a style="opacity: 0.15" onclick="navigator.clipboard.writeText(this.href); alert('Le lien a été copié dans le presse papier !'); return false;" title="Lien public pour partage" class="pull-right" href="{{ path('facturable_public_pdf', {'document': document.id ,'key': document.getSecretKey()})}}"><span class="glyphicon glyphicon-link"></span></a>
     <span class="glyphicon glyphicon-file"></span>
-    <a href="{{ path('facturable_pdf', {'document': document.id, 'key': document.getSecretKey()}) }}">
+    <a href="{{ path('facturable_pdf', {'document': document.id}) }}">
        Devis n° {{ document.numeroDevis }}
     </a>
   </td>
   <td>
-    <a href="{{ path('facturable_pdf', {'document': document.id, 'key': document.getSecretKey()}) }}" data-toggle="tooltip"
+    <a href="{{ path('facturable_pdf', {'document': document.id }) }}" data-toggle="tooltip"
       title="{% for ligne in document.lignes %}{{ (ligne.libelle) ?:"Aucun" }}{% endfor %}">
         {{ document.lignes | length }} ligne(s)
     </a>

@@ -5,9 +5,9 @@
     <body>
         <div style="margin-top:150px" class="container text-center">
             <img src="{{ asset('/images/logo_'~instanceapp~'.svg') }}" height="100" style="margin-top: 5px;"  class="hidden-sm" />
-            <h3 style="margin-top: 45px;" class="text-muted">Facture n° {{ doc.numero }} du {{ doc.dateEmission | date("d/m/Y")}} - {{ doc.montantTTC}} € TTC</h3>
-            <a id="btn_loading" style="margin-top: 20px;" class="btn btn-warning btn-lg hidden" href="{{ path('facturable_telechargement_pdf', {'document': doc.id ,'key': doc.getSecretKey()}) }}"></span>Téléchargement en cours ...</a>
-            <a style="margin-top: 20px;" id="btn_download" class="btn btn-success btn-lg" href="{{ path('facturable_telechargement_pdf', {'document': doc.id ,'key': doc.getSecretKey()}) }}">Télécharger ce document</a>
+            <h3 style="margin-top: 45px;" class="text-muted">{{ doc.getDocumentType() | capitalize }} n° {{ doc.numero }} du {{ doc.dateEmission | date("d/m/Y")}} - {{ doc.montantTTC}} € TTC</h3>
+            <a id="btn_loading" style="margin-top: 20px;" class="btn btn-warning btn-lg hidden" href="{{ path('facturable_telechargement_public_pdf', {'document': doc.id ,'key': doc.getSecretKey()}) }}"></span>Téléchargement en cours ...</a>
+            <a style="margin-top: 20px;" id="btn_download" class="btn btn-success btn-lg" href="{{ path('facturable_telechargement_public_pdf', {'document': doc.id ,'key': doc.getSecretKey()}) }}">Télécharger ce document</a>
         </div>
         <script>
           document.getElementById('btn_loading').classList.remove('hidden');

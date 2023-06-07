@@ -25,7 +25,7 @@
     {% endif %}
     {% if etablissement.commentairePlanification %}
     <div>
-        <p title="Commentaire plannification">{{ etablissement.commentairePlanification | nl2br }} <small><span style="cursor:pointer;" class="glyphicon glyphicon-pencil text-primary commentaire_lien" data-url="{{ path('etablissement_commentaire', {'id': passage.etablissement.id , 'passageId': passage.id}) }}"></span><small></p>
+        <p title="Commentaire plannification">{{ etablissement.commentairePlanification | nl2br }} <small><span style="cursor:pointer;" class="glyphicon glyphicon-pencil text-primary commentaire_lien" data-url="{{ path('etablissement_commentaire', {'id': passage.etablissement.id , 'passageId': passage.id}) }}"></span></small></p>
     </div>
     {% endif %}
     <div class="clearfix">
