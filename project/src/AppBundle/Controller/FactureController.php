@@ -1297,7 +1297,7 @@ class FactureController extends Controller
           $email_footer = $this->container->getParameter('email_footer');
 
           $commercial_SEINE_ET_MARNE = ($this->container->getParameter("commercial_seine_et_marne")) ? $this->container->getParameter("commercial_seine_et_marne") : null;
-          if(($facture->getContrat()->getCommercial()->getNom() == $commercial_SEINE_ET_MARNE )or ($facture->getContrat() && $facture->getContrat()->getZone() == ContratManager::ZONE_SEINE_ET_MARNE)){
+          if(($facture->getContrat() && $facture->getContrat()->getCommercial()->getNom() == $commercial_SEINE_ET_MARNE )or ($facture->getContrat() && $facture->getContrat()->getZone() == ContratManager::ZONE_SEINE_ET_MARNE)){
               $email_footer = $this->container->getParameter('email_footer_SEINE_ET_MARNE');
           }
 
