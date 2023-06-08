@@ -849,7 +849,6 @@ class PassageController extends Controller
 
         $documents = $this->get('attachement.manager')->getRepository()
                          ->findByPassageAndVisibleClient($passage);
-        $dm->clear();
         $images = [];
         $pdfs = [];
 
