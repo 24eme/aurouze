@@ -24,7 +24,11 @@
     </span>
       {% endif %}
     </td>
-    <td class="text-right">{{ reglement.montant | number_format(2, ',', ' ') }}&nbsp;€</td>
+    <td class="text-right">
+        <span title="Montant pointé">{{ reglement.montant | number_format(2, ',', ' ') }}&nbsp;€</span>
+        <br>
+        <span class="text-muted" title="Montant déposé">{{ paiements.getMontantTotalAPayer() | number_format(2, ',', ' ')}}&nbsp;€</span>
+    </td>
     <td class="text-center"><a href="{{ path('paiements_details',{ 'id': paiements.id ,'type' : regKey}) }}"><i class ="mdi mdi-remove-red-eye mdi-lg"></i></a></td>
     <td class="text-center">
     <a href="{{ path('paiements_prelevement_remise_fichier',{ id : paiements.id })}}" class="btn btn-xs btn-info" title="Fichier à transmettre à la banque"><span class="glyphicon glyphicon-file"></span></a>
