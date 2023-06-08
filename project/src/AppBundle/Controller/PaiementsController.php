@@ -34,6 +34,8 @@ class PaiementsController extends Controller {
 
         $tabPaiementsChequesNonTerminé = array();
         $tabOthersPaiements = array();
+        $totalMontantPaye = 0;
+
         foreach($paiementsDocs as $paiements){
             foreach($paiements->getAggregatePaiements() as $k => $v){
                 if(!$paiements->isImprime() && $k == "CHEQUE"){
@@ -43,9 +45,15 @@ class PaiementsController extends Controller {
                     $tabOthersPaiements[] = $paiements;
                 }
             }
+            $totalMontantPaye += $paiements->getMontantTotal();
         }
+
+        foreach($paiementsDocsPrelevement as $paiements){
+            $totalMontantPaye += $paiements->getMontantTotal();
+        }
+
         $paiementsDocs = array_merge($tabPaiementsChequesNonTerminé, $tabOthersPaiements);
-        return $this->render('paiements/index.html.twig', array('paiementsDocs' => $paiementsDocs, 'paiementsDocsPrelevement' => $paiementsDocsPrelevement, 'periode' => $periode));
+        return $this->render('paiements/index.html.twig', array('paiementsDocs' => $paiementsDocs, 'paiementsDocsPrelevement' => $paiementsDocsPrelevement, 'periode' => $periode, 'totalMontantPaye' => $totalMontantPaye));
     }
 
 
