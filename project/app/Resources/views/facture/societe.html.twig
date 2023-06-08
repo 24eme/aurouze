@@ -13,6 +13,13 @@
     {{ include('societe/choixForm.html.twig', {'urlTarget': path('facture_societe', {'id': '_id_'})}) }}
 
     <div class="row">
+        {% if societe.methodeDeFacturation %}
+        <div class="col-xs-12">
+            <div class="alert alert-info">
+                <strong>Méthode de facturation : </strong>{{ societe.methodeDeFacturation }}
+            </div>
+        </div>
+        {% endif %}
         <div class="col-xs-3">
             <h3 style="margin-top: 0;">Solde :
                 <strong class="text-{% if (solde == 0) %}success{% elseif (solde < 0) %}danger{% else %}warning{% endif %}">{{ solde | number_format(2, '.', ' ') }} €</strong>
