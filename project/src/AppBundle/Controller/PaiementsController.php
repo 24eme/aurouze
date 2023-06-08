@@ -353,7 +353,7 @@ class PaiementsController extends Controller {
             $paiement->setFacture($facture);
             $paiement->setMoyenPaiement(PaiementsManager::MOYEN_PAIEMENT_PRELEVEMENT_BANQUAIRE);
             $paiement->setTypeReglement(PaiementsManager::TYPE_REGLEMENT_FACTURE);
-            $paiement->setDatePaiement($date);
+            $paiement->setDatePaiement($facture->getInPrelevement());
             $paiement->setMontant($facture->getMontantTTC());
             $paiement->setLibelle('FACT '.$facture->getNumeroFacture().' du '.$facture->getDateEmission()->format("d m Y").' '. str_ireplace(array(".",","),"EUR",sprintf("%0.2f",$facture->getMontantAPayer())));
             $paiement->setVersementComptable(false);
