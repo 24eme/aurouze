@@ -49,6 +49,11 @@
         <span class="text-muted">Aucune</span>
     {% endif %}
     </p>
+    {% if planifiable.rendezvous.prerequis %}
+        <p style="color: #ff4136">
+            À noter : {{ planifiable.rendezvous.prerequis | nl2br }}
+        </p>
+    {% endif %}
     {% if planifiable.etablissementInfos.telephoneFixe or planifiable.etablissementInfos.telephonePortable %}
         {% if planifiable.etablissementInfos.telephoneFixe %}<i class="mdi mdi-call mdi-lg"></i>&nbsp;<a href="tel:{{ planifiable.etablissementInfos.telephoneFixe }}">{{ planifiable.etablissementInfos.telephoneFixe }}</a>{% endif %}
         {% if planifiable.etablissementInfos.telephonePortable %}<a href="tel:{{ planifiable.etablissementInfos.telephonePortable }}">{{ planifiable.etablissementInfos.telephonePortable }}</a>{% endif %}
