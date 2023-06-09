@@ -104,7 +104,7 @@
         <table class="table table-bordered">
           <thead>
             <tr>
-              <th class="col-xs-2">Date Limite</th>
+              <th class="col-xs-2">Date</th>
               <th class="col-xs-3">Client</th>
               <th class="col-xs-2">Facture</th>
               <th class="col-xs-2">Montant Total / Payé</th>
@@ -120,9 +120,9 @@
             <tr style="{{ factureEnRetard.getRelanceColor }}" >
               {{factureEnRetard.isDevis }}
               <td>
-                <small>{{factureEnRetard.dateLimitePaiement | localizeddate("medium", "none", null, null, "d MMM yyyy") | capitalize }} </small>
+                <small>{{factureEnRetard.dateFacturation | localizeddate("medium", "none", null, null, "d MMM yyyy") | capitalize }} </small>
 				<br>
-				<small class="text-muted">facturé le <span>{{factureEnRetard.dateFacturation | date('d/m/Y') | capitalize }} </small>
+				<small class="text-muted">limite le <span>{{factureEnRetard.dateLimitePaiement | date('d/m/Y') | capitalize }} </small>
 			  </td>
               <td>
 								{% if factureEnRetard.societe.sepa and factureEnRetard.societe.sepa.actif %}
