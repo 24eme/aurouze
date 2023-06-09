@@ -135,6 +135,11 @@ class Societe implements InterlocuteurInterface {
      */
     protected $frequencePaiement;
 
+    /**
+     * @MongoDB\Field(type="string")
+     */
+    protected $methodeDeFacturation;
+
     public function __construct() {
         $this->etablissements = new \Doctrine\Common\Collections\ArrayCollection();
         $this->adresse = new Adresse();
@@ -724,6 +729,25 @@ class Societe implements InterlocuteurInterface {
     	return $this;
     }
 
+    /**
+     * Set methodeDeFacturation
+     *
+     * @param string $methodeDeFacturation
+     * @return self
+     */
+    public function setMethodeDeFacturation($methodeDeFacturation) {
+        $this->methodeDeFacturation = $methodeDeFacturation;
+        return $this;
+    }
+
+    /**
+     * Get methodeDeFacturation
+     *
+     * @return string $methodeDeFacturation
+     */
+    public function getMethodeDeFacturation() {
+        return $this->methodeDeFacturation;
+    }
 
 
     /**

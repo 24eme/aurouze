@@ -34,6 +34,8 @@ class PaiementsController extends Controller {
 
         $tabPaiementsChequesNonTerminé = array();
         $tabOthersPaiements = array();
+        $totalMontantPaye = 0;
+
         foreach($paiementsDocs as $paiements){
             foreach($paiements->getAggregatePaiements() as $k => $v){
                 if(!$paiements->isImprime() && $k == "CHEQUE"){
@@ -43,9 +45,15 @@ class PaiementsController extends Controller {
                     $tabOthersPaiements[] = $paiements;
                 }
             }
+            $totalMontantPaye += $paiements->getMontantTotal();
         }
+
+        foreach($paiementsDocsPrelevement as $paiements){
+            $totalMontantPaye += $paiements->getMontantTotal();
+        }
+
         $paiementsDocs = array_merge($tabPaiementsChequesNonTerminé, $tabOthersPaiements);
-        return $this->render('paiements/index.html.twig', array('paiementsDocs' => $paiementsDocs, 'paiementsDocsPrelevement' => $paiementsDocsPrelevement, 'periode' => $periode));
+        return $this->render('paiements/index.html.twig', array('paiementsDocs' => $paiementsDocs, 'paiementsDocsPrelevement' => $paiementsDocsPrelevement, 'periode' => $periode, 'totalMontantPaye' => $totalMontantPaye));
     }
 
 
@@ -353,7 +361,7 @@ class PaiementsController extends Controller {
             $paiement->setFacture($facture);
             $paiement->setMoyenPaiement(PaiementsManager::MOYEN_PAIEMENT_PRELEVEMENT_BANQUAIRE);
             $paiement->setTypeReglement(PaiementsManager::TYPE_REGLEMENT_FACTURE);
-            $paiement->setDatePaiement($date);
+            $paiement->setDatePaiement($facture->getInPrelevement());
             $paiement->setMontant($facture->getMontantTTC());
             $paiement->setLibelle('FACT '.$facture->getNumeroFacture().' du '.$facture->getDateEmission()->format("d m Y").' '. str_ireplace(array(".",","),"EUR",sprintf("%0.2f",$facture->getMontantAPayer())));
             $paiement->setVersementComptable(false);
