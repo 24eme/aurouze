@@ -175,10 +175,10 @@ class FactureRepository extends DocumentRepository {
       $qD = $this->makeBaseFactureRetardDePaiement($nbRelance, $societe);
       $qD->field('numeroDevis')->notEqual(null);
       if($dateFactureBasse){
-        $qD->field('dateFacturation')->gte($dateFactureBasse);
+        $qD->field('dateLimitePaiement')->gte($dateFactureBasse);
       }
       if($dateFactureHaute){
-        $qD->field('dateFacturation')->lte($dateFactureHaute);
+        $qD->field('dateLimitePaiement')->lte($dateFactureHaute);
       }
       if (!$dateFactureHaute) {
           $todayDevis = clone $today;
