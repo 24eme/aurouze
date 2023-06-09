@@ -130,8 +130,16 @@ class PassageController extends Controller
             $morePassages[$date->format('Ym')] = $date->format('Y-m-d');
         }
 
-        $passages = $passageManager->getRepository()->findToPlan($secteur, $dateDebut, clone $dateFin)->toArray();
-        $devis = $devisManager->getRepository()->findToPlan($secteur, $dateDebut, clone $dateFin)->toArray();
+        $frequences = array(2,3,4,6,12);
+        $frequence = $request->get('frequence');
+
+        $passages = $passageManager->getRepository()->findToPlan($secteur, $dateDebut, clone $dateFin, $frequence);
+        $devis = $devisManager->getRepository()->findToPlan($secteur, $dateDebut, clone $dateFin,$frequence);
+
+        if(!$frequence){
+            $passages = $passages->toArray();
+            $devis = $devis->toArray();
+        }
 
         foreach ($devis as $key => $d) {
             $passages[] = $d;
@@ -163,7 +171,10 @@ class PassageController extends Controller
             'etablissementManager' => $this->get('etablissement.manager'),
             'secteur' => $secteur,
             'coordinatesCenter' => $coordinatesCenter,
-            'passagesFiltreExportForm' => $passagesFiltreExportForm->createView()));
+            'passagesFiltreExportForm' => $passagesFiltreExportForm->createView(),
+            'frequence' => $frequence,
+            'frequences' => $frequences
+        ));
     }
 
 
