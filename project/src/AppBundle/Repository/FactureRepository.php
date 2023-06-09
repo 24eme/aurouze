@@ -164,10 +164,10 @@ class FactureRepository extends DocumentRepository {
       $qF = $this->makeBaseFactureRetardDePaiement($nbRelance, $societe);
       $qF->field('dateLimitePaiement')->lte($today);
       if($dateFactureBasse){
-        $qF->field('dateFacturation')->gte($dateFactureBasse);
+        $qF->field('dateLimitePaiement')->gte($dateFactureBasse);
       }
       if($dateFactureHaute){
-        $qF->field('dateFacturation')->lte($dateFactureHaute);
+        $qF->field('dateLimitePaiement')->lte($dateFactureHaute);
       }
       $resultsFacture = $qF->getQuery()->execute();
 

@@ -104,7 +104,7 @@
         <table class="table table-bordered">
           <thead>
             <tr>
-              <th class="col-xs-1">Date</th>
+              <th class="col-xs-2">Date Limite</th>
               <th class="col-xs-3">Client</th>
               <th class="col-xs-2">Facture</th>
               <th class="col-xs-2">Montant Total / Payé</th>
@@ -119,7 +119,11 @@
             {% set idCheckbox = factureEnRetard.id %}
             <tr style="{{ factureEnRetard.getRelanceColor }}" >
               {{factureEnRetard.isDevis }}
-              <td><small>{{ factureEnRetard.dateFacturation | localizeddate("medium", "none", null, null, "d MMM yyyy") | capitalize }}</small></td>
+              <td>
+                <small>{{factureEnRetard.dateLimitePaiement | localizeddate("medium", "none", null, null, "d MMM yyyy") | capitalize }} </small>
+				<br>
+				<small class="text-muted">facturé le <span>{{factureEnRetard.dateFacturation | date('d/m/Y') | capitalize }} </small>
+			  </td>
               <td>
 								{% if factureEnRetard.societe.sepa and factureEnRetard.societe.sepa.actif %}
 							<small class="pull-left" style="padding-top: 1px; padding-right: 3px; font-size: 75%;" data-toggle="tooltip" title="{{ factureEnRetard.societe.sepa.iban }} <br/> {{ factureEnRetard.societe.sepa.bic }} <br/> {{ factureEnRetard.societe.sepa.rum }} <br/> ({{ factureEnRetard.societe.sepa.date | date("d/m/Y") }}) <br/> {% if factureEnRetard.societe.sepa.first %}Premier prélèvement{% else %}Prélèvements récurrents{% endif %}">
