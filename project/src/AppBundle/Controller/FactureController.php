@@ -1373,14 +1373,8 @@ class FactureController extends Controller
 
 
         private function updateEmetteur(Facture $facture,Contrat $contrat = null){
-<<<<<<< HEAD
-            $commercialSeineEtMarne = $this->container->getParameter('commercial_seine_et_marne') ? $this->container->getParameter('commercial_seine_et_marne') : null;
-            if($facture->getContrat()->getCommercial() && $facture->getContrat()->getCommercial()->getNom() == $commercialSeineEtMarne or ($contrat and $contrat->getZone() == ContratManager::ZONE_SEINE_ET_MARNE)) {
-=======
             $commercial_SEINE_ET_MARNE = ($this->container->getParameter("commercial_seine_et_marne")) ? $this->container->getParameter("commercial_seine_et_marne") : null;
-
             if(($facture->getCommercial() && $facture->getCommercial()->getNom() == $commercial_SEINE_ET_MARNE) or ($facture->getContrat() && $facture->getContrat()->getCommercial() && $facture->getContrat()->getCommercial()->getNom() == $commercial_SEINE_ET_MARNE )or ($contrat and $contrat->getZone() == ContratManager::ZONE_SEINE_ET_MARNE)) {
->>>>>>> sprint-juin
                 $parameters = $this->container->getParameter('facture');
                 $facture->getEmetteur()->setNom($parameters['emetteur_SEINE_ET_MARNE']['nom']);
                 $facture->getEmetteur()->setAdresse($parameters['emetteur_SEINE_ET_MARNE']['adresse']);
