@@ -286,11 +286,8 @@ class CalendarController extends Controller {
         $dm = $this->get('doctrine_mongodb')->getManager();
         $technicien = $dm->getRepository('AppBundle:Compte')->findOneById($request->get('technicien'));
         $periodeStart = $request->get('start');
-<<<<<<< HEAD
         $periodeStart = ((new \DateTime($periodeStart))->modify('-3 month'));
-=======
-        $periodeStart = ((new \DateTime($periodeStart))->modify('-3 month'))
->>>>>>> f126ddb5acffe853e14f85e54d9f1de250c4c2c0
+
         $periodeStart = $periodeStart->format('Y-m-d');
         $periodeEnd = $request->get('end');
         $rdvs = $dm->getRepository('AppBundle:RendezVous')->findByDateAndParticipant($periodeStart, $periodeEnd, $technicien);
