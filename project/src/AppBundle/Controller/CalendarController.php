@@ -92,7 +92,8 @@ class CalendarController extends Controller {
         $calendarTool = new CalendarDateTool($request->get('date'), $request->get('mode'), $this->container->getParameter('calendar_extra'));
 
         $periodeStart = $calendarTool->getDateDebutSemaine('Y-m-d');
-        $periodeStart = ((new \DateTime($periodeStart))->modify('-3 month'))->format('Y-m-d');
+        $periodeStart = ((new \DateTime($periodeStart))->modify('-3 month'));
+        $periodeStart = $periodeStart->format('Y-m-d');
 
         $periodeEnd = $calendarTool->getDateFinSemaine('Y-m-d');
 
@@ -285,7 +286,8 @@ class CalendarController extends Controller {
         $dm = $this->get('doctrine_mongodb')->getManager();
         $technicien = $dm->getRepository('AppBundle:Compte')->findOneById($request->get('technicien'));
         $periodeStart = $request->get('start');
-        $periodeStart = ((new \DateTime($periodeStart))->modify('-3 month'))->format('Y-m-d');
+        $periodeStart = ((new \DateTime($periodeStart))->modify('-3 month'));
+        $periodeStart = $periodeStart->format('Y-m-d');
         $periodeEnd = $request->get('end');
         $rdvs = $dm->getRepository('AppBundle:RendezVous')->findByDateAndParticipant($periodeStart, $periodeEnd, $technicien);
         $calendarData = array();
