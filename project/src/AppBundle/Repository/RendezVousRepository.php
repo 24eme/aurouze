@@ -12,13 +12,8 @@ class RendezVousRepository extends DocumentRepository
         $mongoEndDate = new \MongoDate(strtotime($endDate." 00:00:00"));
 
         $query = $this->createQueryBuilder('RendezVous');
-
-        $query->addOr(
-                $query->expr()->addAnd($query->expr()->field('dateDebut')->gte($mongoStartDate))
-                              ->addAnd($query->expr()->field('dateDebut')->lte($mongoEndDate))
-                              ->addAnd($query->expr()->field('dateFin')->gte($mongoStartDate))
-        );
-
+        $query->addOr($query->expr()->field('dateDebut')->gte($mongoStartDate)->field('dateDebut')->lte($mongoEndDate));
+        $query->addOr($query->expr()->field('dateFin')->gte($mongoStartDate));
         $query->field('participants')->equals($participant->getId())
                 ->sort('dateDebut', 'asc');
 
@@ -53,11 +48,8 @@ class RendezVousRepository extends DocumentRepository
         $mongoEndDate = new \MongoDate(strtotime($endDate." 00:00:00"));
 
         $query = $this->createQueryBuilder('RendezVous');
-        $query->addOr(
-                $query->expr()->addAnd($query->expr()->field('dateDebut')->gte($mongoStartDate))
-                              ->addAnd($query->expr()->field('dateDebut')->lte($mongoEndDate))
-                              ->addAnd($query->expr()->field('dateFin')->gte($mongoStartDate))
-                );
+        $query->addOr($query->expr()->field('dateDebut')->gte($mongoStartDate)->field('dateDebut')->lte($mongoEndDate));
+        $query->addOr($query->expr()->field('dateFin')->gte($mongoStartDate));
         $query->sort('dateDebut', 'asc');
 
         return $query->getQuery()->execute();
