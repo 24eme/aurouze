@@ -534,6 +534,34 @@ class CalendarController extends Controller {
         );
     }
 
+    /**
+     * @Route("/calendar/listeRendezVous", name="listeRendezVous")
+     */
+    public function listeRendezVousAction(Request $request) {
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $date = new \DateTime();
+        $dateFin = (new \DateTime())->modify("+1 month");
+        $rdvs = $dm->getRepository('AppBundle:RendezVous')->findByDate($date->format('Y-m-d'), $dateFin->format('Y-m-d'));
+        return $this->render('recherche/listRendezVous.html.twig', array('rdvs' => $rdvs));
+    }
+
+
+    /**
+     * @Route("/calendar/listeRendezVousTechnicien", name="listeRendezVousTechnicien")
+     */
+    public function listeRendezVousTechnicienAction(Request $request) {
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $date = new \DateTime();
+        $dateFin = (new \DateTime())->modify("+5 years");
+        $technicien = $request->get('technicien');
+        $technicienObj = null;
+        if ($technicien) {
+            $technicienObj = $dm->getRepository('AppBundle:Compte')->findOneById($technicien);
+        }
+        $rdvs = $dm->getRepository('AppBundle:RendezVous')->findByDateAndParticipant($date->format('Y-m-d'),$dateFin->format('Y-m-d'), $technicienObj);
+        return $this->render('recherche/listRendezVous.html.twig', array('rdvs' => $rdvs, 'technicien' => $technicienObj));
+    }
+
     public function buildEventObjCalendar($rdv,$technicien){
         $event = $rdv->getEventJson($technicien->getCouleur());
         $em = $this->get('etablissement.Manager');

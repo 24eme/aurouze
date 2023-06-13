@@ -1,0 +1,51 @@
+{% set _menu_active = 'calendar' %}
+{% extends 'base.html.twig' %}
+{% block title %}Calendrier Résumé{% endblock title %}
+{% block body %}
+    <ol class="breadcrumb">
+        <li><a href="{{ path('calendarManuel')}}">Calendrier global</a></li>
+        <li><a href="{{ path('listeRendezVous')}}">Liste des RDV</a></li>
+        {% if technicien is defined %}
+            <li><a href="{{ path('listeRendezVousTechnicien', {'technicien':technicien.id})}}">{{ technicien.prenom }} {{ technicien.nom }}</a></li>
+        {% endif %}
+    </ol>
+    <h3>Liste des prochain RDV</h3>
+    <table class="table table-bordered table-striped table-hover">
+        <thead>
+            <tr>
+                <th class="col-xs-1">Date</th>
+                <th class="col-xs-1">Heure</th>
+                <th class="col-xs-2">Technicien(s)</th>
+                <th class="col-xs-4">Etablissement</th>
+                <th class="col-xs-3">Lieu</th>
+                <th class="col-xs-1 text-center">Confirmé ?</th>
+                <th class="col-xs-1"></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for rdv in rdvs %}
+                <tr class="{% if not rdv.passage %}warning{% endif %}">
+                    <td> {{rdv.dateDebut | date('d/m/Y')}} </td>
+                    <td> {{rdv.dateDebut | date('H:i') }}/{{rdv.dateFin | date('H:i') }}</td>
+                    <td>
+                        {% for participant in rdv.getParticipants() %}
+                            {% if participant.identiteCourt %}
+                                <span class="label badge" style="background-color:{{ participant.couleur }};color: {{participant.couleurText}};">
+                                    <small><a style="text-decoration: inherit;color:inherit" href="{{ path('listeRendezVousTechnicien', {'technicien':participant.id}) }}" title="Voir les passage de {{ participant.identiteCourt }}">{{ participant.identiteCourt }}</a></small>
+                                </span>
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td>{% if rdv.passage %}{{rdv.passage.etablissement.nom}}{% else %}{{ rdv.titre }}{% endif %}</td>
+                    <td>{{rdv.lieu}}</td>
+                    <td class="text-center">{% if rdv.rendezVousConfirme %}<span class="glyphicon glyphicon-check text-success"></span>{% endif %}</td>
+                    <td class="text-center">
+                        {% if rdv.getParticipants()%}
+                            <a href="{{ path('calendar',{ 'technicien': rdv.getParticipants()[0].id, 'date': rdv.dateDebut | date('Y-m-d'), 'id': ((rdv.passage) ? rdv.passage.etablissement.id : "0") }) }}"><span class="glyphicon glyphicon-arrow-right"></span></a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

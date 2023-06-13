@@ -61,10 +61,12 @@ class AttachementRepository extends DocumentRepository {
         $attachments = array();
         $query = $this->createQueryBuilder()->select('_id', 'updatedAt', 'imageName', 'titre', 'originalName', 'etablissement', 'societe', 'visibleTechnicien', 'ext','visibleClient','base64')
                                             ->field('etablissement')->equals($passage->getEtablissement())
-                                            ->field('visibleClient')->equals(true)
-                                            ->field('updatedAt')->range(\DateTimeImmutable::createFromMutable($passage->getDateDebut())->modify('today'), \DateTimeImmutable::createFromMutable($passage->getDateDebut())->modify('tomorrow'));
-        foreach( $query->getQuery()->execute() as $attachement) {
+                                            ->field('visibleClient')->equals(true);
+        if($passage->getDateDebut()){
+            $query = $query->field('updatedAt')->range(\DateTimeImmutable::createFromMutable($passage->getDateDebut())->modify('today'), \DateTimeImmutable::createFromMutable($passage->getDateDebut())->modify('tomorrow'));
+        }
 
+        foreach( $query->getQuery()->execute() as $attachement) {
             $attachments[$attachement->getId()] = $attachement;
         }
 
