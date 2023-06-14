@@ -534,9 +534,10 @@ class ContratController extends Controller {
     public function pdfAction(Request $request, Contrat $contrat) {
         $dm = $this->get('doctrine_mongodb')->getManager();
         $cm = $this->get('contrat.manager');
+        $contratConfSeineEtMarne = $this->container->getParameter('contrat_seine_et_marne') ? $this->container->getParameter('contrat_seine_et_marne') : null;
 
         if (in_array($contrat->getStatut(), [ContratManager::STATUT_BROUILLON, ContratManager::STATUT_EN_ATTENTE_ACCEPTATION])) {
-            $contrat->setMarkdown($this->renderView('contrat/contrat.markdown.twig', array('contrat' => $contrat, 'contratManager' => $cm)));
+            $contrat->setMarkdown($this->renderView('contrat/contrat.markdown.twig', array('contrat' => $contrat, 'contratManager' => $cm, 'enteteSeineEtMarne' => $contratConfSeineEtMarne)));
             $dm->persist($contrat);
             $dm->flush();
         }
