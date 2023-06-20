@@ -49,4 +49,10 @@ class CompteRepository extends DocumentRepository {
     	return $resultSet;
     }
 
+    public function findAllUtilisateursTechnicienActif() {
+        $query = $this->createQueryBuilder('Compte');
+        $query->field('tags.identifiant')->equals(CompteManager::TYPE_TECHNICIEN);
+        $query->field('actif')->equals(true);
+        return $query->getQuery()->execute();
+    }
 }
