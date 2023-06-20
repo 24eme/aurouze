@@ -148,7 +148,9 @@
                                                     <span class="label label-xs label-primary">{{ prestation.nomToString }}</span>
                                                 {%endif%}
                                             {% endfor %}
-                                        <span title="{{ passage.libelle }}" class="pull-right badge {% if passage.isGarantie or passage.isControle %} badge-warning {% else %} badge-default {% endif %} {% if passage.mouvementDeclenchable %} badge-inverse {% endif %} btn-xs">{{ passage.getNumeroPassage }} / {{ passage.contrat.nbPassages}}</span>
+                                            {% if passage.getNumeroPassage %}
+                                                <span title="{{ passage.libelle }}" class="pull-right badge {% if passage.isGarantie or passage.isControle %} badge-warning {% else %} badge-default {% endif %} {% if passage.mouvementDeclenchable %} badge-inverse {% endif %} btn-xs">{{ passage.getNumeroPassage }} /{{ passage.contrat.getNbPassages }} </span>
+                                            {% endif %}
                                             {% if passage.audit %}
                                                 <span class="pull-right mdi mdi-person text-danger" data-toggle="tooltip" data-placement="top" title="Audit {{ passage.audit }}"></span>
                                             {% endif %}

@@ -134,7 +134,7 @@ class PassageController extends Controller
         $frequence = $request->get('frequence');
 
         $passages = $passageManager->getRepository()->findToPlan($secteur, $dateDebut, clone $dateFin, $frequence);
-        $devis = $devisManager->getRepository()->findToPlan($secteur, $dateDebut, clone $dateFin,$frequence);
+        $devis = $devisManager->getRepository()->findToPlan($secteur, $dateDebut, clone $dateFin);
 
         if(!$frequence){
             $passages = $passages->toArray();

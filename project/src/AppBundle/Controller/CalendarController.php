@@ -544,10 +544,12 @@ class CalendarController extends Controller {
      */
     public function listeRendezVousAction(Request $request) {
         $dm = $this->get('doctrine_mongodb')->getManager();
-        $date = new \DateTime();
-        $dateFin = (new \DateTime())->modify("+1 month");
-        $rdvs = $dm->getRepository('AppBundle:RendezVous')->findByDate($date->format('Y-m-d'), $dateFin->format('Y-m-d'));
-        return $this->render('recherche/listRendezVous.html.twig', array('rdvs' => $rdvs));
+        $date = (new \DateTime())->modify("-1000 year");
+        $dateFin = (new \DateTime());
+        $libre = true;
+        $rdvs = $dm->getRepository('AppBundle:RendezVous')->findByDate($date->format('Y-m-d'), $dateFin->format('Y-m-d'),$libre);
+        $techniciens = $dm->getRepository('AppBundle:Compte')->findAllUtilisateursTechnicienActif();
+        return $this->render('recherche/listRendezVous.html.twig', array('rdvs' => $rdvs, 'techniciens' => $techniciens));
     }
 
 
@@ -556,15 +558,17 @@ class CalendarController extends Controller {
      */
     public function listeRendezVousTechnicienAction(Request $request) {
         $dm = $this->get('doctrine_mongodb')->getManager();
-        $date = new \DateTime();
-        $dateFin = (new \DateTime())->modify("+5 years");
+        $date = (new \DateTime())->modify("-1000 years");
+        $dateFin = (new \DateTime());
         $technicien = $request->get('technicien');
         $technicienObj = null;
         if ($technicien) {
             $technicienObj = $dm->getRepository('AppBundle:Compte')->findOneById($technicien);
         }
-        $rdvs = $dm->getRepository('AppBundle:RendezVous')->findByDateAndParticipant($date->format('Y-m-d'),$dateFin->format('Y-m-d'), $technicienObj);
-        return $this->render('recherche/listRendezVous.html.twig', array('rdvs' => $rdvs, 'technicien' => $technicienObj));
+        $libre = true;
+        $rdvs = $dm->getRepository('AppBundle:RendezVous')->findByDateAndParticipant($date->format('Y-m-d'),$dateFin->format('Y-m-d'), $technicienObj,$libre);
+        $techniciens = $dm->getRepository('AppBundle:Compte')->findAllUtilisateursTechnicienActif();
+        return $this->render('recherche/listRendezVous.html.twig', array('rdvs' => $rdvs, 'technicien' => $technicienObj,'techniciens' => $techniciens));
     }
 
     public function buildEventObjCalendar($rdv,$technicien){
