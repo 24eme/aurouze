@@ -105,7 +105,7 @@ class PassageController extends Controller
             $dateFin->setTime(23,59,59);
 
             $dateFinAll = clone $dateDebut;
-            $dateFinAll->modify("last day of next month");
+            $dateFinAll->modify("+2 months");
             $dateFinAll->setTime(23,59,59);
         }
 
