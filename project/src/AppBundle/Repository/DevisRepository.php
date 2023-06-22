@@ -48,7 +48,7 @@ class DevisRepository extends DocumentRepository {
     return $queryBuilder->getQuery()->execute();
   }
 
-  public function findToPlan($secteur = EtablissementManager::SECTEUR_PARIS, \DateTime $dateDebut = null, \DateTime $dateFin, $frequence = null) {
+  public function findToPlan($secteur = EtablissementManager::SECTEUR_PARIS, \DateTime $dateDebut = null, \DateTime $dateFin) {
       $date = new \DateTime();
       $mongoEndDate = new MongoDate(strtotime($dateFin->format('Y-m-d')));
 
@@ -70,18 +70,7 @@ class DevisRepository extends DocumentRepository {
 
       $query = $q->sort('zone', 'asc')->getQuery();
 
-      if(!$frequence){
-          return $query->execute();
-      }
-      $results = $query->execute();
-
-      $passages = array();
-      foreach($results as $p){
-          if($p->getContrat()->getNbPassages() == $frequence){
-              $passages[] = $p;
-          }
-      }
-      return $passages;
+      return $query->execute();
   }
 
   public function findByQuery($q)
