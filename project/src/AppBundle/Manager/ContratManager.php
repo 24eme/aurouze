@@ -395,6 +395,12 @@ class ContratManager implements MouvementManagerInterface {
            $datePrevisionCloned = clone $datesPrevisionArray[$etb][$cpt]->getDatePrevision();
            $ecartDateDebutDatePrev = $dateDebutContratOrigine->diff($datePrevisionCloned)->format('%R%a');
            $datePrevision = $dateDebutContratReconduit->modify($ecartDateDebutDatePrev." days");
+           if($datePrevision->format('L') && !$datePrevisionCloned->format('L') && $datePrevisionCloned->format('m-d') >= '02-28') {
+               $datePrevision = $datePrevision->modify('+1 day');
+           }
+           if(!$datePrevision->format('L') && $datePrevisionCloned->format('L') && $datePrevisionCloned->format('m-d') >= '02-29') {
+               $datePrevision = $datePrevision->modify('-1 day');
+           }
            $passage->setDatePrevision($datePrevision);
            $cpt++;
         }
