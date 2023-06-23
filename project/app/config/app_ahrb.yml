@@ -4,4 +4,4 @@ parameters:
     certification_bois: false
     date_facturation: null
     code_comptable_auto: true
-    code_comptable_particulier: true
+    code_comptable_particulier: "2PART"
