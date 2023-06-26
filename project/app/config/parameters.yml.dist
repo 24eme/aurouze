@@ -49,7 +49,7 @@ parameters:
         email : "emailTransmission@dns.fr"
         nom : 'Nom du mail'
         numero : '00000000'
-        replyemail : "emailReplyTransmission@dns.fr"
+        reply_email : "emailReplyTransmission@dns.fr"
     commercial_seine_et_marne: "nom_commercial"
     contrat_seine_et_marne:
         adresse_libelle: ''
