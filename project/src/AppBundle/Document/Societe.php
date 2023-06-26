@@ -165,7 +165,7 @@ class Societe implements InterlocuteurInterface {
 
     public function generateCodeComptable($generateCodeComptable,$generateCodeComptableParticulier){
         if($generateCodeComptableParticulier && ($this->getType() == EtablissementManager::TYPE_ETB_PARTICULIER)){
-            $this->setCodeComptable("2PART");
+            $this->setCodeComptable($generateCodeComptableParticulier);
         }
         elseif($generateCodeComptable){
             $this->setCodeComptable("2".substr($this->getRaisonSociale(), 0, 3).$this->getIdentifiant());

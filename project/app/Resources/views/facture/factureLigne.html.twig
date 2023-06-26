@@ -104,9 +104,9 @@
                             {% if(not facture.isAvoir) %}
                               {% if(not facture.iscloture) %}
                                   {% if (resteTropPaye and facture.montantTTC < resteTropPaye) %}
-                                      <li><a onclick="return confirm('Êtes vous sûr de vouloir de payer avec le trop perçu restant et de cloturer cette facture ?')" href="{{ path('facture_cloturer_payer_avec_trop_percu', {'id': facture.societe.id, 'factureId': facture.id }) }}">Payer avec le trop perçu restant et cloturer les paiements</a></li>
+                                      <li><a onclick="return confirm('Êtes vous sûr de vouloir de payer avec le trop perçu restant et de cloturer cette facture ?')" href="{{ path('facture_cloturer_payer_avec_trop_percu', {'id': facture.societe.id, 'factureId': facture.id }) }}">Payer avec le trop perçu restant et cloturer la facture</a></li>
                                   {% endif %}
-                                <li><a onclick="return confirm('Êtes vous sûr de vouloir cloturer cette facture ?')" href="{{ path('facture_cloturer', {'id': facture.societe.id, 'factureId': facture.id }) }}">Cloturer les paiements</a></li>
+                                <li><a onclick="return confirm('Êtes vous sûr de vouloir cloturer cette facture ?')" href="{{ path('facture_cloturer', {'id': facture.societe.id, 'factureId': facture.id }) }}">Cloturer la facture</a></li>
                               {% endif %}
                               {% if (facture.payeeAvecTropPercu) %}
                                 <li><a onclick="return confirm('Êtes vous sûr de vouloir décloturer cette facture et mettre à jour le trop perçu ?')" href="{{ path('facture_decloturer', {'id': facture.societe.id, 'factureId': facture.id }) }}">Décloturer et mettre à jour le trop perçu (remettre les paiements à 0)</a></li>
