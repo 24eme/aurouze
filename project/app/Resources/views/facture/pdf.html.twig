@@ -65,7 +65,7 @@
     {% for ligne in lignes %}
         <tr>
             <td>
-                {% if(ligne.libelle is defined) %}{{ ligne.libelle|replace({'1/1': ''}) }}<br />{% endif %}
+                {% if(ligne.libelle is defined) %}{{ ligne.libelle|replace({' 1/1 ': ' '}) }}<br />{% endif %}
                 {% if ligne.referenceClient is defined and ligne.referenceClient %}<small><small>Votre Réf CDE : {{ ligne.referenceClient }}</small><br /></small>{% endif %}
                 {% if ligne.details is defined %}
                 <small>
@@ -149,6 +149,12 @@ Condition de réglement : {{ facture.frequencePaiementLibelle }}
 </p>
 {% endif %}
 
+{% if (devisLie and devisLie.numeroCommande) %}
+<p>
+    Numero Commande : <strong>{{ devisLie.numeroCommande }}</strong>
+</p>
+{% endif %}
+
 <small>
 <p class="text-center" style="line-height: 13px;">
     <small>
@@ -179,8 +185,19 @@ Condition de réglement : {{ facture.frequencePaiementLibelle }}
             <p>
             <span class="lead" style="font-size: 15px;">Montant {% if facture.isFacture %}dû{% endif %} : {{ facture.montantTTC|number_format(2, ',', ' ')  }}&nbsp;€</span><br />
             {% if facture.isFacture %}
-            <small>{% if facture.sepa and facture.sepa.actif %}Cette facture passera automatiquement en prélèvement le : {% else %}Date limite de règlement : {% endif %}{{ facture.dateLimitePaiement|date("d/m/Y") }}</small>
+            <small>
+            {% if facture.cloture  %}
+                {% if facture.avoir %}
+                    Cette facture a été redressé (avoir {{ facture.avoir }})
+                {% else %}
+                    Cette facture a été réglée le : {{ facture.getDatePaiement() }}
+                {% endif %}
+            {% else %}
+              {% if facture.sepa and facture.sepa.actif %}Cette facture passera automatiquement en prélèvement le : {% else %}Date limite de règlement : {% endif %}{{ facture.dateLimitePaiement|date("d/m/Y") }}
             {% endif %}
+            </small>
+          {% endif %}
+
             </p>
         </div>
     </div>

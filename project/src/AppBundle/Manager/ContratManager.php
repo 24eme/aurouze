@@ -37,6 +37,8 @@ class ContratManager implements MouvementManagerInterface {
     const FREQUENCE_30JMOIS = '30JMOIS';
     const FREQUENCE_45JMOIS = '45JMOIS';
     const FREQUENCE_60J = '60J';
+    const ZONE_SEINE_ET_MARNE = "77";
+    const ZONE_PARIS = "75";
 
     const EXPORT_PCA_CLIENT = 0;
     const EXPORT_PCA_NUMERO_CONTRAT = 1;
@@ -239,6 +241,29 @@ class ContratManager implements MouvementManagerInterface {
         $contrat->reInitContratPassages();
     }
 
+
+    public function removeAllPassagesAPlanifierWhenEtablissementIsDeleted($contrat){
+      $etablissements = $contrat->getEtablissements();
+      $etablissementsIds = array();
+      foreach($etablissements as $etablissement){
+        $etablissementsIds[]=$etablissement->getId();
+      }
+
+      foreach($contrat->getContratPassages() as $cp){
+        if(in_array($cp->getEtablissement()->getId(),$etablissementsIds)){
+          continue;
+        }
+        foreach($cp->getPassages() as $passage){
+            if(! $passage->isAPlanifie()){
+              continue;
+            }
+            $contrat->removePassage($passage);
+            $this->dm->remove($passage);
+            $this->dm->flush();
+        }
+      }
+    }
+
     public function updateInfosPassagePrecedent($contrat, $etablissement = null) {
         $passagesByEtablissement = $this->getPassagesByNumeroArchiveContrat($contrat, true);
         foreach($passagesByEtablissement as $etablissementId => $passages) {
@@ -305,6 +330,9 @@ class ContratManager implements MouvementManagerInterface {
                 $passage->setMultiTechnicien($contrat->getMultiTechnicien());
 
                 $passage->setContrat($contrat);
+                if($contrat->getZone()){
+                  $passage->setZone($contrat->getZone());
+                }
                 $passage->setTypePassage(PassageManager::TYPE_PASSAGE_CONTRAT);
                 foreach ($passageInfos->prestations as $prestationPrevu) {
                     $prestationObj = new Prestation();
@@ -367,6 +395,12 @@ class ContratManager implements MouvementManagerInterface {
            $datePrevisionCloned = clone $datesPrevisionArray[$etb][$cpt]->getDatePrevision();
            $ecartDateDebutDatePrev = $dateDebutContratOrigine->diff($datePrevisionCloned)->format('%R%a');
            $datePrevision = $dateDebutContratReconduit->modify($ecartDateDebutDatePrev." days");
+           if($datePrevision->format('L') && !$datePrevisionCloned->format('L') && $datePrevisionCloned->format('m-d') >= '02-28') {
+               $datePrevision = $datePrevision->modify('+1 day');
+           }
+           if(!$datePrevision->format('L') && $datePrevisionCloned->format('L') && $datePrevisionCloned->format('m-d') >= '02-29') {
+               $datePrevision = $datePrevision->modify('-1 day');
+           }
            $passage->setDatePrevision($datePrevision);
            $cpt++;
         }

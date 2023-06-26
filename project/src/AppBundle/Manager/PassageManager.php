@@ -111,6 +111,15 @@ class PassageManager
         return $passage;
     }
 
+
+    public function delete(Passage $passage){
+      if (! $passage->isAPlanifie()) {
+        return;
+      }
+      $this->dm->remove($passage);
+      $this->dm->flush();
+    }
+
     public function getRepository() {
 
         return $this->dm->getRepository('AppBundle:Passage');
@@ -119,7 +128,7 @@ class PassageManager
     public function getNbPassagesToPlanPerMonth($secteur = EtablissementManager::SECTEUR_PARIS, $dateUntil = null) {
         if(is_null($dateUntil)) {
             $dateUntil = new \DateTime();
-            $dateUntil->modify("last day of next month");
+            $dateUntil->modify("last day of +2 month");
         }
         return $this->getRepository()->findNbPassagesToPlanPerMonthUntil($secteur, $dateUntil);
     }

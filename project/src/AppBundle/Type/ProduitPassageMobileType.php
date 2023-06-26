@@ -27,7 +27,7 @@ class ProduitPassageMobileType extends AbstractType {
 	public function buildForm(FormBuilderInterface $builder, array $options)
 	{
 		$builder
-		->add('identifiant', ChoiceType::class, array('label' => ' ', 'choices'  => array_merge(array('' => ''), $this->getProduits()), "attr" => array("class" => "form-control phoenix","placeholder" => 'Choisir un produit')))
+		->add('identifiant', ChoiceType::class, array('label' => ' ', 'choices'  => array_merge(array('' => ''), $this->getProduits()), "attr" => array("class" => "form-control phoenix filterable-select", "data-native-menu" => 0, "placeholder" => 'Choisir un produit')))
 		->add('nbUtilisePassage', NumberType::class, array('label' => ' ',"required" => false, "attr" => array("class" => "text-right phoenix","placeholder" => 'Quantité utilisée')));
 
 	}

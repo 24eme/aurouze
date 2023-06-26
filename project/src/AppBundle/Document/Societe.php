@@ -135,6 +135,11 @@ class Societe implements InterlocuteurInterface {
      */
     protected $frequencePaiement;
 
+    /**
+     * @MongoDB\Field(type="string")
+     */
+    protected $methodeDeFacturation;
+
     public function __construct() {
         $this->etablissements = new \Doctrine\Common\Collections\ArrayCollection();
         $this->adresse = new Adresse();
@@ -154,6 +159,16 @@ class Societe implements InterlocuteurInterface {
         if(strpos($this->getSepa()->getRum(),strtoupper($instanceapp)) === false){
           $sepa = $this->getSepa();
           $sepa->setRum(strtoupper($instanceapp).$this->getIdentifiant());
+        }
+    }
+
+
+    public function generateCodeComptable($generateCodeComptable,$generateCodeComptableParticulier){
+        if($generateCodeComptableParticulier && ($this->getType() == EtablissementManager::TYPE_ETB_PARTICULIER)){
+            $this->setCodeComptable($generateCodeComptableParticulier);
+        }
+        elseif($generateCodeComptable){
+            $this->setCodeComptable("2".substr($this->getRaisonSociale(), 0, 3).$this->getIdentifiant());
         }
     }
 
@@ -714,6 +729,25 @@ class Societe implements InterlocuteurInterface {
     	return $this;
     }
 
+    /**
+     * Set methodeDeFacturation
+     *
+     * @param string $methodeDeFacturation
+     * @return self
+     */
+    public function setMethodeDeFacturation($methodeDeFacturation) {
+        $this->methodeDeFacturation = $methodeDeFacturation;
+        return $this;
+    }
+
+    /**
+     * Get methodeDeFacturation
+     *
+     * @return string $methodeDeFacturation
+     */
+    public function getMethodeDeFacturation() {
+        return $this->methodeDeFacturation;
+    }
 
 
     /**

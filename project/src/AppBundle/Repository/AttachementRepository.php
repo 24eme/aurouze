@@ -5,6 +5,7 @@ namespace AppBundle\Repository;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use AppBundle\Document\Attachement;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ODM\MongoDB\LockMode;
 
 /**
  * AttachementRepository
@@ -14,10 +15,16 @@ use Doctrine\Common\Collections\ArrayCollection;
  */
 class AttachementRepository extends DocumentRepository {
 
+    public function findForAttachements($id, $lockMode = LockMode::NONE, $lockVersion = null){
+        $doc = parent::find($id, $lockMode, $lockVersion);
+        $this->getDocumentManager()->getUnitOfWork()->clear("AppBundle\Document\Attachement"); //sinon le document attachement est modifié
+        return $doc;
+    }
+
     public function findLast() {
 
         return $this->createQueryBuilder()
-             ->select('_id', 'updatedAt', 'imageName', 'titre', 'originalName', 'etablissement', 'societe', 'visibleTechnicien', 'ext')
+             ->select('_id', 'updatedAt', 'imageName', 'titre', 'originalName', 'etablissement', 'societe', 'visibleTechnicien', 'ext','visibleClient')
              ->limit(10)
              ->sort(array('_id' => -1))
              ->getQuery()
@@ -27,24 +34,45 @@ class AttachementRepository extends DocumentRepository {
     public function findBySociete($societe)
 	{
         $attachments = array();
-		foreach($this->createQueryBuilder()->select('_id', 'updatedAt', 'imageName', 'titre', 'originalName', 'etablissement', 'societe', 'visibleTechnicien', 'ext')->field('societe')->equals($societe)->getQuery()->execute() as $attachement) {
+		foreach($this->createQueryBuilder()->select('_id', 'updatedAt', 'imageName', 'titre', 'originalName', 'etablissement', 'societe', 'visibleTechnicien', 'ext','visibleClient')->field('societe')->equals($societe)->getQuery()->execute() as $attachement) {
             $attachments[$attachement->getId()] = $attachement;
         }
 
         uasort($attachments,array("AppBundle\Document\Attachement", "cmpUpdateAt"));
-
+        $this->getDocumentManager()->getUnitOfWork()->clear("AppBundle\Document\Attachement");
+        // $this->getDocumentManager()->clear(); //sinon le document attachement est modifié
         return $attachments;
     }
 
     public function findByEtablissement($etablissement)
 	{
         $attachments = array();
-		foreach($this->createQueryBuilder()->select('_id', 'updatedAt', 'imageName', 'titre', 'originalName', 'etablissement', 'societe', 'visibleTechnicien', 'ext')->field('etablissement')->equals($etablissement)->getQuery()->execute() as $attachement) {
+        foreach($this->createQueryBuilder()->select('_id', 'updatedAt', 'imageName', 'titre', 'originalName', 'etablissement', 'societe', 'visibleTechnicien', 'ext','visibleClient')->field('etablissement')->equals($etablissement)->getQuery()->execute() as $attachement) {
+            $attachments[$attachement->getId()] = $attachement;
+        }
+
+        uasort($attachments,array("AppBundle\Document\Attachement", "cmpUpdateAt"));
+        $this->getDocumentManager()->getUnitOfWork()->clear("AppBundle\Document\Attachement");//sinon le document attachement est modifié
+        return $attachments;
+    }
+
+    public function findByPassageAndVisibleClient($passage)
+    {
+        $attachments = array();
+        $query = $this->createQueryBuilder()->select('_id', 'updatedAt', 'imageName', 'titre', 'originalName', 'etablissement', 'societe', 'visibleTechnicien', 'ext','visibleClient','base64')
+                                            ->field('etablissement')->equals($passage->getEtablissement())
+                                            ->field('visibleClient')->equals(true);
+        if($passage->getDateDebut()){
+            $query = $query->field('updatedAt')->range(\DateTimeImmutable::createFromMutable($passage->getDateDebut())->modify('today'), \DateTimeImmutable::createFromMutable($passage->getDateDebut())->modify('tomorrow'));
+        }
+
+        foreach( $query->getQuery()->execute() as $attachement) {
             $attachments[$attachement->getId()] = $attachement;
         }
 
         uasort($attachments,array("AppBundle\Document\Attachement", "cmpUpdateAt"));
 
+        $this->getDocumentManager()->getUnitOfWork()->clear("AppBundle\Document\Attachement");//sinon le document attachement est modifié
         return $attachments;
     }
 

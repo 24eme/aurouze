@@ -238,6 +238,12 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
      */
     protected $auditPassage;
 
+    /**
+     * @MongoDB\Field(type="string")
+     */
+    protected $zone;
+
+
     public function __construct() {
         $this->etablissements = new ArrayCollection();
         $this->prestations = new ArrayCollection();
@@ -749,6 +755,39 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
         return $this->auditPassage;
     }
 
+    /**
+     * Get zone
+     *
+     * @return string $zone
+     */
+    public function getZone(){
+      return $this->zone;
+    }
+
+
+    /**
+     * Set zone
+     *
+     * @param string $commercialSeineEtMarne
+     * @return self
+     */
+    public function setZone($commercialSeineEtMarne){
+      if($this->getCommercial()->getNom() == $commercialSeineEtMarne){
+        $this->zone = ContratManager::ZONE_SEINE_ET_MARNE;
+      }
+      else{
+        $this->zone = ContratManager::ZONE_PARIS;
+      }
+
+      foreach($this->getContratPassages() as $cp){
+        foreach($cp->getPassages() as $passage){
+          $passage->setZone($this->getZone());
+        }
+      }
+
+      return $this;
+    }
+
     public function updateObject() {
             $max = 0;
             foreach ($this->getPrestations() as $prestation) {
@@ -985,25 +1024,29 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
           $facturationInterval = (floatval($maxNbPrestations) / floatval($this->getNbFactures()));
         }
 
-        if(floatval($this->getNbFactures()) > 1){
-          $facturationInterval = (floatval($maxNbPrestations -1) / floatval($this->getNbFactures()-1));
-        }
         $compteurFacturation = $facturationInterval;
         $cpt = 0;
+        $nbMouvementsDeclenchables = 0;
         foreach ($passagesDatesArray as $date => $passage) {
             if ($cpt < 1) {
-                $passagesDatesArray[$date]->mouvement_declenchable = boolval($this->getNbFactures());
+                $passagesDatesArray[$date]->mouvement_declenchable = boolval($this->getNbFactures() && $nbMouvementsDeclenchables < $this->getNbFactures());
                 $compteurFacturation--;
+                if($passagesDatesArray[$date]->mouvement_declenchable) {
+                    $nbMouvementsDeclenchables++;
+                }
                 $cpt++;
                 continue;
             }
-            if ($cpt >= $compteurFacturation) {
-                $passagesDatesArray[$date]->mouvement_declenchable = boolval($this->getNbFactures() && (floatval($this->getNbFactures()) > 1));
+            if ($cpt > $compteurFacturation) {
+                $passagesDatesArray[$date]->mouvement_declenchable = boolval($this->getNbFactures() && $nbMouvementsDeclenchables < $this->getNbFactures() && (floatval($this->getNbFactures()) > 1));
                 $compteurFacturation+=$facturationInterval;
             } else {
                 $passagesDatesArray[$date]->mouvement_declenchable = 0;
             }
             $cpt++;
+            if($passagesDatesArray[$date]->mouvement_declenchable) {
+                $nbMouvementsDeclenchables++;
+            }
         }
         $cpt = 0;
         foreach ($passagesDatesArray as $date => $passage) {
@@ -1151,7 +1194,7 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
      *
      * @param AppBundle\Document\Etablissement $etablissement
      */
-    public function removeEtablissement(\AppBundle\Document\Etablissement $etablissement) {
+    public function removeEtablissement(Etablissement $etablissement) {
         $this->etablissements->removeElement($etablissement);
     }
 
@@ -1784,10 +1827,13 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
      * @return string $frequencePaiement
      */
     public function getFrequencePaiement() {
+        $this->frequencePaiement = $this->getSociete()->getFrequencePaiement();
+
         return $this->frequencePaiement;
     }
 
     public function getFrequencePaiementLibelle() {
+        $this->getFrequencePaiement();
 
         if(is_null($this->frequencePaiement)) return "N.C.";
 
@@ -2125,4 +2171,66 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
         $m = round(($duree/60 - $h) * 60);
         return sprintf("%02dh%02d", $h, $m);
     }
+
+    public function getEtablissementsWithoutPassages(){
+      $etablissementsSansPassages = array();
+      foreach($this->getContratPassages() as $contratPassage){
+        if(count($contratPassage->getPassages()) < 1){
+          $etablissementsSansPassages[] = $contratPassage->getEtablissement()->getId();
+        }
+      }
+      return $etablissementsSansPassages;
+    }
+
+
+    public function isEnCoursStatutLibelle(){
+      if($this->getStatutLibelle() == "En cours (réalisé)" || $this->getStatutLibelle() == ContratManager::$statuts_libelles[ContratManager::STATUT_EN_COURS]){
+        return true;
+      }
+      return false;
+    }
+
+    public function isAVenirStatutLibelle(){
+      if($this->getStatutLibelle() == "A venir" ){
+        return true;
+      }
+      return false;
+    }
+
+    public function isEnAttenteStatutLibelle(){
+      if($this->getStatutLibelle() == ContratManager::$statuts_libelles[ContratManager::STATUT_EN_ATTENTE_ACCEPTATION]){
+        return true;
+      }
+      return false;
+    }
+
+    public function isBrouillonStatutLibelle(){
+      if($this->getStatutLibelle() == ContratManager::$statuts_libelles[ContratManager::STATUT_BROUILLON]){
+        return true;
+      }
+      return false;
+    }
+
+    public function isTermineStatutLibelle(){
+      if($this->getStatutLibelle() == ContratManager::$statuts_libelles[ContratManager::STATUT_FINI]){
+        return true;
+      }
+      return false;
+    }
+
+    public function isResilieStatutLibelle(){
+      if($this->getStatutLibelle() == ContratManager::$statuts_libelles[ContratManager::STATUT_RESILIE]){
+        return true;
+      }
+      return false;
+    }
+
+    public function isAnnuleStatutLibelle(){
+      if($this->getStatutLibelle() == ContratManager::$statuts_libelles[ContratManager::STATUT_ANNULE]){
+        return true;
+      }
+      return false;
+    }
+
+
 }

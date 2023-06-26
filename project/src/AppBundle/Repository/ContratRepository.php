@@ -191,9 +191,14 @@ class ContratRepository extends DocumentRepository {
           } else {
           	$q->field('typeContrat')->in(array_keys(ContratManager::$types_contrats_reconductibles));
 	  }
+
 	  if($commercial) {
-		 $q->field('commercial')->equals($commercial);
-	  }
+      $commerciauxIds=array();
+      foreach($commercial->getValues() as $commercial){
+        $commerciauxIds[] = $commercial->getId();
+      }
+      $q->field('commercial')->in($commerciauxIds);
+   }
 
           $q->field('dateFin')->lte($date);
           $q->addOr($q->expr()->field('reconduit')->equals(false))
@@ -209,6 +214,14 @@ class ContratRepository extends DocumentRepository {
       $q = $this->createQueryBuilder();
       $q->field('mouvements.facture')->equals(false);
       $q->limit($limit);
+      $query = $q->getQuery();
+      return $query->execute();
+    }
+
+    public function findAllContratWithFactureAFacturer(){
+      $q = $this->createQueryBuilder();
+      $q->field('mouvements.facture')->equals(false);
+      $q->field('mouvements.facturable')->equals(true);
       $query = $q->getQuery();
       return $query->execute();
     }

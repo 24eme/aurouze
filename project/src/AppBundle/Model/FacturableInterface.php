@@ -32,4 +32,8 @@ interface FacturableInterface
     public function getDocumentType();
     public function getLignes();
     public function getNumero();
+
+    public function getPdfTelecharge();
+    public function setPdfTelecharge($montantTTC);
+
 }

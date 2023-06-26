@@ -1,6 +1,6 @@
-{{ application.adresse_commune }}, le {{ contrat.dateCreation|date("d/m/Y") }}
+{% if(contrat.zone is same as (constant('AppBundle\\Manager\\ContratManager::ZONE_SEINE_ET_MARNE'))) %}{{ enteteSeineEtMarne.adresse_commune }}{% else %}{{ application.adresse_commune }}{% endif %}, le {{ contrat.dateCreation|date("d/m/Y") }}
 
->{{ contrat.devisDestinataire|trim|raw }}  
+>{{ contrat.devisDestinataire|trim|replace({',': ',</br>'})|raw }}  
 >{{ contrat.devisAdresse.adresseFormatee | nl2br|trim|raw }}  
 >{{ contrat.devisAdresse.codePostal }} {{ contrat.devisAdresse.commune|trim|raw }}
 
@@ -9,10 +9,15 @@
 entre
 
 ```
-
+{% if(contrat.zone and contrat.zone is same as (constant('AppBundle\\Manager\\ContratManager::ZONE_SEINE_ET_MARNE'))) %}
+{{ enteteSeineEtMarne.adresse_libelle }}
+{{ enteteSeineEtMarne.adresse_adresse }}
+{{ enteteSeineEtMarne.adresse_cp }} {{ enteteSeineEtMarne.adresse_commune }}
+{% else %}
 {{ application.adresse_libelle }}
 {{ application.adresse_adresse }}
 {{ application.adresse_cp }} {{ application.adresse_commune }}
+{% endif %}
 
 ```
 
@@ -53,7 +58,7 @@ ___
 {% endif %}
 ## Nombre prévisionnel d'interventions par type de prestation
 {% for prestation in contrat.prestations %}
-{{  prestation.nbPassages }} passage{% if prestation.nbPassages > 1 %}s{% endif %} concernant : {{  prestation.nom|trim }}  
+{{  prestation.nbPassages }} {% if application.name is same as("Aurouze") %}intervention{% else %}passage{% endif %}{% if prestation.nbPassages > 1 %}s{% endif %} concernant : {{  prestation.nom|trim }}  
 {% endfor %}
 
 {% if contrat.moyens|length > 0 %}

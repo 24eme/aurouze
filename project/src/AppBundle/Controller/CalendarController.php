@@ -92,6 +92,9 @@ class CalendarController extends Controller {
         $calendarTool = new CalendarDateTool($request->get('date'), $request->get('mode'), $this->container->getParameter('calendar_extra'));
 
         $periodeStart = $calendarTool->getDateDebutSemaine('Y-m-d');
+        $periodeStart = ((new \DateTime($periodeStart))->modify('-3 month'));
+        $periodeStart = $periodeStart->format('Y-m-d');
+
         $periodeEnd = $calendarTool->getDateFinSemaine('Y-m-d');
 
         $rdvs = $dm->getRepository('AppBundle:RendezVous')->findByDate($periodeStart, $periodeEnd);
@@ -283,9 +286,11 @@ class CalendarController extends Controller {
         $dm = $this->get('doctrine_mongodb')->getManager();
         $technicien = $dm->getRepository('AppBundle:Compte')->findOneById($request->get('technicien'));
         $periodeStart = $request->get('start');
+        $periodeStart = ((new \DateTime($periodeStart))->modify('-3 month'));
+
+        $periodeStart = $periodeStart->format('Y-m-d');
         $periodeEnd = $request->get('end');
         $rdvs = $dm->getRepository('AppBundle:RendezVous')->findByDateAndParticipant($periodeStart, $periodeEnd, $technicien);
-
         $calendarData = array();
 
         foreach ($rdvs as $rdv) {
@@ -294,9 +299,133 @@ class CalendarController extends Controller {
 
         $response = new Response(json_encode($calendarData));
         $response->headers->set('Content-Type', 'application/json');
-
         return $response;
     }
+
+    /**
+     * @Route("/calendar/populateWithHolidays", name="calendarPopulateWithHolidays")
+     */
+    public function calendarPopulateWithHolidaysAction(Request $request) {
+        $response = new Response('
+          [
+            {
+              "title": "FERIE : \nJour de l\'an",
+              "start": "2022-01-01T00:00:00",
+              "end": "2022-01-01T23:59:59"
+            },
+            {
+              "title": "FERIE : \nLundi de Pâques",
+              "start": "2022-04-18T00:00:00",
+              "end": "2022-04-18T23:59:59"
+            },
+            {
+              "title": "FERIE : \nFête du Travail",
+              "start": "2022-05-01T00:00:00",
+              "end": "2022-05-01T23:59:59"
+            },
+            {
+              "title": "FERIE : \nVictoire des alliés",
+              "start": "2022-05-08T00:00:00",
+              "end": "2022-05-08T23:59:59"
+            },
+            {
+              "title": "FERIE : \njeudi de l\'ascension",
+              "start": "2022-05-26T00:00:00",
+              "end": "2022-05-26T23:59:59"
+            },
+            {
+              "title": "FERIE : \nLundi de pentecôte",
+              "start": "2022-06-06T00:00:00",
+              "end": "2022-06-06T23:59:59"
+            },
+            {
+              "title": "FERIE : \nFête nationale",
+              "start": "2022-07-14T00:00:00",
+              "end": "2022-07-14T23:59:59"
+            },
+            {
+              "title": "FERIE : \nAssomption",
+              "start": "2022-08-15T00:00:00",
+              "end": "2022-08-15T23:59:59"
+            },
+            {
+              "title": "FERIE : \nLa Toussaint",
+              "start": "2022-11-01T00:00:00",
+              "end": "2022-11-01T23:59:59"
+            },
+            {
+              "title": "FERIE : \nArmistice",
+              "start": "2022-11-11T00:00:00",
+              "end": "2022-11-11T23:59:59"
+            },
+            {
+              "title": "FERIE : \nNoël",
+              "start": "2022-12-25T00:00:00",
+              "end": "2022-12-25T23:59:59"
+            },
+            {
+              "title": "FERIE : \nJour de l\'an",
+              "start": "2023-01-01T00:00:00",
+              "end": "2023-01-01T23:59:59"
+            },
+            {
+              "title": "FERIE : \nLundi de Pâques",
+              "start": "2023-04-10T00:00:00",
+              "end": "2023-04-10T23:59:59"
+            },
+            {
+              "title": "FERIE : \nFête du Travail",
+              "start": "2023-05-01T00:00:00",
+              "end": "2023-05-01T23:59:59"
+            },
+            {
+              "title": "FERIE : \nVictoire des alliés",
+              "start": "2023-05-08T00:00:00",
+              "end": "2023-05-08T23:59:59"
+            },
+            {
+              "title": "FERIE : \njeudi de l\'ascension",
+              "start": "2023-05-18T00:00:00",
+              "end": "2023-05-18T23:59:59"
+            },
+            {
+              "title": "FERIE : \nLundi de pentecôte",
+              "start": "2023-05-29T00:00:00",
+              "end": "2023-05-29T23:59:59"
+            },
+            {
+              "title": "FERIE : \nFête nationale",
+              "start": "2023-07-14T00:00:00",
+              "end": "2023-07-14T23:59:59"
+            },
+            {
+              "title": "FERIE : \nAssomption",
+              "start": "2023-08-15T00:00:00",
+              "end": "2023-08-15T23:59:59"
+            },
+            {
+              "title": "FERIE : \nLa Toussaint",
+              "start": "2023-11-01T00:00:00",
+              "end": "2023-11-01T23:59:59"
+            },
+            {
+              "title": "FERIE : \nArmistice",
+              "start": "2023-11-11T00:00:00",
+              "end": "2023-11-11T23:59:59"
+            },
+            {
+              "title": "FERIE : \nNoël",
+              "start": "2023-12-25T00:00:00",
+              "end": "2023-12-25T23:59:59"
+            }
+          ]'
+        );
+        $response->headers->set('Content-Type', 'application/json');
+        return $response;
+    }
+
+
+
 
     /**
      * @Route("/calendar/read", name="calendarRead")
@@ -318,8 +447,16 @@ class CalendarController extends Controller {
             throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException(sprintf("Le rendez-vous \"%s\" n'a pas été trouvé", $request->get('id')));
         }
 
+        $documents = [];
+        if ($rdv->getPassage()) {
+            $documents = $this->get('attachement.manager')->getRepository()
+                         ->findByPassageAndVisibleClient($rdv->getPassage());
+        }
+
+        $is_devis = false;
         if ($rdv->getPlanifiable() && $rdv->getPlanifiable()->getTypePlanifiable() === Devis::DOCUMENT_TYPE) {
             $template = 'calendar/rendezVousDevis.html.twig';
+            $is_devis = true;
         } else {
             $template = 'calendar/rendezVous.html.twig';
         }
@@ -329,6 +466,7 @@ class CalendarController extends Controller {
         if(!$edition && !$request->get('forceEdition', false)) {
             return $this->render($template, array(
                 'rdv' => $rdv,
+                'documents' => $documents,
                 'service' => $request->get('service')
             ));
         }
@@ -338,9 +476,11 @@ class CalendarController extends Controller {
             'method' => 'POST',
             'attr' => array('id' => 'eventForm'),
             'rdv_libre' => !$rdv->getPlanifiable(),
+            'is_devis' => $is_devis,
         ));
 
         $form->handleRequest($request);
+
 
         if (!$form->isSubmitted() || !$form->isValid()) {
             return $this->render($template, array('rdv' => $rdv, 'form' => $form->createView(), 'service' => $request->get('service')));
@@ -399,6 +539,38 @@ class CalendarController extends Controller {
         );
     }
 
+    /**
+     * @Route("/calendar/listeRendezVous", name="listeRendezVous")
+     */
+    public function listeRendezVousAction(Request $request) {
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $date = (new \DateTime())->modify("-1000 year");
+        $dateFin = (new \DateTime());
+        $libre = true;
+        $rdvs = $dm->getRepository('AppBundle:RendezVous')->findByDate($date->format('Y-m-d'), $dateFin->format('Y-m-d'),$libre);
+        $techniciens = $dm->getRepository('AppBundle:Compte')->findAllUtilisateursTechnicienActif();
+        return $this->render('recherche/listRendezVous.html.twig', array('rdvs' => $rdvs, 'techniciens' => $techniciens));
+    }
+
+
+    /**
+     * @Route("/calendar/listeRendezVousTechnicien", name="listeRendezVousTechnicien")
+     */
+    public function listeRendezVousTechnicienAction(Request $request) {
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $date = (new \DateTime())->modify("-1000 years");
+        $dateFin = (new \DateTime());
+        $technicien = $request->get('technicien');
+        $technicienObj = null;
+        if ($technicien) {
+            $technicienObj = $dm->getRepository('AppBundle:Compte')->findOneById($technicien);
+        }
+        $libre = true;
+        $rdvs = $dm->getRepository('AppBundle:RendezVous')->findByDateAndParticipant($date->format('Y-m-d'),$dateFin->format('Y-m-d'), $technicienObj,$libre);
+        $techniciens = $dm->getRepository('AppBundle:Compte')->findAllUtilisateursTechnicienActif();
+        return $this->render('recherche/listRendezVous.html.twig', array('rdvs' => $rdvs, 'technicien' => $technicienObj,'techniciens' => $techniciens));
+    }
+
     public function buildEventObjCalendar($rdv,$technicien){
         $event = $rdv->getEventJson($technicien->getCouleur());
         $em = $this->get('etablissement.Manager');
@@ -418,7 +590,7 @@ class CalendarController extends Controller {
                 $dateRetour = $rdv->getPlanifiable()->getDateDebut()->format('Ym');
             }
             if($rdv->getPlanifiable()->getTypePlanifiable() == Passage::DOCUMENT_TYPE){
-              $event->retourMap = $this->generateUrl('passage', array('secteur' => $secteur, 'mois' => $dateRetour,'lat' => $planifiableCoord->getLat(),'lon' => $planifiableCoord->getLon(),'zoom' => $z));
+              $event->retourMap = $this->generateUrl('passage_secteur', array('secteur' => $secteur, 'mois' => $dateRetour,'lat' => $planifiableCoord->getLat(),'lon' => $planifiableCoord->getLon(),'zoom' => $z));
               if ($secteur) {
                   $event->retourMap = $this->generateUrl('passage_secteur',array('secteur' => $secteur, 'mois' => $dateRetour,'lat' => $planifiableCoord->getLat(),'lon' => $planifiableCoord->getLon(),'zoom' => $z));
               }

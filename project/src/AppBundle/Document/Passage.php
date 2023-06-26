@@ -163,6 +163,17 @@ class Passage implements DocumentEtablissementInterface, DocumentSocieteInterfac
      */
     protected $multiTechnicien;
 
+    /**
+     * @MongoDB\Field(type="string")
+     */
+    protected $zone;
+
+    /**
+     * @MongoDB\Field(type="date")
+     */
+    protected $dateEnvoiMailRapport;
+
+
     public function __construct() {
         $this->etablissementInfos = new EtablissementInfos();
         $this->prestations = new ArrayCollection();
@@ -989,7 +1000,7 @@ class Passage implements DocumentEtablissementInterface, DocumentSocieteInterfac
     {
       if(!count($this->niveauInfestation)){
           foreach ($this->getPrestations() as $prestation) {
-            $niveauInfestation = new niveauInfestation();
+            $niveauInfestation = new \AppBundle\Document\NiveauInfestation();
             $niveauInfestation->setIdentifiant($prestation->getIdentifiant());
             $this->addNiveauInfestation($niveauInfestation);
           }
@@ -1080,7 +1091,28 @@ class Passage implements DocumentEtablissementInterface, DocumentSocieteInterfac
      * @return int $multiTechnicien
      */
     public function getMultiTechnicien() {
-        return $this->multiTechnicien;
+        return $this->getContrat()->getMultiTechnicien();
+    }
+
+    /**
+     * Get zone
+     *
+     * @return string $zone
+     */
+    public function getZone(){
+      return $this->zone;
+    }
+
+    /**
+     * Set zone
+     *
+     * @param string $zone
+     * @return self
+     */
+
+    public function setZone($zone){
+      $this->zone = $zone;
+      return $this;
     }
 
     public static function triPerHourPrecedente($p_0, $p_1) {
@@ -1184,4 +1216,23 @@ class Passage implements DocumentEtablissementInterface, DocumentSocieteInterfac
     {
         return $this->saisieTechnicien;
     }
+
+    public function getDateFrancais() {
+        $formatter = new \IntlDateFormatter("fr_FR", \IntlDateFormatter::LONG, \IntlDateFormatter::LONG);
+
+        $formatter->setPattern("EEEE d MMMM Y");
+
+        return ucfirst($formatter->format($this->getDateDebut()));
+
+    }
+
+    public function setPdfRapportDateEnvoi($date){
+      $this->dateEnvoiMailRapport = $date;
+      return $this;
+    }
+
+    public function getPdfRapportDateEnvoi(){
+      return $this->dateEnvoiMailRapport;
+    }
+
 }

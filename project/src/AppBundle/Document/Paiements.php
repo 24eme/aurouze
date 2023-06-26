@@ -174,7 +174,7 @@ class Paiements {
     public function getAggregatePaiements($societe = null) {
     	$result = array();
     	foreach ($this->getPaiement() as $paiement) {
-    		if ($societe && $paiement->getFacture()->getSociete()->getId() != $societe->getId()) {
+            if ($societe && $paiement->getFacture()->getSociete()->getId() != $societe->getId() && !preg_match('/FACTURE-'.$societe->getIdentifiant().'/', $paiement->getFacture()->getId())) {
     			continue;
     		}
     		$k = ($paiement->getMoyenPaiement())? $paiement->getMoyenPaiement() : md5(microtime().rand());
@@ -282,6 +282,17 @@ class Paiements {
         return $montantTotal;
     }
 
+    public function getMontantTotalByOperation($paiement) {
+        $montantTotal = 0;
+        foreach ($this->getPaiement() as $p) {
+	    if($p->getDatePaiement()->format('Y-m-d') != $paiement->getDatePaiement()->format('Y-m-d') || $p->getMoyenPaiement() != $paiement->getMoyenPaiement() || $p->getLibelle() != $paiement->getLibelle()) {
+		continue;
+	    }
+            $montantTotal += $p->getMontant();
+        }
+        return $montantTotal;
+    }
+
     public function getMontantTotalByMoyenPaiement($moyen_paiement) {
         $montantTotal = 0;
         foreach ($this->getPaiement() as $paiement) {
@@ -338,6 +349,14 @@ class Paiements {
         return ($this->getNbPaiementsSaisis() == count($this->getPaiement()));
     }
 
+    public function getMontantTotalAPayer(){
+        $montantTotal = 0;
+        foreach ($this->getPaiement() as $paiement) {
+            $facture = $paiement->getFacture();
+            $montantTotal+=$facture->getMontantTTC();
+        }
+        return $montantTotal;
+    }
 
     /**
      * Set numeroRemise

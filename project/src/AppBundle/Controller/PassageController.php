@@ -24,6 +24,7 @@ use AppBundle\Manager\ContratManager;
 use AppBundle\Document\Prestation;
 use AppBundle\Manager\EtablissementManager;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Doctrine\ODM\MongoDB\LockMode;
 
 class PassageController extends Controller
 {
@@ -42,7 +43,8 @@ class PassageController extends Controller
         $contrat = $passage->getContrat();
         $societe = $contrat->getSociete();
         $facture = $this->get('facture.manager');
-        $lastPassage = $dm->getRepository('AppBundle:Passage')->findLastPassage($etablissement, $passage);
+        $lastPassages = $dm->getRepository('AppBundle:Passage')->findLastPassages($etablissement, $passage);
+        $solde = $facture->getSolde($societe);
 
         return $this->render('passage/infossupplementaires.html.twig',
             [
@@ -50,7 +52,8 @@ class PassageController extends Controller
                 'etablissement' => $etablissement,
                 'contrat' => $contrat,
                 'societe' => $societe,
-                'lastPassage' => $lastPassage
+                'lastPassages' => $lastPassages,
+                'solde' => $solde
             ]
         );
     }
@@ -73,10 +76,9 @@ class PassageController extends Controller
     }
 
     /**
-     * @Route("/passage/{secteur}/visualisation/{mois}", name="passage_secteur")
+     * @Route("/passage/{secteur}/visualisation/{periode}", name="passage_secteur")
      */
-    public function secteurAction(Request $request, $secteur, $mois = null) {
-        ini_set('memory_limit', '128M');
+    public function secteurAction(Request $request, $secteur, $periode = null) {
 
         $formEtablissement = $this->createForm(EtablissementChoiceType::class, null, array(
             'action' => $this->generateUrl('passage_etablissement_choice'),
@@ -85,7 +87,6 @@ class PassageController extends Controller
         $passageManager = $this->get('passage.manager');
         $devisManager = $this->get('devis.manager');
 
-        $moisCourant = ($request->get('mois', null) == "courant");
         $dateFin = new \DateTime();
         $dateFinCourant = clone $dateFin;
         $dateFinCourant->modify("+1 month");
@@ -96,23 +97,51 @@ class PassageController extends Controller
         $dateFin = $dateFinCourant;
         $anneeMois = "courant";
         $dateFinAll = $dateFin;
-        if(!$moisCourant){
-            $anneeMois = ($request->get('mois',null))? $request->get('mois') : date('Ym', strtotime(date('Y-m-d')));
-            $dateDebut = \DateTime::createFromFormat('Ymd H:i:s',$anneeMois.'01 00:00:00');
+
+        if(strlen($request->get('periode')) == 4) {
+            $anneeMois = $request->get('periode');
+            $dateDebut = \DateTime::createFromFormat('Ymd',$anneeMois.'0101');
+            $dateFin = clone $dateDebut;
+            $dateFin->modify("+1 year -1 day");
+            $dateFin->setTime(23,59,59);
+        } else {
+            $anneeMois = ($request->get('periode',null))? $request->get('periode') : date('Ym', strtotime(date('Y-m-d')));
             $dateDebut = \DateTime::createFromFormat('Ymd',$anneeMois.'01');
             $dateFin = clone $dateDebut;
             $dateFin->modify("last day of this month");
             $dateFin->setTime(23,59,59);
-
-            $dateFinAll = clone $dateDebut;
-            $dateFinAll->modify("+2 months");
-            $dateFinAll->setTime(23,59,59);
         }
+
+        $dateFinAll = new \DateTime();
+        $dateFinAll->modify("last day of +2 month");
+        $dateFinAll->setTime(23,59,59);
 
         $passages = null;
         $moisPassagesArray = $passageManager->getNbPassagesToPlanPerMonth($secteur, clone $dateFinAll);
-        $passages = $passageManager->getRepository()->findToPlan($secteur, $dateDebut, clone $dateFin)->toArray();
-        $devis = $devisManager->getRepository()->findToPlan($secteur, $dateDebut, clone $dateFin)->toArray();
+        $morePassages = [];
+        foreach ($moisPassagesArray as $key => $values) {
+            if (strlen($key) === 4) {
+                $morePassages[$key] = \DateTimeImmutable::createFromFormat('Y', $key)->format('Y-m-d');
+            }
+        }
+        $now = new \DateTimeImmutable();
+        for ($i = 3; $i < (3+6); $i++) {
+            $date = $now->modify("+".$i." month");
+            $morePassages[$date->format('Ym')] = $date->format('Y-m-d');
+        }
+
+        $frequences = array(2,3,4,6,12);
+        $frequence = $request->get('frequence');
+
+        $passages = $passageManager->getRepository()->findToPlan($secteur, $dateDebut, clone $dateFin, $frequence);
+
+        $devis = array();
+        if(!$frequence){
+            $passages = $passages->toArray();
+            $devis = $devisManager->getRepository()->findToPlan($secteur, $dateDebut, clone $dateFin);
+            $devis = $devis->toArray();
+        }
+
 
         foreach ($devis as $key => $d) {
             $passages[] = $d;
@@ -127,6 +156,7 @@ class PassageController extends Controller
         $coordinatesCenter->setLat($lat);
         $coordinatesCenter->setLon($lon);
         $coordinatesCenter->setZoom($zoom);
+
         $geojson = $this->buildGeoJson($passages);
         $passagesFiltreExportForm = $this->getPassagesFiltreExportForm();
 
@@ -138,11 +168,15 @@ class PassageController extends Controller
             'formEtablissement' => $formEtablissement->createView(),
             'geojson' => $geojson,
             'moisPassagesArray' => $moisPassagesArray,
+            'morePassages' => $morePassages,
             'passageManager' => $passageManager,
             'etablissementManager' => $this->get('etablissement.manager'),
             'secteur' => $secteur,
             'coordinatesCenter' => $coordinatesCenter,
-            'passagesFiltreExportForm' => $passagesFiltreExportForm->createView()));
+            'passagesFiltreExportForm' => $passagesFiltreExportForm->createView(),
+            'frequence' => $frequence,
+            'frequences' => $frequences
+        ));
     }
 
 
@@ -200,7 +234,7 @@ class PassageController extends Controller
 
         $passage = $this->get('passage.manager')->create($etablissement, $contrat);
         $passage->setDatePrevision(new \DateTime());
-
+        $passage->setZone($contrat->getZone());
         $form = $this->createForm(new PassageCreationType($dm), $passage, array(
             'action' => $this->generateUrl('passage_creation', array('id_etablissement' => $etablissement->getId(), 'id_contrat' => $contrat->getId())),
             'method' => 'POST',
@@ -230,13 +264,10 @@ class PassageController extends Controller
      * @ParamConverter("passage", class="AppBundle:Passage")
      */
     public function suppressionAction(Request $request, Passage $passage) {
-        $dm = $this->get('doctrine_mongodb')->getManager();
         $contrat = $passage->getContrat();
-        if ($passage->isAPlanifie()) {
-            $contrat->removePassage($passage);
-            $dm->remove($passage);
-            $dm->flush();
-        }
+        $contrat->removePassage($passage);
+        $pm = $this->get('passage.manager');
+        $pm->delete($passage);
         return $this->redirectToRoute('contrat_visualisation', array('id' => $contrat->getId()));
     }
 
@@ -390,7 +421,7 @@ class PassageController extends Controller
      */
     public function editionAction(Request $request, Passage $passage) {
         $dm = $this->get('doctrine_mongodb')->getManager();
-
+        $cm = $this->get('contrat.manager');
 
         $form = $this->createForm(new PassageType($dm), $passage, array(
             'action' => $this->generateUrl('passage_edition', array('id' => $passage->getId(), 'service' => $request->get('service'))),
@@ -399,21 +430,51 @@ class PassageController extends Controller
 
         $form->handleRequest($request);
 
-        if (!$form->isSubmitted() || !$form->isValid()) {
+        $contrat = $dm->getRepository('AppBundle:Contrat')->findOneById($passage->getContrat()->getId());
 
+        $lastPassageRealise = null;
+        foreach ($cm->getPassagesByNumeroArchiveContrat($contrat, true) as $etab => $ps) {
+            foreach ($ps as $p) {
+                if ($p->isRealise()) { $lastPassageRealise = $p; break; }
+            }
+        }
+
+        if(!$passage->getEmailTransmission()){
+            if($lastPassageRealise){
+                $passage->setEmailTransmission($lastPassageRealise->getEmailTransmission());
+            }
+            elseif($passage->getEtablissement()->getEmail()){
+                $passage->setEmailTransmission($passage->getEtablissement()->getEmail());
+            }
+            elseif($contrat->getSociete()->getContactCoordonnee()->getEmail()){
+                $passage->setEmailTransmission($contrat->getSociete()->getContactCoordonnee()->getEmail());
+            }
+            $dm->persist($passage);
+            $dm->flush();
+        }
+
+        if (!$form->isSubmitted() || !$form->isValid()) {
+            if($this->container->getParameter("commercial_seine_et_marne")){
+                $contrat->setZone($this->container->getParameter("commercial_seine_et_marne"));
+                $passage->setZone($contrat->getZone());
+                $dm->persist($passage);
+                $dm->persist($contrat);
+                $dm->flush();
+            }
             return $this->render('passage/edition.html.twig', array('passage' => $passage, 'form' => $form->createView(), 'service' => $request->get('service')));
         }
-        $passageManager = $this->get('passage.manager');
 
-        $contrat = $dm->getRepository('AppBundle:Contrat')->findOneById($passage->getContrat()->getId());
+
+        $passageManager = $this->get('passage.manager');
 
         if ($passage->getMouvementDeclenchable() && !$passage->getMouvementDeclenche()) {
             if ($contrat->generateMouvement($passage)) {
                 $passage->setMouvementDeclenche(true);
             }
         }
-
         $passage->setDateRealise($passage->getDateDebut());
+        $passage->setSaisieTechnicien(($passage->getEmailTransmission() || $passage->getNomTransmission() || $passage->getSignatureBase64()) && $passage->getDescription());
+
         $dm->persist($passage);
         $dm->persist($contrat);
         $dm->flush();
@@ -467,28 +528,108 @@ class PassageController extends Controller
     }
 
     /**
-     * @Route("/passage/pdf-rapport/{id}", name="passage_pdf_rapport")
+     * @Route("/passage/pdf-rapport-print/{id}", name="passage_pdf_rapport_print")
      * @ParamConverter("passage", class="AppBundle:Passage")
      */
-    public function pdfRapportAction(Request $request, Passage $passage) {
+    public function pdfRapportPrintAction(Request $request, Passage $passage) {
         $rapportVisitePdf = $this->createRapportVisitePdf($passage);
 
         if ($request->get('output') == 'html') {
 
             return new Response($rapportVisitePdf->html, 200);
         }
+
         if(!$passage->getEmailTransmission()){
             $dm = $this->get('doctrine_mongodb')->getManager();
             $passage->setPdfNonEnvoye(false);
+            $passage->setPdfRapportDateEnvoi(new \DateTime());
             $dm->flush();
         }
 
-        return new Response(
-            $this->get('knp_snappy.pdf')->getOutputFromHtml($rapportVisitePdf->html, $this->getPdfGenerationOptions()), 200, array(
+        if( !$rapportVisitePdf->pdfs){
+            return new Response(
+                $this->get('knp_snappy.pdf')->getOutputFromHtml($rapportVisitePdf->html, $this->getPdfGenerationOptions()), 200, array(
+                    'Content-Type' => 'application/pdf',
+                    'Content-Disposition' => 'attachment; filename="' . $rapportVisitePdf->filename . '"'
+                )
+            );
+        }
+
+        $tmpfile = $this->container->getParameter('kernel.cache_dir').'/PDFRAPPORT_'.$passage->getId().uniqid();
+        $this->get('knp_snappy.pdf')->generateFromHtml($rapportVisitePdf->html,$tmpfile,$this->getPdfGenerationOptions());
+
+        foreach($rapportVisitePdf->pdfs as $pdf){
+            $filename  = '/tmp/output-pdf-'.$passage->getId().rand().'.pdf';
+            $concat = "/tmp/output-pdf-concact-".$passage->getId().rand();
+            file_put_contents($filename,base64_decode($pdf->getBase64()));
+            exec(escapeshellcmd('pdftk '.$tmpfile.' '.$filename.' cat output '.$concat), $output, $exitcode);
+            $tmpfile = $concat;
+            unlink($filename);
+        }
+
+        if ($exitcode !== 0) {
+            throw new \Exception('pdftk failed with error: '.implode(', ', $output));
+        }
+
+        return new Response(file_get_contents($tmpfile), 200, array(
                 'Content-Type' => 'application/pdf',
                 'Content-Disposition' => 'attachment; filename="' . $rapportVisitePdf->filename . '"'
             )
         );
+
+        if($request->get('service')) {
+
+            return $this->redirect($request->get('service'));
+        }
+
+    }
+
+    /**
+     * @Route("/passage/pdf-rapport-download/{id}", name="passage_pdf_rapport_download")
+     * @ParamConverter("passage", class="AppBundle:Passage")
+     */
+    public function pdfRapportDownloadAction(Request $request, Passage $passage) {
+        $rapportVisitePdf = $this->createRapportVisitePdf($passage);
+        if ($request->get('output') == 'html') {
+
+            return new Response($rapportVisitePdf->html, 200);
+        }
+
+        if (! shell_exec(sprintf("which %s", escapeshellarg('pdftk')))) {
+            throw new \LogicException('missing pdftk binary');
+        }
+
+        if( !$rapportVisitePdf->pdfs){
+            return new Response(
+                $this->get('knp_snappy.pdf')->getOutputFromHtml($rapportVisitePdf->html, $this->getPdfGenerationOptions()), 200, array(
+                    'Content-Type' => 'application/pdf',
+                    'Content-Disposition' => 'attachment; filename="' . $rapportVisitePdf->filename . '"'
+                )
+            );
+        }
+
+        $tmpfile = $this->container->getParameter('kernel.cache_dir').'/PDFRAPPORT_'.$passage->getId().uniqid();
+        $this->get('knp_snappy.pdf')->generateFromHtml($rapportVisitePdf->html,$tmpfile,$this->getPdfGenerationOptions());
+
+        foreach($rapportVisitePdf->pdfs as $pdf){
+            $filename  = '/tmp/output-pdf-'.$passage->getId().rand().'.pdf';
+            $concat = "/tmp/output-pdf-concact-".$passage->getId().rand();
+            file_put_contents($filename,base64_decode($pdf->getBase64()));
+            exec(escapeshellcmd('pdftk '.$tmpfile.' '.$filename.' cat output '.$concat), $output, $exitcode);
+            $tmpfile = $concat;
+            unlink($filename);
+        }
+
+        if ($exitcode !== 0) {
+            throw new \Exception('pdftk failed with error: '.implode(', ', $output));
+        }
+
+        return new Response(file_get_contents($tmpfile), 200, array(
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="' . $rapportVisitePdf->filename . '"'
+            )
+        );
+
         if($request->get('service')) {
 
             return $this->redirect($request->get('service'));
@@ -520,7 +661,7 @@ class PassageController extends Controller
         $fromEmail = $parameters['coordonnees']['email'];
         $fromName = $parameters['coordonnees']['nom'];
 
-        $replyEmail = $parameters['coordonnees']['replyemail'];
+        $replyEmail = $parameters['coordonnees']['replyEmail'];
 
         $suject = "[".ucfirst($appname)."] - Rapport de visite du ".$passage->getDateDebut()->format("d/m/Y")." à ".$passage->getDateDebut()->format("H\hi");
         $body = $this->renderView(
@@ -531,24 +672,46 @@ class PassageController extends Controller
         $message = \Swift_Message::newInstance()
             ->setSubject($suject)
             ->setFrom(array($fromEmail => $fromName))
-            ->setTo($passage->getEmailTransmission())
+            ->setTo(explode(";",$passage->getEmailTransmission()))
             ->setReplyTo($replyEmail)
             ->setBody($body,'text/plain');
 
         if ($passage->getSecondEmailTransmission()) {
-            $to = [];
-            $to[] = $passage->getEmailTransmission();
-            $to[] = $passage->getSecondEmailTransmission();
+            $emailsTransmissions = explode(";",$passage->getEmailTransmission());
+            $secondEmailsTransmission = explode(";",$passage->getSecondEmailTransmission());
+            $to = array_merge($emailsTransmissions,$secondEmailsTransmission);
             $message->setTo($to);
         }
 
-        $attachment = \Swift_Attachment::newInstance($this->get('knp_snappy.pdf')->getOutputFromHtml($rapportVisitePdf->html, $this->getPdfGenerationOptions()), $rapportVisitePdf->filename, 'application/pdf');
+        if( !$rapportVisitePdf->pdfs){
+            $attachment = \Swift_Attachment::newInstance($this->get('knp_snappy.pdf')->getOutputFromHtml($rapportVisitePdf->html, $this->getPdfGenerationOptions()), $rapportVisitePdf->filename, 'application/pdf');
+        }else{
+            $tmpfile = $this->container->getParameter('kernel.cache_dir').'/PDFRAPPORT_'.$passage->getId().uniqid();
+            $this->get('knp_snappy.pdf')->generateFromHtml($rapportVisitePdf->html,$tmpfile,$this->getPdfGenerationOptions());
+
+            foreach($rapportVisitePdf->pdfs as $pdf){
+                $filename  = '/tmp/output-pdf-'.$passage->getId().rand().'.pdf';
+                $concat = "/tmp/output-pdf-concact-".$passage->getId().rand().'.pdf';
+                file_put_contents($filename,base64_decode($pdf->getBase64()));
+                exec(escapeshellcmd('pdftk '.$tmpfile.' '.$filename.' cat output '.$concat), $output, $exitcode);
+                $tmpfile = $concat;
+            }
+            if ($exitcode !== 0) {
+                throw new \Exception('pdftk failed with error: '.implode(', ', $output));
+            }
+
+            $attachment = \Swift_Attachment::newInstance(file_get_contents($tmpfile), $rapportVisitePdf->filename, 'application/pdf');
+        }
+
+
         $message->attach($attachment);
 
         try {
             $this->get('mailer')->send($message);
             $passage->setPdfNonEnvoye(false);
+            $passage->setPdfRapportDateEnvoi(new \DateTime());
             $dm->flush();
+
         }
         catch(Exception $e) {
             var_dump('NO mailer config'); exit;
@@ -696,12 +859,30 @@ class PassageController extends Controller
         $fm = $this->get('facture.manager');
         $pm = $this->get('passage.manager');
         $prestationArray = $dm->getRepository('AppBundle:Configuration')->findConfiguration()->getPrestationsArray();
+
+        $documents = $this->get('attachement.manager')->getRepository()
+                         ->findByPassageAndVisibleClient($passage);
+        $images = [];
+        $pdfs = [];
+
+        foreach($documents as $document){
+            $attachement = $this->get('attachement.manager')->getRepository()->findForAttachements($document->getId(),LockMode::PESSIMISTIC_READ);
+            if($attachement->isPdf()){
+                $pdfs[] = $attachement;
+            }
+            else{
+                $images[] = $attachement->getBase64Src();
+            }
+        }
         $createRapportVisitePdf->html = $this->renderView('passage/pdfRapport.html.twig', array(
             'passage' => $passage,
             'parameters' => $fm->getParameters(),
             'pm' => $pm,
-            'prestationArray' => $prestationArray
+            'prestationArray' => $prestationArray,
+            'images' => $images
         ));
+
+        $createRapportVisitePdf->pdfs = $pdfs;
 
         $createRapportVisitePdf->filename = sprintf("passage_rapport_%s_%s.pdf", $passage->getDateDebut()->format("Y-m-d_H:i"), strtoupper(Transliterator::urlize($passage->getEtablissement()->getIntitule())));
 

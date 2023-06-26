@@ -103,6 +103,7 @@ class TourneeController extends Controller {
           }
         return $this->render('tournee/tourneeTechnicien.html.twig', array('rendezVousByTechnicien' => $rendezVousByTechnicien,
                                                                           "technicien" => $technicienObj,
+                                                                          "isAdmin" => array_key_exists('PHP_AUTH_USER', $_SERVER) && preg_match('/^[a-zA-Z]+$/', $_SERVER['PHP_AUTH_USER']) === 1,
                                                                           "date" => $date,
                                                                           "version" => $version,
                                                                           "historiqueAllPassages" => $historiqueAllPassages,
@@ -195,11 +196,12 @@ class TourneeController extends Controller {
 
         $passage->setDateRealise($passage->getDateDebut());
 
-        $passage->setSaisieTechnicien(($passage->getEmailTransmission() || $passage->getNomTransmission() || $passage->getSignatureBase64()) && $passage->getDescription());
+        $passage->setSaisieTechnicien(($passage->getEmailTransmission() || $passage->getNomTransmission() || $passage->getSignatureBase64()) && $passage->getDescription() && $passage->getDuree());
 
         if(!$passage->getPdfNonEnvoye()){
-          $passage->setPdfNonEnvoye(true);
+            $passage->setPdfNonEnvoye(true);
         }
+
         $dm->persist($passage);
         $dm->flush();
 
@@ -263,6 +265,7 @@ class TourneeController extends Controller {
              $f = $uploadAttachementForm->getData()->getImageFile();
              if($f){
                  $attachement->setVisibleTechnicien(true);
+                 $attachement->setVisibleClient(true);
                  $attachement->setEtablissement($etablissement);
                  $dm->persist($attachement);
                  $etablissement->addAttachement($attachement);

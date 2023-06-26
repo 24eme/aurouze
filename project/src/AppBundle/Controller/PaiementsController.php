@@ -32,7 +32,40 @@ class PaiementsController extends Controller {
         $paiementsDocsPrelevement = $this->get('paiements.manager')->getRepository()->findByPeriode($periode,true);
         $dm = $this->get('doctrine_mongodb')->getManager();
 
-        return $this->render('paiements/index.html.twig', array('paiementsDocs' => $paiementsDocs, 'paiementsDocsPrelevement' => $paiementsDocsPrelevement, 'periode' => $periode));
+        $tabPaiementsChequesNonTerminé = array();
+        $tabOthersPaiements = array();
+        $totalMontantPaye = 0;
+
+        foreach($paiementsDocs as $paiements){
+            foreach($paiements->getAggregatePaiements() as $k => $v){
+                if(!$paiements->isImprime() && $k == "CHEQUE"){
+                    $tabPaiementsChequesNonTerminé[] =$paiements;
+                }
+                else{
+                    $tabOthersPaiements[] = $paiements;
+                }
+            }
+            $totalMontantPaye += $paiements->getMontantTotal();
+        }
+
+        foreach($paiementsDocsPrelevement as $paiements){
+            $totalMontantPaye += $paiements->getMontantTotal();
+        }
+
+        $paiementsDocs = array_merge($tabPaiementsChequesNonTerminé, $tabOthersPaiements);
+        return $this->render('paiements/index.html.twig', array('paiementsDocs' => $paiementsDocs, 'paiementsDocsPrelevement' => $paiementsDocsPrelevement, 'periode' => $periode, 'totalMontantPaye' => $totalMontantPaye));
+    }
+
+
+
+    /**
+     * @Route("/paiements/details/{id}", name="paiements_details")
+     */
+    public function detailsAction(Request $request) {
+        $type  = $request->get('type');
+        $id = $request->get('id');
+        $paiements = $this->get('paiements.manager')->getRepository()->findById($id);
+        return $this->render('paiements/details.html.twig', array('paiements' => $paiements,'type'=>$type));
     }
 
     /**
@@ -285,15 +318,15 @@ class PaiementsController extends Controller {
 
     	$facturesForCsv = $fm->getFacturesPrelevementsForCsv();
 
+
         if(count($facturesForCsv)){
+
             $prelevement = new PrelevementXml($facturesForCsv,$banqueParameters);
             $prelevement->createPrelevement();
             $this->createPaiementsPrelevement($facturesForCsv,$prelevement);
         }
 
-        return $this->redirectToRoute('paiements_liste');
-
-
+        return $this->redirect($this->generateUrl('paiements_liste') . '#prelevements');
     }
 
     /**
@@ -328,8 +361,8 @@ class PaiementsController extends Controller {
             $paiement->setFacture($facture);
             $paiement->setMoyenPaiement(PaiementsManager::MOYEN_PAIEMENT_PRELEVEMENT_BANQUAIRE);
             $paiement->setTypeReglement(PaiementsManager::TYPE_REGLEMENT_FACTURE);
-            $paiement->setDatePaiement($date);
-            $paiement->setMontant(0.0);
+            $paiement->setDatePaiement($facture->getInPrelevement());
+            $paiement->setMontant($facture->getMontantTTC());
             $paiement->setLibelle('FACT '.$facture->getNumeroFacture().' du '.$facture->getDateEmission()->format("d m Y").' '. str_ireplace(array(".",","),"EUR",sprintf("%0.2f",$facture->getMontantAPayer())));
             $paiement->setVersementComptable(false);
             $paiements->addPaiement($paiement);

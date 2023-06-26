@@ -68,6 +68,20 @@ class FactureManager {
     const EXPORT_STATS_TOTAL_PREC = 10;
     const EXPORT_STATS_TOTAL = 11;
 
+
+    const EXPORT_RETARD_DATE = 0;
+    const EXPORT_RETARD_CLIENT = 1;
+    const EXPORT_RETARD_ADRESSE_SOCIETE = 2;
+    const EXPORT_RETARD_MAIL = 3;
+    const EXPORT_RETARD_NUMERO_FIXE = 4;
+    const EXPORT_RETARD_NUMERO_PORTABLE = 5;
+    const EXPORT_RETARD_NUMERO_FACTURE = 6;
+    const EXPORT_RETARD_NUMERO_CONTRAT = 7;
+    const EXPORT_RETARD_MONTANT_TOTAL = 8;
+    const EXPORT_RETARD_MONTANT_PAYE =  9;
+    const EXPORT_RETARD_NB_RELANCES = 10;
+
+
     const AUCUNE_RELANCE = "Aucune relance effectuée";
     const RELANCE_RAPPEL = "1ère relance";
     const RELANCE_RAPPEL2 = "2ème relance";
@@ -111,7 +125,19 @@ public static $export_stats_libelle = array(
   self::EXPORT_STATS_TOTAL_PREC => "Total {X-1}",
   self::EXPORT_STATS_TOTAL => "Total {X}"
 );
-
+public static $export_factures_en_retards = array(
+  self::EXPORT_RETARD_DATE => "Date",
+  self::EXPORT_RETARD_CLIENT =>"Client",
+  self::EXPORT_RETARD_ADRESSE_SOCIETE => "Adresse Société",
+  self::EXPORT_RETARD_MAIL => "Mail Client",
+  self::EXPORT_RETARD_NUMERO_FIXE => "Numéro Fixe Client",
+  self::EXPORT_RETARD_NUMERO_PORTABLE => "Numéro Portable Client",
+  self::EXPORT_RETARD_NUMERO_FACTURE => "Numéro Facture",
+  self::EXPORT_RETARD_NUMERO_CONTRAT => "Numéro Contrat",
+  self::EXPORT_RETARD_MONTANT_TOTAL => "Montant total",
+  self::EXPORT_RETARD_MONTANT_PAYE => "Montant payé",
+  self::EXPORT_RETARD_NB_RELANCES => "Nombre de relances"
+);
     function __construct(DocumentManager $dm, MouvementManager $mm, $parameters) {
         $this->dm = $dm;
         $this->mm = $mm;
@@ -182,6 +208,8 @@ public static $export_stats_libelle = array(
           $facture->addLigne($ligne);
         }
 
+        $facture->update();
+
         return $facture;
     }
 
@@ -226,10 +254,22 @@ public static $export_stats_libelle = array(
     }
 
     public function getSolde(Societe $societe) {
-        $montantFacure = $this->getRepository()->getMontantFacture($societe);
-        $montantPaye = $this->dm->getRepository('AppBundle:Paiements')->getMontantPaye($societe);
 
-        return round($montantPaye - $montantFacure,2);
+        return round($this->getTotalPaye($societe) - $this->getTotalFacture($societe),2);
+    }
+
+    public function getTotalFacture(Societe $societe) {
+
+        return round($this->getRepository()->getMontantFacture($societe), 2);
+    }
+
+    public function getTotalPaye(Societe $societe) {
+
+        return round($this->dm->getRepository('AppBundle:Paiements')->getMontantPaye($societe), 2);
+    }
+
+    public function getResteTropPercu(Societe $societe){
+        return ($this->dm->getRepository('AppBundle:Facture')->getMontantTropPaye($societe)) - (round($this->dm->getRepository('AppBundle:Facture')->getMontantFacturePayeeAvecTropPercu($societe),2));
     }
 
     public function getStatsForCsv($dateDebut = null, $dateFin = null, $commercialFiltre = null){
@@ -557,6 +597,9 @@ public static $export_stats_libelle = array(
         $debit = 0;
         $credit = 0;
         foreach ($facturesObjs as $facture) {
+              if( ! $facture->getNumeroFacture()){
+                continue;
+              }
               if($facture->isAvoir() && $facture->getOrigineAvoir()){
                   $factureOrigine = $facture->getOrigineAvoir();
                   if (! array_key_exists($factureOrigine->getId(), $facturesArray)) {
@@ -590,9 +633,13 @@ public static $export_stats_libelle = array(
 
     public function buildFactureSocieteLigne($facture){
       $factureLigne = array();
+      $credit = 0;
       foreach ($facture->getPaiements() as $paiements) {
             foreach ($paiements->getPaiement() as $paiement) {
             if ($paiement->getFacture()->getId() == $facture->getId()) {
+              if($paiement->getMontant()){
+                    $credit += $paiement->getMontant();
+              }
               $factureLigne[self::EXPORT_SOCIETE_DATE] = $facture->getDateFacturation()->format('d/m/Y');
               $factureLigne[self::EXPORT_SOCIETE_PIECE] =  $facture->getNumeroFacture();
               if($facture->isAvoir()){
@@ -605,12 +652,14 @@ public static $export_stats_libelle = array(
               }
               $factureLigne[self::EXPORT_SOCIETE_ECHEANCE] =  $facture->getDateLimitePaiement()->format('d/m/Y');
               $factureLigne[self::EXPORT_SOCIETE_DEBIT] =  number_format($facture->getMontantTTC(), 2, ",", "");
-              $factureLigne[self::EXPORT_SOCIETE_CREDIT] =  ($facture->isAvoir())? number_format($facture->getMontantTTC() , 2, ",", "") : number_format($paiement->getMontant() , 2, ",", "");
+              $factureLigne[self::EXPORT_SOCIETE_CREDIT] =  ($facture->isAvoir())? number_format($facture->getMontantTTC() , 2, ",", "") : number_format($credit , 2, ",", "");
               if($facture->isAvoir() && $facture->getAvoirPartielRemboursementCheque()){
                 $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] =  $paiement->getMoyenPaiementLibelle();
               }else{
                 $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] =  $paiement->getMoyenPaiementLibelle();
               }
+
+              $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] .= "\n(".$paiement->getDatePaiement()->format('d/m/Y').')';
             }
           }
         }
@@ -683,6 +732,50 @@ public static $export_stats_libelle = array(
     public function getRetardDePaiementBySociete(Societe $societe, $nbJourSeuil = 0){
       return $this->getRepository()->findRetardDePaiementBySociete($societe, $nbJourSeuil);
     }
+    public function buildLigneRetard($facture,$typeLigne = self::EXPORT_LIGNE_GENERALE){
+      $factureLigne = array();
+      $factureLigne[self::EXPORT_RETARD_DATE] = $facture->getDateFacturation()->format('d/m/Y');
+      $factureLigne[self::EXPORT_RETARD_CLIENT] = $facture->getSociete()->getRaisonSociale();
+
+      $factureLigne[self::EXPORT_RETARD_ADRESSE_SOCIETE] = $facture->getSociete()->getAdresse()->getAdresse()." ".$facture->getSociete()->getAdresse()->getCodePostal()." ".$facture->getSociete()->getAdresse()->getCommune();
+
+      if($facture->getSociete()->getContactCoordonnee()->getEmailFacturation()){
+        $factureLigne[self::EXPORT_RETARD_MAIL] = $facture->getSociete()->getContactCoordonnee()->getEmailFacturation();
+      }else{
+        $factureLigne[self::EXPORT_RETARD_MAIL] = $facture->getSociete()->getContactCoordonnee()->getEmail();
+      }
+      $factureLigne[self::EXPORT_RETARD_NUMERO_FIXE] = $facture->getSociete()->getContactCoordonnee()->getTelephoneFixe();
+      $factureLigne[self::EXPORT_RETARD_NUMERO_PORTABLE] = $facture->getSociete()->getContactCoordonnee()->getTelephoneMobile();
+
+      $factureLigne[self::EXPORT_RETARD_NUMERO_FACTURE] =  $facture->getNumeroFacture();
+
+      $factureLigne[self::EXPORT_RETARD_NUMERO_CONTRAT] = "";
+      foreach($facture->getLignes() as $f){
+        if($f->getOrigineDocument()){
+          $factureLigne[self::EXPORT_RETARD_NUMERO_CONTRAT] .= $f->getOrigineDocument()->getNumeroArchive();  //voir s'il faut séparé les numéros de contrats.
+        }
+      }
+      if($typeLigne == self::EXPORT_LIGNE_GENERALE){
+          $factureLigne[self::EXPORT_RETARD_MONTANT_TOTAL] = number_format(($facture->isAvoir())? "0" : $facture->getMontantTTC(), 2, ",", "");
+          $factureLigne[self::EXPORT_RETARD_MONTANT_PAYE] = number_format(($facture->isAvoir())? (-1*$facture->getMontantTTC()): "0", 2, ",", "");
+      }
+
+      $factureLigne[self::EXPORT_RETARD_NB_RELANCES] =  $facture->getNbRelance();
+      ksort($factureLigne);
+      return $factureLigne;
+    }
+
+    public function getRetardDePaiementCSV(){
+      $facturesObjs = $this->getRepository()->findFactureRetardDePaiement();
+      $facturesArray = array();
+      $facturesArray[] = self::$export_factures_en_retards;
+
+      foreach ($facturesObjs as $facture) {
+            $facturesArray[] =  $this->buildLigneRetard($facture,self::EXPORT_LIGNE_GENERALE);
+      }
+      return $facturesArray;
+    }
+
 
     public static function getCategoriePrestationFromId($idPrestation){
       if(preg_match("/^DESINSECTISATION/",$idPrestation)){

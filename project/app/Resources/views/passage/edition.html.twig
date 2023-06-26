@@ -82,7 +82,6 @@
                 </div>
             </div>
         </div>
-        {% if (passage.isValideTechnicien and passage.isSaisieTechnicien) %}
         <div class="panel panel-default">
                 <div class="panel-heading"><strong>Information Client</strong></div>
                 <div class="panel-body col-xs-offset-2">
@@ -118,7 +117,6 @@
                 </div>
             </div>
           </div>
-          {% endif %}
     {% if passage.mouvementDeclenchable and not passage.mouvementDeclenche %}
     <p class="bg-warning" style="padding: 15px;"><span class="glyphicon glyphicon-exclamation-sign"></span> La saisie de ce rapport de passage entraine le déclenchement d'un mouvement de facture.</p>
     {% endif %}

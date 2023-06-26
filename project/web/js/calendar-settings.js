@@ -70,6 +70,13 @@ $(function () {
         droppable: true,
         slotEventOverlap: false,
         defaultView: $('#calendrier').data('view'),
+				events:{
+					url: $('#calendrier').data('urlPopulateHolidays'),
+			    method: 'POST',
+					color: '#aaa9a9',
+			    textColor: 'black',
+					editable: false
+		    },
         eventSources: [
             {
                 url: $('#calendrier').data('urlPopulate'),

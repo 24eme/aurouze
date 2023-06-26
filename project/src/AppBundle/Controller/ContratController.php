@@ -150,6 +150,17 @@ class ContratController extends Controller {
                 foreach ($contrat->getMouvements() as $mouvement) {
                     $mouvement->setSociete($formValues['societe']);
                 }
+                if( $formValues['documents']){
+                    $attachementRepository = $this->get('attachement.manager')->getRepository();
+
+                    foreach ($etablissementsArr as $oldEtb) {
+                        $etbN = $etablissementRepository->find($formValues[$oldEtb->getId()]);
+                        $documents = $attachementRepository->findBy(array('etablissement' => $oldEtb), array('updatedAt' => 'DESC'));
+                        foreach($documents as $d){
+                            $d->setEtablissement($etbN);
+                        }
+                    }
+                }
 
                 $dm->flush();
 
@@ -176,10 +187,13 @@ class ContratController extends Controller {
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $contrat = $form->getData();
+
             if(!$contrat->getStatut() || $contrat->isBrouillon()) {
                 $contrat->setStatut(ContratManager::STATUT_EN_ATTENTE_ACCEPTATION);
             }
-
+            if($this->container->getParameter("commercial_seine_et_marne")){
+              $contrat->setZone($this->container->getParameter("commercial_seine_et_marne"));
+            }
             $contrat->updateObject();
             $contrat->updatePrestations($dm);
             $contrat->updateProduits($dm);
@@ -188,6 +202,9 @@ class ContratController extends Controller {
                 $dm->persist($contrat);
             }
             $dm->flush();
+
+            $contratManager->removeAllPassagesAPlanifierWhenEtablissementIsDeleted($contrat);
+
             return $this->redirectToRoute('contrat_acceptation', array('id' => $contrat->getId()));
         }
         return $this->render('contrat/modification.html.twig', array('contrat' => $contrat, 'form' => $form->createView(), 'societe' => $contrat->getSociete()));
@@ -258,7 +275,7 @@ class ContratController extends Controller {
         $dm->persist($contratReconduit);
         $dm->flush();
 
-        return $this->redirectToRoute('contrat_acceptation', array('id' => $contratReconduit->getId()));
+        return $this->redirectToRoute('contrat_modification', array('id' => $contratReconduit->getId()));
     }
 
     /**
@@ -422,7 +439,14 @@ class ContratController extends Controller {
             }
         }
 
-        return $this->render('contrat/visualisation.html.twig', array('contrat' => $contrat, 'factures' => $factures, 'societe' => $contrat->getSociete(), 'recapProduits' => $recapProduits));
+        $lastPassageRealise = null;
+        foreach ($this->get('contrat.manager')->getPassagesByNumeroArchiveContrat($contrat, true) as $etab => $ps) {
+            foreach ($ps as $p) {
+                if ($p->isRealise()) { $lastPassageRealise = $p; break; }
+            }
+        }
+
+        return $this->render('contrat/visualisation.html.twig', array('contrat' => $contrat, 'factures' => $factures, 'societe' => $contrat->getSociete(), 'recapProduits' => $recapProduits, 'lastPassageRealise' => $lastPassageRealise));
     }
 
     /**
@@ -432,8 +456,11 @@ class ContratController extends Controller {
     public function markdownAction(Request $request, Contrat $contrat) {
         $dm = $this->get('doctrine_mongodb')->getManager();
         $cm = $this->get('contrat.manager');
+
+        $contratConfSeineEtMarne = $this->container->getParameter('contrat_seine_et_marne') ? $this->container->getParameter('contrat_seine_et_marne') : null;
+
         if (!$contrat->getMarkdown()) {
-            $contrat->setMarkdown($this->renderView('contrat/contrat.markdown.twig', array('contrat' => $contrat, 'societe' => $contrat->getSociete(), 'contratManager' => $cm)));
+            $contrat->setMarkdown($this->renderView('contrat/contrat.markdown.twig', array('contrat' => $contrat, 'societe' => $contrat->getSociete(), 'contratManager' => $cm, 'enteteSeineEtMarne' => $contratConfSeineEtMarne)));
             $dm->persist($contrat);
             $dm->flush();
         }
@@ -451,14 +478,14 @@ class ContratController extends Controller {
         }
 
         $formGenerator = $this->createForm(new ContratGeneratorType(), $contrat, array(
-            'action' => $this->generateUrl('contrat_markdown', array('id' => $contrat->getId())),
+            'action' => $this->generateUrl('contrat_markdown', array('id' => $contrat->getId(),'enteteSeineEtMarne' => $contratConfSeineEtMarne)),
             'method' => 'POST',
         ));
 
         $formGenerator->handleRequest($request);
         if ($formGenerator->isSubmitted() && $formGenerator->isValid()) {
             $contrat = $formGenerator->getData();
-            $contrat->setMarkdown($this->renderView('contrat/contrat.markdown.twig', array('contrat' => $contrat, 'contratManager' => $cm)));
+            $contrat->setMarkdown($this->renderView('contrat/contrat.markdown.twig', array('contrat' => $contrat, 'contratManager' => $cm, 'enteteSeineEtMarne' => $contratConfSeineEtMarne)));
             $dm->persist($contrat);
             $dm->flush();
         }
@@ -507,9 +534,10 @@ class ContratController extends Controller {
     public function pdfAction(Request $request, Contrat $contrat) {
         $dm = $this->get('doctrine_mongodb')->getManager();
         $cm = $this->get('contrat.manager');
+        $contratConfSeineEtMarne = $this->container->getParameter('contrat_seine_et_marne') ? $this->container->getParameter('contrat_seine_et_marne') : null;
 
         if (in_array($contrat->getStatut(), [ContratManager::STATUT_BROUILLON, ContratManager::STATUT_EN_ATTENTE_ACCEPTATION])) {
-            $contrat->setMarkdown($this->renderView('contrat/contrat.markdown.twig', array('contrat' => $contrat, 'contratManager' => $cm)));
+            $contrat->setMarkdown($this->renderView('contrat/contrat.markdown.twig', array('contrat' => $contrat, 'contratManager' => $cm, 'enteteSeineEtMarne' => $contratConfSeineEtMarne)));
             $dm->persist($contrat);
             $dm->flush();
         }
@@ -528,16 +556,31 @@ class ContratController extends Controller {
             return new Response($html, 200);
         }
 
-        return new Response(
-                $this->get('knp_snappy.pdf')->getOutputFromHtml($html, array(
-                    'footer-html' => $footer,
-                    'header-html' => $header,
-                    'margin-right' => 0,
-                    'margin-left' => 0,
-                    'margin-top' => 38,
-                    'margin-bottom' => 38,
-                    'page-size' => "A4"
-                )), 200, array(
+        if (! shell_exec(sprintf("which %s", escapeshellarg('pdftk')))) {
+            throw new \LogicException('missing pdftk binary');
+        }
+
+        $tmpfile = $this->container->getParameter('kernel.cache_dir').'/PDFCONTRAT_'.$contrat->getNumeroArchive().uniqid();
+        $this->get('knp_snappy.pdf')->generateFromHtml($html, $tmpfile, [
+            'footer-html' => $footer,
+            'header-html' => $header,
+            'margin-right' => 0,
+            'margin-left' => 0,
+            'margin-top' => 38,
+            'margin-bottom' => 38,
+            'page-size' => "A4"
+        ]);
+
+        if(file_exists($this->get('kernel')->getRootDir().'/../data/CGV.pdf')) {
+            exec(escapeshellcmd('pdftk '.$tmpfile.' '.$this->get('kernel')->getRootDir().'/../data/CGV.pdf cat output '.$tmpfile.'.pdf'), $output, $exitcode);
+            if ($exitcode !== 0) {
+                throw new \Exception('pdftk failed with error: '.implode(', ', $output));
+            }
+        } else {
+            copy($tmpfile, $tmpfile.'.pdf');
+        }
+
+        return new Response(file_get_contents($tmpfile.'.pdf'), 200, array(
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'attachment; filename="contrat-' . $contrat->getNumeroArchive() . '.pdf"'
                 )
@@ -567,8 +610,13 @@ class ContratController extends Controller {
      */
     public function exportPcaAction(Request $request) {
         ini_set('memory_limit', '-1');
+        ini_set('set_time_limit', '90');
+        ini_set('max_execution_time', '90');
       // $response = new StreamedResponse();
         $formRequest = $request->request->get('form');
+        if (! isset($formRequest['dateDebut'])) {
+            $formRequest['dateDebut'] = (new \DateTime())->format('d/m/Y');
+        }
         $dateDebutString = $formRequest['dateDebut']." 23:59:59";
 
         $dateDebut = \DateTime::createFromFormat('d/m/Y H:i:s',$dateDebutString);
@@ -675,9 +723,10 @@ class ContratController extends Controller {
         	$dateRecondution = $formValues["dateRenouvellement"];
         	$typeContrat = $formValues["typeContrat"];
         	$societe = $formValues["societe"];
-        	$commercial = $formValues["commercial"];
+          if(count($formValues["commercial"])>0){
+            $commercial = $formValues["commercial"];
+          }
         }
-
         $contratsAReconduire = $cm->getRepository()->findContratsAReconduire($typeContrat, $dateRecondution, $societe, $commercial);
         $formReconduction = $this->createForm(new ReconductionType($contratsAReconduire), null, array(
         		'action' => $this->generateUrl('contrats_reconduire_massivement'),
@@ -789,14 +838,13 @@ class ContratController extends Controller {
 
         $emailCommercial = $contrat->getCommercial()->getContactCoordonnee()->getEmail();
         $parameters = $this->get('contrat.manager')->getParameters();
-
         if ($emailCommercial) {
             $message = \Swift_Message::newInstance()
                 ->setSubject($subject)
                 ->setFrom([
                     $parameters['coordonnees']['email'] => $parameters['coordonnees']['nom']
                 ])
-                ->setTo($contrat->getCommercial()->getContactCoordonnee()->getEmail())
+                ->setTo(explode(";",$contrat->getCommercial()->getContactCoordonnee()->getEmail()))
                 ->setBody(
                     $this->renderView($template.'.html.twig', array('contrat' => $contrat)),
                     'text/plain'

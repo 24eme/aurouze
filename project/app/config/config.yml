@@ -46,8 +46,7 @@ twig:
         application: "%application%"
         calendar_extra: "%calendar_extra%"
         certification_bois: "%certification_bois%"
-        email_subject: "%email_subject%"
-        email_message: '%email_message%'
+        banque: '%banque%'
 doctrine_mongodb:
     connections:
         default:
@@ -65,6 +64,7 @@ swiftmailer:
     username:  "%mailer_user%"
     password:  "%mailer_password%"
     spool:     { type: memory }
+    delivery_addresses: "%mailer_delivery_addresses%"
 
 knp_snappy:
     pdf:

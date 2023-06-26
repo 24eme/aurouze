@@ -8,6 +8,7 @@ use AppBundle\Document\Societe;
 use MongoDate as MongoDate;
 use AppBundle\Manager\EtablissementManager;
 use AppBundle\Manager\PassageManager;
+use AppBundle\Manager\ContratManager;
 
 /**
  * DevisRepository
@@ -61,13 +62,13 @@ class DevisRepository extends DocumentRepository {
 
       }
 
-      $regex = $this->getRegexForSeineEtMarne();
       if ($secteur == EtablissementManager::SECTEUR_PARIS) {
-         $q->addAnd($q->expr()->field('etablissementInfos.adresse.codePostal')->operator('$not', new \MongoRegex($regex)));
+        $q->field('zone')->notEqual(ContratManager::ZONE_SEINE_ET_MARNE);
       } elseif($secteur == EtablissementManager::SECTEUR_SEINE_ET_MARNE) {
-         $q->addAnd($q->expr()->field('etablissementInfos.adresse.codePostal')->equals(new \MongoRegex($regex)));
+         $q->field('zone')->equals(ContratManager::ZONE_PARIS);
       }
-      $query = $q->sort('etablissementInfos.adresse.codePostal', 'asc')->getQuery();
+
+      $query = $q->sort('zone', 'asc')->getQuery();
 
       return $query->execute();
   }

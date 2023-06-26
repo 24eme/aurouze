@@ -85,6 +85,25 @@
       </div>
   </div>
 
+  <div class="row">
+        <div class="col-xs-12">
+          <div class="panel panel-default">
+              <div class="panel-heading">
+                <h3 class="panel-title">Documents</h3>
+              </div>
+              <div class="panel-body  form-horizontal">
+              <div class="row">
+                  <div class="col-xs-5"></div>
+                  <div class="col-xs-1"><span class="glyphicon glyphicon-chevron-left"></span><span class="glyphicon glyphicon-chevron-right"></span></div>
+                  <div class="col-xs-6">
+                  {{ form_row(form.documents) }}
+                  </div>
+                  </div>
+              </div>
+          </div>
+        </div>
+    </div>
+
         <div class="row">
             <div class="text-left col-sm-6">
                 <a href="{{ path('contrat_visualisation',{ 'id' : contrat.id }) }}" class="btn btn-default">Annuler</a>

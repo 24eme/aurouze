@@ -18,6 +18,7 @@ use AppBundle\Document\Adresse as Adresse;
 use Doctrine\ODM\MongoDB\DocumentManager as DocumentManager;
 use Symfony\Component\Console\Output\OutputInterface;
 use AppBundle\Manager\EtablissementManager as EtablissementManager;
+use AppBundle\Manager\ContratManager;
 use AppBundle\Document\ContactCoordonnee;
 
 class SocieteCsvImporter extends CsvFile {
@@ -27,26 +28,26 @@ class SocieteCsvImporter extends CsvFile {
     const CSV_ID_SOCIETE = 0;
     const CSV_ID_ADRESSE_HISTORIQUE = 1;
     const CSV_TYPE_ADRESSE = 2;
-    const CSV_ADRESSE_LIBELLE_1 = 3;
-    const CSV_ADRESSE_SOCIETE_1 = 4;
-    const CSV_ADRESSE_SOCIETE_2 = 5;
-    const CSV_CP = 6;
-    const CSV_VILLE = 7;
-    const CSV_PAYS = 8;
-    const CSV_TEL_FIXE = 9;
-    const CSV_TEL_MOBILE = 10;
-    const CSV_FAX = 11;
-    const CSV_SITE_WEB = 12;
-    const CSV_EMAIL = 13;
-    const CSV_ADRESSE_COMMENTAIRE = 14;
-    const CSV_TYPE_SOCIETE = 27;
-    const CSV_RAISON_SOCIALE = 23;
-
-    const CSV_SOUS_TRAITANT = 22;
-
-    const CSV_COMMENTAIRE = 26;
-
-    const CSV_CODE_COMPTABLE = 31;
+    const CSV_RAISON_SOCIALE = 3;
+    const CSV_ADRESSE_LIBELLE_1 = 4;
+    const CSV_ADRESSE_SOCIETE_1 = 5;
+    const CSV_ADRESSE_SOCIETE_2 = 6;
+    const CSV_CP = 7;
+    const CSV_VILLE = 8;
+    const CSV_PAYS = 9;
+    const CSV_TEL_FIXE = 10;
+    const CSV_TEL_MOBILE = 11;
+    const CSV_FAX = 12;
+    const CSV_SITE_WEB = 13;
+    const CSV_EMAIL = 14;
+    const CSV_CODE_COMPTABLE = 15;
+    const CSV_SIRET = 16;
+    const CSV_NUM_ACCISES = 17;
+    const CSV_CODE_APE = 18;
+    const CSV_TYPE_SOCIETE = 19;
+    const CSV_SOUS_TRAITANT = 20;
+    const CSV_ADRESSE_COMMENTAIRE = 21;
+    const CSV_COMMENTAIRE = 22;
 
     public function __construct(DocumentManager $dm) {
         $this->dm = $dm;
@@ -77,21 +78,30 @@ class SocieteCsvImporter extends CsvFile {
     }
 
     public function createFromImport($ligne) {
-        if(!is_numeric($ligne[self::CSV_ID_SOCIETE])) {
+        if(!$ligne[self::CSV_ID_SOCIETE]) {
+
+            return;
+        }
+
+        if($ligne[self::CSV_ID_SOCIETE] == "CT_Num") {
 
             return;
         }
 
         $societe = new Societe();
 
-        $societe->setIdentifiantReprise($ligne[self::CSV_ID_SOCIETE]);
+        $societe->setIdentifiantReprise(trim($ligne[self::CSV_ID_SOCIETE]));
 
-        $societe->setIdentifiantAdresseReprise($ligne[self::CSV_ID_ADRESSE_HISTORIQUE]);
+        if($ligne[self::CSV_ID_ADRESSE_HISTORIQUE]) {
+            $societe->setIdentifiantAdresseReprise($ligne[self::CSV_ID_ADRESSE_HISTORIQUE]);
+        }
 
         $raisonSociale = $this->createRaisonSociale($ligne[self::CSV_RAISON_SOCIALE],$ligne[self::CSV_ADRESSE_LIBELLE_1]);
 
         $societe->setRaisonSociale($raisonSociale);
-        $societe->setCodeComptable($ligne[self::CSV_CODE_COMPTABLE]);
+        $societe->setCodeComptable(trim($ligne[self::CSV_CODE_COMPTABLE]));
+        $societe->setSiret(trim($ligne[self::CSV_SIRET]));
+        $societe->setFrequencePaiement(ContratManager::FREQUENCE_30J);
         $societe->setCommentaire(null);
         $ligne[self::CSV_COMMENTAIRE] = str_replace('"', "", $ligne[self::CSV_COMMENTAIRE]);
         $ligne[self::CSV_ADRESSE_COMMENTAIRE] = str_replace('"', "", $ligne[self::CSV_COMMENTAIRE]);
@@ -102,9 +112,17 @@ class SocieteCsvImporter extends CsvFile {
             $societe->setCommentaire($ligne[self::CSV_COMMENTAIRE]."\n");
         }
         if(trim($ligne[self::CSV_ADRESSE_COMMENTAIRE]) && $ligne[self::CSV_COMMENTAIRE] != $ligne[self::CSV_ADRESSE_COMMENTAIRE]) {
-            $societe->setCommentaire($societe->getCommentaire()."\n".$ligne[self::CSV_ADRESSE_COMMENTAIRE]);
+            $societe->setCommentaire($societe->getCommentaire()."\n".$ligne[self::CSV_ADRESSE_COMMENTAIRE]."\n");
         }
-        $societe->setSousTraitant(!($ligne[self::CSV_SOUS_TRAITANT]));
+
+        if($ligne[self::CSV_NUM_ACCISES]) {
+            $societe->setCommentaire($societe->getCommentaire()."N°TVA Intracommunautaire : ".$ligne[self::CSV_NUM_ACCISES]."\n");
+        }
+        if($ligne[self::CSV_CODE_APE]) {
+            $societe->setCommentaire($societe->getCommentaire()."Code APE : ".$ligne[self::CSV_CODE_APE]."\n");
+        }
+
+        $societe->setSousTraitant(boolval($ligne[self::CSV_SOUS_TRAITANT]));
 
         $adresse = new Adresse();
 
@@ -116,19 +134,29 @@ class SocieteCsvImporter extends CsvFile {
 
         $societe->setAdresse($adresse);
 
+        $telephone1 = null;
+        $telephone2 = null;
+        $telephones = explode("/", trim($ligne[self::CSV_TEL_FIXE]));
+        if(isset($telephones[0])) {
+            $telephone1 = trim($telephones[0]);
+        }
+        if(isset($telephones[1])) {
+            $telephone2 = trim($telephones[1]);
+        }
+
         $contactCoordonnee = new ContactCoordonnee();
-        $contactCoordonnee->setTelephoneFixe($ligne[self::CSV_TEL_FIXE]);
-        $contactCoordonnee->setTelephoneMobile($ligne[self::CSV_TEL_MOBILE]);
-        $contactCoordonnee->setFax($ligne[self::CSV_FAX]);
-        $contactCoordonnee->setSiteInternet($ligne[self::CSV_SITE_WEB]);
-        $contactCoordonnee->setEmail($ligne[self::CSV_EMAIL]);
+        $contactCoordonnee->setTelephoneFixe($telephone1);
+        $contactCoordonnee->setTelephoneMobile($telephone2);
+        $contactCoordonnee->setFax(trim($ligne[self::CSV_FAX]));
+        $contactCoordonnee->setSiteInternet(trim($ligne[self::CSV_SITE_WEB]));
+        $contactCoordonnee->setEmail(trim($ligne[self::CSV_EMAIL]));
 
-
-         $societe->setContactCoordonnee($contactCoordonnee);
-        if ($ligne[self::CSV_TYPE_SOCIETE] == "") {
+        $societe->setContactCoordonnee($contactCoordonnee);
+        if (!$ligne[self::CSV_TYPE_SOCIETE] && preg_match('/MAIRIE/', strtoupper($ligne[self::CSV_RAISON_SOCIALE]))) {
+            $societe->setType(EtablissementManager::TYPE_ETB_MAIRIE);
+        } elseif (!$ligne[self::CSV_TYPE_SOCIETE]) {
             $societe->setType(EtablissementManager::TYPE_ETB_NON_SPECIFIE);
         } else {
-
             $types_etablissements = EtablissementManager::$type_libelles;
             $types_etb_keys = array_keys($types_etablissements);
 

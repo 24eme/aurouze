@@ -43,7 +43,7 @@ class ContratType extends AbstractType {
      */
     public function buildForm(FormBuilderInterface $builder, array $options) {
         $builder
-                ->add('typeContrat', ChoiceType::class, array('label' => 'Type de contrat* :', 'choices' => array_merge(array('' => ''), ContratManager::$types_contrat_libelles), "attr" => array("class" => "select2 select2-simple")))
+                ->add('typeContrat', ChoiceType::class, array('label' => 'Type de contrat* :','required' => true, 'choices' => array_merge(array('' => ''), ContratManager::$types_contrat_libelles), "attr" => array("class" => "select2 select2-simple")))
                 ->add('nomenclature', TextareaType::class, array('label' => 'Nomenclature* :', "attr" => array("class" => "form-control", "rows" => 6)))
                 ->add('duree', TextType::class, array('label' => 'Durée du contrat* :'))
                 ->add('auditPassage', TextType::class, array('label' => 'Audit commercial au passage n° :', 'required' => false))
@@ -63,15 +63,25 @@ class ContratType extends AbstractType {
 
         $builder->get('devisInterlocuteur')->addModelTransformer(new InterlocuteurTransformer($this->container->get('interlocuteur.manager')));
 
+        $etablissementsSansPassages = $builder->getData()->getEtablissementsWithoutPassages();
+
         $builder->add('etablissements', ChoiceType::class, array('label' => 'Lieux de passage* : ',
             'choices' => $this->getEtablissements($builder),
             'expanded' => false,
             'multiple' => true,
-            'disabled' => !$builder->getData()->isModifiable(),
+            'required' => false,
+            'choice_attr' => function($value) use ($builder,$etablissementsSansPassages) {
+              $emptyPassage = true;
+              if(!$builder->getData()->isModifiable()){
+                $emptyPassage = in_array($value,$etablissementsSansPassages);
+              }
+              return $emptyPassage ? [] : ["locked" => "locked"];
+        },
             'attr' => array("class" => "select2 select2-simple", "multiple" => "multiple"),
         ));
 
         $builder->get('etablissements')->addModelTransformer(new EtablissementsTransformer($this->dm, $builder->getData()->getSociete()));
+
 
         $builder->add('prestations', CollectionType::class, array(
             'entry_type' => new PrestationType($this->dm),
@@ -153,7 +163,12 @@ class ContratType extends AbstractType {
     }
 
     public function getEtablissements($builder) {
-        $etablissements = $this->dm->getRepository('AppBundle:Etablissement')->findAllOrderedByIdentifiantSociete($builder->getData()->getSociete());
+        if($builder->getData()->isEnCours()){
+          $etablissements = $builder->getData()->getEtablissements();
+        }
+        else{
+          $etablissements = $this->dm->getRepository('AppBundle:Etablissement')->findAllOrderedByIdentifiantSociete($builder->getData()->getSociete());
+        }
         $etablissementsArray = array();
         foreach ($etablissements as $etablissement) {
             $etablissementsArray[$etablissement->getId()] = $etablissement->getIntitule();

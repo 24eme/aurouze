@@ -88,6 +88,11 @@ class RendezVous {
    */
    protected $rendezVousConfirme;
 
+    /**
+     * @MongoDB\Field(type="string")
+     */
+    protected $prerequis;
+
     public function __construct()
     {
         $this->participants = new \Doctrine\Common\Collections\ArrayCollection();
@@ -137,7 +142,7 @@ class RendezVous {
         }
 
         if ($planifiable->isSaisieTechnicien()) {
-            if ($planifiable->isPdfNonEnvoye()) {
+            if ($planifiable->isPdfNonEnvoye() || $planifiable->isPdfNonEnvoye() === null) {
                 $colors['text'] = self::COLOR_TEXT_BROWN;
                 $colors['background'] = self::COLOR_STATUS_GOLD;
             } else {
@@ -182,6 +187,8 @@ class RendezVous {
 
         if ($this->getPlanifiable()->getTypePlanifiable() === Devis::DOCUMENT_TYPE) {
             $this->getPlanifiable()->setDatePrevision($this->getDateDebut());
+            $this->getPlanifiable()->setCommentaireInterne($this->getDescription());
+
         } elseif ($this->getPlanifiable()->getTypePlanifiable() === Passage::DOCUMENT_TYPE) {
             $this->getPlanifiable()->setCommentaire($this->getDescription());
         }
@@ -456,5 +463,23 @@ class RendezVous {
     public function getDevis()
     {
         return $this->devis;
+    }
+
+    /**
+     * Get prerequis
+     * @return string $prerequis
+     */
+    public function getPrerequis()
+    {
+        return $this->prerequis;
+    }
+
+    /**
+     * Set prerequis
+     * @param string $prerequis
+     */
+    public function setPrerequis($prerequis)
+    {
+        $this->prerequis = $prerequis;
     }
 }

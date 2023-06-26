@@ -25,9 +25,8 @@ class EtablissementCommentaireType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('commentairePlanification', TextareaType::class, array('label' => 'Commentaire récurrent planification :', 'required' => false, 'attr' => array('rows' => '3')))
-            ->add('commentaire', TextareaType::class, array('label' => 'Commentaire récurrent techniciens :', 'required' => false , 'attr' => array('rows' => '3')));
-
+            ->add('commentairePlanification', TextareaType::class, array('label' => 'Commentaire récurrent de planification :', 'required' => false, 'attr' => array('rows' => '3')))
+            ->add('commentaire', TextareaType::class, array('label' => 'Information récurrent techniciens :', 'required' => false , 'attr' => array('rows' => '3')));
     }
 
     /**

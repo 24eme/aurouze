@@ -16,6 +16,11 @@ class Paiement {
     protected $facture;
 
     /**
+     * @MongoDB\ReferenceOne(targetDocument="Societe", inversedBy="paiements", simple=true)
+     */
+    protected $societe;
+
+    /**
      * @MongoDB\Field(type="string")
      */
     protected $moyenPaiement;
@@ -69,6 +74,7 @@ class Paiement {
      */
     public function setFacture(\AppBundle\Document\Facture $facture) {
         $this->facture = $facture;
+        $this->setSociete($facture->getSociete());
         return $this;
     }
 
@@ -79,6 +85,27 @@ class Paiement {
      */
     public function getFacture() {
         return $this->facture;
+    }
+
+
+    /**
+     * Set societe
+     *
+     * @param AppBundle\Document\Societe $societe
+     * @return self
+     */
+    public function setSociete(\AppBundle\Document\Societe $societe) {
+        $this->societe = $societe;
+        return $this;
+    }
+
+    /**
+     * Get societe
+     *
+     * @return AppBundle\Document\Societe $societe
+     */
+    public function getSociete() {
+        return $this->societe;
     }
 
     /**

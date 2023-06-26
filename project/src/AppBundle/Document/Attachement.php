@@ -97,6 +97,12 @@ class Attachement
     */
    protected $visibleTechnicien;
 
+   /**
+    * @MongoDB\Field(type="bool")
+    */
+   protected $visibleClient;
+
+
 
     /**
      * Set updatedAt
@@ -289,6 +295,29 @@ class Attachement
     {
         return $this->visibleTechnicien;
     }
+
+    /**
+     * Set visibleClient
+     *
+     * @param boolean $visibleClient
+     * @return $this
+     */
+    public function setVisibleClient($visibleClient)
+    {
+        $this->visibleClient = $visibleClient;
+        return $this;
+    }
+
+    /**
+     * Get visibleClient
+     *
+     * @return boolean $visibleClient
+     */
+    public function getVisibleClient()
+    {
+        return $this->visibleClient;
+    }
+
 
     public function isPdf(){
       return preg_match('/\.pdf$/i',$this->getImageName());

@@ -112,13 +112,13 @@ class PassageRepository extends DocumentRepository {
         return$query->execute();
     }
 
-    public function findLastPassage($etablissement, $passage = null) {
+    public function findLastPassages($etablissement, $passage = null) {
         $query = $this->createQueryBuilder('Passage')
                 ->field('dateFin')->exists(true)
                 ->field('dateFin')->notEqual(null)
                 ->field('etablissement')->equals($etablissement->getId())
                 ->sort('dateFin', 'desc')
-                ->limit(1);
+                ->limit(2);
         if ($passage && $passage->getDateDebut()) {
             $mongoStartDate = new MongoDate(strtotime($passage->getDateDebut()->format('Y-m-d')));
             $query->field('dateFin')->lte($mongoStartDate);
@@ -127,8 +127,7 @@ class PassageRepository extends DocumentRepository {
 
         $query = $query->getQuery();
 
-        return $query->execute()->getSingleResult();
-
+        return $query->execute();
     }
 
     public function findPassagesForEtablissementSortedByContrat($etablissementIdentifiant) {
@@ -185,12 +184,49 @@ class PassageRepository extends DocumentRepository {
         return $techniciens;
     }
 
-    public function findToPlan($secteur = EtablissementManager::SECTEUR_PARIS, \DateTime $dateDebut = null, \DateTime $dateFin) {
+    public function findToPlan($secteur = EtablissementManager::SECTEUR_PARIS, \DateTime $dateDebut = null, \DateTime $dateFin, $frequence = null) {
         $date = new \DateTime();
         $mongoEndDate = new MongoDate(strtotime($dateFin->format('Y-m-d')));
 
         $q = $this->createQueryBuilder();
         $q->field('statut')->equals(PassageManager::STATUT_A_PLANIFIER)
+          ->field('datePrevision')->lte($mongoEndDate);
+
+        if($dateDebut){
+          $mongoStartDate = new MongoDate(strtotime($dateDebut->format('Y-m-d')));
+          $q->field('datePrevision')->gte($mongoStartDate);
+
+        }
+
+        if ($secteur == EtablissementManager::SECTEUR_PARIS) {
+          $q->field('zone')->notEqual("77");
+        } elseif($secteur == EtablissementManager::SECTEUR_SEINE_ET_MARNE) {
+          $q->field('zone')->equals("77");
+        }
+
+        $query = $q->sort('zone', 'asc')->getQuery();
+
+        if(!$frequence){
+            return $query->execute();
+        }
+        $results = $query->execute();
+
+        $passages = array();
+        foreach($results as $p){
+            if($p->getContrat()->getNbPassages() == $frequence){
+                $passages[] = $p;
+            }
+        }
+        return $passages;
+    }
+
+
+    public function findAllPassages($secteur = EtablissementManager::SECTEUR_PARIS, \DateTime $dateDebut = null, \DateTime $dateFin) {
+        $date = new \DateTime();
+        $mongoEndDate = new MongoDate(strtotime($dateFin->format('Y-m-d')));
+        $array = array(PassageManager::STATUT_A_PLANIFIER, PassageManager::STATUT_PLANIFIE);
+        $q = $this->createQueryBuilder();
+        $q->field('statut')->in($array)
                 ->field('datePrevision')->lte($mongoEndDate);
 
         if($dateDebut){
@@ -199,14 +235,13 @@ class PassageRepository extends DocumentRepository {
 
         }
 
-        $regex = $this->getRegexForSeineEtMarne();
         if ($secteur == EtablissementManager::SECTEUR_PARIS) {
-           $q->addAnd($q->expr()->field('etablissementInfos.adresse.codePostal')->operator('$not', new \MongoRegex($regex)));
+          $q->field('zone')->notEqual("77");
         } elseif($secteur == EtablissementManager::SECTEUR_SEINE_ET_MARNE) {
-           $q->addAnd($q->expr()->field('etablissementInfos.adresse.codePostal')->equals(new \MongoRegex($regex)));
+          $q->field('zone')->equals("77");
         }
-        $query = $q->sort('etablissementInfos.adresse.codePostal', 'asc')->getQuery();
 
+        $query = $q->sort('zone', 'asc')->getQuery();
         return $query->execute();
     }
 
@@ -219,35 +254,45 @@ class PassageRepository extends DocumentRepository {
       $passages = $this->findToPlan($secteur, null, $dateFin);
       $devis = $this->dm->getRepository('AppBundle:Devis')->findToPlan($secteur, null, $dateFin);
 
-      $result = array();
-      $result['courant'] = new \stdClass();
-      $result['courant']->date = $date;
-      $result['courant']->nb = 0;
+      $resultMoisAnnee = array();
+      $resultAnnee = array();
+
       foreach ($passages as $passage) {
           $moisAnnee = $passage->getDatePrevision()->format('Ym');
-          if (!array_key_exists($moisAnnee, $result)) {
-              $result[$moisAnnee] = new \stdClass();
-              $result[$moisAnnee]->nb = 0;
-              $result[$moisAnnee]->date = $passage->getDatePrevision();
+          $annee = $passage->getDatePrevision()->format('Y');
+          if (!array_key_exists($annee, $resultAnnee)) {
+              $resultAnnee[$annee] = new \stdClass();
+              $resultAnnee[$annee]->nb = 0;
+              $resultAnnee[$annee]->date = $passage->getDatePrevision();
           }
-          if($datePlusOnemonth > $passage->getDatePrevision()){
-            $result['courant']->nb = $result['courant']->nb + 1;
+          if (!array_key_exists($moisAnnee, $resultMoisAnnee)) {
+              $resultMoisAnnee[$moisAnnee] = new \stdClass();
+              $resultMoisAnnee[$moisAnnee]->nb = 0;
+              $resultMoisAnnee[$moisAnnee]->date = $passage->getDatePrevision();
           }
-          $result[$moisAnnee]->nb = $result[$moisAnnee]->nb + 1;
+          $resultAnnee[$annee]->nb = $resultAnnee[$annee]->nb + 1;
+          $resultMoisAnnee[$moisAnnee]->nb = $resultMoisAnnee[$moisAnnee]->nb + 1;
       }
       foreach ($devis as $d) {
           $moisAnnee = $d->getDatePrevision()->format('Ym');
-          if (!array_key_exists($moisAnnee, $result)) {
-              $result[$moisAnnee] = new \stdClass();
-              $result[$moisAnnee]->nb = 0;
-              $result[$moisAnnee]->date = $d->getDatePrevision();
+          $annee = $d->getDatePrevision()->format('Y');
+          if (!array_key_exists($annee, $resultAnnee)) {
+              $resultAnnee[$annee] = new \stdClass();
+              $resultAnnee[$annee]->nb = 0;
+              $resultAnnee[$annee]->date = $d->getDatePrevision();
           }
-          if($datePlusOnemonth > $d->getDatePrevision()){
-            $result['courant']->nb = $result['courant']->nb + 1;
+          if (!array_key_exists($moisAnnee, $resultMoisAnnee)) {
+              $resultMoisAnnee[$moisAnnee] = new \stdClass();
+              $resultMoisAnnee[$moisAnnee]->nb = 0;
+              $resultMoisAnnee[$moisAnnee]->date = $d->getDatePrevision();
           }
-          $result[$moisAnnee]->nb = $result[$moisAnnee]->nb + 1;
+          $resultAnnee[$annee]->nb = $resultAnnee[$annee]->nb + 1;
+          $resultMoisAnnee[$moisAnnee]->nb = $resultMoisAnnee[$moisAnnee]->nb + 1;
       }
-      ksort($result);
+      unset($resultAnnee[date('Y') + 1]);
+      ksort($resultAnnee);
+      ksort($resultMoisAnnee);
+      $result = array_slice($resultAnnee,-2, 2,true)+array_slice($resultMoisAnnee, -5, 5,true);
       return $result;
     }
 
@@ -309,19 +354,4 @@ class PassageRepository extends DocumentRepository {
     public function findAllApplications() {
         return PassageManager::$applications;
     }
-
-    private function getRegexForSeineEtMarne(){
-      $dpts = EtablissementManager::$secteurs_departements[EtablissementManager::SECTEUR_SEINE_ET_MARNE];
-      $regex = '';
-      $dptReg = '';
-      foreach ($dpts as $i => $dpt) {
-          $dptReg .= $dpt;
-          if ($i < count($dpts) - 1) {
-              $dptReg .= '|';
-          }
-      }
-      $regex .= '/^(' . $dptReg . ')/i';
-      return $regex;
-    }
-
 }

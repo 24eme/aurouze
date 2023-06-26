@@ -126,6 +126,11 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
      */
     protected $origineAvoir;
 
+     /**
+     * @MongoDB\ReferenceOne(targetDocument="Facture", inversedBy="avoirs", simple=true)
+     */
+    protected $avoirObject;
+
     /**
      * @MongoDB\ReferenceMany(targetDocument="Paiements", mappedBy="paiement.facture", simple=true, repositoryMethod="findPaiementsByFacture")
      */
@@ -171,6 +176,20 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
      */
     protected $inPrelevement;
 
+    /**
+     * @MongoDB\Field(type="date")
+     */
+    protected $dateEnvoiMail;
+
+    /**
+     * @MongoDB\Field(type="bool")
+     */
+    protected $payeeAvecTropPercu;
+
+    /**
+     * @MongoDB\Field(type="date")
+     */
+    protected $pdfTelecharge;
 
     public function __construct() {
         $this->lignes = new \Doctrine\Common\Collections\ArrayCollection();
@@ -421,7 +440,15 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
      * @return date $datePaiement
      */
     public function getDatePaiement() {
-        return $this->datePaiement;
+        $date = null;
+        foreach ($this->getPaiements() as $paiements) {
+          foreach ($paiements->getPaiement() as $paiement) {
+              if ($paiement->getFacture()->getId() == $this->getId()) {
+                $date = $paiement->getDatePaiement();
+              }
+          }
+        }
+        return ($date) ? $date->format('d/m/Y') : null;
     }
 
     /**
@@ -437,6 +464,14 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
         }
         if($this->societe->getSepa()){
             $this->setSepa($this->societe->getSepa());
+        }
+
+        foreach ($this->getPaiements() as $paiements) {
+            foreach ($paiements->getPaiement() as $paiement) {
+                if($paiement->getFacture() == $this){
+                    $paiement->setFacture($this);
+                }
+            }
         }
         return $this;
     }
@@ -471,6 +506,29 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
      */
     public function getOrigineAvoir() {
     	return $this->origineAvoir;
+    }
+
+
+
+    /**
+     * Set AvoirObject
+     *
+     * @param AppBundle\Document\Facture $facture
+     * @return self
+     */
+    public function setAvoirObject(\AppBundle\Document\Facture $facture) {
+    	$this->avoirObject = $facture;
+
+    	return $this;
+    }
+
+    /**
+     * Get AvoirObject
+     *
+     * @return AppBundle\Document\Facture $facture
+     */
+    public function getAvoirObject() {
+    	return $this->avoirObject;
     }
 
     /**
@@ -619,11 +677,7 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
      * @return AppBundle\Document\Sepa $sepa
      */
     public function getSepa() {
-        $sepa = $this->sepa;
-        if(!$sepa || !$sepa->getIban() || !$sepa->getBic()){
-            $sepa = $this->getSociete()->getSepa();
-        }
-        return $sepa;
+        return $this->sepa;
     }
 
     /**
@@ -835,7 +889,8 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
     }
 
     public function updateMontantPaye($output = null) {
-        $this->setMontantPaye(0.0);
+        $montantAvoir = ($this->getAvoirObject())? ($this->getAvoirObject()->getMontantTTC() * -1) : 0;
+        $this->setMontantPaye($montantAvoir);
         foreach ($this->getPaiements() as $paiements) {
             foreach ($paiements->getPaiement() as $paiement) {
             	if ($p = $paiement->getFacture()) {
@@ -995,7 +1050,15 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
 
     public function decloturer() {
         $this->updateMontantPaye();
+        if($this->getPayeeAvecTropPercu()){
+            $this->setPayeeAvecTropPercu(false);
+        }
     }
+
+    public function payerAvecTropPercu(){ //signifie qu'il a été cloturé pour le solde
+        $this->setPayeeAvecTropPercu(true);
+    }
+
     public function isDecloturable() {
        return $this->getMontantPayeCalcule() != $this->getMontantTTC();
     }
@@ -1220,19 +1283,24 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
 
     public function getPrelevementDate(){
       $dateEmission = clone $this->getDateEmission();
-      if($dateEmission->format('m') > 20){
+
+      if($dateEmission->format('d') > 20){
           $dateEmission->modify("+2 month");
       }else{
           $dateEmission->modify("+1 month");
       }
+
       $dueDate = \DateTime::createFromFormat("Ymd",$dateEmission->format("Y").$dateEmission->format("m")."20");
       $now = new \DateTime();
+
       if($dueDate < $now){
-          if($now->format('m') > 20){
+          if($now->format('d') > 20){
               $now->modify("+1 month");
           }
+
           $dueDate = \DateTime::createFromFormat("Ymd",$now->format("Y").$now->format("m")."20");
       }
+
       return $dueDate;
     }
 
@@ -1253,5 +1321,90 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
       return hash ('sha256' , $id.$secretKey);
     }
 
+    /**
+     * Set dateEnvoiMail
+     *
+     * @param date $dateEnvoiMail
+     * @return $this
+     */
+    public function setDateEnvoiMail($dateEnvoiMail) {
+        $this->dateEnvoiMail = $dateEnvoiMail;
+        return $this;
+    }
+
+    /**
+     * Get dateEnvoiMail
+     *
+     * @return date $dateEnvoiMail
+     */
+    public function getDateEnvoiMail() {
+      return $this->dateEnvoiMail;
+    }
+
+    public function getMesPaiements(){
+    $arrayPaiements = array();
+        foreach ($this->getPaiements() as $paiements) {
+          foreach ($paiements->getPaiement() as $paiement) {
+              if ($paiement->getFacture()->getId() == $this->getId()) {
+                $arrayPaiements[] = $paiement;
+              }
+          }
+        }
+    return $arrayPaiements;
+    }
+
+    public function getMontantReelPaye(){
+    $paiementReel = 0;
+        foreach ($this->getPaiements() as $paiements) {
+          foreach ($paiements->getPaiement() as $paiement) {
+              if ($paiement->getFacture()->getId() == $this->getId()) {
+                $paiementReel += $paiement->getMontant();
+              }
+          }
+        }
+    return $paiementReel;
+    }
+
+
+    /**
+     * Set payeeAvecTropPercu
+     *
+     * @param boolean $payeeAvecTropPercu
+     * @return self
+     */
+    public function setPayeeAvecTropPercu($payeeAvecTropPercu) {
+        $this->payeeAvecTropPercu = $payeeAvecTropPercu;
+        return $this;
+    }
+
+    /**
+     * Get payeeAvecTropPercu
+     *
+     * @return boolean $payeeAvecTropPercu
+     */
+    public function getPayeeAvecTropPercu() {
+        return $this->payeeAvecTropPercu;
+    }
+
+
+    /**
+     * Set pdfTelecharge
+     *
+     * @param date $pdfTelecharge
+     * @return self
+     */
+    public function setPdfTelecharge($pdfTelecharge) {
+        $this->pdfTelecharge = $pdfTelecharge;
+        return $this;
+    }
+
+    /**
+     * Get pdfTelecharge
+     *
+     * @return date $pdfTelecharge
+     */
+    public function getPdfTelecharge() {
+        return $this->pdfTelecharge;
+    }
 
 }

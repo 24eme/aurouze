@@ -78,10 +78,6 @@ class EtablissementController extends Controller {
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $etablissement = $form->getData();
-            $coordonnes = new Coordonnees();
-            $dm->persist($coordonnes);
-            $etablissement->getAdresse()->setCoordonnees($coordonnes);
-            $this->get('etablissement.manager')->getOSMAdresse()->calculCoordonnees($etablissement->getAdresse());
             if(!$etablissement->getId()) {
                 $dm->persist($etablissement);
             }

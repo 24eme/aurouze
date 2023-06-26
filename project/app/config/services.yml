@@ -35,7 +35,7 @@ services:
 
     paiements.importer:
         class: AppBundle\Import\PaiementsCsvImporter
-        arguments: [@doctrine_mongodb.odm.default_document_manager, @paiements.manager, @facture.manager]
+        arguments: [@doctrine_mongodb.odm.default_document_manager, @paiements.manager, @facture.manager, @societe.manager]
 
     contrat.manager:
         class: AppBundle\Manager\ContratManager
@@ -91,7 +91,7 @@ services:
 
     facture.importer:
         class: AppBundle\Import\FactureCsvImporter
-        arguments: [@doctrine_mongodb.odm.default_document_manager, @facture.manager, @societe.manager, @contrat.manager]
+        arguments: [@doctrine_mongodb.odm.default_document_manager, @facture.manager, @societe.manager]
 
     devis.manager:
         class: AppBundle\Manager\DevisManager
