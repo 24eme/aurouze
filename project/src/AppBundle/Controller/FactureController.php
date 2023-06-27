@@ -1011,30 +1011,33 @@ class FactureController extends Controller
 
       $pdf = $request->get('pdf',null);
 
-      $date = new \DateTime();
-      $interval = new \DateInterval('P2Y');
-      $dateFactureBasse = $date->sub($interval);
-
+      $dateFactureBasse = null;
       $dateFactureHaute = null;
       $nbRelances = null;
       $commerciaux = null;
+
+      if(!$societe){
+          $date = new \DateTime();
+          $interval = new \DateInterval('P2Y');
+          $dateFactureBasse = $date->sub($interval);
+      }
+
       $formFacturesEnRetard = $this->createForm(new FacturesEnRetardFiltresType($this->container, $this->get('doctrine_mongodb')->getManager(),$societe), null, array(
           'action' => $this->generateUrl('factures_retard'),
           'method' => 'GET',
       ));
+
       $formFacturesEnRetard->handleRequest($request);
       if ($formFacturesEnRetard->isSubmitted() && $formFacturesEnRetard->isValid()) {
-
         $formValues =  $formFacturesEnRetard->getData();
         $dateFactureBasse = $formValues["dateFactureBasse"];
         $dateFactureHaute = $formValues["dateFactureHaute"];
         $nbRelances = intval($formValues["nbRelances"]) -1;
         $societe = $formValues["societe"];
         $commerciaux = $formValues["commerciaux"];
-
       }
-      $facturesEnRetard = $fm->getRepository()->findFactureRetardDePaiement($dateFactureBasse, $dateFactureHaute, $nbRelances, $societe, $commerciaux);
 
+      $facturesEnRetard = $fm->getRepository()->findFactureRetardDePaiement($dateFactureBasse, $dateFactureHaute, $nbRelances, $societe, $commerciaux);
       $formRelance = $this->createForm(new RelanceType($facturesEnRetard), null, array(
           'action' => $this->generateUrl('factures_relance_massive'),
           'method' => 'post',
