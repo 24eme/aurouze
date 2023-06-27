@@ -124,7 +124,12 @@ class PassageController extends Controller
                 $morePassages[$key] = \DateTimeImmutable::createFromFormat('Y', $key)->format('Y-m-d');
             }
         }
+
         $now = new \DateTimeImmutable();
+        for ($i = 0; $i < 12; $i++) {
+            $date = $now->modify("-".$i." month");
+            $morePassages[$date->format('Ym')] = $date->format('Y-m-d');
+        }
         for ($i = 3; $i < (3+6); $i++) {
             $date = $now->modify("+".$i." month");
             $morePassages[$date->format('Ym')] = $date->format('Y-m-d');
