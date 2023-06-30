@@ -1015,6 +1015,7 @@ class FactureController extends Controller
       $dateFactureHaute = null;
       $nbRelances = null;
       $commerciaux = null;
+      $dateMois = null;
 
       if(!$societe){
           $date = new \DateTime();
@@ -1032,12 +1033,13 @@ class FactureController extends Controller
         $formValues =  $formFacturesEnRetard->getData();
         $dateFactureBasse = $formValues["dateFactureBasse"];
         $dateFactureHaute = $formValues["dateFactureHaute"];
+        $dateMois = $formValues["dateMois"];
         $nbRelances = intval($formValues["nbRelances"]) -1;
         $societe = $formValues["societe"];
         $commerciaux = $formValues["commerciaux"];
       }
 
-      $facturesEnRetard = $fm->getRepository()->findFactureRetardDePaiement($dateFactureBasse, $dateFactureHaute, $nbRelances, $societe, $commerciaux);
+      $facturesEnRetard = $fm->getRepository()->findFactureRetardDePaiement($dateFactureBasse, $dateFactureHaute, $nbRelances, $societe, $commerciaux,$dateMois);
       $formRelance = $this->createForm(new RelanceType($facturesEnRetard), null, array(
           'action' => $this->generateUrl('factures_relance_massive'),
           'method' => 'post',
