@@ -5,14 +5,15 @@
 {% block body %}
     <ol class="breadcrumb">
         <li><a href="{{ path('paiements_liste') }}">Paiements</a></li>
-
     </ol>
-
-
 	<h2>
 		Synthèse campagnes de paiements
-		<a class="btn btn-default pull-right" href="{{ path('paiements_nouveau') }}"><span aria-hidden="true" class="glyphicon glyphicon-plus"></span>&nbsp;Nouvelle saisie</a>
+        <span class="pull-right">
+            <a class="btn btn-default" href="#prelevement"><span class="glyphicon glyphicon-arrow-down "></span>&nbsp;Prélèvements</a>
+            <a class="btn btn-default" href="{{ path('paiements_nouveau') }}"><span aria-hidden="true" class="glyphicon glyphicon-plus"></span>&nbsp;Nouvelle saisie</a>
+        </span>
 	</h2>
+
     <div class="row" style="margin: 20px 0 10px 0;">
         <div class="col-md-8">
             <form action="" method="get" class="form-inline">
@@ -29,7 +30,7 @@
     {{ include('paiements/paiementsTableau.html.twig', {'paiementsDocs': paiementsDocs, 'prelevement' : false }) }}
     </div>
     <hr>
-    <h2 class="clearfix">
+    <h2 id="prelevement" class="clearfix">
         Prélèvements bancaires
         <a class="btn btn-default pull-right" href="{{ path('paiements_prelevement_previsualisation') }}">Créer un export pour la banque</a>
     </h2>

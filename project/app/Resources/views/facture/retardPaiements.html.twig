@@ -42,25 +42,31 @@
 							{{ form_widget(formFacturesARelancer.dateFactureBasse) }}
 							</div>
 							<div class="col-xs-6">
-								{{ form_label(formFacturesARelancer.dateFactureHaute) }}
+							{{ form_label(formFacturesARelancer.dateFactureHaute) }}
 							{{ form_errors(formFacturesARelancer.dateFactureHaute) }}
 							{{ form_widget(formFacturesARelancer.dateFactureHaute) }}
 							</div>
 						</div>
 						<br/>
 						<div class="row">
+							<div class="col-xs-6" id="datepicker">
+								{{ form_label(formFacturesARelancer.dateMois) }}
+								{{ form_errors(formFacturesARelancer.dateMois) }}
+								{{ form_widget(formFacturesARelancer.dateMois) }}
+							</div>
 							<div class="col-xs-6">
 								{{ form_label(formFacturesARelancer.commerciaux) }}
 							{{ form_errors(formFacturesARelancer.commerciaux) }}
 							{{ form_widget(formFacturesARelancer.commerciaux) }}
 							</div>
-							<div class="col-xs-6 text-right">
-								<label class="control-label">&nbsp;</label><br />
-									<a class="btn btn-default" href="{{ path('factures_retard') }}"><span class="glyphicon glyphicon-repeat"></span>&nbsp;Ré-initialiser</a>&nbsp;&nbsp;
-								{{ form_widget(formFacturesARelancer.save) }}
-							</div>
 					</div>
-			</div>
+					<div class="row">
+						<div class="col-xs-12 text-right">
+							<label class="control-label">&nbsp;</label><br />
+								<a class="btn btn-default" href="{{ path('factures_retard') }}"><span class="glyphicon glyphicon-repeat"></span>&nbsp;Ré-initialiser</a>&nbsp;&nbsp;
+							{{ form_widget(formFacturesARelancer.save) }}
+						</div>
+					</div>
 		</div>
 </div>
 </div>
