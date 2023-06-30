@@ -68,10 +68,10 @@ class FacturesEnRetardFiltresType extends AbstractType {
                 		'format' => 'dd/MM/yyyy',
 		));
     $builder->add('dateMois', DateType::class, array('required' => false,
-                "label" => "Facture de",
+                "label" => "Facturé en",
                 "attr" => array('class' => 'input-inline datepickermonthyear','data-provide' => 'datepicker','data-date-format' => 'mm/yyyy'),
                                 'widget' => 'single_text',
-                                'format' => 'mm/yyyy',
+                                'format' => 'MM/yyyy',
 		          ));
     $commerciaux = $this->dm->getRepository('AppBundle:Compte')->findAllUtilisateursCommercial();
     $builder->add('commerciaux', DocumentType::class, array(
