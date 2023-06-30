@@ -154,7 +154,7 @@ class FactureRepository extends DocumentRepository {
         return $q;
     }
 
-    public function findFactureRetardDePaiement($dateFactureBasse = null, $dateFactureHaute = null, $nbRelance = null, $societe = null, $commerciaux = null){
+    public function findFactureRetardDePaiement($dateFactureBasse = null, $dateFactureHaute = null, $nbRelance = null, $societe = null, $commerciaux = null, $dateMois = null){
       $today = new \DateTime();
       if ($dateFactureHaute && $dateFactureHaute instanceof \DateTime) {
           $dateFactureHaute->modify('+1 day');
@@ -168,6 +168,12 @@ class FactureRepository extends DocumentRepository {
       }
       if($dateFactureHaute){
         $qF->field('dateLimitePaiement')->lte($dateFactureHaute);
+      }
+      if($dateMois){
+        $datePlusOnemonth = clone $dateMois;
+        $datePlusOnemonth = $datePlusOnemonth->modify("+1 month -2 hours");
+        $qF->field('dateFacturation')->gte($dateMois->modify("+2 hours"));
+        $qF->field('dateFacturation')->lte($datePlusOnemonth);
       }
       $resultsFacture = $qF->getQuery()->execute();
 

@@ -50,6 +50,7 @@
         $.initHighLight();
         $.initFacture();
         $.initPassageOpen();
+        $.initDatePickerMonthDate();
     });
 
     $.initClickInputAddon = function(){
@@ -410,6 +411,18 @@
 
     $.initDatePicker = function () {
         $('.datepicker').datepicker({autoclose: true, todayHighlight: true, toggleActive: true, language: "fr"});
+    }
+
+    $.initDatePickerMonthDate = function () {
+        $(".datepickermonthyear").datepicker( {
+            autoclose: true,
+            todayHighlight: true,
+            toggleActive: true,
+            language: "fr",
+            format: "mm/yyyy",
+            viewMode: "months",
+            minViewMode: "months",
+        });
     }
 
     $.initPeriodePicker = function () {
