@@ -156,7 +156,6 @@ class FactureRepository extends DocumentRepository {
 
     public function findFactureRetardDePaiement($dateFactureBasse = null, $dateFactureHaute = null, $nbRelance = null, $societe = null, $commerciaux = null, $dateMois = null){
       $today = new \DateTime();
-
       // Factures
       $qF = $this->makeBaseFactureRetardDePaiement($nbRelance, $societe);
       $qF->field('dateLimitePaiement')->lte($today);
@@ -187,6 +186,10 @@ class FactureRepository extends DocumentRepository {
           $todayDevis = clone $today;
           $todayDevis->modify("-".FactureManager::DEFAUT_FREQUENCE_JOURS." days");
           $qD->field('dateFacturation')->lt($todayDevis);
+      }
+      if($dateMois){
+        $qD->field('dateFacturation')->gte($dateMois);
+        $qD->field('dateFacturation')->lte($datePlusOnemonth);
       }
       $resultsDevis = $qD->getQuery()->execute();
 
