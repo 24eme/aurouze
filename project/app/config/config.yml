@@ -10,6 +10,7 @@ parameters:
     locale: fr
     commitref: null
 
+
 framework:
     #esi:             ~
     #translator:      { fallbacks: ["%locale%"] }
@@ -46,6 +47,7 @@ twig:
         instanceapp: %instanceapp%
         commitref: %commitref%
         application: "%application%"
+        instanceenv: "%instanceenv%"
         calendar_extra: "%calendar_extra%"
         certification_bois: "%certification_bois%"
         banque: '%banque%'

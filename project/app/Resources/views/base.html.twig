@@ -102,6 +102,9 @@
         </nav>
 
         <div class="container">
+            {% if instanceenv == "preprod" %}
+            <div><p style="color:red; text-align:center; font-weight: bold;">Preproduction (la base est succeptible d'être supprimée à tout moment)</p></div>
+            {% endif %}
             {% block body %}{% endblock %}
         </div>
 
