@@ -69,6 +69,37 @@ class PaiementsController extends Controller {
     }
 
     /**
+     * @Route("/paiements/details_export/{id}", name="paiements_details_export")
+     */
+    public function detailsExportAction(Request $request) {
+        $type  = $request->get('type');
+        $id = $request->get('id');
+        $pm = $this->get('paiements.manager');
+
+        $paiements = $this->get('paiements.manager')->getRepository()->findById($id);
+        $paiementsForCsv = $pm->getPaiementsPrelevementsForCsv($paiements);
+
+        $filename = sprintf("export_paiements_$id.csv");
+        $handle = fopen('php://memory', 'r+');
+
+        foreach ($paiementsForCsv as $paiement) {
+            fputcsv($handle, $paiement,';');
+        }
+
+        rewind($handle);
+
+        $content = stream_get_contents($handle);
+        fclose($handle);
+
+        $response = new Response(utf8_decode($content), 200, array(
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename=' . $filename,
+        ));
+        $response->setCharset('UTF-8');
+        return $response;
+    }
+
+    /**
      * @Route("/paiements/societe/{id}", name="paiements_societe")
      * @ParamConverter("societe", class="AppBundle:Societe")
      */
