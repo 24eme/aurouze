@@ -29,6 +29,11 @@
     <h3>  <input id="tourneesDate" data-url-cible="{{ path('tournee_technicien',{ 'technicien' : technicien.id }) }}" data-role="date" value="{{date | localizeddate("medium", "none", null, null, "dd/MM/yyyy") }}" data-inline="false" type="text" /></h3>
     <span class="ui-li-count">{{ rendezVousByTechnicien | length }}</span>
   </li>
+  {% if isJourFerie %}
+      <li class="notStatic" style="padding:15px">
+        <b>05h00<br>FERIE</b>
+      </li>
+  {% endif %}
   {% for rendezvous in rendezVousByTechnicien %}
       {% if rendezvous.planifiable %}
         {% set planifiable = rendezvous.planifiable %}

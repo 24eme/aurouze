@@ -101,6 +101,15 @@ class TourneeController extends Controller {
               'action' => $this->generateUrl('tournee_attachement_upload', array('technicien' => $technicien, 'date' => $date->format('Y-m-d'),'idetablissement' => $etbId, 'retour' => 'passage_visualisation_'.$planifiable->getId())));
             }
           }
+
+        $jourFerieJsonContent = json_decode(file_get_contents($this->get('kernel')->getRootDir().'/../web/joursFeries.json'), true);
+        $isJourFerie = false;
+        foreach($jourFerieJsonContent as $c){
+            if( substr($c['start'], 0, 10) == $date->format('Y-m-d')){
+                $isJourFerie = true;
+                break;
+            }
+        }
         return $this->render('tournee/tourneeTechnicien.html.twig', array('rendezVousByTechnicien' => $rendezVousByTechnicien,
                                                                           "technicien" => $technicienObj,
                                                                           "isAdmin" => array_key_exists('PHP_AUTH_USER', $_SERVER) && preg_match('/^[a-zA-Z]+$/', $_SERVER['PHP_AUTH_USER']) === 1,
@@ -109,7 +118,8 @@ class TourneeController extends Controller {
                                                                           "historiqueAllPassages" => $historiqueAllPassages,
                                                                           'telephoneSecretariat' => $telephoneSecretariat,
                                                                           "planifiableForms" => $planifiableForms,
-                                                                          "attachementsForms" => $attachementsForms));
+                                                                          "attachementsForms" => $attachementsForms,
+                                                                          "isJourFerie" => $isJourFerie));
     }
 
     /**
