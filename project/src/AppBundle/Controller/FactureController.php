@@ -357,6 +357,23 @@ class FactureController extends Controller
 
 
     /**
+     * @Route("/ajouter_aux_prelevements/{id}/{factureId}", name="ajouter_aux_prelevements")
+     * @ParamConverter("societe", class="AppBundle:Societe")
+     */
+    public function ajouterFactuerAuxPrelevementAction(Request $request, Societe $societe, $factureId) {
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $retour = ($request->get('retour', null));
+        $facture = $this->get('facture.manager')->getRepository()->findOneById($factureId);
+        if($facture->getSepa()->isFullAndActif()){
+            $facture->setInPrelevement(null);
+            $dm->persist($facture);
+            $dm->flush();
+        }
+        return $this->redirectToRoute('facture_societe', array('id' => $societe->getId()));
+    }
+
+
+    /**
      * @Route("/facture-en-attente/{factureId}/facturer", name="facture_en_attente_facturer")
      */
     public function facturesEnAttenteAction(Request $request, $factureId) {
