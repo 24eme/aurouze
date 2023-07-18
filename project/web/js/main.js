@@ -1110,9 +1110,12 @@
 
         var hash = window.location.hash;
         var parameters = new URLSearchParams(window.location.search);
-
-        history.pushState(null, null, "?id_passage="+this.id+hash);
-
+        var new_parameters = "?id_passage="+this.id+hash;
+        var frequence = parameters.get("frequence");
+        if(frequence){
+          new_parameters+="&frequence="+frequence;
+        }
+        history.pushState(null, null,new_parameters);
       });
     }
 
