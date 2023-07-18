@@ -235,12 +235,35 @@ class FactureController extends Controller
             'action' => $this->generateUrl('societe'),
             'method' => 'GET',
         ));
+        $etablissements = $societe->getEtablissementsByStatut(true);
         $factures = $fm->findBySociete($societe);
+        $mouvements = $fm->getMouvementsBySociete($societe);
+        $hasDevis = false;
+        $factureIdsEtablissement = null;
+
+        if($request->get('etablissement_id')) {
+            $factureIdsEtablissement = array();
+            foreach($factures as $key => $facture) {
+                if(!$facture->getContrat() || !in_array($request->get('etablissement_id'), $facture->getContrat()->getEtablissementIds())) {
+                    unset($factures[$key]);
+                    continue;
+                }
+                $factureIdsEtablissement[] = $facture->getId();
+            }
+            foreach($mouvements as $key => $mouvement) {
+                if(!in_array($request->get('etablissement_id'), $facture->getContrat()->getEtablissementIds())) {
+                    unset($mouvements[$key]);
+                }
+            }
+        }
 
         $sommeMontantPayeReelParmiCeuxQuiUtiliseTropPercu = 0;
         $facturesPrevisionnel = array();
 
         foreach($factures as $facture) {
+            if($facture->isDevis()){
+                $hasDevis = true;
+            }
             if (!$facture->isDevis() && !($facture->isPaye() || $facture->isAvoir() || $facture->isRedressee()) && !$facture->getNumeroFacture()) {
                 $facturesPrevisionnel[] = $facture;
             }
@@ -249,12 +272,10 @@ class FactureController extends Controller
             }
         }
 
-        $hasDevis = $fm->hasDevisSociete($societe);
-        $mouvements = $fm->getMouvementsBySociete($societe);
-        $solde = $fm->getSolde($societe);
-        $totalFacture = $fm->getTotalFacture($societe);
-        $totalPaye = $fm->getTotalPaye($societe);
-        $resteTropPaye = $fm->getResteTropPercu($societe) + $sommeMontantPayeReelParmiCeuxQuiUtiliseTropPercu;
+        $solde = $fm->getSolde($societe, $factureIdsEtablissement);
+        $totalFacture = $fm->getTotalFacture($societe, $factureIdsEtablissement);
+        $totalPaye = $fm->getTotalPaye($societe, $factureIdsEtablissement);
+        $resteTropPaye = $fm->getResteTropPercu($societe, $factureIdsEtablissement) + $sommeMontantPayeReelParmiCeuxQuiUtiliseTropPercu;
 
         $exportSocieteForm = $this->createExportSocieteForm($societe);
 
@@ -264,7 +285,7 @@ class FactureController extends Controller
             $defaultDate = new \DateTime($this->container->getParameter('date_facturation'));
         }
 
-        return $this->render('facture/societe.html.twig', array('societe' => $societe, 'mouvements' => $mouvements,'hasDevis' => $hasDevis,  'factures' => $factures, 'facturesPrevisionnel' => $facturesPrevisionnel, 'exportSocieteForm' => $exportSocieteForm->createView(), 'solde' => $solde, 'totalFacture' => $totalFacture, 'totalPaye' => $totalPaye, 'defaultDate' => $defaultDate, 'resteTropPaye' => $resteTropPaye));
+        return $this->render('facture/societe.html.twig', array('societe' => $societe, 'etablissements' => $etablissements, 'mouvements' => $mouvements,'hasDevis' => $hasDevis,  'factures' => $factures, 'facturesPrevisionnel' => $facturesPrevisionnel, 'exportSocieteForm' => $exportSocieteForm->createView(), 'solde' => $solde, 'totalFacture' => $totalFacture, 'totalPaye' => $totalPaye, 'defaultDate' => $defaultDate, 'resteTropPaye' => $resteTropPaye));
     }
 
     /**
@@ -351,6 +372,23 @@ class FactureController extends Controller
 
         if($retour && ($retour == "relance")){
           return $this->redirectToRoute('factures_retard');
+        }
+        return $this->redirectToRoute('facture_societe', array('id' => $societe->getId()));
+    }
+
+
+    /**
+     * @Route("/ajouter_aux_prelevements/{id}/{factureId}", name="ajouter_aux_prelevements")
+     * @ParamConverter("societe", class="AppBundle:Societe")
+     */
+    public function ajouterFactuerAuxPrelevementAction(Request $request, Societe $societe, $factureId) {
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $retour = ($request->get('retour', null));
+        $facture = $this->get('facture.manager')->getRepository()->findOneById($factureId);
+        if($facture->getSepa()->isFullAndActif()){
+            $facture->setInPrelevement(null);
+            $dm->persist($facture);
+            $dm->flush();
         }
         return $this->redirectToRoute('facture_societe', array('id' => $societe->getId()));
     }

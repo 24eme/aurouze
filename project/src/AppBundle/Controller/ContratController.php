@@ -520,7 +520,23 @@ class ContratController extends Controller {
      */
     public function generationMouvementAction(Request $request, Contrat $contrat) {
         $dm = $this->get('doctrine_mongodb')->getManager();
-        $contrat->generateMouvement();
+        $passagesContrat = $contrat->getContratPassages();
+        $firstPassageFacturable = null;
+
+        foreach ($passagesContrat as $etablissementId => $passagesEtablissement) {
+            if(!count($passagesEtablissement->getPassages())){
+                break;
+            }
+            foreach($passagesEtablissement->getPassages() as $passage){
+                if($passage->getMouvementDeclenchable() && !$passage->getMouvementDeclenche()){
+                    $firstPassageFacturable = $passage;
+                    $firstPassageFacturable->setMouvementDeclenche(true);
+                    break;
+                }
+            }
+        }
+        $contrat->generateMouvement($firstPassageFacturable);
+        $dm->persist($firstPassageFacturable);
         $dm->persist($contrat);
         $dm->flush();
 

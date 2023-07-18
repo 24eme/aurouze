@@ -221,13 +221,17 @@ class FactureRepository extends DocumentRepository {
         return $retards;
     }
 
-    public function getMontantFacture($societe) {
+    public function getMontantFacture($societe, $factureIds = null) {
         $command = array();
         $command['aggregate'] = "Facture";
         $command['pipeline'] = array(
             array('$match' => array('societe' => $societe->getId(), "numeroFacture" => array('$ne' => null ))),
             array('$group' => array('_id' => 'somme_montant_facture', 'montantTTC' => array('$sum' => '$montantTTC')))
         );
+        if(!is_null($factureIds)) {
+            $command['pipeline'][0]['$match']['_id'] = array('$in' => $factureIds);
+        }
+
         $db = $this->getDocumentManager()->getDocumentDatabase(\AppBundle\Document\Facture::class);
         $resultat = $db->command($command);
 
@@ -238,13 +242,16 @@ class FactureRepository extends DocumentRepository {
       return $this->findFactureRetardDePaiement(null, null, null, $societe, null);
     }
 
-    public function getMontantTropPaye(Societe $societe){
+    public function getMontantTropPaye(Societe $societe, $factureIds = null){
         $command = array();
         $command['aggregate'] = "Facture";
         $command['pipeline'] = array(
             array('$match' => array('societe' => $societe->getId(), 'cloture'=> true, 'montantTTC' => ['$gt' => 0.0])), //cloture == true veut dire qu'il a été payé avec solde
             array('$group' => array('_id' => 'top','montantAPayer' => array('$sum' => '$montantAPayer')))
         );
+        if(!is_null($factureIds)) {
+            $command['pipeline'][0]['$match']['_id'] = array('$in' => $factureIds);
+        }
         $db = $this->getDocumentManager()->getDocumentDatabase(\AppBundle\Document\Facture::class);
         $resultat = $db->command($command);
 
@@ -252,13 +259,16 @@ class FactureRepository extends DocumentRepository {
     }
 
 
-    public function getMontantFacturePayeeAvecTropPercu(Societe $societe){
+    public function getMontantFacturePayeeAvecTropPercu(Societe $societe, $factureIds = null){
         $command = array();
         $command['aggregate'] = "Facture";
         $command['pipeline'] = array(
             array('$match' => array('societe' => $societe->getId(), 'payeeAvecTropPercu' => ['$eq' => true])), //cloture == true veut dire qu'il a été payé avec solde
             array('$group' => array('_id' => 'somme_montant_paye_avec_solde', 'montantTTC' => array('$sum' => '$montantTTC')))
         );
+        if(!is_null($factureIds)) {
+            $command['pipeline'][0]['$match']['_id'] = array('$in' => $factureIds);
+        }
         $db = $this->getDocumentManager()->getDocumentDatabase(\AppBundle\Document\Facture::class);
         $resultat = $db->command($command);
         return (isset($resultat['result'][0]))? $resultat['result'][0]['montantTTC'] : 0;
