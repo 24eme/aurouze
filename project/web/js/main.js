@@ -1485,3 +1485,18 @@
     }
 }
 )(jQuery);
+
+$(document).on('DOMSubtreeModified', function() {
+    var elementsSelect2 = $('[id^="select2-"][id$="-container"]');
+    elementsSelect2.each(function() {
+        var element = $(this);
+        if(!element.parent().parent().parent().prev().prop('required')){
+            return true;
+        }
+        if(element.attr('title') === '' || !element.attr('title')){
+            element.parent().css("border-color",'#dc3545');
+        }else{
+            element.parent().css("border-color",'');
+        }
+    });
+});

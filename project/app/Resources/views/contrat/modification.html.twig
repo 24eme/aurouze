@@ -277,16 +277,5 @@
           }
         });
     });
-
-    $(document).on('DOMSubtreeModified', function() {
-        var elementsSelect2 = [$('#select2-contrat_commercial-container'),$('#select2-contrat_prestations_0_identifiant-container'),$('#select2-contrat_typeContrat-container')];
-        for(var element of elementsSelect2){
-            if(element.attr('title') === '' || !element.attr('title')){
-                element.parent().css("border-color",'#dc3545');
-            }else{
-                element.parent().css("border-color",'');
-            }
-        }
-    });
 </script>
 {% endblock %}
