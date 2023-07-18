@@ -243,22 +243,22 @@ public static $export_factures_en_retards = array(
         return $this->mm->getMouvements(true, false);
     }
 
-    public function getSolde(Societe $societe, $factureIds = array()) {
+    public function getSolde(Societe $societe, $factureIds = null) {
 
         return round($this->getTotalPaye($societe, $factureIds) - $this->getTotalFacture($societe, $factureIds),2);
     }
 
-    public function getTotalFacture(Societe $societe, $factureIds = array()) {
+    public function getTotalFacture(Societe $societe, $factureIds = null) {
 
         return round($this->getRepository()->getMontantFacture($societe, $factureIds), 2);
     }
 
-    public function getTotalPaye(Societe $societe, $factureIds = array()) {
+    public function getTotalPaye(Societe $societe, $factureIds = null) {
 
         return round($this->dm->getRepository('AppBundle:Paiements')->getMontantPaye($societe, $factureIds), 2);
     }
 
-    public function getResteTropPercu(Societe $societe, $factureIds = array()){
+    public function getResteTropPercu(Societe $societe, $factureIds = null){
         return ($this->dm->getRepository('AppBundle:Facture')->getMontantTropPaye($societe, $factureIds)) - (round($this->dm->getRepository('AppBundle:Facture')->getMontantFacturePayeeAvecTropPercu($societe, $factureIds),2));
     }
 

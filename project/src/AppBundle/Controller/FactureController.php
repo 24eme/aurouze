@@ -235,12 +235,14 @@ class FactureController extends Controller
             'action' => $this->generateUrl('societe'),
             'method' => 'GET',
         ));
+        $etablissements = $societe->getEtablissementsByStatut(true);
         $factures = $fm->findBySociete($societe);
         $mouvements = $fm->getMouvementsBySociete($societe);
         $hasDevis = false;
-        $factureIdsEtablissement = array();
+        $factureIdsEtablissement = null;
 
         if($request->get('etablissement_id')) {
+            $factureIdsEtablissement = array();
             foreach($factures as $key => $facture) {
                 if(!$facture->getContrat() || !in_array($request->get('etablissement_id'), $facture->getContrat()->getEtablissementIds())) {
                     unset($factures[$key]);
@@ -283,7 +285,7 @@ class FactureController extends Controller
             $defaultDate = new \DateTime($this->container->getParameter('date_facturation'));
         }
 
-        return $this->render('facture/societe.html.twig', array('societe' => $societe, 'mouvements' => $mouvements,'hasDevis' => $hasDevis,  'factures' => $factures, 'facturesPrevisionnel' => $facturesPrevisionnel, 'exportSocieteForm' => $exportSocieteForm->createView(), 'solde' => $solde, 'totalFacture' => $totalFacture, 'totalPaye' => $totalPaye, 'defaultDate' => $defaultDate, 'resteTropPaye' => $resteTropPaye));
+        return $this->render('facture/societe.html.twig', array('societe' => $societe, 'etablissements' => $etablissements, 'mouvements' => $mouvements,'hasDevis' => $hasDevis,  'factures' => $factures, 'facturesPrevisionnel' => $facturesPrevisionnel, 'exportSocieteForm' => $exportSocieteForm->createView(), 'solde' => $solde, 'totalFacture' => $totalFacture, 'totalPaye' => $totalPaye, 'defaultDate' => $defaultDate, 'resteTropPaye' => $resteTropPaye));
     }
 
     /**
