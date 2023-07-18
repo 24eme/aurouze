@@ -704,6 +704,7 @@ class ContratController extends Controller {
      * @Route("/contrats-reconduction", name="contrats_reconduction_massive")
      */
     public function reconductionMassiveAction(Request $request) {
+        set_time_limit(120);
         $dm = $this->get('doctrine_mongodb')->getManager();
         $cm = $this->get('contrat.manager');
 
