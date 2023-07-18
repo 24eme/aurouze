@@ -236,11 +236,32 @@ class FactureController extends Controller
             'method' => 'GET',
         ));
         $factures = $fm->findBySociete($societe);
+        $mouvements = $fm->getMouvementsBySociete($societe);
+        $hasDevis = false;
+        $factureIdsEtablissement = array();
+
+        if($request->get('etablissement_id')) {
+            foreach($factures as $key => $facture) {
+                if(!$facture->getContrat() || !in_array($request->get('etablissement_id'), $facture->getContrat()->getEtablissementIds())) {
+                    unset($factures[$key]);
+                    continue;
+                }
+                $factureIdsEtablissement[] = $facture->getId();
+            }
+            foreach($mouvements as $key => $mouvement) {
+                if(!in_array($request->get('etablissement_id'), $facture->getContrat()->getEtablissementIds())) {
+                    unset($mouvements[$key]);
+                }
+            }
+        }
 
         $sommeMontantPayeReelParmiCeuxQuiUtiliseTropPercu = 0;
         $facturesPrevisionnel = array();
 
         foreach($factures as $facture) {
+            if($facture->isDevis()){
+                $hasDevis = true;
+            }
             if (!$facture->isDevis() && !($facture->isPaye() || $facture->isAvoir() || $facture->isRedressee()) && !$facture->getNumeroFacture()) {
                 $facturesPrevisionnel[] = $facture;
             }
@@ -249,12 +270,10 @@ class FactureController extends Controller
             }
         }
 
-        $hasDevis = $fm->hasDevisSociete($societe);
-        $mouvements = $fm->getMouvementsBySociete($societe);
-        $solde = $fm->getSolde($societe);
-        $totalFacture = $fm->getTotalFacture($societe);
-        $totalPaye = $fm->getTotalPaye($societe);
-        $resteTropPaye = $fm->getResteTropPercu($societe) + $sommeMontantPayeReelParmiCeuxQuiUtiliseTropPercu;
+        $solde = $fm->getSolde($societe, $factureIdsEtablissement);
+        $totalFacture = $fm->getTotalFacture($societe, $factureIdsEtablissement);
+        $totalPaye = $fm->getTotalPaye($societe, $factureIdsEtablissement);
+        $resteTropPaye = $fm->getResteTropPercu($societe, $factureIdsEtablissement) + $sommeMontantPayeReelParmiCeuxQuiUtiliseTropPercu;
 
         $exportSocieteForm = $this->createExportSocieteForm($societe);
 
