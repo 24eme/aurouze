@@ -11,25 +11,70 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 trait FacturableControllerTrait
 {
     /**
-     * @Route("/public/{document}/pdf/{key}", name="facturable_pdf")
+     * @Route("/public/{document}/pdf/{key}", name="facturable_public_pdf")
      */
-    public function pdfAction(Request $request, $document)
+    public function publicPdfAction(Request $request, $document)
     {
-
         $type = strtolower(strtok($document, '-'));
         $manager = $this->get($type.'.manager');
         $repository = $manager->getRepository('AppBundle:'.ucfirst($type));
         $doc = $repository->findOneById($document);
 
-        $urlKey= basename( $this->uri = $_SERVER['REQUEST_URI']);
-        if($doc->getSecretKey()  == $urlKey){
-         return $this->createPdfFacture($request,$document);
+        if(!$doc) {
+            throw new NotFoundHttpException();
+        }
 
+        $urlKey= basename( $this->uri = $_SERVER['REQUEST_URI']);
+
+        if($doc->getSecretKey() != $urlKey){
+            throw new NotFoundHttpException();
         }
-          else{
-              throw new NotFoundHttpException();
-        }
+
+        return $this->render('facture/telechargementPdf.html.twig', array('doc' => $doc));
     }
+
+
+    /**
+    *@Route("/public/download/{document}/pdf/{key}", name="facturable_telechargement_public_pdf")
+    */
+    public function telechargementPublicPdfAction(Request $request, $document)
+    {
+        $type = strtolower(strtok($document, '-'));
+        $manager = $this->get($type.'.manager');
+        $repository = $manager->getRepository('AppBundle:'.ucfirst($type));
+        $doc = $repository->findOneById($document);
+        $dm = $this->get('doctrine_mongodb')->getManager();
+
+        $urlKey= basename( $this->uri = $_SERVER['REQUEST_URI']);
+
+        if($doc->getSecretKey() == $urlKey){
+            if(!$doc->getPdfTelecharge()){
+                $doc->setPdfTelecharge(new \DateTime());
+                $dm->persist($doc);
+                $dm->flush();
+            }
+            return $this->createPdfFacture($request,$document);
+        }
+
+        throw new NotFoundHttpException();
+    }
+
+    /**
+    *@Route("/pdf/{document}", name="facturable_pdf")
+    */
+    public function pdfAction(Request $request, $document)
+    {
+        $type = strtolower(strtok($document, '-'));
+        $manager = $this->get($type.'.manager');
+        $repository = $manager->getRepository('AppBundle:'.ucfirst($type));
+        $doc = $repository->findOneById($document);
+        $dm = $this->get('doctrine_mongodb')->getManager();
+
+        $urlKey= basename( $this->uri = $_SERVER['REQUEST_URI']);
+
+        return $this->createPdfFacture($request,$document);
+    }
+
 
 
     public function createPdfFacture(Request $request, $document){

@@ -3,7 +3,7 @@
   {% elseif(facture.numeroFacture and facture.isEnRetardPaiement()) %} danger
 {% endif %}">
             <td>{{ ((facture.isDevis) ? facture.dateDevis : facture.dateFacturation) | localizeddate("medium", "none", null, null, "d MMMM yyyy") }} {% if(facture.numeroDevis) %} <span class="pull-right"><i class="mdi mdi-local-shipping"></i></span> {% endif %}</td>
-            <td><a href="{{ path('facturable_pdf', {'document': facture.id ,'key': facture.getSecretKey()})}}">
+            <td> <a style="opacity: 0.15" onclick="navigator.clipboard.writeText(this.href); alert('Le lien a été copié dans le presse papier !'); return false;" title="Lien public pour partage" class="pull-right" href="{{ path('facturable_public_pdf', {'document': facture.id ,'key': facture.getSecretKey()})}}"><span class="glyphicon glyphicon-link"></span></a><a href="{{ path('facturable_pdf', {'document': facture.id })}}">
           <span class="glyphicon glyphicon-file"></span> {% if facture.isDevis %}Devis n° {{ facture.numeroDevis }}
                                                          {% elseif(facture.isAvoir) %}Avoir n° {{ facture.numeroFacture }}
                                                          {% elseif(facture.numeroFacture) %}Facture n° {{ facture.numeroFacture }}
@@ -26,7 +26,7 @@
         {% endif %}
             </td>
             <td>
-                <a data-toggle="tooltip" title="{% for ligne in facture.lignes %}{{ (ligne.libelle) ? ligne.libelle~"\n" : "Aucun" }}{% endfor %}" href="{{ path('facturable_pdf', {'document': facture.id ,'key': facture.getSecretKey() })}}">{{ facture.lignes | length}} ligne(s)</a>
+                <a data-toggle="tooltip" title="{% for ligne in facture.lignes %}{{ (ligne.libelle) ? ligne.libelle~"\n" : "Aucun" }}{% endfor %}" href="{{ path('facturable_pdf', {'document': facture.id })}}">{{ facture.lignes | length}} ligne(s)</a>
                 {% for origine in facture.origines %}
                   - <a data-toggle="tooltip" title="{% for etab in origine.etablissements %}{{ etab }}<br/>{% endfor %}"
                       href="{{ path('contrat_visualisation', {'id': origine.id })}}">Contrat n° {{ origine.numeroArchive }}</a>
@@ -44,31 +44,39 @@
                   <span class="text-muted">{{ "%0.2f" | format(facture.montantTTC)  }}&nbsp;€</span>
                   <span title="Remboursé par chèque" style="cursor: help" class="pull-right label label-xs label-info">Chq</span>
                 {% endif %}
+              {% elseif((not facture.getMesPaiements and facture.getPayeeAvecTropPercu) or facture.cloture)%}
+                  <a type="button" data-toggle="modal" data-target="#modal{{facture.id}}" title="Cloturé" style="cursor:pointer;text-decoration: none;"><span class="text-muted">{{ "%0.2f" | format(facture.getMontantReelPaye())  }}&nbsp;€</span></a>
               {% elseif(facture.isRedressee) %}
-                <span class="text-muted">{{ "%0.2f" | format(facture.montantPaye)  }}&nbsp;€</span>
+                <a type="button" data-toggle="modal" data-target="#modal{{facture.id}}" style="cursor:pointer;text-decoration: none;"><span class="text-muted">{{ "%0.2f" | format(facture.montantPaye)  }}&nbsp;€</span></a>
               {% elseif not(facture.numeroFacture) %}
                 <span class="text-muted"></span>
               {% else %}
-                <span class="text-muted">{{ "%0.2f" | format(facture.montantPaye)  }}&nbsp;€</span>
+                <span class="text-muted">
+                    {% if (facture.numeroFacture and facture.paye and not facture.isAvoir) %}
+                        <a type="button" data-toggle="modal" data-target="#modal{{facture.id}}" style="cursor:pointer;text-decoration: none;"><span class="text-muted">{{ "%0.2f" | format(facture.montantPaye)  }}&nbsp;€</span></a>
+                    {% endif %}
+                    {% if facture.getMesPaiements() and not facture.paye %}
+                        <a type="button" data-toggle="modal" data-target="#modal{{facture.id}}" style="cursor:pointer;text-decoration: none;"><span class="text-muted">{{ "%0.2f" | format(facture.montantPaye)  }}&nbsp;€</span></a>
+                    {% endif %}
+                </span>
               {% endif %}
             {% endif %}
           </td>
           <td class="col-xs-1 text-right">
             {% if not facture.isAvoir %}
-
               {% if facture.numeroFacture %}
-                {% if facture.montantAPayer < 0 %}
-                  <span class="label label-info" data-toggle="tooltip" title="Trop perçu {{ "%0.2f" | format(facture.montantAPayer*-1) }} €">
-                {% endif %}
-                  <span class="
-                {% if facture.montantAPayer >= 0 %}text-muted
-                {% endif %}">{{ "%0.2f" | format(facture.montantAPayer) }}&nbsp;€
-                </span>
-                {% if facture.montantAPayer < 0 %}</span>
-                {% endif %}
-              {% else %}
+                 {% if (facture.getPayeeAvecTropPercu) %}
+                      <span data-toggle="tooltip" title="Déduction trop perçu {{ "%0.2f" | format((facture.montantTTC- facture.getMontantReelPaye)*-1) }} €">{{ "%0.2f" | format((facture.montantTTC- facture.getMontantReelPaye) *-1) }}&nbsp;€</span>
+                 {% elseif facture.montantAPayer < 0 %}
+                     <span data-toggle="tooltip" title="Trop perçu {{ "%0.2f" | format(facture.montantAPayer*-1) }} €">
+                 {% if facture.montantAPayer < 0 %}+{{ "%0.2f" | format(facture.montantAPayer*-1) }}&nbsp;€{% endif %}
+                     </span>
+                {% elseif facture.montantAPayer > 0%}
+                <span data-toggle="tooltip">{{ "%0.2f" | format(facture.montantAPayer) }}&nbsp;€</span>
+                 {% endif %}
+             {% else %}
                 <span class="text-muted"></span>
-              {% endif %}
+             {% endif %}
             {% endif %}
           </td>
             <td class="text-left">
@@ -95,7 +103,16 @@
                             {% endif %}
                             {% if(not facture.isAvoir) %}
                               {% if(not facture.iscloture) %}
-                                <li><a onclick="return confirm('Êtes vous sûr de vouloir cloturer cette facture ?')" href="{{ path('facture_cloturer', {'id': facture.societe.id, 'factureId': facture.id }) }}">Cloturer les paiements</a></li>
+                                  {% if facture.sepa.isFullAndActif %}
+                                    <li><a onclick="return confirm('Êtes vous sûr de vouloir ajouter cette facture au prochain prélèvement?')" href="{{ path('ajouter_aux_prelevements', {'id': facture.societe.id, 'factureId': facture.id }) }}">Ajouter au prochain prélèvement</a></li>
+                                  {% endif %}
+                                  {% if (resteTropPaye and facture.montantTTC < resteTropPaye) %}
+                                      <li><a onclick="return confirm('Êtes vous sûr de vouloir de payer avec le trop perçu restant et de cloturer cette facture ?')" href="{{ path('facture_cloturer_payer_avec_trop_percu', {'id': facture.societe.id, 'factureId': facture.id }) }}">Payer avec le trop perçu restant et cloturer la facture</a></li>
+                                  {% endif %}
+                                <li><a onclick="return confirm('Êtes vous sûr de vouloir cloturer cette facture ?')" href="{{ path('facture_cloturer', {'id': facture.societe.id, 'factureId': facture.id }) }}">Cloturer la facture</a></li>
+                              {% endif %}
+                              {% if (facture.payeeAvecTropPercu) %}
+                                <li><a onclick="return confirm('Êtes vous sûr de vouloir décloturer cette facture et mettre à jour le trop perçu ?')" href="{{ path('facture_decloturer', {'id': facture.societe.id, 'factureId': facture.id }) }}">Décloturer et mettre à jour le trop perçu (remettre les paiements à 0)</a></li>
                               {% endif %}
                                 <li><a onclick="return confirm('Êtes vous sûr de vouloir décloturer cette facture ?')" href="{{ path('facture_decloturer', {'id': facture.societe.id, 'factureId': facture.id }) }}">Décloturer (remettre les paiements à 0)</a></li>
                                 {% if not facture.isRedressee %}
@@ -109,16 +126,80 @@
                                 {% endif %}
                             {% endif %}
                     {% endif %}
+                    {% if (facture.numeroFacture and facture.paye and not facture.isAvoir) %}
+                    <li>
+                    <a type="button" data-toggle="modal" data-target="#modal{{facture.id}}">
+                      Voir le détail des paiements
+                    </a>
+                    </li>
+                    {% endif %}
                   </ul>
                  </div>
               {% endif %}
               {% if not facture.numeroFacture and not facture.isDevis %}
                 <a class="btn btn-default btn-xs" onclick="return confirm('Êtes vous sûr de vouloir facturer ?')" href="{{ path('facture_en_attente_facturer', { 'factureId': facture.id }) }}"> Créer la facture </a>
               {% endif %}
+              {% if (facture.numeroFacture) %}
+              <div class="modal fade" id="modal{{facture.id}}" tabindex="-1" role="dialog" aria-labelledby="modalLabel{{facture.id}}" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                     <h4 class="modal-title" id="modalLabel{{facture.id}}">Paiements de la Facture n°{{ facture.numeroFacture }}</h4>
+                    </div>
+                    <div class="modal-body">
+                    <table class="table table-striped">
+                    <thead>
+                        <tr>
+                          <th scope="col">Date</th>
+                          <th class="col-xs-3">Libellé</th>
+                          <th scope="col">Moyen</th>
+                          <th scope="col" class="text-right">MontantTTC</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                      {% if facture.getMesPaiements() %}
+                      {% for paiement in facture.getMesPaiements() %}
+                          <tr>
+                          <td>{{ paiement.datePaiement | date("d-m-Y") }}</td>
+                          <td>{{ paiement.libelle }}</td>
+                          <td>{{ paiement.moyenPaiement }}</td>
+                          <td class="text-right">{{ paiement.montant | number_format(2, ',', ' ')}}&nbsp;€ </td>
+                          </tr>
+                      {% endfor %}
+                      {% endif %}
+                      {% if facture.getPayeeAvecTropPercu %}
+                          <tr>
+                          <td></td>
+                          <td></td>
+                          <td>Trop perçu et Cloture</td>
+                          <td class="text-right">{{ "%0.2f" | format((facture.montantTTC- facture.getMontantReelPaye)) }}&nbsp;€</td>
+                          </tr>
+                      {% elseif facture.cloture and not facture.getMesPaiements()%}
+                          <tr>
+                          <td></td>
+                          <td></td>
+                          <td>CLOTURE</td>
+                          <td class="text-right">0.00&nbsp;€ </td>
+                          </tr>
+                      {% endif %}
+                      </tbody>
+                      </table>
+
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% endif %}
               </td>
               <td>
                   {% if facture.getDateEnvoiMail() %}
-                    <span class="glyphicon glyphicon-envelope" title="Mail envoyé le {{ facture.getDateEnvoiMail()| date("d/m/Y") }}"></span>
+              <span class="glyphicon glyphicon-envelope" title="Mail envoyé le {{ facture.getDateEnvoiMail()| date("d/m/Y") }}{% if facture.pdfTelecharge %} et téléchargé le {{ facture.pdfTelecharge | date("d/m/Y")}}{% endif %}"></span>
                   {% endif %}
                   {% if facture.getRelanceCommentaire() %}
                     {% if(facture.numeroFacture and facture.isEditable) %}

@@ -26,6 +26,8 @@
         <span class="glyphicon glyphicon-print"></span>&nbsp;{% if(paiement.isRemiseEspece) %}Espèce{% else %}{{ paiement.nbPaiementUniqueParMoyen }} chèq.{% endif %}
       </a>
     {% endif %}
+    <a href="{{ path('paiements_details_export',{ id : paiement.id })}}" class="btn btn-default btn-md"><strong><small>Export pour comptable</small></strong></a>
+
     <a class="btn btn-warning" href="{{ path('paiements_modification', {'id': paiement.id })}}">
       <span class="glyphicon glyphicon-pencil"></span>
     </a>

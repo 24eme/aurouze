@@ -35,7 +35,7 @@ class DevisMobileType extends AbstractType
     {
         $devisId = $builder->getData()->getId();
         $builder->add('commentaireTechnicien', TextareaType::class, [
-                    'label' => 'Commentaire technicien:',
+                    'label' => 'Information technicien:',
                     'required' => false,
                     "attr" => array("class" => " phoenix", "rows" => 5)
                 ]);
@@ -45,7 +45,7 @@ class DevisMobileType extends AbstractType
          $defaultNomResp = $builder->getData()->getNomTransmission();
 
         $builder->add('emailTransmission', EmailType::class, array(
-          'label' => 'Email :',
+          'label' => 'Email:',
           'required' => false,
           'data' => $defaultEmail,
           'attr' => array('class' => " phoenix","placeholder" => 'Email de transmission')));

@@ -14,7 +14,7 @@
 {% endif %}
 <div class="reloadWarning ui-bar ui-bar-b" style="display:none;">
 	<h3>Votre tournée a été modifiée. Il est préférable de la recharger.&nbsp;
-      <a onclick="window.location.reload()" class="ui-btn ui-icon-back ui-btn-icon-left" data-role="button" data-mini="true" >
+      <a onclick="window.location.reload()" class="ui-btn ui-btn-right ui-icon-back ui-btn-icon-left" data-role="button" data-mini="true" >
         &nbsp;Recharger
       </a>
   </h3>
@@ -49,6 +49,11 @@
         <span class="text-muted">Aucune</span>
     {% endif %}
     </p>
+    {% if planifiable.rendezvous.prerequis %}
+        <p style="color: #ff4136">
+            À noter : {{ planifiable.rendezvous.prerequis | nl2br }}
+        </p>
+    {% endif %}
     {% if planifiable.etablissementInfos.telephoneFixe or planifiable.etablissementInfos.telephonePortable %}
         {% if planifiable.etablissementInfos.telephoneFixe %}<i class="mdi mdi-call mdi-lg"></i>&nbsp;<a href="tel:{{ planifiable.etablissementInfos.telephoneFixe }}">{{ planifiable.etablissementInfos.telephoneFixe }}</a>{% endif %}
         {% if planifiable.etablissementInfos.telephonePortable %}<a href="tel:{{ planifiable.etablissementInfos.telephonePortable }}">{{ planifiable.etablissementInfos.telephonePortable }}</a>{% endif %}

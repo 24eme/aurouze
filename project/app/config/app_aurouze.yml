@@ -1,5 +1,7 @@
 parameters:
     secteurs: true
-    calendar_extra: false
+    calendar_extra: true
     certification_bois: false
     date_facturation: null
+    code_comptable_auto: true
+    code_comptable_particulier: "2PART"

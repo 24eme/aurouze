@@ -3,6 +3,7 @@
 # http://symfony.com/doc/current/best_practices/configuration.html#infrastructure-related-configuration
 parameters:
     instanceapp: null
+    instanceenv: prod
     database_host: 127.0.0.1
     database_port: 27017
     database_name: aurouze
@@ -27,7 +28,7 @@ parameters:
     knp_snappy_pdfbinary: xvfb-run wkhtmltopdf
     knp_snappy_imagebinary: xvfb-run wkhtmltoimage
     email_footer: |-
-
+    email_footer_SEINE_ET_MARNE: |-
     banque:
         creditorId: 'XXXXXXXXXXX'
         creditorName: 'ETABLISSEMENTS XXXX XXXXXXXXX'
@@ -49,8 +50,13 @@ parameters:
         email : "emailTransmission@dns.fr"
         nom : 'Nom du mail'
         numero : '00000000'
-        replyemail : "emailReplyTransmission@dns.fr"
+        reply_email : "emailReplyTransmission@dns.fr"
     commercial_seine_et_marne: "nom_commercial"
+    contrat_seine_et_marne:
+        adresse_libelle: ''
+        adresse_adresse: ''
+        adresse_cp: ''
+        adresse_commune: ''
     facture:
         emetteur:
             nom: ""

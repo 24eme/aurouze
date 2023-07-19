@@ -154,20 +154,22 @@ class FactureRepository extends DocumentRepository {
         return $q;
     }
 
-    public function findFactureRetardDePaiement($dateFactureBasse = null, $dateFactureHaute = null, $nbRelance = null, $societe = null, $commerciaux = null){
+    public function findFactureRetardDePaiement($dateFactureBasse = null, $dateFactureHaute = null, $nbRelance = null, $societe = null, $commerciaux = null, $dateMois = null){
       $today = new \DateTime();
-      if ($dateFactureHaute && $dateFactureHaute instanceof \DateTime) {
-          $dateFactureHaute->modify('+1 day');
-      }
-
       // Factures
       $qF = $this->makeBaseFactureRetardDePaiement($nbRelance, $societe);
       $qF->field('dateLimitePaiement')->lte($today);
       if($dateFactureBasse){
-        $qF->field('dateFacturation')->gte($dateFactureBasse);
+        $qF->field('dateLimitePaiement')->gte($dateFactureBasse);
       }
       if($dateFactureHaute){
-        $qF->field('dateFacturation')->lte($dateFactureHaute);
+        $qF->field('dateLimitePaiement')->lte($dateFactureHaute);
+      }
+      if($dateMois){
+        $datePlusOnemonth = clone $dateMois;
+        $datePlusOnemonth = $datePlusOnemonth->modify("+1 month -2 hours");
+        $qF->field('dateFacturation')->gte($dateMois->modify("+2 hours"));
+        $qF->field('dateFacturation')->lte($datePlusOnemonth);
       }
       $resultsFacture = $qF->getQuery()->execute();
 
@@ -175,15 +177,19 @@ class FactureRepository extends DocumentRepository {
       $qD = $this->makeBaseFactureRetardDePaiement($nbRelance, $societe);
       $qD->field('numeroDevis')->notEqual(null);
       if($dateFactureBasse){
-        $qD->field('dateFacturation')->gte($dateFactureBasse);
+        $qD->field('dateLimitePaiement')->gte($dateFactureBasse);
       }
       if($dateFactureHaute){
-        $qD->field('dateFacturation')->lte($dateFactureHaute);
+        $qD->field('dateLimitePaiement')->lte($dateFactureHaute);
       }
       if (!$dateFactureHaute) {
           $todayDevis = clone $today;
           $todayDevis->modify("-".FactureManager::DEFAUT_FREQUENCE_JOURS." days");
           $qD->field('dateFacturation')->lt($todayDevis);
+      }
+      if($dateMois){
+        $qD->field('dateFacturation')->gte($dateMois);
+        $qD->field('dateFacturation')->lte($datePlusOnemonth);
       }
       $resultsDevis = $qD->getQuery()->execute();
 
@@ -215,13 +221,17 @@ class FactureRepository extends DocumentRepository {
         return $retards;
     }
 
-    public function getMontantFacture($societe) {
+    public function getMontantFacture($societe, $factureIds = null) {
         $command = array();
         $command['aggregate'] = "Facture";
         $command['pipeline'] = array(
             array('$match' => array('societe' => $societe->getId(), "numeroFacture" => array('$ne' => null ))),
             array('$group' => array('_id' => 'somme_montant_facture', 'montantTTC' => array('$sum' => '$montantTTC')))
         );
+        if(!is_null($factureIds)) {
+            $command['pipeline'][0]['$match']['_id'] = array('$in' => $factureIds);
+        }
+
         $db = $this->getDocumentManager()->getDocumentDatabase(\AppBundle\Document\Facture::class);
         $resultat = $db->command($command);
 
@@ -230,6 +240,38 @@ class FactureRepository extends DocumentRepository {
 
     public function findRetardDePaiementBySociete(Societe $societe, $nbJourSeuil = 0){
       return $this->findFactureRetardDePaiement(null, null, null, $societe, null);
+    }
+
+    public function getMontantTropPaye(Societe $societe, $factureIds = null){
+        $command = array();
+        $command['aggregate'] = "Facture";
+        $command['pipeline'] = array(
+            array('$match' => array('societe' => $societe->getId(), 'cloture'=> true, 'montantTTC' => ['$gt' => 0.0])), //cloture == true veut dire qu'il a été payé avec solde
+            array('$group' => array('_id' => 'top','montantAPayer' => array('$sum' => '$montantAPayer')))
+        );
+        if(!is_null($factureIds)) {
+            $command['pipeline'][0]['$match']['_id'] = array('$in' => $factureIds);
+        }
+        $db = $this->getDocumentManager()->getDocumentDatabase(\AppBundle\Document\Facture::class);
+        $resultat = $db->command($command);
+
+        return (isset($resultat['result'][0]))? $resultat['result'][0]['montantAPayer']*-1 : 0;
+    }
+
+
+    public function getMontantFacturePayeeAvecTropPercu(Societe $societe, $factureIds = null){
+        $command = array();
+        $command['aggregate'] = "Facture";
+        $command['pipeline'] = array(
+            array('$match' => array('societe' => $societe->getId(), 'payeeAvecTropPercu' => ['$eq' => true])), //cloture == true veut dire qu'il a été payé avec solde
+            array('$group' => array('_id' => 'somme_montant_paye_avec_solde', 'montantTTC' => array('$sum' => '$montantTTC')))
+        );
+        if(!is_null($factureIds)) {
+            $command['pipeline'][0]['$match']['_id'] = array('$in' => $factureIds);
+        }
+        $db = $this->getDocumentManager()->getDocumentDatabase(\AppBundle\Document\Facture::class);
+        $resultat = $db->command($command);
+        return (isset($resultat['result'][0]))? $resultat['result'][0]['montantTTC'] : 0;
     }
 
 }

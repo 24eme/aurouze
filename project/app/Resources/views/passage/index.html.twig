@@ -24,7 +24,7 @@
                                     {{ morePassages[anneeMois] | localizeddate("medium", "none", null, null, "MMM yyyy") | capitalize }}
                                 {% endif %}
                             {% else %}Plus d'options{% endif %} <span class="caret"></span></a>
-                        <ul id="dropdown-more-date-content" class="dropdown-menu" aria-labelledby="dropdown-more-date">
+                        <ul id="dropdown-more-date-content" class="dropdown-menu" aria-labelledby="dropdown-more-date" style="max-height: 200px;overflow-y: auto;">
                             {% for k,v in morePassages %}
                             <li {% if (k == anneeMois) %}class="active"{% endif %}><a href="{{ path('passage_secteur', {"secteur" : secteur, "periode" : k, "lat" : coordinatesCenter.lat, "lon" : coordinatesCenter.lon, "zoom": coordinatesCenter.zoom }) }}">
                                 {% if k | length == 4 %}
@@ -45,7 +45,6 @@
                     {% endfor %}
                 </ul>
             </div>
-
             {% if secteur %}
                 <div class="col-xs-3 text-right">
                     <div class="btn-group">
@@ -56,7 +55,22 @@
                 </div>
             {% endif %}
         </div>
-
+        <br/>
+        <div class="row">
+        <div class="col-xs-1">
+          <div class="input-group">
+            <div class="input-group-btn">
+              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">{% if frequence %}{{ frequence}} passages {% else %}Fréquence {% endif %}<span class="caret"></span></button>
+              <ul class="dropdown-menu">
+                  <li><a href="{{ path('passage_secteur', {"secteur" : secteur, "periode" : anneeMois, "lat" : coordinatesCenter.lat, "lon" : coordinatesCenter.lon, "zoom": coordinatesCenter.zoom }) }}">Fréquence</a></li>
+              {% for frequence in frequences %}
+                  <li><a href="{{ path('passage_secteur', {"secteur" : secteur, "periode" : anneeMois, "lat" : coordinatesCenter.lat, "lon" : coordinatesCenter.lon, "zoom": coordinatesCenter.zoom, "frequence": frequence }) }}">{{frequence}} passages</a></li>
+              {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+        </div>
         <br/>
         <div class="row">
             <div class="col-xs-12">
@@ -134,8 +148,9 @@
                                                     <span class="label label-xs label-primary">{{ prestation.nomToString }}</span>
                                                 {%endif%}
                                             {% endfor %}
-                                            <span title="{{ passage.libelle }}" class="pull-right badge {% if passage.isGarantie or passage.isControle %} badge-warning {% else %} badge-default {% endif %} {% if passage.mouvementDeclenchable %} badge-inverse {% endif %} btn-xs">{{ passage.getNumeroPassage }}</span>
-
+                                            {% if passage.getNumeroPassage %}
+                                                <span title="{{ passage.libelle }}" class="pull-right badge {% if passage.isGarantie or passage.isControle %} badge-warning {% else %} badge-default {% endif %} {% if passage.mouvementDeclenchable %} badge-inverse {% endif %} btn-xs">{{ passage.getNumeroPassage }} /{{ passage.contrat.getNbPassages }} </span>
+                                            {% endif %}
                                             {% if passage.audit %}
                                                 <span class="pull-right mdi mdi-person text-danger" data-toggle="tooltip" data-placement="top" title="Audit {{ passage.audit }}"></span>
                                             {% endif %}

@@ -7,16 +7,27 @@ use AppBundle\Document\RendezVous;
 
 class RendezVousRepository extends DocumentRepository
 {
-    public function findByDateAndParticipant($startDate, $endDate, $participant) {
+    public function findByDateAndParticipant($startDate, $endDate, $participant, $libre = null) {
+
         $mongoStartDate = new \MongoDate(strtotime($startDate." 00:00:00"));
         $mongoEndDate = new \MongoDate(strtotime($endDate." 00:00:00"));
 
         $query = $this->createQueryBuilder('RendezVous');
-        $query->addOr($query->expr()->field('dateDebut')->gte($mongoStartDate)->field('dateDebut')->lte($mongoEndDate));
-        $query->addOr($query->expr()->field('dateFin')->gte($mongoStartDate));
-        $query->field('participants')->equals($participant->getId())
-                ->sort('dateDebut', 'asc');
 
+        $query->addOr(
+                $query->expr()
+                              ->addAnd($query->expr()->field('dateDebut')->gte($mongoStartDate))
+                              ->addAnd($query->expr()->field('dateDebut')->lte($mongoEndDate))
+                              ->addAnd($query->expr()->field('dateFin')->gte($mongoStartDate))
+        );
+        $query->field('participants')->equals($participant->getId());
+
+        if($libre){
+            $query->field('passage')->equals(null);
+            $query->sort('dateDebut', 'desc');
+        }else{
+            $query->sort('dateDebut', 'asc');
+        }
         return $query->getQuery()->execute();
     }
 
@@ -37,21 +48,30 @@ class RendezVousRepository extends DocumentRepository
               ->addOr(
                 $query->expr()->addAnd($query->expr()->field('dateDebut')->lte($mongoStartDate))
                               ->addAnd($query->expr()->field('dateFin')->gte($mongoEndDate)));
+
         $query->field('participants')->equals($participant->getId())
                 ->sort('dateDebut', 'asc');
 
         return $query->getQuery()->execute();
     }
 
-    public function findByDate($startDate, $endDate) {
+    public function findByDate($startDate, $endDate, $libre = null) {
         $mongoStartDate = new \MongoDate(strtotime($startDate." 00:00:00"));
         $mongoEndDate = new \MongoDate(strtotime($endDate." 00:00:00"));
 
         $query = $this->createQueryBuilder('RendezVous');
-        $query->addOr($query->expr()->field('dateDebut')->gte($mongoStartDate)->field('dateDebut')->lte($mongoEndDate));
-        $query->addOr($query->expr()->field('dateFin')->gte($mongoStartDate));
-        $query->sort('dateDebut', 'asc');
+        $query->addOr(
+            $query->expr()->addAnd($query->expr()->field('dateDebut')->gte($mongoStartDate))
+                          ->addAnd($query->expr()->field('dateDebut')->lte($mongoEndDate))
+                          ->addAnd($query->expr()->field('dateFin')->gte($mongoStartDate))
+        );
 
+        if($libre){
+            $query->field('passage')->equals(null);
+            $query->sort('dateDebut', 'desc');
+        }else{
+            $query->sort('dateDebut', 'asc');
+        }
         return $query->getQuery()->execute();
     }
 }

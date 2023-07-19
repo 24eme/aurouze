@@ -439,15 +439,14 @@ class ContratController extends Controller {
             }
         }
 
-        $lastPassages = $this->get('contrat.manager')->getPassagesByNumeroArchiveContrat($contrat, true);
-        $lastEmailTransmission = null;
-        foreach ($lastPassages as $etab => $ps) {
+        $lastPassageRealise = null;
+        foreach ($this->get('contrat.manager')->getPassagesByNumeroArchiveContrat($contrat, true) as $etab => $ps) {
             foreach ($ps as $p) {
-                if ($p->getEmailTransmission()) { $lastEmailTransmission = $p->getEmailTransmission(); break; }
+                if ($p->isRealise()) { $lastPassageRealise = $p; break; }
             }
         }
 
-        return $this->render('contrat/visualisation.html.twig', array('contrat' => $contrat, 'factures' => $factures, 'societe' => $contrat->getSociete(), 'recapProduits' => $recapProduits, 'lastEmailTransmission' => $lastEmailTransmission));
+        return $this->render('contrat/visualisation.html.twig', array('contrat' => $contrat, 'factures' => $factures, 'societe' => $contrat->getSociete(), 'recapProduits' => $recapProduits, 'lastPassageRealise' => $lastPassageRealise));
     }
 
     /**
@@ -457,8 +456,11 @@ class ContratController extends Controller {
     public function markdownAction(Request $request, Contrat $contrat) {
         $dm = $this->get('doctrine_mongodb')->getManager();
         $cm = $this->get('contrat.manager');
+
+        $contratConfSeineEtMarne = $this->container->getParameter('contrat_seine_et_marne') ? $this->container->getParameter('contrat_seine_et_marne') : null;
+
         if (!$contrat->getMarkdown()) {
-            $contrat->setMarkdown($this->renderView('contrat/contrat.markdown.twig', array('contrat' => $contrat, 'societe' => $contrat->getSociete(), 'contratManager' => $cm)));
+            $contrat->setMarkdown($this->renderView('contrat/contrat.markdown.twig', array('contrat' => $contrat, 'societe' => $contrat->getSociete(), 'contratManager' => $cm, 'enteteSeineEtMarne' => $contratConfSeineEtMarne)));
             $dm->persist($contrat);
             $dm->flush();
         }
@@ -476,14 +478,14 @@ class ContratController extends Controller {
         }
 
         $formGenerator = $this->createForm(new ContratGeneratorType(), $contrat, array(
-            'action' => $this->generateUrl('contrat_markdown', array('id' => $contrat->getId())),
+            'action' => $this->generateUrl('contrat_markdown', array('id' => $contrat->getId(),'enteteSeineEtMarne' => $contratConfSeineEtMarne)),
             'method' => 'POST',
         ));
 
         $formGenerator->handleRequest($request);
         if ($formGenerator->isSubmitted() && $formGenerator->isValid()) {
             $contrat = $formGenerator->getData();
-            $contrat->setMarkdown($this->renderView('contrat/contrat.markdown.twig', array('contrat' => $contrat, 'contratManager' => $cm)));
+            $contrat->setMarkdown($this->renderView('contrat/contrat.markdown.twig', array('contrat' => $contrat, 'contratManager' => $cm, 'enteteSeineEtMarne' => $contratConfSeineEtMarne)));
             $dm->persist($contrat);
             $dm->flush();
         }
@@ -518,7 +520,23 @@ class ContratController extends Controller {
      */
     public function generationMouvementAction(Request $request, Contrat $contrat) {
         $dm = $this->get('doctrine_mongodb')->getManager();
-        $contrat->generateMouvement();
+        $passagesContrat = $contrat->getContratPassages();
+        $firstPassageFacturable = null;
+
+        foreach ($passagesContrat as $etablissementId => $passagesEtablissement) {
+            if(!count($passagesEtablissement->getPassages())){
+                break;
+            }
+            foreach($passagesEtablissement->getPassages() as $passage){
+                if($passage->getMouvementDeclenchable() && !$passage->getMouvementDeclenche()){
+                    $firstPassageFacturable = $passage;
+                    $firstPassageFacturable->setMouvementDeclenche(true);
+                    break;
+                }
+            }
+        }
+        $contrat->generateMouvement($firstPassageFacturable);
+        $dm->persist($firstPassageFacturable);
         $dm->persist($contrat);
         $dm->flush();
 
@@ -532,9 +550,10 @@ class ContratController extends Controller {
     public function pdfAction(Request $request, Contrat $contrat) {
         $dm = $this->get('doctrine_mongodb')->getManager();
         $cm = $this->get('contrat.manager');
+        $contratConfSeineEtMarne = $this->container->getParameter('contrat_seine_et_marne') ? $this->container->getParameter('contrat_seine_et_marne') : null;
 
         if (in_array($contrat->getStatut(), [ContratManager::STATUT_BROUILLON, ContratManager::STATUT_EN_ATTENTE_ACCEPTATION])) {
-            $contrat->setMarkdown($this->renderView('contrat/contrat.markdown.twig', array('contrat' => $contrat, 'contratManager' => $cm)));
+            $contrat->setMarkdown($this->renderView('contrat/contrat.markdown.twig', array('contrat' => $contrat, 'contratManager' => $cm, 'enteteSeineEtMarne' => $contratConfSeineEtMarne)));
             $dm->persist($contrat);
             $dm->flush();
         }
@@ -701,6 +720,7 @@ class ContratController extends Controller {
      * @Route("/contrats-reconduction", name="contrats_reconduction_massive")
      */
     public function reconductionMassiveAction(Request $request) {
+        set_time_limit(120);
         $dm = $this->get('doctrine_mongodb')->getManager();
         $cm = $this->get('contrat.manager');
 

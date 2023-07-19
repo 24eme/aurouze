@@ -1,6 +1,6 @@
 Bonjour,
 
-Je me permets de vous solliciter par mail, car sauf erreur de notre part, notre mail du {{ factureEnRetard.getRelanceObjNumero(1).dateRelance | localizeddate("medium", "none", null, null,  "dd/MM/yyyy") }} est resté sans réponse de votre part, la facture n°{{ facture.getNumeroFacture()}} d'un montant de {{ facture.getMontantTTC() }} € du {{ facture.getDateFacturation().format('d/m/Y') }} reste impayée dans nos comptes à ce jour.
+Je me permets de vous solliciter par mail, car sauf erreur de notre part, notre mail du {{ facture.getRelanceObjNumero(1).dateRelance | localizeddate("medium", "none", null, null,  "dd/MM/yyyy") }} est resté sans réponse de votre part, la facture n°{{ facture.getNumeroFacture()}} d'un montant de {{ facture.getMontantTTC() }} € du {{ facture.getDateFacturation().format('d/m/Y') }} reste impayée dans nos comptes à ce jour.
 
 Je vous remercie de nous faire parvenir votre règlement de {{ facture.getMontantTTC() }} € avant le  {{ dateLimite }}.
 

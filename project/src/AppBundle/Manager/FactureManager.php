@@ -158,16 +158,6 @@ public static $export_factures_en_retards = array(
         return $this->getRepository()->findBy(array('societe' => $societe->getId()), array('dateEmission' => 'desc'));
     }
 
-    public function hasDevisSociete(Societe $societe) {
-        $factures = $this->findBySociete($societe);
-        foreach ($factures as $facture) {
-          if($facture->isDevis()){
-            return true;
-          }
-        }
-        return false;
-    }
-
     public function createVierge(Societe $societe) {
         $facture = new Facture();
         $facture->setSociete($societe);
@@ -253,11 +243,23 @@ public static $export_factures_en_retards = array(
         return $this->mm->getMouvements(true, false);
     }
 
-    public function getSolde(Societe $societe) {
-        $montantFacure = $this->getRepository()->getMontantFacture($societe);
-        $montantPaye = $this->dm->getRepository('AppBundle:Paiements')->getMontantPaye($societe);
+    public function getSolde(Societe $societe, $factureIds = null) {
 
-        return round($montantPaye - $montantFacure,2);
+        return round($this->getTotalPaye($societe, $factureIds) - $this->getTotalFacture($societe, $factureIds),2);
+    }
+
+    public function getTotalFacture(Societe $societe, $factureIds = null) {
+
+        return round($this->getRepository()->getMontantFacture($societe, $factureIds), 2);
+    }
+
+    public function getTotalPaye(Societe $societe, $factureIds = null) {
+
+        return round($this->dm->getRepository('AppBundle:Paiements')->getMontantPaye($societe, $factureIds), 2);
+    }
+
+    public function getResteTropPercu(Societe $societe, $factureIds = null){
+        return ($this->dm->getRepository('AppBundle:Facture')->getMontantTropPaye($societe, $factureIds)) - (round($this->dm->getRepository('AppBundle:Facture')->getMontantFacturePayeeAvecTropPercu($societe, $factureIds),2));
     }
 
     public function getStatsForCsv($dateDebut = null, $dateFin = null, $commercialFiltre = null){
@@ -621,9 +623,13 @@ public static $export_factures_en_retards = array(
 
     public function buildFactureSocieteLigne($facture){
       $factureLigne = array();
+      $credit = 0;
       foreach ($facture->getPaiements() as $paiements) {
             foreach ($paiements->getPaiement() as $paiement) {
             if ($paiement->getFacture()->getId() == $facture->getId()) {
+              if($paiement->getMontant()){
+                    $credit += $paiement->getMontant();
+              }
               $factureLigne[self::EXPORT_SOCIETE_DATE] = $facture->getDateFacturation()->format('d/m/Y');
               $factureLigne[self::EXPORT_SOCIETE_PIECE] =  $facture->getNumeroFacture();
               if($facture->isAvoir()){
@@ -636,12 +642,14 @@ public static $export_factures_en_retards = array(
               }
               $factureLigne[self::EXPORT_SOCIETE_ECHEANCE] =  $facture->getDateLimitePaiement()->format('d/m/Y');
               $factureLigne[self::EXPORT_SOCIETE_DEBIT] =  number_format($facture->getMontantTTC(), 2, ",", "");
-              $factureLigne[self::EXPORT_SOCIETE_CREDIT] =  ($facture->isAvoir())? number_format($facture->getMontantTTC() , 2, ",", "") : number_format($paiement->getMontant() , 2, ",", "");
+              $factureLigne[self::EXPORT_SOCIETE_CREDIT] =  ($facture->isAvoir())? number_format($facture->getMontantTTC() , 2, ",", "") : number_format($credit , 2, ",", "");
               if($facture->isAvoir() && $facture->getAvoirPartielRemboursementCheque()){
                 $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] =  $paiement->getMoyenPaiementLibelle();
               }else{
                 $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] =  $paiement->getMoyenPaiementLibelle();
               }
+
+              $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] .= "\n(".$paiement->getDatePaiement()->format('d/m/Y').')';
             }
           }
         }

@@ -49,6 +49,8 @@
         $.initMapForAdresse();
         $.initHighLight();
         $.initFacture();
+        $.initPassageOpen();
+        $.initDatePickerMonthDate();
     });
 
     $.initClickInputAddon = function(){
@@ -342,6 +344,9 @@
     $.initRdvLink = function () {
         $('.rdv-deplanifier-link').click(function (e) {
             e.preventDefault();
+            if(!confirm('Êtes vous sûr de vouloir supprimer ce rendez-vous ?')) {
+                return false;
+            }
             var link = $(this).attr('href');
             $.post(link, function (data) {
                 document.location.reload();
@@ -406,6 +411,18 @@
 
     $.initDatePicker = function () {
         $('.datepicker').datepicker({autoclose: true, todayHighlight: true, toggleActive: true, language: "fr"});
+    }
+
+    $.initDatePickerMonthDate = function () {
+        $(".datepickermonthyear").datepicker( {
+            autoclose: true,
+            todayHighlight: true,
+            toggleActive: true,
+            language: "fr",
+            format: "mm/yyyy",
+            viewMode: "months",
+            minViewMode: "months",
+        });
     }
 
     $.initPeriodePicker = function () {
@@ -1002,7 +1019,11 @@
               map.on('moveend', function(){
                 var center = map.getCenter();
                 var hash = window.location.hash;
-                history.pushState(null, null, "?lat="+center.lat+"&lon="+center.lng+"&zoom="+ map.getZoom()+hash);
+
+                var parameters = new URLSearchParams(window.location.search);
+                var passage = parameters.get("id_passage");
+
+                history.pushState(null, null, "?lat="+center.lat+"&lon="+center.lng+"&zoom="+ map.getZoom()+"&id_passage="+passage+hash);
                 refreshListFromMapBounds();
               });
             }
@@ -1086,7 +1107,24 @@
         }
         $(this).css("border-color","black");
         $(this).addClass("clicked-div");
+
+        var hash = window.location.hash;
+        var parameters = new URLSearchParams(window.location.search);
+        var new_parameters = "?id_passage="+this.id+hash;
+        var frequence = parameters.get("frequence");
+        if(frequence){
+          new_parameters+="&frequence="+frequence;
+        }
+        history.pushState(null, null,new_parameters);
       });
+    }
+
+    $.initPassageOpen = function(){
+      var parameters = new URLSearchParams(window.location.search);
+      var passage = parameters.get("id_passage");
+      if(passage){
+        $(document.getElementById(passage)).trigger('click');
+      }
     }
 
     $.initTourneeDatepicker = function () {
@@ -1450,3 +1488,18 @@
     }
 }
 )(jQuery);
+
+$(document).on('DOMSubtreeModified', function() {
+    var elementsSelect2 = $('[id^="select2-"][id$="-container"]');
+    elementsSelect2.each(function() {
+        var element = $(this);
+        if(!element.parent().parent().parent().prev().prop('required')){
+            return true;
+        }
+        if(element.attr('title') === '' || !element.attr('title')){
+            element.parent().css("border-color",'#dc3545');
+        }else{
+            element.parent().css("border-color",'');
+        }
+    });
+});
