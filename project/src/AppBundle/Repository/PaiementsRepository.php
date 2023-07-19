@@ -26,7 +26,7 @@ class PaiementsRepository extends DocumentRepository {
                         ->execute();
     }
 
-    public function getMontantPaye($societe) {
+    public function getMontantPaye($societe, $factureIds = null) {
       $command = array();
       $command['aggregate'] = "Paiements";
       $command['pipeline'] = array(
@@ -34,6 +34,9 @@ class PaiementsRepository extends DocumentRepository {
           array('$match' => array('paiement.societe' => $societe->getId(), 'paiement.typeReglement' => ['$ne' => 'REGULARISATION_AVOIR'])),
           array('$group' => array('_id' => 'somme_montant_paye', 'montant' => array('$sum' => '$paiement.montant')))
       );
+      if(!is_null($factureIds)) {
+          $command['pipeline'][1]['$match']['paiement.facture'] = array('$in' => $factureIds);
+      }
       $db = $this->getDocumentManager()->getDocumentDatabase(\AppBundle\Document\Paiements::class);
       $resultat = $db->command($command);
       return (isset($resultat['result'][0]))? $resultat['result'][0]['montant'] : 0;

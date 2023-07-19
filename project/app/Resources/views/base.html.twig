@@ -4,27 +4,27 @@
         <meta charset="{{ _charset }}">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="shortcut icon" type="image/ico" href="/favicon_{{ instanceapp }}.ico?v=20190528" sizes="32x32" >
-        <link rel="shortcut icon" type="image/png" href="/favicon_{{ instanceapp }}.png?v=20190528" sizes="32x32" >
-        <link rel="apple-touch-icon" sizes="129x129" href="/apple-touch-icon_{{ instanceapp }}.png?v=20170331">
-        <link rel="icon" type="image/png" href="/favicon192x192_{{ instanceapp }}.png?v=20190528" sizes="192x192">
+        <link rel="shortcut icon" type="image/ico" href="/favicon_{{ instanceapp }}.ico?{{ commitref }}" sizes="32x32" >
+        <link rel="shortcut icon" type="image/png" href="/favicon_{{ instanceapp }}.png?{{ commitref }}" sizes="32x32" >
+        <link rel="apple-touch-icon" sizes="129x129" href="/apple-touch-icon_{{ instanceapp }}.png?{{ commitref }}">
+        <link rel="icon" type="image/png" href="/favicon192x192_{{ instanceapp }}.png?{{ commitref }}" sizes="192x192">
 
         <title>{% block title %}{{ application.shortname }}{% endblock title %}</title>
 
-        <link rel="stylesheet" href="{{ asset('/component/bootstrap/css/bootstrap.min.css') }}" />
-        <link rel="stylesheet" href="{{ asset('/component/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css') }}" />
-        <link rel="stylesheet" href="{{ asset('/component/bootstrap-timepicker/css/bootstrap-timepicker.css') }}" />
-        <link rel="stylesheet" href="{{ asset('/component/bootstrap-switch/css/bootstrap-switch.min.css') }}" />
-        <link rel="stylesheet" href="{{ asset('/component/fullcalendar/css/fullcalendar.min.css') }}" />
-        <link rel="stylesheet" href="{{ asset('/component/select2/css/select2.min.css') }}" />
-        <link rel="stylesheet" href="{{ asset('/component/select2/css/select2-bootstrap.min.css') }}" />
-        <link rel="stylesheet" href="{{ asset('/component/mervick/material-design-icons/css/material-icons.css') }}">
-        <link rel="stylesheet" href="{{ asset('/component/leaflet/leaflet.css') }}">
-        <link rel="stylesheet" href="{{ asset('/component/aurouze/aurouze.css') }}">
-        <link rel="stylesheet" href="{{ asset('/component/leaflet-extra-markers/css/leaflet.extra-markers.css') }}">
-        <link rel="stylesheet" media="print" href="{{ asset('/component/fullcalendar/css/fullcalendar.print.css') }}" />
-        <link rel="stylesheet" href="{{ asset('/css/main.css') }}?date=202301240931" />
-        <link rel="stylesheet" media="print" href="{{ asset('/css/print.css') }}?date=20160622" />
+        <link rel="stylesheet" href="{{ asset('/component/bootstrap/css/bootstrap.min.css') }}?{{ commitref }}" />
+        <link rel="stylesheet" href="{{ asset('/component/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css') }}?{{ commitref }}" />
+        <link rel="stylesheet" href="{{ asset('/component/bootstrap-timepicker/css/bootstrap-timepicker.css') }}?{{ commitref }}" />
+        <link rel="stylesheet" href="{{ asset('/component/bootstrap-switch/css/bootstrap-switch.min.css') }}?{{ commitref }}" />
+        <link rel="stylesheet" href="{{ asset('/component/fullcalendar/css/fullcalendar.min.css') }}?{{ commitref }}" />
+        <link rel="stylesheet" href="{{ asset('/component/select2/css/select2.min.css') }}?{{ commitref }}" />
+        <link rel="stylesheet" href="{{ asset('/component/select2/css/select2-bootstrap.min.css') }}?{{ commitref }}" />
+        <link rel="stylesheet" href="{{ asset('/component/mervick/material-design-icons/css/material-icons.css') }}?{{ commitref }}">
+        <link rel="stylesheet" href="{{ asset('/component/leaflet/leaflet.css') }}?{{ commitref }}">
+        <link rel="stylesheet" href="{{ asset('/component/aurouze/aurouze.css') }}?{{ commitref }}">
+        <link rel="stylesheet" href="{{ asset('/component/leaflet-extra-markers/css/leaflet.extra-markers.css') }}?{{ commitref }}">
+        <link rel="stylesheet" media="print" href="{{ asset('/component/fullcalendar/css/fullcalendar.print.css') }}?{{ commitref }}" />
+        <link rel="stylesheet" href="{{ asset('/css/main.css') }}?{{ commitref }}" />
+        <link rel="stylesheet" media="print" href="{{ asset('/css/print.css') }}?{{ commitref }}" />
 
         {% block stylesheets %}{% endblock %}
     </head>
@@ -102,34 +102,37 @@
         </nav>
 
         <div class="container">
+            {% if instanceenv == "preprod" %}
+            <div><p style="color:red; text-align:center; font-weight: bold;">Preproduction (la base est succeptible d'être supprimée à tout moment)</p></div>
+            {% endif %}
             {% block body %}{% endblock %}
         </div>
 
         <div class="modal" id="modal-calendrier-infos" tabindex="-1" role="dialog"></div>
-        <script type="text/javascript" src="{{ asset('/component/jquery/js/jquery.min.js') }}"></script>
-        <script type="text/javascript" src="{{ asset('/component/jquery-ui/js/jquery-ui.min.js') }}"></script>
-        <script type="text/javascript" src="{{ asset('/component/bootstrap/js/bootstrap.min.js') }}"></script>
-        <script type="text/javascript" src="{{ asset('/component/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
-        <script type="text/javascript" src="{{ asset('/component/bootstrap-datepicker/dist/locales/bootstrap-datepicker.fr.min.js') }}"></script>
-        <script type="text/javascript" src="{{ asset('/component/bootstrap-switch/js/bootstrap-switch.min.js') }}"></script>
-        <script type="text/javascript" src="{{ asset('/component/bootstrap-timepicker/js/bootstrap-timepicker.js') }}"></script>
-        <script type="text/javascript" src="{{ asset('/component/moment/js/moment.min.js') }}"></script>
-        <script type="text/javascript" src="{{ asset('/component/fullcalendar/js/fullcalendar.min.js') }}"></script>
-        <script type="text/javascript" src="{{ asset('/component/fullcalendar/js/fullcalendar-languages.js') }}"></script>
-        <script type="text/javascript" src="{{ asset('/component/select2/js/select2.min.js') }}"></script>
-        <script type="text/javascript" src="{{ asset('/component/select2/js/i18n/fr.js') }}"></script>
-        <script type="text/javascript" src="{{ asset('/component/leaflet/leaflet.js') }}"></script>
-        <script type="text/javascript" src="{{ asset('/component/leaflet-extra-markers/js/leaflet.extra-markers.js') }}"></script>
-        <script type="text/javascript" src="{{ asset('/component/typeahead/typeahead.bundle.min.js?date=201712111731') }}"></script>
+        <script type="text/javascript" src="{{ asset('/component/jquery/js/jquery.min.js') }}?{{ commitref }}"></script>
+        <script type="text/javascript" src="{{ asset('/component/jquery-ui/js/jquery-ui.min.js') }}?{{ commitref }}"></script>
+        <script type="text/javascript" src="{{ asset('/component/bootstrap/js/bootstrap.min.js') }}?{{ commitref }}"></script>
+        <script type="text/javascript" src="{{ asset('/component/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}?{{ commitref }}"></script>
+        <script type="text/javascript" src="{{ asset('/component/bootstrap-datepicker/dist/locales/bootstrap-datepicker.fr.min.js') }}?{{ commitref }}"></script>
+        <script type="text/javascript" src="{{ asset('/component/bootstrap-switch/js/bootstrap-switch.min.js') }}?{{ commitref }}"></script>
+        <script type="text/javascript" src="{{ asset('/component/bootstrap-timepicker/js/bootstrap-timepicker.js') }}?{{ commitref }}"></script>
+        <script type="text/javascript" src="{{ asset('/component/moment/js/moment.min.js') }}?{{ commitref }}"></script>
+        <script type="text/javascript" src="{{ asset('/component/fullcalendar/js/fullcalendar.min.js') }}?{{ commitref }}"></script>
+        <script type="text/javascript" src="{{ asset('/component/fullcalendar/js/fullcalendar-languages.js') }}?{{ commitref }}"></script>
+        <script type="text/javascript" src="{{ asset('/component/select2/js/select2.min.js') }}?{{ commitref }}"></script>
+        <script type="text/javascript" src="{{ asset('/component/select2/js/i18n/fr.js') }}?{{ commitref }}"></script>
+        <script type="text/javascript" src="{{ asset('/component/leaflet/leaflet.js') }}?{{ commitref }}"></script>
+        <script type="text/javascript" src="{{ asset('/component/leaflet-extra-markers/js/leaflet.extra-markers.js') }}?{{ commitref }}"></script>
+        <script type="text/javascript" src="{{ asset('/component/typeahead/typeahead.bundle.min.js') }}?{{ commitref }}"></script>
 		<script>
             var params = params || {};
             $.extend(params, {
             	calendarExtra: '{{ calendar_extra }}'
             });
         </script>
-        <script type="text/javascript" src="{{ asset('/js/functions.js') }}"></script>
-        <script type="text/javascript" src="{{ asset('/js/calendar-settings.js?date=201904301219') }}"></script>
-        <script type="text/javascript" src="{{ asset('/js/main.js?date=202304281215') }}"></script>
+        <script type="text/javascript" src="{{ asset('/js/functions.js') }}?{{ commitref }}"></script>
+        <script type="text/javascript" src="{{ asset('/js/calendar-settings.js') }}?{{ commitref }}"></script>
+        <script type="text/javascript" src="{{ asset('/js/main.js') }}?{{ commitref }}"></script>
 
         {% block javascripts %}{% endblock %}
 

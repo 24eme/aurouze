@@ -1207,6 +1207,14 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
         return $this->etablissements;
     }
 
+    public function getEtablissementIds() {
+        $ids = array();
+        foreach($this->getEtablissements() as $etablissement) {
+            $ids[] = $etablissement->getId();
+        }
+        return $ids;
+    }
+
     /**
      * Set technicien
      *

@@ -3,20 +3,20 @@
         <meta charset="{{ _charset }}">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="shortcut icon" type="image/ico" href="/favicon_{{ instanceapp }}.ico?v=20190528" sizes="32x32" >
-        <link rel="shortcut icon" type="image/png" href="/favicon_{{ instanceapp }}.png?v=20190528" sizes="32x32" >
-        <link rel="apple-touch-icon" sizes="129x129" href="/apple-touch-icon_{{ instanceapp }}.png?v=20170331">
-        <link rel="icon" type="image/png" href="/favicon192x192_{{ instanceapp }}.png?v=20190528" sizes="192x192">
+        <link rel="shortcut icon" type="image/ico" href="/favicon_{{ instanceapp }}.ico?{{ commitref }}" sizes="32x32" >
+        <link rel="shortcut icon" type="image/png" href="/favicon_{{ instanceapp }}.png?{{ commitref }}" sizes="32x32" >
+        <link rel="apple-touch-icon" sizes="129x129" href="/apple-touch-icon_{{ instanceapp }}.png?{{ commitref }}">
+        <link rel="icon" type="image/png" href="/favicon192x192_{{ instanceapp }}.png?{{ commitref }}" sizes="192x192">
         <title>{% block title %}{{ application.shortname }}{% endblock title %}</title>
 
-        <link rel="stylesheet" href="{{ asset('/mobile/css/jquery.mobile-1.4.5.min.css?20170316') }}">
-        <link rel="stylesheet" href="{{ asset('/component/aurouze/aurouze.css?20170316') }}">
-        <link rel="stylesheet" href="{{ asset('/component/mervick/material-design-icons/css/material-icons.css') }}">
-        <link rel="stylesheet" href="{{ asset('/css/main.css?20170316') }}" />
-        <link rel="stylesheet" href="{{ asset('/mobile/css/mobile.css?20170316') }}">
-        <link rel="stylesheet" href="{{ asset('/mobile/css/jquery.mobile.datepicker.css?20170316') }}" />
-        <link rel="stylesheet" href="{{ asset('/mobile/css/jquery.mobile.datepicker.theme.css?20170316') }}" />
-        <link rel="stylesheet" media="print" href="{{ asset('/css/print.css?20170316') }}" />
+        <link rel="stylesheet" href="{{ asset('/mobile/css/jquery.mobile-1.4.5.min.css') }}?{{ commitref }}">
+        <link rel="stylesheet" href="{{ asset('/component/aurouze/aurouze.css') }}?{{ commitref }}">
+        <link rel="stylesheet" href="{{ asset('/component/mervick/material-design-icons/css/material-icons.css') }}?{{ commitref }}">
+        <link rel="stylesheet" href="{{ asset('/css/main.css') }}?{{ commitref }}" />
+        <link rel="stylesheet" href="{{ asset('/mobile/css/mobile.css') }}?{{ commitref }}">
+        <link rel="stylesheet" href="{{ asset('/mobile/css/jquery.mobile.datepicker.css') }}?{{ commitref }}" />
+        <link rel="stylesheet" href="{{ asset('/mobile/css/jquery.mobile.datepicker.theme.css') }}?{{ commitref }}" />
+        <link rel="stylesheet" media="print" href="{{ asset('/css/print.css') }}?{{ commitref }}" />
 
         {% block stylesheets %}{% endblock %}
     </head>
@@ -41,15 +41,15 @@
 
         {% block javascripts %}{% endblock %}
 
-        <script type="text/javascript" src="{{ asset('/component/jquery/js/jquery.js') }}"></script>
-        <script type="text/javascript" src="{{ asset('/component/jquery-ui/js/jquery-ui.js') }}"></script>
-        <script type="text/javascript" src="{{ asset('/mobile/js/jquery.mobile-1.4.5.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('/component/jquery/js/jquery.js') }}?{{ commitref }}"></script>
+        <script type="text/javascript" src="{{ asset('/component/jquery-ui/js/jquery-ui.js') }}?{{ commitref }}"></script>
+        <script type="text/javascript" src="{{ asset('/mobile/js/jquery.mobile-1.4.5.js') }}?{{ commitref }}"></script>
 
-        <script type="text/javascript" src="{{ asset('/js/functions.js') }}"></script>
-        <script type="text/javascript" src="{{ asset('/mobile/js/jquery.phoenix.min.js?20200316') }}"></script>
-        <script type="text/javascript" src="{{ asset('/mobile/js/datepicker.js?20200316') }}"></script>
-        <script type="text/javascript" src="{{ asset('/mobile/js/jquery.mobile.datepicker.js?20200316') }}"></script>
-        <script type="text/javascript" src="{{ asset('/mobile/js/signature_pad.js?20200316') }}"></script>
-        <script type="text/javascript" src="{{ asset('/mobile/js/mobile.js?20220624') }}"></script>
+        <script type="text/javascript" src="{{ asset('/js/functions.js') }}?{{ commitref }}"></script>
+        <script type="text/javascript" src="{{ asset('/mobile/js/jquery.phoenix.min.js') }}?{{ commitref }}"></script>
+        <script type="text/javascript" src="{{ asset('/mobile/js/datepicker.js') }}?{{ commitref }}"></script>
+        <script type="text/javascript" src="{{ asset('/mobile/js/jquery.mobile.datepicker.js') }}?{{ commitref }}"></script>
+        <script type="text/javascript" src="{{ asset('/mobile/js/signature_pad.js') }}?{{ commitref }}"></script>
+        <script type="text/javascript" src="{{ asset('/mobile/js/mobile.js') }}?{{ commitref }}"></script>
     </body>
 </html>

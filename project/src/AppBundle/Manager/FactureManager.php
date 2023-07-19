@@ -158,16 +158,6 @@ public static $export_factures_en_retards = array(
         return $this->getRepository()->findBy(array('societe' => $societe->getId()), array('dateEmission' => 'desc'));
     }
 
-    public function hasDevisSociete(Societe $societe) {
-        $factures = $this->findBySociete($societe);
-        foreach ($factures as $facture) {
-          if($facture->isDevis()){
-            return true;
-          }
-        }
-        return false;
-    }
-
     public function createVierge(Societe $societe) {
         $facture = new Facture();
         $facture->setSociete($societe);
@@ -253,23 +243,23 @@ public static $export_factures_en_retards = array(
         return $this->mm->getMouvements(true, false);
     }
 
-    public function getSolde(Societe $societe) {
+    public function getSolde(Societe $societe, $factureIds = null) {
 
-        return round($this->getTotalPaye($societe) - $this->getTotalFacture($societe),2);
+        return round($this->getTotalPaye($societe, $factureIds) - $this->getTotalFacture($societe, $factureIds),2);
     }
 
-    public function getTotalFacture(Societe $societe) {
+    public function getTotalFacture(Societe $societe, $factureIds = null) {
 
-        return round($this->getRepository()->getMontantFacture($societe), 2);
+        return round($this->getRepository()->getMontantFacture($societe, $factureIds), 2);
     }
 
-    public function getTotalPaye(Societe $societe) {
+    public function getTotalPaye(Societe $societe, $factureIds = null) {
 
-        return round($this->dm->getRepository('AppBundle:Paiements')->getMontantPaye($societe), 2);
+        return round($this->dm->getRepository('AppBundle:Paiements')->getMontantPaye($societe, $factureIds), 2);
     }
 
-    public function getResteTropPercu(Societe $societe){
-        return ($this->dm->getRepository('AppBundle:Facture')->getMontantTropPaye($societe)) - (round($this->dm->getRepository('AppBundle:Facture')->getMontantFacturePayeeAvecTropPercu($societe),2));
+    public function getResteTropPercu(Societe $societe, $factureIds = null){
+        return ($this->dm->getRepository('AppBundle:Facture')->getMontantTropPaye($societe, $factureIds)) - (round($this->dm->getRepository('AppBundle:Facture')->getMontantFacturePayeeAvecTropPercu($societe, $factureIds),2));
     }
 
     public function getStatsForCsv($dateDebut = null, $dateFin = null, $commercialFiltre = null){
