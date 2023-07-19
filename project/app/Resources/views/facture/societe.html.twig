@@ -20,6 +20,22 @@
             </div>
         </div>
         {% endif %}
+
+        {% if etablissements | length > 1 %}
+        <form id="form_etablissement_filtre" action="" method="GET">
+            <div class="col-xs-12" style="margin-bottom: 30px; {% if not app.request.get('etablissement_id') %}opacity: 0.75;{% endif %}">
+                <div class="input-group">
+                    <span class="input-group-addon">Filtrer pour un établissement</span>
+                    <select onchange="document.querySelector('#form_etablissement_filtre').submit();" name="etablissement_id" class="form-control">
+                        <option value="">Tous</option>
+                    {% for etablissement in etablissements %}
+                        <option {% if app.request.get('etablissement_id') == etablissement.id %}selected="selected"{% endif %} value="{{ etablissement.id }}">{{ etablissement.libelleComplet }}</option>
+                    {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </form>
+        {% endif %}
         <div class="col-xs-3">
             <h3 style="margin-top: 0;">Solde :
                 <strong class="text-{% if (solde == 0) %}success{% elseif (solde < 0) %}danger{% else %}warning{% endif %}">{{ solde | number_format(2, '.', ' ') }} €</strong>

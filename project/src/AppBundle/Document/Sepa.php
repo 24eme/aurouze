@@ -228,4 +228,12 @@ class Sepa {
     {
         return $this->nomBancaire;
     }
+
+
+    public function isFullAndActif(){
+        if(!$this->getNomBancaire() || !$this->getIban() || !$this->getBic() || !$this->getRum() || !$this->getDate() || !$this->getActif()){
+            return false;
+        }
+        return true;
+    }
 }

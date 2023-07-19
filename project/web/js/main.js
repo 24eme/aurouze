@@ -1110,9 +1110,12 @@
 
         var hash = window.location.hash;
         var parameters = new URLSearchParams(window.location.search);
-
-        history.pushState(null, null, "?id_passage="+this.id+hash);
-
+        var new_parameters = "?id_passage="+this.id+hash;
+        var frequence = parameters.get("frequence");
+        if(frequence){
+          new_parameters+="&frequence="+frequence;
+        }
+        history.pushState(null, null,new_parameters);
       });
     }
 
@@ -1485,3 +1488,18 @@
     }
 }
 )(jQuery);
+
+$(document).on('DOMSubtreeModified', function() {
+    var elementsSelect2 = $('[id^="select2-"][id$="-container"]');
+    elementsSelect2.each(function() {
+        var element = $(this);
+        if(!element.parent().parent().parent().prev().prop('required')){
+            return true;
+        }
+        if(element.attr('title') === '' || !element.attr('title')){
+            element.parent().css("border-color",'#dc3545');
+        }else{
+            element.parent().css("border-color",'');
+        }
+    });
+});

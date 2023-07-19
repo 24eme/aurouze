@@ -39,7 +39,12 @@
                   </td>
                   <td>{{ reglement.libelle }}</td>
                   <td>{{ libelle.libelle }}</td>
-                  <td><a href="{{ path('facturable_pdf', {'document': paiement.facture.id , 'key': paiement.facture.getSecretKey()})}}">Facture n° {{ paiement.facture.numeroFacture }}</a></td>
+                  <td>
+                    <a href="{{ path('facturable_pdf', {'document': paiement.facture.id , 'key': paiement.facture.getSecretKey()})}}">Facture n° {{ paiement.facture.numeroFacture }}</a>
+                    {% if paiement.datePaiement > date()%}
+                        <span class="pull-right glyphicon glyphicon-time" title="Sera prélevée le {{ paiement.datePaiement | localizeddate("medium", "none", null, null, "d MMM yyyy") }}"></span>
+                    {% endif %}
+                  </td>
                   <td class="text-right">{{ paiement.montant | number_format(2, ',', ' ') }}&nbsp;€</td>
                   <td class="text-right">
                   {% if paiements.dateCreation != date %}

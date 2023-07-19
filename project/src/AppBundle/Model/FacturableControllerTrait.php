@@ -20,14 +20,17 @@ trait FacturableControllerTrait
         $repository = $manager->getRepository('AppBundle:'.ucfirst($type));
         $doc = $repository->findOneById($document);
 
+        if(!$doc) {
+            throw new NotFoundHttpException();
+        }
+
         $urlKey= basename( $this->uri = $_SERVER['REQUEST_URI']);
 
-        if($doc->getSecretKey() == $urlKey){
-            return $this->render('facture/telechargementPdf.html.twig', array('doc' => $doc));
+        if($doc->getSecretKey() != $urlKey){
+            throw new NotFoundHttpException();
         }
-          else{
-              throw new NotFoundHttpException();
-        }
+
+        return $this->render('facture/telechargementPdf.html.twig', array('doc' => $doc));
     }
 
 

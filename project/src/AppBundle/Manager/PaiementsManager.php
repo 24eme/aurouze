@@ -123,7 +123,18 @@ class PaiementsManager {
             self::EXPORT_TYPE_RELANCE => "Type de la dernière relance",
             self::EXPORT_DATE_RELANCE => "Date de dernière relance");
 
-      public static $types_exports = array(self::TYPE_EXPORT_FACTURES => array("libelle" =>  "Export des factures","picto" =>  "glyphicon glyphicon-eur", "pdf" =>  false),
+        public static $export_prelevement_libelle = array(
+            self::EXPORT_DATE_PAIEMENT => "Date prélèvement",
+            self::EXPORT_CODE_COMPTABLE => "Code Comptable",
+            self::EXPORT_CLIENT_RAISON_SOCIALE => "Client",
+            self::EXPORT_FACTURE_NUM => "N° Facture",
+            self::EXPORT_PRIX => "Montant",
+            self::EXPORT_MODE_REGLEMENT => "Mode de règlement",
+            self::EXPORT_TYPE_REGLEMENT=> "Type de règlement"
+        );
+
+
+    public static $types_exports = array(self::TYPE_EXPORT_FACTURES => array("libelle" =>  "Export des factures","picto" =>  "glyphicon glyphicon-eur", "pdf" =>  false),
     self::TYPE_EXPORT_PAIEMENTS => array("libelle" =>  "Export des paiements", "picto" =>  "glyphicon glyphicon-th-list", "pdf" =>  false),
     self::TYPE_EXPORT_STATS  => array("libelle" =>  "Export Chiffre d'affaire", "picto" =>  "glyphicon glyphicon-stats", "pdf" =>  true),
     self::TYPE_EXPORT_CONTRATS  => array("libelle" =>  "Export Contrats", "picto" =>  "glyphicon glyphicon-list-alt", "pdf" =>  true),
@@ -152,6 +163,35 @@ class PaiementsManager {
         $paiements = new Paiements($this->dm);
         $paiements->setDateCreation($dateCreation);
         return $paiements;
+    }
+
+    public function getPaiementsPrelevementsForCsv($paiementsObjs){
+        $paiementsArray = array();
+        $paiementsArray[] = self::$export_prelevement_libelle;
+
+        foreach ($paiementsObjs as $paiements) {
+            foreach ($paiements->getPaiement() as $paiement) {
+              $paiementDate = $paiement->getDatePaiement();
+              $paiementArr = array();
+              $paiementArr[self::EXPORT_DATE_PAIEMENT] = $paiementDate->format('d/m/Y');
+              $paiementArr[self::EXPORT_CODE_COMPTABLE] = $paiement->getFacture()->getSociete()->getCodeComptable();
+              $paiementArr[self::EXPORT_CLIENT_RAISON_SOCIALE] = $paiement->getFacture()->getSociete()->getRaisonSociale();
+              $paiementArr[self::EXPORT_FACTURE_NUM] = $paiement->getFacture()->getNumeroFacture();
+              $paiementArr[self::EXPORT_PRIX] = number_format($paiement->getMontant(), 2, ",", "");
+              if(isset(self::$moyens_paiement_libelles[$paiement->getMoyenPaiement()])) {
+                  $paiementArr[self::EXPORT_MODE_REGLEMENT] = self::$moyens_paiement_libelles[$paiement->getMoyenPaiement()];
+              } else {
+                  $paiementArr[self::EXPORT_MODE_REGLEMENT] = "";
+              }
+              if(isset(self::$types_reglements_libelles[$paiement->getTypeReglement()])) {
+                $paiementArr[self::EXPORT_TYPE_REGLEMENT] = self::$types_reglements_libelles[$paiement->getTypeReglement()];
+              } else {
+                $paiementArr[self::EXPORT_TYPE_REGLEMENT] = "";
+              }
+              $paiementsArray[] = $paiementArr;
+          }
+      }
+      return $paiementsArray;
     }
 
     public function getPaiementsForCsv($dateDebut = null,$dateFin = null) {

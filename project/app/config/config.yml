@@ -8,6 +8,8 @@ imports:
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: fr
+    commitref: null
+
 
 framework:
     #esi:             ~
@@ -43,7 +45,9 @@ twig:
         facture_manager: "@facture.manager"
         attachement_manager: "@attachement.manager"
         instanceapp: %instanceapp%
+        commitref: %commitref%
         application: "%application%"
+        instanceenv: "%instanceenv%"
         calendar_extra: "%calendar_extra%"
         certification_bois: "%certification_bois%"
         banque: '%banque%'

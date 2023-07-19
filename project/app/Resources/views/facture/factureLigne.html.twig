@@ -103,6 +103,9 @@
                             {% endif %}
                             {% if(not facture.isAvoir) %}
                               {% if(not facture.iscloture) %}
+                                  {% if facture.sepa.isFullAndActif %}
+                                    <li><a onclick="return confirm('Êtes vous sûr de vouloir ajouter cette facture au prochain prélèvement?')" href="{{ path('ajouter_aux_prelevements', {'id': facture.societe.id, 'factureId': facture.id }) }}">Ajouter au prochain prélèvement</a></li>
+                                  {% endif %}
                                   {% if (resteTropPaye and facture.montantTTC < resteTropPaye) %}
                                       <li><a onclick="return confirm('Êtes vous sûr de vouloir de payer avec le trop perçu restant et de cloturer cette facture ?')" href="{{ path('facture_cloturer_payer_avec_trop_percu', {'id': facture.societe.id, 'factureId': facture.id }) }}">Payer avec le trop perçu restant et cloturer la facture</a></li>
                                   {% endif %}

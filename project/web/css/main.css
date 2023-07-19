@@ -349,3 +349,10 @@ body {
 .cursor-pointer {
     cursor: pointer !important;
 }
+
+input:required:invalid {
+  border-color: #dc3545;
+}
+textarea:required:invalid{
+  border-color: #dc3545;
+}
