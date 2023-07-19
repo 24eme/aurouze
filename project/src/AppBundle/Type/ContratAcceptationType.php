@@ -72,11 +72,11 @@ class ContratAcceptationType extends AbstractType {
 
         $builder->add('technicien', DocumentType::class, array_merge($required, array(
             "choices" => array_merge(array(null => null), $this->getTechniciens()),
-            'label' => 'Technicien :',
+            'label' => 'Technicien* :',
             'class' => 'AppBundle\Document\Compte',
             'expanded' => false,
             'multiple' => false,
-            'required' => false,
+            'required' => true,
             "attr" => array("class" => "select2 select2-simple"))));
 
         $builder->add('commercial', DocumentType::class, array_merge($required, array(

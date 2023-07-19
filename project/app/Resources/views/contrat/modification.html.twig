@@ -138,10 +138,10 @@
             <div class="panel-body col-xs-offset-2">
                 <div class="row">
                     <div class="col-xs-7">
-                        <label class="control-label">Prestations :</label>
+                        <label class="control-label">Prestations* :</label>
                     </div>
                     <div class="col-xs-2 text-center">
-                        <label class="control-label">Nb passages :</label>
+                        <label class="control-label">Nb passages* :</label>
                     </div>
                 </div>
                 {{ form_widget(form.prestations, { 'attr': {'class': 'dynamic-collection'} }) }}
@@ -211,9 +211,6 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-xs-5">
-                        {{ form_row(form.frequencePaiement) }}
-                    </div>
                     <div class="col-xs-5">
                         <div class="form-group">
                             {{ form_label(form.prixHt) }}

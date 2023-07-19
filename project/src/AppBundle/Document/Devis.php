@@ -105,6 +105,10 @@ class Devis implements DocumentSocieteInterface, DocumentPlanifiableInterface, F
      */
     protected $zone;
 
+    /**
+     * @MongoDB\Field(type="date")
+     */
+    protected $pdfTelecharge;
 
     public function __construct() {
         $this->etablissementInfos = new EtablissementInfos();
@@ -662,12 +666,31 @@ class Devis implements DocumentSocieteInterface, DocumentPlanifiableInterface, F
 
     public function setZone($commercialSeineEtMarne){
       if($this->getCommercial()->getNom() == $commercialSeineEtMarne){
-        $this->zone = "77";
+        $this->zone = ContratManager::ZONE_SEINE_ET_MARNE;
       }
       else{
-        $this->zone = "75";
+        $this->zone = ContratManager::ZONE_PARIS;
       }
       return $this;
     }
 
+    /**
+     * Set pdfTelecharge
+     *
+     * @param date $pdfTelecharge
+     * @return self
+     */
+    public function setPdfTelecharge($pdfTelecharge) {
+        $this->pdfTelecharge = $pdfTelecharge;
+        return $this;
+    }
+
+    /**
+     * Get pdfTelecharge
+     *
+     * @return date $pdfTelecharge
+     */
+    public function getPdfTelecharge() {
+        return $this->pdfTelecharge;
+    }
 }

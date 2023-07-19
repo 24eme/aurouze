@@ -77,6 +77,7 @@ class SocieteController extends Controller {
     		$dm->persist($societe);
             if ($isNew) {
                 $societe->preInitRum($this->container->getParameter('instanceapp'));
+                $societe->generateCodeComptable($this->container->getParameter('code_comptable_auto'),$this->container->getParameter('code_comptable_particulier'));
             }
     		$dm->flush();
     		if ($isNew && $form->get("generer")->getData()) {
@@ -97,8 +98,7 @@ class SocieteController extends Controller {
     		}
     		return $this->redirectToRoute('societe_visualisation', array('id' => $societe->getId()));
     	}
-
-    	return $this->render('societe/modification.html.twig', array('form' => $form->createView(), 'societe' => $societe,  'isNew' => $isNew));
+        return $this->render('societe/modification.html.twig', array('form' => $form->createView(), 'societe' => $societe,  'isNew' => $isNew, 'autoCodeComptable' => $this->container->getParameter('code_comptable_auto')));
     }
 
     /**

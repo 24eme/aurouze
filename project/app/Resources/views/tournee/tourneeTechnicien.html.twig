@@ -8,14 +8,15 @@
 
 <div data-role="header" style="overflow:hidden;" data-position="fixed">
 <h1>Tournée {{ technicien.identite }}</h1>
-<a href="{{path('tournee_technicien',{ 'technicien' : technicien.id })}}" class="ui-btn ui-icon-back ui-btn-icon-left" >
+
+<a href="{{ path('tournees') }}" class="ui-btn ui-icon-arrow-l ui-btn-icon-left" {% if isAdmin %}style="display: none"{% endif %}> Retour</a>
+
+<a href="{{path('tournee_technicien',{ 'technicien' : technicien.id })}}" class="ui-btn ui-btn-right ui-icon-back ui-btn-icon-left" >
       &nbsp;Recharger
 </a>
-
-
 <div class="reloadWarning ui-bar ui-bar-b" style="display:none;">
 	<h3>Votre tournée a été modifiée. Il est préférable de la recharger.&nbsp;
-      <a onclick="window.location.reload()" class="ui-btn ui-icon-back ui-btn-icon-left" data-role="button" data-mini="true" >
+      <a onclick="window.location.reload()" class="ui-btn ui-btn-right ui-icon-back ui-btn-icon-left" data-role="button" data-mini="true" >
         &nbsp;Recharger
       </a>
   </h3>
@@ -28,6 +29,11 @@
     <h3>  <input id="tourneesDate" data-url-cible="{{ path('tournee_technicien',{ 'technicien' : technicien.id }) }}" data-role="date" value="{{date | localizeddate("medium", "none", null, null, "dd/MM/yyyy") }}" data-inline="false" type="text" /></h3>
     <span class="ui-li-count">{{ rendezVousByTechnicien | length }}</span>
   </li>
+  {% if isJourFerie %}
+      <li class="notStatic" style="padding:15px">
+        <b>05h00<br>FERIE</b>
+      </li>
+  {% endif %}
   {% for rendezvous in rendezVousByTechnicien %}
       {% if rendezvous.planifiable %}
         {% set planifiable = rendezvous.planifiable %}

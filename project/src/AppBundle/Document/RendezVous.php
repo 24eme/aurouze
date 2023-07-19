@@ -142,7 +142,7 @@ class RendezVous {
         }
 
         if ($planifiable->isSaisieTechnicien()) {
-            if ($planifiable->isPdfNonEnvoye()) {
+            if ($planifiable->isPdfNonEnvoye() || $planifiable->isPdfNonEnvoye() === null) {
                 $colors['text'] = self::COLOR_TEXT_BROWN;
                 $colors['background'] = self::COLOR_STATUS_GOLD;
             } else {
@@ -187,6 +187,8 @@ class RendezVous {
 
         if ($this->getPlanifiable()->getTypePlanifiable() === Devis::DOCUMENT_TYPE) {
             $this->getPlanifiable()->setDatePrevision($this->getDateDebut());
+            $this->getPlanifiable()->setCommentaireInterne($this->getDescription());
+
         } elseif ($this->getPlanifiable()->getTypePlanifiable() === Passage::DOCUMENT_TYPE) {
             $this->getPlanifiable()->setCommentaire($this->getDescription());
         }

@@ -5,20 +5,26 @@
 {% block body %}
     <ol class="breadcrumb">
         <li><a href="{{ path('paiements_liste') }}">Paiements</a></li>
-
     </ol>
-
-
 	<h2>
 		Synthèse campagnes de paiements
-		<a class="btn btn-default pull-right" href="{{ path('paiements_nouveau') }}"><span aria-hidden="true" class="glyphicon glyphicon-plus"></span>&nbsp;Nouvelle saisie</a>
+        <span class="pull-right">
+            <a class="btn btn-default" onclick="window.scrollTo(0, document.body.scrollHeight);"><span class="glyphicon glyphicon-arrow-down "></span>&nbsp;Prélèvements</a>
+            <a class="btn btn-default" href="{{ path('paiements_nouveau') }}"><span aria-hidden="true" class="glyphicon glyphicon-plus"></span>&nbsp;Nouvelle saisie</a>
+        </span>
 	</h2>
 
-	<form action="" method="get" class="form-inline" style="margin: 20px 0 10px 0;">
-		<label for="periode">Période : </label>
-        <input style="width: auto;" type="text" id="periode" name="periode" class="periodepicker form-control" value="{{ periode }}" placeholder="Sélection période" />
-    </form>
-
+    <div class="row" style="margin: 20px 0 10px 0;">
+        <div class="col-md-8">
+            <form action="" method="get" class="form-inline">
+                <label for="periode">Période : </label>
+                <input style="width: auto;" type="text" id="periode" name="periode" class="periodepicker form-control" value="{{ periode }}" placeholder="Sélection période" />
+            </form>
+        </div>
+        <div class="col-md-4">
+            <h5 class="text-right">Total {{ periode }} = <b>{{ totalMontantPaye | number_format(2, ',', ' ') }}&nbsp;€</b></h5>
+        </div>
+    </div>
 
     <div id="wrapper">
     {{ include('paiements/paiementsTableau.html.twig', {'paiementsDocs': paiementsDocs, 'prelevement' : false }) }}

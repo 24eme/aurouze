@@ -34,6 +34,8 @@ class PaiementsController extends Controller {
 
         $tabPaiementsChequesNonTerminé = array();
         $tabOthersPaiements = array();
+        $totalMontantPaye = 0;
+
         foreach($paiementsDocs as $paiements){
             foreach($paiements->getAggregatePaiements() as $k => $v){
                 if(!$paiements->isImprime() && $k == "CHEQUE"){
@@ -43,9 +45,15 @@ class PaiementsController extends Controller {
                     $tabOthersPaiements[] = $paiements;
                 }
             }
+            $totalMontantPaye += $paiements->getMontantTotal();
         }
+
+        foreach($paiementsDocsPrelevement as $paiements){
+            $totalMontantPaye += $paiements->getMontantTotal();
+        }
+
         $paiementsDocs = array_merge($tabPaiementsChequesNonTerminé, $tabOthersPaiements);
-        return $this->render('paiements/index.html.twig', array('paiementsDocs' => $paiementsDocs, 'paiementsDocsPrelevement' => $paiementsDocsPrelevement, 'periode' => $periode));
+        return $this->render('paiements/index.html.twig', array('paiementsDocs' => $paiementsDocs, 'paiementsDocsPrelevement' => $paiementsDocsPrelevement, 'periode' => $periode, 'totalMontantPaye' => $totalMontantPaye));
     }
 
 
@@ -58,6 +66,37 @@ class PaiementsController extends Controller {
         $id = $request->get('id');
         $paiements = $this->get('paiements.manager')->getRepository()->findById($id);
         return $this->render('paiements/details.html.twig', array('paiements' => $paiements,'type'=>$type));
+    }
+
+    /**
+     * @Route("/paiements/details_export/{id}", name="paiements_details_export")
+     */
+    public function detailsExportAction(Request $request) {
+        $type  = $request->get('type');
+        $id = $request->get('id');
+        $pm = $this->get('paiements.manager');
+
+        $paiements = $this->get('paiements.manager')->getRepository()->findById($id);
+        $paiementsForCsv = $pm->getPaiementsPrelevementsForCsv($paiements);
+
+        $filename = sprintf("export_paiements_$id.csv");
+        $handle = fopen('php://memory', 'r+');
+
+        foreach ($paiementsForCsv as $paiement) {
+            fputcsv($handle, $paiement,';');
+        }
+
+        rewind($handle);
+
+        $content = stream_get_contents($handle);
+        fclose($handle);
+
+        $response = new Response(utf8_decode($content), 200, array(
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename=' . $filename,
+        ));
+        $response->setCharset('UTF-8');
+        return $response;
     }
 
     /**
@@ -353,8 +392,8 @@ class PaiementsController extends Controller {
             $paiement->setFacture($facture);
             $paiement->setMoyenPaiement(PaiementsManager::MOYEN_PAIEMENT_PRELEVEMENT_BANQUAIRE);
             $paiement->setTypeReglement(PaiementsManager::TYPE_REGLEMENT_FACTURE);
-            $paiement->setDatePaiement($date);
-            $paiement->setMontant(0.0);
+            $paiement->setDatePaiement($facture->getInPrelevement());
+            $paiement->setMontant($facture->getMontantTTC());
             $paiement->setLibelle('FACT '.$facture->getNumeroFacture().' du '.$facture->getDateEmission()->format("d m Y").' '. str_ireplace(array(".",","),"EUR",sprintf("%0.2f",$facture->getMontantAPayer())));
             $paiement->setVersementComptable(false);
             $paiements->addPaiement($paiement);

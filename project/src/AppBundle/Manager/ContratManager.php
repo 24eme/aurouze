@@ -37,6 +37,8 @@ class ContratManager implements MouvementManagerInterface {
     const FREQUENCE_30JMOIS = '30JMOIS';
     const FREQUENCE_45JMOIS = '45JMOIS';
     const FREQUENCE_60J = '60J';
+    const ZONE_SEINE_ET_MARNE = "77";
+    const ZONE_PARIS = "75";
 
     const EXPORT_PCA_CLIENT = 0;
     const EXPORT_PCA_NUMERO_CONTRAT = 1;
@@ -393,6 +395,12 @@ class ContratManager implements MouvementManagerInterface {
            $datePrevisionCloned = clone $datesPrevisionArray[$etb][$cpt]->getDatePrevision();
            $ecartDateDebutDatePrev = $dateDebutContratOrigine->diff($datePrevisionCloned)->format('%R%a');
            $datePrevision = $dateDebutContratReconduit->modify($ecartDateDebutDatePrev." days");
+           if($datePrevision->format('L') && !$datePrevisionCloned->format('L') && $datePrevisionCloned->format('m-d') >= '02-28') {
+               $datePrevision = $datePrevision->modify('+1 day');
+           }
+           if(!$datePrevision->format('L') && $datePrevisionCloned->format('L') && $datePrevisionCloned->format('m-d') >= '02-29') {
+               $datePrevision = $datePrevision->modify('-1 day');
+           }
            $passage->setDatePrevision($datePrevision);
            $cpt++;
         }

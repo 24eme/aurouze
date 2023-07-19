@@ -54,6 +54,9 @@ class AppKernel extends Kernel
             $loader->load($this->getRootDir().'/config/app_'.$container->getParameter('instanceapp').'.yml');
         }
 
+        $container->setParameter('commitref', $this->getCommitRef());
+
+
         return $container;
     }
 
@@ -67,4 +70,25 @@ class AppKernel extends Kernel
     {
         return $this->rootDir.'/../var/logs/'.$this->getEnvironment();
     }
+
+    function getCommitRef() {
+        if(!file_exists($this->rootDir.'/../../.git/HEAD')) {
+
+            return null;
+        }
+
+        $head = str_replace(["ref: ", "\n"], "", file_get_contents($this->rootDir.'/../../.git/HEAD'));
+        $commit = null;
+
+        if(strpos($head, "refs/") !== 0) {
+            $commit = $head;
+        }
+
+        if(file_exists($this->rootDir.'/../../.git/'.$head)) {
+            $commit = str_replace("\n", "", file_get_contents($this->rootDir.'/../../.git/'.$head));
+        }
+
+        return substr($commit, 0, 7);
+    }
+
 }

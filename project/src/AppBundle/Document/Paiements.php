@@ -349,6 +349,14 @@ class Paiements {
         return ($this->getNbPaiementsSaisis() == count($this->getPaiement()));
     }
 
+    public function getMontantTotalAPayer(){
+        $montantTotal = 0;
+        foreach ($this->getPaiement() as $paiement) {
+            $facture = $paiement->getFacture();
+            $montantTotal+=$facture->getMontantTTC();
+        }
+        return $montantTotal;
+    }
 
     /**
      * Set numeroRemise
