@@ -49,9 +49,6 @@
                 <div class="col-xs-7">{{ planifiable.etablissementInfos.adresse.adresse }}
                     {{ planifiable.etablissementInfos.adresse.codePostal }}
                     {{ planifiable.etablissementInfos.adresse.commune }}</div>
-                    {% if planifiable.getTypePlanifiable() and planifiable.getTypePlanifiable() == constant('AppBundle\\Document\\Devis::DOCUMENT_TYPE') %}
-                      <span style="position:absolute; top: 10px; right:10px; font-size: 14pt" ><i class="mdi mdi-local-shipping"></i></span>
-                    {% endif %}
                 <div class="col-xs-3"></div>
               </div>
               <div class="row">
@@ -61,12 +58,6 @@
                   {% endif %}
                   {% if(planifiable.mouvementDeclenchable is defined and planifiable.mouvementDeclenchable and planifiable.getContrat.getNbFactures > 0) %}
                     <a href="{{ path('facture_societe', { 'id': planifiable.societe.id }) }}" class="deco-none"><span class="badge{% if (planifiable.isMouvementAlreadyFacture) %} badge-success  {% else %} badge-inverse {% endif %}">{% if (planifiable.isMouvementAlreadyFacture) %}facturé{% else %}facturant{% endif %}</span></a>
-                  {% elseif planifiable.getTypePlanifiable() and planifiable.getTypePlanifiable() == constant('AppBundle\\Document\\Devis::DOCUMENT_TYPE') %}
-                      {% if planifiable.getIdentifiantFacture() %}
-                          <a href="{{ path('devis_visualisation', {'id': planifiable.id}) }}" class="deco-none"><span class="badge badge-success">facturé</span></a>
-                      {% else %}
-                          <a href="{{ path('devis_modification', {'id': planifiable.id}) }}" class="deco-none"><span class="badge badge-inverse">facturant</span></a>
-                      {% endif %}
                   {% endif %}
                 </div>
                 <div class="col-xs-7">
