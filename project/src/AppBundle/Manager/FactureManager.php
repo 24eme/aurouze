@@ -648,8 +648,10 @@ public static $export_factures_en_retards = array(
               }else{
                 $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] =  $paiement->getMoyenPaiementLibelle();
               }
-
               $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] .= "\n(".$paiement->getDatePaiement()->format('d/m/Y').')';
+              if($facture->getPayeeAvecTropPercu()){
+                  $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] .= "\n et Trop perçu";
+              }
             }
           }
         }
@@ -667,7 +669,11 @@ public static $export_factures_en_retards = array(
           $factureLigne[self::EXPORT_SOCIETE_ECHEANCE] =  $facture->getDateLimitePaiement()->format('d/m/Y');
           $factureLigne[self::EXPORT_SOCIETE_DEBIT] =  number_format($facture->getMontantTTC(), 2, ",", "");
           $factureLigne[self::EXPORT_SOCIETE_CREDIT] =  ($facture->isAvoir())? number_format($facture->getMontantTTC() , 2, ",", "") : "0";
-          $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] = ($facture->getAvoirPartielRemboursementCheque())? "Remboursement par chèque le ".$facture->getDateFacturation()->format('d/m/Y') : "-";
+          if($facture->getPayeeAvecTropPercu()){
+              $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] = "Trop perçu";
+          }else{
+              $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] = ($facture->getAvoirPartielRemboursementCheque())? "Remboursement par chèque le ".$facture->getDateFacturation()->format('d/m/Y') : "-";
+          }
         }
       return $factureLigne;
     }
