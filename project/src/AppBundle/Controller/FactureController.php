@@ -1055,12 +1055,6 @@ class FactureController extends Controller
       $commerciaux = null;
       $dateMois = null;
 
-      if(!$societe){
-          $date = new \DateTime();
-          $interval = new \DateInterval('P2Y');
-          $dateFactureBasse = $date->sub($interval);
-      }
-
       $formFacturesEnRetard = $this->createForm(new FacturesEnRetardFiltresType($this->container, $this->get('doctrine_mongodb')->getManager(),$societe), null, array(
           'action' => $this->generateUrl('factures_retard'),
           'method' => 'GET',
