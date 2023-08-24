@@ -17,6 +17,7 @@ use AppBundle\Document\LigneFacturable;
 use AppBundle\Type\FactureType;
 use AppBundle\Document\Contrat;
 use AppBundle\Document\Societe;
+use AppBundle\Document\Etablissement;
 use AppBundle\Document\Relance;
 use AppBundle\Type\FactureChoiceType;
 use AppBundle\Type\SocieteChoiceType;
@@ -230,7 +231,7 @@ class FactureController extends Controller
      */
     public function societeAction(Request $request, Societe $societe) {
         $fm = $this->get('facture.manager');
-
+        $em = $this->get('etablissement.manager');
         $formSociete = $this->createForm(SocieteChoiceType::class, array('societe' => $societe), array(
             'action' => $this->generateUrl('societe'),
             'method' => 'GET',
@@ -277,14 +278,14 @@ class FactureController extends Controller
         $totalPaye = $fm->getTotalPaye($societe, $factureIdsEtablissement);
         $resteTropPaye = $fm->getResteTropPercu($societe, $factureIdsEtablissement) + $sommeMontantPayeReelParmiCeuxQuiUtiliseTropPercu;
 
-        $exportSocieteForm = $this->createExportSocieteForm($societe);
+        $etablissement = ($request->get('etablissement_id')) ? $em->getRepository()->find($request->get('etablissement_id')) : null;
+        $exportSocieteForm = $this->createExportSocieteForm($societe,$etablissement);
 
         $defaultDate = new \DateTime();
 
         if($this->container->getParameter('date_facturation')) {
             $defaultDate = new \DateTime($this->container->getParameter('date_facturation'));
         }
-
         return $this->render('facture/societe.html.twig', array('societe' => $societe, 'etablissements' => $etablissements, 'mouvements' => $mouvements,'hasDevis' => $hasDevis,  'factures' => $factures, 'facturesPrevisionnel' => $facturesPrevisionnel, 'exportSocieteForm' => $exportSocieteForm->createView(), 'solde' => $solde, 'totalFacture' => $totalFacture, 'totalPaye' => $totalPaye, 'defaultDate' => $defaultDate, 'resteTropPaye' => $resteTropPaye));
     }
 
@@ -480,7 +481,7 @@ class FactureController extends Controller
         return $this->redirectToRoute('facture_societe', array('id' => $contrat->getSociete()->getId()));
     }
 
-    public function createExportSocieteForm(Societe $societe) {
+    public function createExportSocieteForm(Societe $societe, Etablissement $etablissement = null) {
       $formBuilder = $this->createFormBuilder();
       $formBuilder->add('dateDebut', DateType::class, array('required' => true,
             "attr" => array('class' => 'input-inline datepicker',
@@ -501,7 +502,10 @@ class FactureController extends Controller
             'label' => 'Date de fin* :',
       ));
       $formBuilder->add('pdf', CheckboxType::class, array('label' => 'PDF', 'required' => false, 'label_attr' => array('class' => 'small')));
-      $formBuilder->setAction($this->generateUrl('factures_export_client',array('societe' => $societe->getId())));
+
+
+      $etablissementId = ($etablissement) ? $etablissement->getId() : null;
+      $formBuilder->setAction($this->generateUrl('factures_export_client',array('societe' => $societe->getId(), 'etablissement'=> $etablissementId)));
       $exportForm = $formBuilder->getForm();
 
       return $exportForm;
@@ -772,14 +776,19 @@ class FactureController extends Controller
           }
         }
 
-
-
-
     /**
-     * @Route("/facture/export-client/{societe}", name="factures_export_client")
+     * @Route("/facture/export-client/{societe}/{etablissement} ", name="factures_export_client", defaults={"etablissement" = null})
      * @ParamConverter("societe", class="AppBundle:Societe")
+
      */
     public function exportFactureClientAction(Request $request, Societe $societe) {
+        $etablissementId = $request->get('etablissement');
+        $etablissement = null;
+
+        if($etablissementId){
+            $em = $this->get('etablissement.manager');
+            $etablissement = $em->getRepository()->find($etablissementId);
+        }
 
         $formRequest = $request->request->get('form');
 
@@ -791,12 +800,28 @@ class FactureController extends Controller
 
         $dm = $this->get('doctrine_mongodb')->getManager();
         $fm = $this->get('facture.manager');
-        $facturesForCsv = $fm->getFacturesSocieteForCsv($societe, $dateDebut,$dateFin);
+
+        $facturesForCsv = $fm->getFacturesSocieteForCsv($societe, $dateDebut,$dateFin,$etablissement);
+
+        if($etablissement){
+            foreach($facturesForCsv as $key => $factureObj) {
+                $factureObj = $factureObj->facture;
+                if(!$factureObj){
+                    continue;
+                }
+                if(!$factureObj->getContrat() || !in_array($etablissement->getId(), $factureObj->getContrat()->getEtablissementIds())) {
+                    unset($facturesForCsv[$key]);
+                    continue;
+                }
+            }
+        }
 
         $pdf = (isset($formRequest["pdf"]) && $formRequest["pdf"]);
 
+        $nom = ($etablissement && $etablissement->getLibelleComplet()) ? str_replace(array("'"," ",'"'),array('','',''),$etablissement->getLibelleComplet()) : str_replace(array("'"," ",'"'),array('','',''),$societe->getRaisonSociale());
+
         if(!$pdf){
-          $filename = sprintf("export_%s_factures_du_%s_au_%s.csv",str_replace(array("'"," ",'"'),array('','',''),$societe->getRaisonSociale()), $dateDebut->format("Y-m-d"),$dateFin->format("Y-m-d"));
+          $filename = sprintf("export_%s_factures_du_%s_au_%s.csv",$nom, $dateDebut->format("Y-m-d"),$dateFin->format("Y-m-d"));
           $handle = fopen('php://memory', 'r+');
 
           foreach ($facturesForCsv as $factureObj) {
@@ -847,7 +872,7 @@ class FactureController extends Controller
         ));
 
 
-        $filename = sprintf("export_%s_factures_du_%s_au_%s.pdf",str_replace(array("'"," ",'"'),array('','',''),$societe->getRaisonSociale()), $dateDebut->format("Y-m-d"),$dateFin->format("Y-m-d"));
+        $filename = sprintf("export_%s_factures_du_%s_au_%s.pdf",$nom, $dateDebut->format("Y-m-d"),$dateFin->format("Y-m-d"));
 
         if ($request->get('output') == 'html') {
 

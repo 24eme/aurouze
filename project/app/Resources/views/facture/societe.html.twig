@@ -216,7 +216,16 @@
                               {{ form_start(exportSocieteForm) }}
                               <div class="modal-header">
                                   <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                <h4>Export des factures de {{societe.raisonSociale}}</h4>
+                                <h4>Export des factures de
+                                {{societe.raisonSociale}}
+                                {% if etablissements | length > 1 and app.request.get('etablissement_id')%}
+                                    {% for etablissement in etablissements %}
+                                        {% if app.request.get('etablissement_id') == etablissement.id %}
+                                            <br>({{ etablissement.libelleComplet }})
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                                </h4>
                               </div>
                                   <div class="modal-body form-horizontal">
                                           <div class="form-group">
