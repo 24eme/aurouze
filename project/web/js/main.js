@@ -455,6 +455,13 @@
             e.preventDefault();
             $(e.delegateTarget).remove();
         });
+        $('.dynamic-collection-item').on('click', '.dynamic-collection-reject', function (e) {
+            e.preventDefault();
+            var inputElement = e.delegateTarget.childNodes[0].nextElementSibling.children[5].firstElementChild;
+            inputElement.value = 0.00;
+            inputElement.select();
+            inputElement.blur();
+        });
         $('body').on('click', '.dynamic-collection-add', function (e) {
             e.preventDefault();
             var collectionTarget = $(this).data('collection-target');
