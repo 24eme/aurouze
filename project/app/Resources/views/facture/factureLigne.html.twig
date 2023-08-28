@@ -106,7 +106,7 @@
                             {% endif %}
                             {% if(not facture.isAvoir) %}
                               {% if(not facture.iscloture) %}
-                                  {% if facture.sepa.isFullAndActif %}
+                                  {% if facture.sepa.isFullAndActif and facture.inPrelevement and facture.inPrelevement < date() %}
                                     <li><a onclick="return confirm('Êtes vous sûr de vouloir ajouter cette facture au prochain prélèvement?')" href="{{ path('ajouter_aux_prelevements', {'id': facture.societe.id, 'factureId': facture.id }) }}">Ajouter au prochain prélèvement</a></li>
                                   {% endif %}
                                   {% if (resteTropPaye and facture.montantTTC <= resteTropPaye) %}
