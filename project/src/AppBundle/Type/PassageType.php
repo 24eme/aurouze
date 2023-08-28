@@ -30,7 +30,7 @@ class PassageType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('description', TextareaType::class, array('label' => 'Constat :', 'required' => false, "attr" => array("class" => "form-control", "rows" => 10)))
+            ->add('description', TextareaType::class, array('label' => 'Rapport :', 'required' => false, "attr" => array("class" => "form-control", "rows" => 10)))
             ->add('duree', TextType::class, array('label' => 'Durée effective du passage* :', 'attr' => array('class' => 'input-timepicker')))
             ->add('save', SubmitType::class, array('label' => 'Valider', "attr" => array("class" => "btn btn-success")));
         ;
