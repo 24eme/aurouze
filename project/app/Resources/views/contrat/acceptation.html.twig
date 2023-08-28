@@ -26,7 +26,10 @@
                 {%  if (contrat.isCopiable) %}
                     <a href="{{ path('contrat_copie', {'id': contrat.getId()}) }}" class="btn btn-sm btn-default" onclick="return confirm('Êtes-vous sûre de créer un nouveau contrat avec les infos de ce contrat ?');"><span class="glyphicon glyphicon-duplicate"></span> Dupliquer</a>
                 {% endif %}
-                {% if contrat.isEnAttenteAcceptation() %}
+                {%  if contrat.isPassableEnAttente() %}
+                    <a href="{{ path('contrat_en_attente', {'id': contrat.getId()}) }}" class="btn btn-sm btn-default" onclick="return confirm('Êtes-vous sûre de vouloir passer le contrat n° '+{{ contrat.numeroArchive }}+' en attente ?\n ⚠ Les passages planifiés seront déplanifié');"><span class="glyphicon glyphicon-arrow-left"></span> Passer "en Attente"</a>
+                {% endif %}
+                {%  if contrat.isEnAttenteAcceptation() %}
                 <a href="{{ path('contrat_suppression', {'id': contrat.getId()}) }}" onclick="return confirm('Etes-vous sûr de vouloir supprimer ce contrat ?')" class="btn btn-sm btn-danger"><span class="glyphicon glyphicon-remove"></span>&nbsp;Supprimer le contrat</a>
                 {% else %}
                 <a href="{{ path('contrat_visualisation', {'id': contrat.getId()}) }}" class="btn btn-link">Retour à la visualisation du contrat</a>

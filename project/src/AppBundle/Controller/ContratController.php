@@ -755,7 +755,33 @@ class ContratController extends Controller {
                                                                             'formContratsAReconduire' => $formContratsAReconduire->createView(),
                                                                             'formReconduction' => $formReconduction->createView()));
     }
+    /**
+     * @Route("/contrat/{id}/en_attente", name="contrat_en_attente")
+     * @ParamConverter("contrat", class="AppBundle:Contrat")
+     */
+    public function enAttenteAcceptationAction(Request $request, Contrat $contrat) {
+        $dm = $this->get('doctrine_mongodb')->getManager();
 
+        if (!$contrat->isPassableEnAttente()) {
+            throw $this->createNotFoundException();
+        }
+
+        $societeId = $contrat->getSociete()->getId();
+        foreach ($contrat->getContratPassages() as $contratPassages) {
+            foreach ($contratPassages->getPassages() as $passage) {
+                if($passage->isPlanifie()){
+                    $rdv = $passage->getRendezVous();
+                    $dm->remove($rdv);
+                    $dm->flush();
+
+                }
+            }
+        }
+
+        $contrat->setStatut(ContratManager::STATUT_EN_ATTENTE_ACCEPTATION);
+        $dm->flush();
+        return $this->redirectToRoute('contrat_acceptation', array('id' => $contrat->getId()));
+    }
 
         /**
          * @Route("/stats/export-commerciaux", name="contrats_export")
