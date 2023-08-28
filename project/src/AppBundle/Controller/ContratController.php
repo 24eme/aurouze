@@ -772,9 +772,9 @@ class ContratController extends Controller {
                 if($passage->isPlanifie()){
                     $rdv = $passage->getRendezVous();
                     $dm->remove($rdv);
-                    $dm->flush();
-
                 }
+                $dm->remove($passage);
+                $dm->flush();
             }
         }
 

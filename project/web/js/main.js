@@ -344,7 +344,7 @@
     $.initRdvLink = function () {
         $('.rdv-deplanifier-link').click(function (e) {
             e.preventDefault();
-            if(!confirm('Êtes vous sûr de vouloir supprimer ce rendez-vous ?')) {
+            if(!confirm('Êtes vous sûr de vouloir déplanifier ce passage ?')) {
                 return false;
             }
             var link = $(this).attr('href');

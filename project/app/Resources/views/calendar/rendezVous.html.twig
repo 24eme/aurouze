@@ -3,7 +3,7 @@
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             <span class="col-xs-2 text-center">
-                {% if (rdv.passage and rdv.passage.annule) %}
+                {% if (rdv.passage and rdv.passage.isAnnule) %}
                     <button class="btn btn-md btn-block btn-danger">{{
             rdv.passage.getStatutLibelle() }}</button>
 
@@ -290,7 +290,7 @@
                     <div class="col-xs-7 text-center">
                         <div class="btn-group">
                             {% if rdv.id and form is defined %}
-                                <a class="btn btn-sm btn-default text-danger rdv-deplanifier-link" href="{{ path('calendarDelete', {'id': rdv.id, 'service': service }) }}"><span class="text-danger"><span class="glyphicon glyphicon-trash"></span> Supprimer RDV</span></a>
+                                <a class="btn btn-sm btn-default text-danger rdv-deplanifier-link" href="{{ path('calendarDelete', {'id': rdv.id, 'service': service }) }}"><span class="text-danger"><span class="glyphicon glyphicon-trash"></span>Déplanifier</span></a>
                             {% endif %}
                             {% if (rdv.id and rdv.passage and form is defined) %}
                                 <a class="btn btn-sm btn-default" href="{{ path('passage_pdf_bon', { id: rdv.passage.id, 'service': service })}}"><span class="glyphicon glyphicon-print"></span> Bon de passage</a>
@@ -303,7 +303,7 @@
                                 <a class="btn btn-sm btn-default" href="{{ path('passage_edition', {'id': rdv.passage.id, 'service': service })}}"><span class="glyphicon glyphicon-pencil"></span> Modifier le rapport</a>
                             {% endif %}
                             {% if (rdv.passage and not rdv.id) %}
-                                <a href="{{ path('passage_annulation',{ 'id': rdv.passage.id, 'service': service }) }}" class="btn btn-sm btn-default text-danger" onclick="return confirm('Êtes vous sûr de vouloir passer ce passage en annuler ?')"><span class="text-danger">Annuler le passage</span></a>
+                                <a href="{{ path('passage_annulation',{ 'id': rdv.passage.id, 'service': service }) }}" class="btn btn-default" onclick="return confirm('Êtes vous sûr de vouloir passer ce passage en annuler ?')"><span class="text-danger">Annuler le passage</span></a>
                             {% endif %}
                             {% if (rdv.passage and rdv.passage.isValideTechnicien and rdv.passage.isSaisieTechnicien) %}
                                 <a class="btn btn-sm btn-default" href="{{ path('passage_pdf_rapport_download', {'id': rdv.passage.id, 'service': service })}}"

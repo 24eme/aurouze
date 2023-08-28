@@ -2246,7 +2246,7 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
         }
         foreach ($this->getContratPassages() as $contratPassage) {
             foreach ($contratPassage->getPassages() as $p) {
-                if ($p->isRealise() || $p->isAnnule()) {
+                if ($p->isRealise() || $p->isPlanifie()) {
                     return false;
                 }
             }
