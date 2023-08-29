@@ -351,8 +351,8 @@ body {
 }
 
 input:required:invalid {
-  border-color: #dc3545;
+  border : 2px solid black;
 }
 textarea:required:invalid{
-  border-color: #dc3545;
+  border : 2px solid black;
 }

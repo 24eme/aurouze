@@ -1504,7 +1504,7 @@ $(document).on('DOMSubtreeModified', function() {
             return true;
         }
         if(element.attr('title') === '' || !element.attr('title')){
-            element.parent().css("border-color",'#dc3545');
+            element.parent().css("border",'2px solid black');
         }else{
             element.parent().css("border-color",'');
         }
