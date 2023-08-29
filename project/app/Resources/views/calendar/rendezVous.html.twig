@@ -265,6 +265,11 @@
                             </div>
                         </div>
                     </div>
+                    <div class="form-group">
+                        <div class="col-xs-3 col-xs-offset-9">
+                            <span class="btn btn-default" onclick='selectFullDay()'><small>Séléctionner toute la journée</small></span>
+                        </div>
+                    </div>
                     <hr />
                     <div class="form-group">
                         {{ form_errors(form.description) }}
@@ -347,3 +352,12 @@
             {% endif %}
         </div>
     </div>
+
+
+<script>
+function selectFullDay(){
+  document.getElementById("rendezvous_dateFin").value = document.getElementById("rendezvous_dateDebut").value
+  document.getElementById("rendezvous_timeDebut").value = '7:00';
+  document.getElementById("rendezvous_timeFin").value = '19:00';
+}
+</script>
