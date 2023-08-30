@@ -208,7 +208,7 @@ class FactureController extends Controller
 
         $dm->flush();
 
-        return $this->redirectToRoute('facture_societe', array('id' => $societe->getId()));
+        return $this->redirectToRoute('facture_societe', array('id' => $societe->getId(),"etablissement_id" => $request->get('etablissement_id')));
     }
 
     /**
@@ -349,7 +349,8 @@ class FactureController extends Controller
         if($retour && ($retour == "relance")){
           return $this->redirectToRoute('factures_retard');
         }
-        return $this->redirectToRoute('facture_societe', array('id' => $societe->getId()));
+
+        return $this->redirectToRoute('facture_societe', array('id' => $societe->getId(),"etablissement_id" => $request->get('etablissement_id')));
     }
 
 
@@ -374,7 +375,8 @@ class FactureController extends Controller
         if($retour && ($retour == "relance")){
           return $this->redirectToRoute('factures_retard');
         }
-        return $this->redirectToRoute('facture_societe', array('id' => $societe->getId()));
+
+        return $this->redirectToRoute('facture_societe', array('id' => $societe->getId(),"etablissement_id" => $request->get('etablissement_id')));
     }
 
 
@@ -391,7 +393,7 @@ class FactureController extends Controller
             $dm->persist($facture);
             $dm->flush();
         }
-        return $this->redirectToRoute('facture_societe', array('id' => $societe->getId()));
+        return $this->redirectToRoute('facture_societe', array('id' => $societe->getId(),"etablissement_id" => $request->get('etablissement_id')));
     }
 
 
@@ -412,7 +414,7 @@ class FactureController extends Controller
         $dm->persist($facture);
         $dm->flush();
 
-        return $this->redirectToRoute('facture_societe', array('id' => $facture->getSociete()->getId()));
+        return $this->redirectToRoute('facture_societe', array('id' => $societe->getId(),"etablissement_id" => $request->get('etablissement_id')));
     }
 
 
@@ -452,7 +454,7 @@ class FactureController extends Controller
         }
       }
 
-      return $this->redirectToRoute('facture_societe', array('id' => $societe->getId()));
+      return $this->redirectToRoute('facture_societe', array('id' => $societe->getId(),"etablissement_id" => $request->get('etablissement_id')));
   }
 
 
@@ -467,7 +469,8 @@ class FactureController extends Controller
         $facture->decloturer();
         $dm->persist($facture);
         $dm->flush();
-        return $this->redirectToRoute('facture_societe', array('id' => $societe->getId()));
+
+        return $this->redirectToRoute('facture_societe', array('id' => $societe->getId(),"etablissement_id" => $request->get('etablissement_id')));
     }
 
     /**
@@ -478,7 +481,8 @@ class FactureController extends Controller
         $dm = $this->get('doctrine_mongodb')->getManager();
     	$contrat->resetFacturableMouvement($identifiant);
         $dm->flush();
-        return $this->redirectToRoute('facture_societe', array('id' => $contrat->getSociete()->getId()));
+
+        return $this->redirectToRoute('facture_societe', array('id' => $societe->getId(),"etablissement_id" => $request->get('etablissement_id')));
     }
 
     public function createExportSocieteForm(Societe $societe, Etablissement $etablissement = null) {
