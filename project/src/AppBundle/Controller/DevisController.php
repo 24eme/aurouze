@@ -15,7 +15,7 @@ use AppBundle\Document\Societe;
 use AppBundle\Document\RendezVous;
 use AppBundle\Type\DevisType;
 use AppBundle\Model\FacturableControllerTrait;
-
+use Behat\Transliterator\Transliterator;
 /**
  * Devis controller.
  *
@@ -176,10 +176,14 @@ class DevisController extends Controller
         $facture = $fm->createFromDevis($devis, $planification);
         $df = ($this->container->getParameter('date_facturation'))? new \DateTime($this->container->getParameter('date_facturation')) : new \DateTime();
         $facture->setDateFacturation($df);
-        $devis->setPdfNonEnvoye(false);
         $dm->persist($facture);
         $devis->setIdentifiantFacture($facture->getId());
         $dm->flush();
+
+        if($request->get('service')) {
+            return $this->redirect($request->get('service'));
+        }
+
         return $this->redirectToRoute('facture_societe', array('id' => $facture->getSociete()->getId()));
     }
 
@@ -213,4 +217,118 @@ class DevisController extends Controller
 
         return $this->forward('AppBundle:Calendar:calendarRead', array('planifiable' => $devis->getId(), 'service' => $request->get('service')));
     }
+
+    private function createRapportVisitePdf(Devis $devis){
+        $createRapportVisitePdf = new \stdClass();
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $fm = $this->get('facture.manager');
+
+        $createRapportVisitePdf->html = $this->renderView('devis/pdfRapport.html.twig', array(
+            'devis' => $devis,
+            'parameters' => $fm->getParameters(),
+        ));
+
+        $createRapportVisitePdf->filename = sprintf("passage_rapport_%s_%s.pdf", $devis->getDateDebut()->format("Y-m-d_H:i"), strtoupper(Transliterator::urlize($devis->getEtablissement())));
+
+        return $createRapportVisitePdf;
+    }
+
+    /**
+     * @Route("/devis/pdf-rapport-download/{id}", name="devis_pdf_rapport_download")
+     * @ParamConverter("devis", class="AppBundle:Devis")
+     */
+    public function pdfRapportDownloadAction(Request $request, Devis $devis) {
+        $rapportVisitePdf = $this->createRapportVisitePdf($devis);
+        if ($request->get('output') == 'html') {
+
+            return new Response($rapportVisitePdf->html, 200);
+        }
+
+        if (! shell_exec(sprintf("which %s", escapeshellarg('pdftk')))) {
+            throw new \LogicException('missing pdftk binary');
+        }
+
+        $tmpfile = $this->container->getParameter('kernel.cache_dir').'/PDFRAPPORT_'.$devis->getId().uniqid();
+        $this->get('knp_snappy.pdf')->generateFromHtml($rapportVisitePdf->html,$tmpfile,$this->getPdfGenerationOptions());
+
+        return new Response(file_get_contents($tmpfile), 200, array(
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="' . $rapportVisitePdf->filename . '"'
+            )
+        );
+
+        if($request->get('service')) {
+            return $this->redirect($request->get('service'));
+        }
+
+    }
+
+    /**
+     * @Route("/devis/devis-transmission-email/{id}", name="devis_transmission_email")
+     * @ParamConverter("devis", class="AppBundle:Devis")
+     */
+    public function transmissionEmailAction(Request $request, Devis $devis) {
+
+        $rapportVisitePdf = $this->createRapportVisitePdf($devis);
+        if ($request->get('output') == 'html') {
+
+            return new Response($rapportVisitePdf->html, 200);
+        }
+
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $fm = $this->get('facture.manager');
+        $parameters = $fm->getParameters();
+        $appname = $this->container->getParameter('instanceapp');
+
+        if(!$parameters['coordonnees'] || !$parameters['coordonnees']['email'] || !$parameters['coordonnees']['nom']){
+            throw new Exception("Le paramétrage pour le mail d'envoie n'est pas correct.");
+        }
+
+        $fromEmail = $parameters['coordonnees']['email'];
+        $fromName = $parameters['coordonnees']['nom'];
+
+        $replyEmail = $parameters['coordonnees']['replyEmail'];
+
+        $suject = "[".ucfirst($appname)."] - Rapport de Livraison du ".$devis->getDateDebut()->format("d/m/Y")." à ".$devis->getDateDebut()->format("H\hi");
+        $body = $this->renderView(
+            'devis/rapportEmail.html.twig',
+            array('devis' => $devis)
+        );
+
+        $message = \Swift_Message::newInstance()
+            ->setSubject($suject)
+            ->setFrom(array($fromEmail => $fromName))
+            ->setTo(explode(";",$devis->getEmailTransmission()))
+            ->setReplyTo($replyEmail)
+            ->setBody($body,'text/plain');
+
+        if ($devis->getSecondEmailTransmission()) {
+            $emailsTransmissions = explode(";",$devis->getEmailTransmission());
+            $secondEmailsTransmission = explode(";",$devis->getSecondEmailTransmission());
+            $to = array_merge($emailsTransmissions,$secondEmailsTransmission);
+            $message->setTo($to);
+        }
+
+        $attachment = \Swift_Attachment::newInstance($this->get('knp_snappy.pdf')->getOutputFromHtml($rapportVisitePdf->html, $this->getPdfGenerationOptions()), $rapportVisitePdf->filename, 'application/pdf');
+
+        $message->attach($attachment);
+
+        try {
+            $this->get('mailer')->send($message);
+            $devis->setPdfNonEnvoye(false);
+            $dm->flush();
+        }
+
+        catch(Exception $e) {
+            var_dump('NO mailer config'); exit;
+        }
+
+        if($request->get('service')) {
+
+            return $this->redirect($request->get('service'));
+        }
+
+        return $this->redirectToRoute('passage_etablissement', array('id' => $passage->getEtablissement()->getId()));
+    }
+
 }

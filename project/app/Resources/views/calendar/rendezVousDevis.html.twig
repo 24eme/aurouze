@@ -11,14 +11,18 @@
         {% elseif rdv.planifiable.planifie %}
           <button style="margin-bottom: 10px;" class="btn btn-md btn-block btn-warning">Planifié</button>
         {% elseif rdv.planifiable.realise %}
-          {% if (rdv.planifiable.getPdfNonEnvoye) %}
+          {% if not rdv.planifiable.getPdfNonEnvoye %}
             <button class="btn btn-md btn-block" style="background-color:{{rdv.calculateTilesColors().background}}; color:{{rdv.calculateTilesColors().text}};">
-              Facture non Emise
+                Pdf Rapport envoyé
+            </button>
+          {% elseif (rdv.planifiable.identifiantFacture) %}
+            <button class="btn btn-md btn-block" style="background-color:{{rdv.calculateTilesColors().background}}; color:{{rdv.calculateTilesColors().text}};">
+              Facture éditée
             </button>
           {% else %}
-          <button class="btn btn-md btn-block" style="background-color:{{rdv.calculateTilesColors().background}}; color:{{rdv.calculateTilesColors().text}};">
-            Facture éditée
-          </button>
+              <button class="btn btn-md btn-block" style="background-color:{{rdv.calculateTilesColors().background}}; color:{{rdv.calculateTilesColors().text}};">
+                Facture non Emise
+              </button>
           {% endif %}
         {% endif %}
       </span>
@@ -207,7 +211,10 @@
                 {% if (rdv.id and rdv.planifiable) %}
                   <a class="btn btn-sm btn-default" href="{{ path('devis_modification', {'id': rdv.devis.id, 'service': service })}}"></span> Modification du devis</a>
                 {% endif %}
-              </div>
+                {% if (rdv.planifiable and rdv.planifiable.isValideTechnicien and rdv.planifiable.isSaisieTechnicien) %}
+                    <a class="btn btn-sm btn-default" href="{{ path('devis_pdf_rapport_download', {'id': rdv.devis.id, 'service': service })}}" data-toggle="tooltip" ><span class="glyphicon glyphicon-file"></span> Télécharger le rapport de devis</a>
+                {% endif %}
+                </div>
             </div>
             <div class="col-xs-4 text-right">
             {% if rdv.id and form is defined %}
@@ -217,19 +224,23 @@
             {% endif %}
               {% if (rdv.planifiable and rdv.planifiable.isValideTechnicien and rdv.planifiable.isSaisieTechnicien) %}
               <div class="btn-group">
-                {% if (not rdv.planifiable.identifiantFacture) %}
-                <a class="btn btn-sm btn-default"
-                   href="{{ path('devis_create-facture', {'id': rdv.devis.id })}}"
-                   title="Création de la facture"
-                   data-toggle="tooltip" >
-                      <span class="glyphicon glyphicon-file"></span>&nbsp;Facturer le devis produit
-                </a>
-                {% else %}
+               {% if (not rdv.planifiable.identifiantFacture) %}
+                   <a class="btn btn-sm btn-default"
+                      href="{{ path('devis_create-facture', {'id': rdv.devis.id , 'service': service})}}"
+                      title="Création de la facture"
+                      data-toggle="tooltip" >
+                         <span class="glyphicon glyphicon-file"></span>&nbsp;Facturer le devis produit
+                   </a>
+                {% else  %}
                 <a class="btn btn-sm btn-default"
                    href="{{ path('facture_societe', {'id': rdv.devis.societe.id })}}"
                    title="Retour aux facture"
-                   data-toggle="tooltip" >&nbsp;Retour aux factures
-                </a>
+                   data-toggle="tooltip" >Retour aux factures</a>
+                <br><br>
+                <a class="btn btn-sm btn-default"
+                   href="{{ path('devis_transmission_email', {'id': rdv.planifiable.id, 'service': service })}}"
+                   title="Enoyer le rapport par mail">
+                   <span class="glyphicon glyphicon-send"></span> Envoyer par mail</a>
               {% endif %}
               </div>
               {% endif %}
