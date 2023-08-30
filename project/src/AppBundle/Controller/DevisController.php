@@ -228,7 +228,7 @@ class DevisController extends Controller
             'parameters' => $fm->getParameters(),
         ));
 
-        $createRapportVisitePdf->filename = sprintf("passage_rapport_%s_%s.pdf", $devis->getDateDebut()->format("Y-m-d_H:i"), strtoupper(Transliterator::urlize($devis->getEtablissement())));
+        $createRapportVisitePdf->filename = sprintf("Livraison_rapport_%s_%s.pdf", $devis->getDateDebut()->format("Y-m-d_H:i"), strtoupper(Transliterator::urlize($devis->getEtablissement())));
 
         return $createRapportVisitePdf;
     }
