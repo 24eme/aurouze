@@ -12,166 +12,227 @@
 
     {{ include('societe/choixForm.html.twig', {'urlTarget': path('contrats_societe', {'id': '_id_'})}) }}
 
-
     <h3>Liste des contrats de la société {{ societe.raisonSociale }}
     <small>N° {{societe.identifiant }}</small>
     <a style="margin-bottom: 10px;" href="{{ path('contrat_creation', {'id': societe.getId()}) }}" class="btn btn-sm btn-default pull-right"><strong><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>&nbsp;Créer un nouveau contrat</strong></a></h3>
     <br>
-    <h3>Liste des contrats <strong>en cours </strong></h3>
-    <table  class="table table-bordered">
-      <thead>
-          <tr>
-              <th class="col-xs-1">Statut</th>
-              <th class="col-xs-2">Type</th>
-              <th class="col-xs-1">N°</th>
-              <th class="col-xs-2">Date</th>
-              <th class="col-xs-1">Garantie</th>
-              <th class="col-xs-1" class="text-center">Prix</th>
-              <th class="col-xs-1">Prestations</th>
-              <th class="col-xs-4 text-center">Lieu de passage</th>
-          </tr>
-      </thead>
-      {% for contrat in contrats %}
 
-      {% if contrat.isEnCoursStatutLibelle %}
-      <tr class="{{ contrat.statutCouleur }}">
-          <td><small class="text-{{ contrat.statutCouleur }}">{{ contrat.statutLibelle }}</small></td>
-          <td><small>{{ contrat.typeContratLibelle }}</small></td>
-          <td><a href="{{ path('contrat_visualisation', {'id': contrat.id })}}">n°&nbsp;{{ contrat.numeroArchive }}</a></td>
-          <td>{{ contrat.dateDebut | localizeddate("medium", "none", null, null, "MMM yyyy") | capitalize }}{% if(contrat.dateDebut | localizeddate("medium", "none", null, null, "MMM yyyy")) != contrat.dateFin | localizeddate("medium", "none", null, null, "MMM yyyy") %}&nbsp;-&nbsp;{{ contrat.dateFin | localizeddate("medium", "none", null, null, "MMM yyyy") | capitalize }}{% endif %}</td>
-          <td class="text-right">{% if(contrat.dureeGarantie) %}{{ contrat.dureeGarantie }} mois{% else %}<small class="text-muted">Aucune</small>{% endif %}</td>
-          <td class="text-right">{{ "%0.2f" | format(contrat.getPrixHt)  }}&nbsp;€</td>
-          <td>
-              {% for prestation in contrat.prestations %}
-                  {% if(prestation.wordToPicto) %}
-                      &nbsp;<span class="" title="{{  prestation.nomToString }} : {{ prestation.nbPassages }}" data-toggle="tooltip" >
-                          <i class="mdi-{{prestation.wordToPicto}}" style="cursor:pointer;">&nbsp;</i></span>
+    <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#encours"><b>en cours</b></a></li>
+        <li><a data-toggle="tab" href="#avenir"><b>à venir</b></a></li>
+        <li><a data-toggle="tab" href="#attentebrouillon"><b>en attente/brouillon</b></a></li>
+        <li><a data-toggle="tab" href="#terminesresiliesannules"><b>terminés/résiliés/annulés</b></a></li>
+    </ul>
+
+    <div class="tab-content">
+        <div id="encours" class="tab-pane fade in active">
+            <h3>Liste des contrats <strong>en cours </strong></h3>
+            <table  class="table table-bordered">
+              <thead>
+                  <tr>
+                      <th class="col-xs-1">Statut</th>
+                      <th class="col-xs-2">Type</th>
+                      <th class="col-xs-1">N°</th>
+                      <th class="col-xs-2">Date</th>
+                      <th class="col-xs-1">Garantie</th>
+                      <th class="col-xs-1" class="text-center">Prix</th>
+                      <th class="col-xs-1">Prestations</th>
+                      <th class="col-xs-4 text-center">Lieu de passage</th>
+                  </tr>
+              </thead>
+              {% for contrat in contrats %}
+
+              {% if contrat.isEnCoursStatutLibelle %}
+              <tr class="{{ contrat.statutCouleur }}">
+                  <td><small class="text-{{ contrat.statutCouleur }}">{{ contrat.statutLibelle }}</small></td>
+                  <td><small>{{ contrat.typeContratLibelle }}</small></td>
+                  <td><a href="{{ path('contrat_visualisation', {'id': contrat.id })}}">n°&nbsp;{{ contrat.numeroArchive }}</a></td>
+                  <td>{{ contrat.dateDebut | localizeddate("medium", "none", null, null, "MMM yyyy") | capitalize }}{% if(contrat.dateDebut | localizeddate("medium", "none", null, null, "MMM yyyy")) != contrat.dateFin | localizeddate("medium", "none", null, null, "MMM yyyy") %}&nbsp;-&nbsp;{{ contrat.dateFin | localizeddate("medium", "none", null, null, "MMM yyyy") | capitalize }}{% endif %}</td>
+                  <td class="text-right">{% if(contrat.dureeGarantie) %}{{ contrat.dureeGarantie }} mois{% else %}<small class="text-muted">Aucune</small>{% endif %}</td>
+                  <td class="text-right">{{ "%0.2f" | format(contrat.getPrixHt)  }}&nbsp;€</td>
+                  <td>
+                      {% for prestation in contrat.prestations %}
+                          {% if(prestation.wordToPicto) %}
+                              &nbsp;<span class="" title="{{  prestation.nomToString }} : {{ prestation.nbPassages }}" data-toggle="tooltip" >
+                                  <i class="mdi-{{prestation.wordToPicto}}" style="cursor:pointer;">&nbsp;</i></span>
+                              {% else %}
+                              <span class="btn btn-xs label-primary">{{  prestation.nomToString }}&nbsp;<span>{{ prestation.nbPassages }}</span></span>
+                          {% endif %}
+                      {% endfor %}
+                  </td>
+                  <td class="text-center">
+                      {% if ((contrat.etablissements | length) > 1) %}
+                          <a data-html="true" title="{% for etablissement in contrat.etablissements %} {{ etablissement.adresse.adresseFormatee }} <br/> {% endfor %}" data-toggle="tooltip" href="{{ path('contrat_visualisation', {'id': contrat.id }) }}">{{ contrat.etablissements | length }}&nbsp;établissements</a>
+                      {% elseif ((contrat.etablissements | length) == 1) %}
+                          <a title="{% for etablissement in contrat.etablissements %} {{ etablissement.nom }} - {{ etablissement.adresse.commune }} {% endfor %}" data-toggle="tooltip" href="{{ path('passage_etablissement', {'id': contrat.etablissements[0].id }) }}">
+                        {% for etablissement in contrat.etablissements %}
+                         {% if etablissement.adresse.adresseFormatee %}{{ etablissement.adresse.adresseFormatee }}{% else %}{{ etablissement.adresse.commune }}{% endif %}
+                        {% endfor %}
+                        </a>
                       {% else %}
-                      <span class="btn btn-xs label-primary">{{  prestation.nomToString }}&nbsp;<span>{{ prestation.nbPassages }}</span></span>
-                  {% endif %}
-              {% endfor %}
-          </td>
-          <td class="text-center">
-              {% if ((contrat.etablissements | length) > 1) %}
-                  <a data-html="true" title="{% for etablissement in contrat.etablissements %} {{ etablissement.adresse.adresseFormatee }} <br/> {% endfor %}" data-toggle="tooltip" href="{{ path('contrat_visualisation', {'id': contrat.id }) }}">{{ contrat.etablissements | length }}&nbsp;établissements</a>
-              {% elseif ((contrat.etablissements | length) == 1) %}
-                  <a title="{% for etablissement in contrat.etablissements %} {{ etablissement.nom }} - {{ etablissement.adresse.commune }} {% endfor %}" data-toggle="tooltip" href="{{ path('passage_etablissement', {'id': contrat.etablissements[0].id }) }}">
-                {% for etablissement in contrat.etablissements %}
-                 {% if etablissement.adresse.adresseFormatee %}{{ etablissement.adresse.adresseFormatee }}{% else %}{{ etablissement.adresse.commune }}{% endif %}
-                {% endfor %}
-                </a>
-              {% else %}
-                  <small>Aucun</small>
-              {% endif %}
-          </td>
-      </tr>
-
-
-
-      {% endif %}
-      {% endfor %}
-    </table>
-
-
-    <h3>Liste des contrats <strong>à venir/en attente/brouillon </strong></h3>
-    <table  class="table table-bordered">
-      <thead>
-          <tr>
-              <th class="col-xs-1">Statut</th>
-              <th class="col-xs-2">Type</th>
-              <th class="col-xs-1">N°</th>
-              <th class="col-xs-2">Date</th>
-              <th class="col-xs-1">Garantie</th>
-              <th class="col-xs-1" class="text-center">Prix</th>
-              <th class="col-xs-1">Prestations</th>
-              <th class="col-xs-4 text-center">Lieu de passage</th>
-          </tr>
-      </thead>
-      {% for contrat in contrats %}
-        {% if contrat.isAVenirStatutLibelle  or contrat.isEnAttenteStatutLibelle or contrat.isBrouillonStatutLibelle %}
-        <tr class="{{ contrat.statutCouleur }}">
-            <td><small class="text-{{ contrat.statutCouleur }}">{{ contrat.statutLibelle }}</small></td>
-            <td><small>{{ contrat.typeContratLibelle }}</small></td>
-            <td><a href="{{ path('contrat_visualisation', {'id': contrat.id })}}">n°&nbsp;{{ contrat.numeroArchive }}</a></td>
-            <td>{{ contrat.dateDebut | localizeddate("medium", "none", null, null, "MMM yyyy") | capitalize }}{% if(contrat.dateDebut | localizeddate("medium", "none", null, null, "MMM yyyy")) != contrat.dateFin | localizeddate("medium", "none", null, null, "MMM yyyy") %}&nbsp;-&nbsp;{{ contrat.dateFin | localizeddate("medium", "none", null, null, "MMM yyyy") | capitalize }}{% endif %}</td>
-            <td class="text-right">{% if(contrat.dureeGarantie) %}{{ contrat.dureeGarantie }} mois{% else %}<small class="text-muted">Aucune</small>{% endif %}</td>
-            <td class="text-right">{{ "%0.2f" | format(contrat.getPrixHt)  }}&nbsp;€</td>
-            <td>
-                {% for prestation in contrat.prestations %}
-                    {% if(prestation.wordToPicto) %}
-                        &nbsp;<span class="" title="{{  prestation.nomToString }} : {{ prestation.nbPassages }}" data-toggle="tooltip" >
-                            <i class="mdi-{{prestation.wordToPicto}}" style="cursor:pointer;">&nbsp;</i></span>
-                        {% else %}
-                        <span class="btn btn-xs label-primary">{{  prestation.nomToString }}&nbsp;<span>{{ prestation.nbPassages }}</span></span>
-                    {% endif %}
-                {% endfor %}
-            </td>
-            <td class="text-center">
-                {% if ((contrat.etablissements | length) > 1) %}
-                    <a data-html="true" title="{% for etablissement in contrat.etablissements %} {{ etablissement.adresse.adresseFormatee }} <br/> {% endfor %}" data-toggle="tooltip" href="{{ path('contrat_visualisation', {'id': contrat.id }) }}">{{ contrat.etablissements | length }}&nbsp;établissements</a>
-                {% elseif ((contrat.etablissements | length) == 1) %}
-                    <a title="{% for etablissement in contrat.etablissements %} {{ etablissement.nom }} - {{ etablissement.adresse.commune }} {% endfor %}" data-toggle="tooltip" href="{{ path('passage_etablissement', {'id': contrat.etablissements[0].id }) }}">
-                  {% for etablissement in contrat.etablissements %}
-                   {% if etablissement.adresse.adresseFormatee %}{{ etablissement.adresse.adresseFormatee }}{% else %}{{ etablissement.adresse.commune }}{% endif %}
-                  {% endfor %}
-                  </a>
-                {% else %}
-                    <small>Aucun</small>
-                {% endif %}
-            </td>
-        </tr>
-        {% endif %}
-      {% endfor %}
-    </table>
-
-    <h3>Liste des contrats <strong>terminés/résiliés/annulés</strong></h3>
-    <table  class="table table-bordered">
-      <thead>
-          <tr>
-              <th class="col-xs-1">Statut</th>
-              <th class="col-xs-2">Type</th>
-              <th class="col-xs-1">N°</th>
-              <th class="col-xs-2">Date</th>
-              <th class="col-xs-1">Garantie</th>
-              <th class="col-xs-1" class="text-center">Prix</th>
-              <th class="col-xs-1">Prestations</th>
-              <th class="col-xs-4 text-center">Lieu de passage</th>
-          </tr>
-      </thead>
-        {% for contrat in contrats %}
-          {% if contrat.isTermineStatutLibelle or contrat.isResilieStatutLibelle or contrat.isAnnuleStatutLibelle %}
-          <tr class="{{ contrat.statutCouleur }}">
-              <td><small class="text-{{ contrat.statutCouleur }}">{{ contrat.statutLibelle }}</small></td>
-              <td><small>{{ contrat.typeContratLibelle }}</small></td>
-              <td><a href="{{ path('contrat_visualisation', {'id': contrat.id })}}">n°&nbsp;{{ contrat.numeroArchive }}</a></td>
-              <td>{{ contrat.dateDebut | localizeddate("medium", "none", null, null, "MMM yyyy") | capitalize }}{% if(contrat.dateDebut | localizeddate("medium", "none", null, null, "MMM yyyy")) != contrat.dateFin | localizeddate("medium", "none", null, null, "MMM yyyy") %}&nbsp;-&nbsp;{{ contrat.dateFin | localizeddate("medium", "none", null, null, "MMM yyyy") | capitalize }}{% endif %}</td>
-              <td class="text-right">{% if(contrat.dureeGarantie) %}{{ contrat.dureeGarantie }} mois{% else %}<small class="text-muted">Aucune</small>{% endif %}</td>
-              <td class="text-right">{{ "%0.2f" | format(contrat.getPrixHt)  }}&nbsp;€</td>
-              <td>
-                  {% for prestation in contrat.prestations %}
-                      {% if(prestation.wordToPicto) %}
-                          &nbsp;<span class="" title="{{  prestation.nomToString }} : {{ prestation.nbPassages }}" data-toggle="tooltip" >
-                              <i class="mdi-{{prestation.wordToPicto}}" style="cursor:pointer;">&nbsp;</i></span>
-                          {% else %}
-                          <span class="btn btn-xs label-primary">{{  prestation.nomToString }}&nbsp;<span>{{ prestation.nbPassages }}</span></span>
+                          <small>Aucun</small>
                       {% endif %}
-                  {% endfor %}
-              </td>
-              <td class="text-center">
-                  {% if ((contrat.etablissements | length) > 1) %}
-                      <a data-html="true" title="{% for etablissement in contrat.etablissements %} {{ etablissement.adresse.adresseFormatee }} <br/> {% endfor %}" data-toggle="tooltip" href="{{ path('contrat_visualisation', {'id': contrat.id }) }}">{{ contrat.etablissements | length }}&nbsp;établissements</a>
-                  {% elseif ((contrat.etablissements | length) == 1) %}
-                      <a title="{% for etablissement in contrat.etablissements %} {{ etablissement.nom }} - {{ etablissement.adresse.commune }} {% endfor %}" data-toggle="tooltip" href="{{ path('passage_etablissement', {'id': contrat.etablissements[0].id }) }}">
-                    {% for etablissement in contrat.etablissements %}
-                     {% if etablissement.adresse.adresseFormatee %}{{ etablissement.adresse.adresseFormatee }}{% else %}{{ etablissement.adresse.commune }}{% endif %}
-                    {% endfor %}
-                    </a>
-                  {% else %}
-                      <small>Aucun</small>
+                  </td>
+              </tr>
+              {% endif %}
+              {% endfor %}
+            </table>
+        </div>
+        <div id="avenir" class="tab-pane fade">
+            <h3>Liste des contrats <strong>à venir </strong></h3>
+            <table  class="table table-bordered">
+              <thead>
+                  <tr>
+                      <th class="col-xs-1">Statut</th>
+                      <th class="col-xs-2">Type</th>
+                      <th class="col-xs-1">N°</th>
+                      <th class="col-xs-2">Date</th>
+                      <th class="col-xs-1">Garantie</th>
+                      <th class="col-xs-1" class="text-center">Prix</th>
+                      <th class="col-xs-1">Prestations</th>
+                      <th class="col-xs-4 text-center">Lieu de passage</th>
+                  </tr>
+              </thead>
+              {% for contrat in contrats %}
+                {% if contrat.isAVenirStatutLibelle %}
+                <tr class="{{ contrat.statutCouleur }}">
+                    <td><small class="text-{{ contrat.statutCouleur }}">{{ contrat.statutLibelle }}</small></td>
+                    <td><small>{{ contrat.typeContratLibelle }}</small></td>
+                    <td><a href="{{ path('contrat_visualisation', {'id': contrat.id })}}">n°&nbsp;{{ contrat.numeroArchive }}</a></td>
+                    <td>{{ contrat.dateDebut | localizeddate("medium", "none", null, null, "MMM yyyy") | capitalize }}{% if(contrat.dateDebut | localizeddate("medium", "none", null, null, "MMM yyyy")) != contrat.dateFin | localizeddate("medium", "none", null, null, "MMM yyyy") %}&nbsp;-&nbsp;{{ contrat.dateFin | localizeddate("medium", "none", null, null, "MMM yyyy") | capitalize }}{% endif %}</td>
+                    <td class="text-right">{% if(contrat.dureeGarantie) %}{{ contrat.dureeGarantie }} mois{% else %}<small class="text-muted">Aucune</small>{% endif %}</td>
+                    <td class="text-right">{{ "%0.2f" | format(contrat.getPrixHt)  }}&nbsp;€</td>
+                    <td>
+                        {% for prestation in contrat.prestations %}
+                            {% if(prestation.wordToPicto) %}
+                                &nbsp;<span class="" title="{{  prestation.nomToString }} : {{ prestation.nbPassages }}" data-toggle="tooltip" >
+                                    <i class="mdi-{{prestation.wordToPicto}}" style="cursor:pointer;">&nbsp;</i></span>
+                                {% else %}
+                                <span class="btn btn-xs label-primary">{{  prestation.nomToString }}&nbsp;<span>{{ prestation.nbPassages }}</span></span>
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td class="text-center">
+                        {% if ((contrat.etablissements | length) > 1) %}
+                            <a data-html="true" title="{% for etablissement in contrat.etablissements %} {{ etablissement.adresse.adresseFormatee }} <br/> {% endfor %}" data-toggle="tooltip" href="{{ path('contrat_visualisation', {'id': contrat.id }) }}">{{ contrat.etablissements | length }}&nbsp;établissements</a>
+                        {% elseif ((contrat.etablissements | length) == 1) %}
+                            <a title="{% for etablissement in contrat.etablissements %} {{ etablissement.nom }} - {{ etablissement.adresse.commune }} {% endfor %}" data-toggle="tooltip" href="{{ path('passage_etablissement', {'id': contrat.etablissements[0].id }) }}">
+                          {% for etablissement in contrat.etablissements %}
+                           {% if etablissement.adresse.adresseFormatee %}{{ etablissement.adresse.adresseFormatee }}{% else %}{{ etablissement.adresse.commune }}{% endif %}
+                          {% endfor %}
+                          </a>
+                        {% else %}
+                            <small>Aucun</small>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endif %}
+              {% endfor %}
+            </table>
+        </div>
+        <div id="attentebrouillon" class="tab-pane fade">
+            <h3>Liste des contrats <strong>en attente/brouillon </strong></h3>
+            <table  class="table table-bordered">
+              <thead>
+                  <tr>
+                      <th class="col-xs-1">Statut</th>
+                      <th class="col-xs-2">Type</th>
+                      <th class="col-xs-1">N°</th>
+                      <th class="col-xs-2">Date</th>
+                      <th class="col-xs-1">Garantie</th>
+                      <th class="col-xs-1" class="text-center">Prix</th>
+                      <th class="col-xs-1">Prestations</th>
+                      <th class="col-xs-4 text-center">Lieu de passage</th>
+                  </tr>
+              </thead>
+              {% for contrat in contrats %}
+                {% if contrat.isEnAttenteStatutLibelle or contrat.isBrouillonStatutLibelle %}
+                <tr class="{{ contrat.statutCouleur }}">
+                    <td><small class="text-{{ contrat.statutCouleur }}">{{ contrat.statutLibelle }}</small></td>
+                    <td><small>{{ contrat.typeContratLibelle }}</small></td>
+                    <td><a href="{{ path('contrat_visualisation', {'id': contrat.id })}}">n°&nbsp;{{ contrat.numeroArchive }}</a></td>
+                    <td>{{ contrat.dateDebut | localizeddate("medium", "none", null, null, "MMM yyyy") | capitalize }}{% if(contrat.dateDebut | localizeddate("medium", "none", null, null, "MMM yyyy")) != contrat.dateFin | localizeddate("medium", "none", null, null, "MMM yyyy") %}&nbsp;-&nbsp;{{ contrat.dateFin | localizeddate("medium", "none", null, null, "MMM yyyy") | capitalize }}{% endif %}</td>
+                    <td class="text-right">{% if(contrat.dureeGarantie) %}{{ contrat.dureeGarantie }} mois{% else %}<small class="text-muted">Aucune</small>{% endif %}</td>
+                    <td class="text-right">{{ "%0.2f" | format(contrat.getPrixHt)  }}&nbsp;€</td>
+                    <td>
+                        {% for prestation in contrat.prestations %}
+                            {% if(prestation.wordToPicto) %}
+                                &nbsp;<span class="" title="{{  prestation.nomToString }} : {{ prestation.nbPassages }}" data-toggle="tooltip" >
+                                    <i class="mdi-{{prestation.wordToPicto}}" style="cursor:pointer;">&nbsp;</i></span>
+                                {% else %}
+                                <span class="btn btn-xs label-primary">{{  prestation.nomToString }}&nbsp;<span>{{ prestation.nbPassages }}</span></span>
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td class="text-center">
+                        {% if ((contrat.etablissements | length) > 1) %}
+                            <a data-html="true" title="{% for etablissement in contrat.etablissements %} {{ etablissement.adresse.adresseFormatee }} <br/> {% endfor %}" data-toggle="tooltip" href="{{ path('contrat_visualisation', {'id': contrat.id }) }}">{{ contrat.etablissements | length }}&nbsp;établissements</a>
+                        {% elseif ((contrat.etablissements | length) == 1) %}
+                            <a title="{% for etablissement in contrat.etablissements %} {{ etablissement.nom }} - {{ etablissement.adresse.commune }} {% endfor %}" data-toggle="tooltip" href="{{ path('passage_etablissement', {'id': contrat.etablissements[0].id }) }}">
+                          {% for etablissement in contrat.etablissements %}
+                           {% if etablissement.adresse.adresseFormatee %}{{ etablissement.adresse.adresseFormatee }}{% else %}{{ etablissement.adresse.commune }}{% endif %}
+                          {% endfor %}
+                          </a>
+                        {% else %}
+                            <small>Aucun</small>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endif %}
+              {% endfor %}
+            </table>
+        </div>
+        <div id="terminesresiliesannules" class="tab-pane fade">
+            <h3>Liste des contrats <strong>terminés/résiliés/annulés</strong></h3>
+            <table  class="table table-bordered">
+              <thead>
+                  <tr>
+                      <th class="col-xs-1">Statut</th>
+                      <th class="col-xs-2">Type</th>
+                      <th class="col-xs-1">N°</th>
+                      <th class="col-xs-2">Date</th>
+                      <th class="col-xs-1">Garantie</th>
+                      <th class="col-xs-1" class="text-center">Prix</th>
+                      <th class="col-xs-1">Prestations</th>
+                      <th class="col-xs-4 text-center">Lieu de passage</th>
+                  </tr>
+              </thead>
+                {% for contrat in contrats %}
+                  {% if contrat.isTermineStatutLibelle or contrat.isResilieStatutLibelle or contrat.isAnnuleStatutLibelle %}
+                  <tr class="{{ contrat.statutCouleur }}">
+                      <td><small class="text-{{ contrat.statutCouleur }}">{{ contrat.statutLibelle }}</small></td>
+                      <td><small>{{ contrat.typeContratLibelle }}</small></td>
+                      <td><a href="{{ path('contrat_visualisation', {'id': contrat.id })}}">n°&nbsp;{{ contrat.numeroArchive }}</a></td>
+                      <td>{{ contrat.dateDebut | localizeddate("medium", "none", null, null, "MMM yyyy") | capitalize }}{% if(contrat.dateDebut | localizeddate("medium", "none", null, null, "MMM yyyy")) != contrat.dateFin | localizeddate("medium", "none", null, null, "MMM yyyy") %}&nbsp;-&nbsp;{{ contrat.dateFin | localizeddate("medium", "none", null, null, "MMM yyyy") | capitalize }}{% endif %}</td>
+                      <td class="text-right">{% if(contrat.dureeGarantie) %}{{ contrat.dureeGarantie }} mois{% else %}<small class="text-muted">Aucune</small>{% endif %}</td>
+                      <td class="text-right">{{ "%0.2f" | format(contrat.getPrixHt)  }}&nbsp;€</td>
+                      <td>
+                          {% for prestation in contrat.prestations %}
+                              {% if(prestation.wordToPicto) %}
+                                  &nbsp;<span class="" title="{{  prestation.nomToString }} : {{ prestation.nbPassages }}" data-toggle="tooltip" >
+                                      <i class="mdi-{{prestation.wordToPicto}}" style="cursor:pointer;">&nbsp;</i></span>
+                                  {% else %}
+                                  <span class="btn btn-xs label-primary">{{  prestation.nomToString }}&nbsp;<span>{{ prestation.nbPassages }}</span></span>
+                              {% endif %}
+                          {% endfor %}
+                      </td>
+                      <td class="text-center">
+                          {% if ((contrat.etablissements | length) > 1) %}
+                              <a data-html="true" title="{% for etablissement in contrat.etablissements %} {{ etablissement.adresse.adresseFormatee }} <br/> {% endfor %}" data-toggle="tooltip" href="{{ path('contrat_visualisation', {'id': contrat.id }) }}">{{ contrat.etablissements | length }}&nbsp;établissements</a>
+                          {% elseif ((contrat.etablissements | length) == 1) %}
+                              <a title="{% for etablissement in contrat.etablissements %} {{ etablissement.nom }} - {{ etablissement.adresse.commune }} {% endfor %}" data-toggle="tooltip" href="{{ path('passage_etablissement', {'id': contrat.etablissements[0].id }) }}">
+                            {% for etablissement in contrat.etablissements %}
+                             {% if etablissement.adresse.adresseFormatee %}{{ etablissement.adresse.adresseFormatee }}{% else %}{{ etablissement.adresse.commune }}{% endif %}
+                            {% endfor %}
+                            </a>
+                          {% else %}
+                              <small>Aucun</small>
+                          {% endif %}
+                      </td>
+                  </tr>
                   {% endif %}
-              </td>
-          </tr>
-          {% endif %}
-        {% endfor %}
-    </table>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
 {% endblock %}
