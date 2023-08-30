@@ -138,7 +138,7 @@
                       <th class="col-xs-1">Statut</th>
                       <th class="col-xs-2">Type</th>
                       <th class="col-xs-1">N°</th>
-                      <th class="col-xs-2">Date</th>
+                      <th class="col-xs-2">Date d'édition</th>
                       <th class="col-xs-1">Garantie</th>
                       <th class="col-xs-1" class="text-center">Prix</th>
                       <th class="col-xs-1">Prestations</th>
@@ -151,7 +151,7 @@
                     <td><small class="text-{{ contrat.statutCouleur }}">{{ contrat.statutLibelle }}</small></td>
                     <td><small>{{ contrat.typeContratLibelle }}</small></td>
                     <td><a href="{{ path('contrat_visualisation', {'id': contrat.id })}}">n°&nbsp;{{ contrat.numeroArchive }}</a></td>
-                    <td>{{ contrat.dateDebut | localizeddate("medium", "none", null, null, "MMM yyyy") | capitalize }}{% if(contrat.dateDebut | localizeddate("medium", "none", null, null, "MMM yyyy")) != contrat.dateFin | localizeddate("medium", "none", null, null, "MMM yyyy") %}&nbsp;-&nbsp;{{ contrat.dateFin | localizeddate("medium", "none", null, null, "MMM yyyy") | capitalize }}{% endif %}</td>
+                    <td>{{ contrat.dateCreation | localizeddate("medium", "none", null, null, "MMM yyyy") | capitalize }}</td>
                     <td class="text-right">{% if(contrat.dureeGarantie) %}{{ contrat.dureeGarantie }} mois{% else %}<small class="text-muted">Aucune</small>{% endif %}</td>
                     <td class="text-right">{{ "%0.2f" | format(contrat.getPrixHt)  }}&nbsp;€</td>
                     <td>
