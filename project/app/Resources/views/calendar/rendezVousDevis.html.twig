@@ -97,6 +97,7 @@
                                         {% if(rdv.devis.nomTransmission) %}{{ rdv.devis.nomTransmission }}{% else %}pas de nom{% endif %}&nbsp;/&nbsp;
                                         {% if(rdv.devis.emailTransmission) %}{{ rdv.devis.emailTransmission }}{% else %}pas d'email{% endif %}&nbsp;/&nbsp;
                                         {% if(rdv.devis.secondEmailTransmission) %}{{ rdv.devis.secondEmailTransmission }}{% else %}pas de second email{% endif %}
+                                        {% if not rdv.devis.emailTransmission %} {{ rdv.devis.etablissement.email }}{% endif %}&nbsp;/&nbsp; //si aucun email indiquer l'email avec lequel ça part.
                                       </p>
                                   </div>
                               </div>

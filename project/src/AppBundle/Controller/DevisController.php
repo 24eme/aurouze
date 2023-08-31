@@ -295,15 +295,16 @@ class DevisController extends Controller
             array('devis' => $devis)
         );
 
+        $email = $devis->getEmailTransmission() ? $devis->getEmailTransmission() : $devis->getEtablissement()->getEmail();
         $message = \Swift_Message::newInstance()
             ->setSubject($suject)
             ->setFrom(array($fromEmail => $fromName))
-            ->setTo(explode(";",$devis->getEmailTransmission()))
+            ->setTo(explode(";",$email))
             ->setReplyTo($replyEmail)
             ->setBody($body,'text/plain');
 
         if ($devis->getSecondEmailTransmission()) {
-            $emailsTransmissions = explode(";",$devis->getEmailTransmission());
+            $emailsTransmissions = explode(";",$email);
             $secondEmailsTransmission = explode(";",$devis->getSecondEmailTransmission());
             $to = array_merge($emailsTransmissions,$secondEmailsTransmission);
             $message->setTo($to);
