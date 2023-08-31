@@ -286,7 +286,8 @@ class FactureController extends Controller
         if($this->container->getParameter('date_facturation')) {
             $defaultDate = new \DateTime($this->container->getParameter('date_facturation'));
         }
-        return $this->render('facture/societe.html.twig', array('societe' => $societe, 'etablissements' => $etablissements, 'mouvements' => $mouvements,'hasDevis' => $hasDevis,  'factures' => $factures, 'facturesPrevisionnel' => $facturesPrevisionnel, 'exportSocieteForm' => $exportSocieteForm->createView(), 'solde' => $solde, 'totalFacture' => $totalFacture, 'totalPaye' => $totalPaye, 'defaultDate' => $defaultDate, 'resteTropPaye' => $resteTropPaye));
+        $etablissement_id = $etablissement ? $etablissement->getId() : null;
+        return $this->render('facture/societe.html.twig', array('societe' => $societe, 'etablissements' => $etablissements, 'mouvements' => $mouvements,'hasDevis' => $hasDevis,  'factures' => $factures, 'facturesPrevisionnel' => $facturesPrevisionnel, 'exportSocieteForm' => $exportSocieteForm->createView(), 'solde' => $solde, 'totalFacture' => $totalFacture, 'totalPaye' => $totalPaye, 'defaultDate' => $defaultDate, 'resteTropPaye' => $resteTropPaye, 'etablissement_id' => $etablissement_id));
     }
 
     /**
