@@ -74,7 +74,7 @@
             {% set totalRestant = 0.0 %}
             {% for facture in facturesPrevisionnel %}
                 {% set totalRestant = totalRestant + facture.montantAPayer %}
-                {{ include('facture/factureLigne.html.twig', {'facture': facture, 'societe' : societe, 'resteTropPaye' : resteTropPaye, 'etablissement_id': app.request.get('etablissement_id')}) }}
+                {{ include('facture/factureLigne.html.twig', {'facture': facture, 'societe' : societe, 'resteTropPaye' : resteTropPaye, 'etablissement_id': etablissement_id}) }}
             {% endfor %}
         </tbody>
       </table>
@@ -149,7 +149,7 @@
         <tbody>
             {% for facture in factures %}
              {% if facture.isDevis %}
-              {{ include('facture/factureLigne.html.twig', {'facture': facture, 'societe' : societe, 'resteTropPaye' : resteTropPaye, 'etablissement_id': app.request.get('etablissement_id')}) }}
+              {{ include('facture/factureLigne.html.twig', {'facture': facture, 'societe' : societe, 'resteTropPaye' : resteTropPaye, 'etablissement_id': etablissement_id}) }}
               {% endif %}
             {% endfor %}
         </tbody>
@@ -180,7 +180,7 @@
             {% for facture in factures %}
              {% if not facture.isDevis and not (facture.paye or facture.isAvoir or facture.isRedressee) and facture.numeroFacture %}
                 {% set totalRestant = totalRestant + facture.montantAPayer %}
-              {{ include('facture/factureLigne.html.twig', {'facture': facture, 'societe' : societe,'resteTropPaye' : resteTropPaye, 'etablissement_id': app.request.get('etablissement_id')}) }}
+              {{ include('facture/factureLigne.html.twig', {'facture': facture, 'societe' : societe,'resteTropPaye' : resteTropPaye, 'etablissement_id': etablissement_id}) }}
               {% endif %}
             {% endfor %}
         </tbody>
@@ -204,7 +204,7 @@
           <tbody>
               {% for facture in factures %}
                {% if facture.paye or facture.isAvoir or facture.isRedressee %}
-                  {{ include('facture/factureLigne.html.twig', {'facture': facture, 'societe' : societe,'resteTropPaye' : resteTropPaye, 'etablissement_id': app.request.get('etablissement_id')}) }}
+                  {{ include('facture/factureLigne.html.twig', {'facture': facture, 'societe' : societe,'resteTropPaye' : resteTropPaye, 'etablissement_id': etablissement_id }) }}
                 {% endif %}
               {% endfor %}
           </tbody>
