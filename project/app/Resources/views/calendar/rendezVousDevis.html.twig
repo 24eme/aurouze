@@ -211,16 +211,16 @@
                       <span class="text-danger"><i class="glyphicon glyphicon-trash"></i> Supprimer RDV</span>
                   </a>
                 {% endif %}
-                {% if (rdv.devis.numeroDevis) %}
-                  <a class="btn btn-sm btn-default" href="{{ path('facturable_pdf', {'document': rdv.devis.id ,'key': rdv.devis.getSecretKey()}) }}">
-                    <i class="glyphicon glyphicon-file"></i> Voir le PDF du devis
-                  </a>
-                {% endif %}
                 {% if (rdv.id and rdv.planifiable) %}
                   <a class="btn btn-sm btn-default" href="{{ path('devis_modification', {'id': rdv.devis.id, 'service': service })}}"></span> Modification du devis</a>
                 {% endif %}
+                {% if (rdv.devis.numeroDevis) %}
+                  <a class="btn btn-sm btn-default" href="{{ path('facturable_pdf', {'document': rdv.devis.id ,'key': rdv.devis.getSecretKey()}) }}">
+                    <i class="glyphicon glyphicon-file"></i> PDF du devis
+                  </a>
+                {% endif %}
                 {% if (rdv.planifiable and rdv.planifiable.isValideTechnicien and rdv.planifiable.isSaisieTechnicien) %}
-                    <a class="btn btn-sm btn-default" href="{{ path('devis_pdf_rapport_download', {'id': rdv.devis.id, 'service': service })}}" data-toggle="tooltip" ><span class="glyphicon glyphicon-file"></span> Télécharger le rapport de devis</a>
+                    <a class="btn btn-sm btn-default" href="{{ path('devis_pdf_rapport_download', {'id': rdv.devis.id, 'service': service })}}" data-toggle="tooltip" ><span class="glyphicon glyphicon-file"></span> Rapport de devis</a>
                 {% endif %}
                 </div>
             </div>
@@ -239,18 +239,11 @@
                       data-toggle="tooltip" >
                          <span class="glyphicon glyphicon-file"></span>&nbsp;Facturer le devis produit
                    </a>
-                {% else  %}
-                <a class="btn btn-sm btn-default"
-                   href="{{ path('facture_societe', {'id': rdv.devis.societe.id })}}"
-                   title="Retour aux facture"
-                   data-toggle="tooltip" >Retour aux factures</a>
-                <br><br>
-                {% if (rdv.passage.emailTransmission) %}
+                {% elseif (rdv.passage.emailTransmission) %}
                 <a class="btn btn-sm btn-default"
                    href="{{ path('devis_transmission_email', {'id': rdv.planifiable.id, 'service': service })}}"
                    title="Envoyer le rapport par mail">
                    <span class="glyphicon glyphicon-send"></span> Envoyer par mail</a>
-                {% endif %}
               {% endif %}
               </div>
               {% endif %}
