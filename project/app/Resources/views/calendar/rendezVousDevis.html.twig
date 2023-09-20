@@ -202,7 +202,7 @@
                 Fermer
               </button>
             </div>
-            <div class="col-xs-6 text-center">
+            <div class="col-xs-7 text-center">
               <div class="btn-group">
                 {% if rdv.id %}
                   <a class="btn btn-sm btn-default text-danger rdv-deplanifier-link"
@@ -224,7 +224,7 @@
                 {% endif %}
                 </div>
             </div>
-            <div class="col-xs-4 text-right">
+            <div class="col-xs-3 text-right">
             {% if rdv.id and form is defined %}
                 <button data-loading-text="En cours ..." autocomplete="off" class="btn btn-primary btn-block" type="submit">Modifier</button>
             {% elseif form is defined %}
