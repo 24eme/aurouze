@@ -276,7 +276,7 @@ class DevisController extends Controller
         }
 
         $dm = $this->get('doctrine_mongodb')->getManager();
-        $pm = $this->get('facture.manager');
+        $pm = $this->get('passage.manager');
         $parameters = $pm->getParameters();
         $appname = $this->container->getParameter('instanceapp');
 
