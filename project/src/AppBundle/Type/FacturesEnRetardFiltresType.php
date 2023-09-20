@@ -34,15 +34,6 @@ class FacturesEnRetardFiltresType extends AbstractType {
 	{
 		$nbRelances = array_merge(array("Toutes les factures"), FactureManager::$types_nb_relance);
 
-        $dateFactureBasse = null;
-
-        if(!$this->societe){
-            $date = new \DateTime();
-            $interval = new \DateInterval('P2Y');
-            $dateFactureBasse = $date->sub($interval); //mettre la date du jour - 2 ans
-        }
-
-
 		$builder->add('nbRelances', ChoiceType::class, array('label' => 'Nombre de relance',
                 		'choices' => $nbRelances,
 						        "required" => false,
@@ -53,7 +44,6 @@ class FacturesEnRetardFiltresType extends AbstractType {
                 				'data-provide' => 'datepicker',
                 				'data-date-format' => 'dd/mm/yyyy'
                 		),
-                        'data' => $dateFactureBasse,
                 		'widget' => 'single_text',
                 		'format' => 'dd/MM/yyyy',
 		));
@@ -63,7 +53,6 @@ class FacturesEnRetardFiltresType extends AbstractType {
                 				'data-provide' => 'datepicker',
                 				'data-date-format' => 'dd/mm/yyyy'
                 		),
-                	//	'data' => $dateFactureBasse,
                 		'widget' => 'single_text',
                 		'format' => 'dd/MM/yyyy',
 		));

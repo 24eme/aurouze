@@ -562,14 +562,13 @@ public static $export_factures_en_retards = array(
 
     }
 
-    public function getFacturesSocieteForCsv($societe, $dateDebut = null,$dateFin = null) {
+    public function getFacturesSocieteForCsv($societe, $dateDebut = null,$dateFin = null,$etablissement = null) {
         if(!$dateDebut){
           $dateDebut = new \DateTime();
           $dateFin = new \DateTime();
           $dateFin->modify("+1 month");
         }
         $facturesObjs = $this->getRepository()->exportBySocieteAndDate($societe, $dateDebut,$dateFin);
-
         $facturesArray = array();
         $facturesArray["00"] = new \stdClass();
         $facturesArray["00"]->facture = null;
@@ -586,9 +585,13 @@ public static $export_factures_en_retards = array(
 
         $debit = 0;
         $credit = 0;
+
         foreach ($facturesObjs as $facture) {
               if( ! $facture->getNumeroFacture()){
                 continue;
+              }
+              if($etablissement && (!$facture->getContrat() || !in_array($etablissement->getId(), $facture->getContrat()->getEtablissementIds()))) {
+                  continue;
               }
               if($facture->isAvoir() && $facture->getOrigineAvoir()){
                   $factureOrigine = $facture->getOrigineAvoir();

@@ -137,7 +137,12 @@
         <div class="col-xs-6">
             <p>
             <span class="lead" style="font-size: 15px;">Devis n° {{ devis.numeroDevis }} du {{ devis.dateEmission|date("d/m/Y") }}</span><br />
-            <small>Client : {{ devis.destinataire.raisonSociale }} ({{ devis.destinataire.codeComptable }})</small>
+            <small>Client : <br />
+              {{ devis.destinataire.raisonSociale }}</br>
+              {{ devis.etablissement.adresse.adresseFormatee | nl2br }}
+              {{ devis.etablissement.adresse.codePostal }}
+              {{ devis.etablissement.adresse.Commune }}
+             ({{ devis.destinataire.codeComptable }})</small>
             </p>
         </div>
         <div class="col-xs-6 text-right">

@@ -36,7 +36,7 @@ class PassageMobileType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $passageId = $builder->getData()->getId();
-        $builder->add('description', TextareaType::class, array('label' => 'Constat :', 'required' => false, "attr" => array("class" => " phoenix", "rows" => 10)))
+        $builder->add('description', TextareaType::class, array('label' => 'Rapport :', 'required' => false, "attr" => array("class" => " phoenix", "rows" => 10)))
         ->add('commentaireInterne', TextareaType::class, array('label' => 'Commentaire Interne :', 'required' => false, "attr" => array("class" => " phoenix", "rows" => 5)))
         ->add('dureeRaw', 'time', array(
             'input' => 'string',

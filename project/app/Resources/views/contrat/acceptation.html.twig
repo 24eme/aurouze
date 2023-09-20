@@ -23,16 +23,27 @@
                     <strong>&nbsp;n° {{ contrat.getNumeroArchive() }}</strong> <span class="btn btn-sm btn-{{ contrat.statutCouleur }}">{{ contrat.getStatutLibelleLong | capitalize }}</span></h3>
             </div>
             <div class="col-xs-4 text-right">
-                {%  if (contrat.isCopiable) %}
-                    <a href="{{ path('contrat_copie', {'id': contrat.getId()}) }}" class="btn btn-sm btn-default" onclick="return confirm('Êtes-vous sûre de créer un nouveau contrat avec les infos de ce contrat ?');"><span class="glyphicon glyphicon-duplicate"></span> Dupliquer</a>
-                {% endif %}
-                {% if contrat.isEnAttenteAcceptation() %}
+                {%  if contrat.isEnAttenteAcceptation() %}
                 <a href="{{ path('contrat_suppression', {'id': contrat.getId()}) }}" onclick="return confirm('Etes-vous sûr de vouloir supprimer ce contrat ?')" class="btn btn-sm btn-danger"><span class="glyphicon glyphicon-remove"></span>&nbsp;Supprimer le contrat</a>
                 {% else %}
                 <a href="{{ path('contrat_visualisation', {'id': contrat.getId()}) }}" class="btn btn-link">Retour à la visualisation du contrat</a>
                 {% endif %}
-                <a href="{{ path('contrat_transfert', {'id': contrat.getId()}) }}" class="btn btn-sm btn-default"><span class="glyphicon glyphicon-refresh"></span> Transférer</a>
-            </div>
+                <div class="btn-group pull-right">
+                    <button class="btn btn-sm btn-default dropdown-toggle" type="button" id="actionButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                      Autres Actions
+                      <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-right">
+                        {%  if (contrat.isCopiable) %}
+                            <li><a href="{{ path('contrat_copie', {'id': contrat.getId()}) }}" class="btn-sm" onclick="return confirm('Êtes-vous sûre de créer un nouveau contrat avec les infos de ce contrat ?');"><span class="glyphicon glyphicon-duplicate"></span> Dupliquer</a></li>
+                        {% endif %}
+                        <li><a href="{{ path('contrat_transfert', {'id': contrat.getId()}) }}" class="btn-sm"><span class="glyphicon glyphicon-refresh"></span> Transférer</a></li>
+                        {%  if contrat.isPassableEnAttente() %}
+                            <li><a href="{{ path('contrat_en_attente', {'id': contrat.getId()}) }}" class="btn-sm" onclick="return confirm('Êtes-vous sûre de vouloir passer le contrat n° '+{{ contrat.numeroArchive }}+' en attente ?\n ⚠ Les passages planifiés seront déplanifié');">Passer "en Attente"</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+          </div>
         </div>
 
         {{ include('contrat/contrat.html.twig', { 'contrat': contrat ,'form' : form, 'editionMode': true}) }}

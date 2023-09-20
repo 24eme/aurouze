@@ -1,0 +1,11 @@
+Numéro du devis : {{ devis.getNumeroDevis() }}
+
+Bonjour,
+
+Suite à la livraison par notre technicien le {{ devis.dateDebut | localizeddate("full", "none") }} à {{ devis.dateDebut | date("H") }}h{{ devis.dateDebut | date("i") }} dans votre établissement, vous trouverez ci-joint le rapport de livraison.
+
+Très cordialement,
+
+Merci de ne pas répondre à ce mail.
+
+{{ application.name }}
