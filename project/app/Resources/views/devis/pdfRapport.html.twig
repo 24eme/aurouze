@@ -1,0 +1,106 @@
+{% extends 'base_pdf.html.twig' %}
+{% block body %}
+  <h2 style="margin-bottom: 10px; font-size: 21px;" class="text-center"><strong>Rapport de Livraison du {{ devis.dateDebut | localizeddate("full", "none") }} </strong></h2>
+  <h4 class="text-center" >Devis n° {{ devis.getNumeroDevis() }}</h4>
+  <hr style="border-color: #ddd; margin-bottom: 30px;" />
+  {% set emetteur = parameters.emetteur %}
+  {% if parameters["emetteur_"~devis.etablissement.region] is defined %}
+      {% set emetteur = parameters["emetteur_"~devis.etablissement.region] %}
+  {% endif %}
+  <div class="row" style="padding-top: 110px;">
+      <div class="col-xs-6">
+          <p>
+              <span class="lead" style="font-weight: 400; font-size: 18px">{{ emetteur.nom }}</span><br />
+              {{ emetteur.adresse }}<br />
+              {{ emetteur.code_postal }} {{ emetteur.commune }} <br />
+              Tél : {{ emetteur.telephone }}<br />
+              Email : {{ emetteur.email }}
+          </p>
+      </div>
+      <div class="col-xs-6 text-left form-horizontal">
+          <p>
+              <span class="lead" style="font-weight: 400; font-size: 18px"><strong>{{ devis.societe.raisonSociale }}</strong></span><br />
+              {% if(devis.etablissement.nom != devis.societe.raisonSociale) %}
+              <span class="lead" style="font-weight: 400; font-size: 18px">{{ devis.etablissement.nom }}</span><br />
+              {% endif %}
+              {{ devis.etablissement.adresse.adresseFormatee | nl2br }}<br />
+              {{ devis.etablissement.adresse.codePostal }}
+              {{ devis.etablissement.adresse.Commune }}
+          </p>
+      </div>
+  </div>
+  <br />
+  <div class="row">
+      <div class="col-xs-12">
+          <p class="lead" style="font-weight: 400;"> Livraison effectuée par  <small>{{ devis.getTechniciens()[0] }}</small></p>
+      </div>
+  </div>
+  <br />
+  <div class="row">
+      <div class="col-xs-12">
+          <div class="well">
+              <p style="text-decoration:underline;">Produits livrés :</p>
+              <br />
+              <table class="table table-bordered table-condensed" style="border-bottom: 0 !important; border-right: 0 !important;  border-left: 0 !important;">
+                  <thead>
+                      <tr>
+                          <th class="col-xs-7">Libellé</th>
+                          <th class="text-center col-xs-1">Qté</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                  {% for ligne in devis.lignes %}
+                  <tr>
+                      <td>
+                          {% if(ligne.libelle is defined) %}{{ ligne.libelle|replace({'1/1': ''}) }}<br />{% endif %}
+                          {% if ligne.referenceClient is defined and ligne.referenceClient %}<small><small>Votre Réf CDE : {{ ligne.referenceClient }}</small><br /></small>{% endif %}
+                          {% if ligne.details is defined %}
+                          <small>
+                              <small>
+                              {% for libelle, details in ligne.details %}
+                                  {% if details is iterable %}
+                                  {{ libelle }} :
+                                  <ul class="list-unstyled" style="padding-left: 10px; margin-bottom: 0">
+                                      {% for detailLigne in details %}
+                                      <li>- {{ detailLigne }}</li>
+                                      {% endfor %}
+                                  </ul>
+                                  {% else %}
+                                      {{ details | nl2br }}
+                                  {% endif %}
+                              {% endfor %}
+                              </small>
+                          </small>
+                          {% endif %}
+                      </td>
+                      <td class="text-center">{% if ligne.quantite is defined %}{{ ligne.quantite }}{% endif %}</td>
+                  </tr>
+                  {% endfor %}
+              </table>
+          </div>
+      </div>
+  </div>
+  <br />
+  <div class="row">
+      <div class="col-xs-12">
+          <div class="well">
+              <p style="text-decoration:underline;">Observations :</p>
+              <br />
+              {{ devis.commentaireTechnicien | nl2br }}
+          </div>
+      </div>
+  </div>
+
+  <div class="row">
+    {% if (devis.nomTransmission) %}
+    <div class="col-xs-8">  <p>Signé par : {{ devis.nomTransmission   }}<br /></p>
+    </div>
+    {% endif %}
+    <div class="col-xs-8">
+              <p>Signature du client :<br /></p>
+            <div height="200px;" >
+              <img src="{{ devis.signatureBase64   }}" height="200px;" width="580px;" >
+            </div>
+      </div>
+  </div>
+{% endblock %}
