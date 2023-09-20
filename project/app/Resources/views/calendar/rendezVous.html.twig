@@ -336,7 +336,7 @@
                               onclick="return confirm('{{ msgconfirm }}')"
                               class="btn btn-sm {% if rdv.passage.isPdfNonEnvoye() %}btn-success{% else %}btn-default{% endif %}"
                               href="{{ path('passage_transmission_email', {'id': rdv.passage.id, 'service': service })}}">
-                                <span class="glyphicon glyphicon-send"></span> Envoyer mail
+                                <span class="glyphicon glyphicon-send"></span> Envoyer par mail
                             </a>
                             {% else %}
                             <a class="btn btn-sm {% if rdv.passage.isPdfNonEnvoye() %}btn-success{% else %}btn-default{% endif %}" href="{{ path('passage_pdf_rapport_print', {'id': rdv.passage.id, 'service': service })}}"

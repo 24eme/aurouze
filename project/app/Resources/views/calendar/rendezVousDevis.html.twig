@@ -245,10 +245,12 @@
                    title="Retour aux facture"
                    data-toggle="tooltip" >Retour aux factures</a>
                 <br><br>
+                {% if (rdv.passage.emailTransmission) %}
                 <a class="btn btn-sm btn-default"
                    href="{{ path('devis_transmission_email', {'id': rdv.planifiable.id, 'service': service })}}"
                    title="Envoyer le rapport par mail">
                    <span class="glyphicon glyphicon-send"></span> Envoyer par mail</a>
+                {% endif %}
               {% endif %}
               </div>
               {% endif %}
