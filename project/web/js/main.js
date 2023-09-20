@@ -344,7 +344,7 @@
     $.initRdvLink = function () {
         $('.rdv-deplanifier-link').click(function (e) {
             e.preventDefault();
-            if(!confirm('Êtes vous sûr de vouloir supprimer ce rendez-vous ?')) {
+            if(!confirm('Êtes vous sûr de vouloir déplanifier ce passage ?')) {
                 return false;
             }
             var link = $(this).attr('href');
@@ -454,6 +454,13 @@
         $('.dynamic-collection-item').on('click', '.dynamic-collection-remove', function (e) {
             e.preventDefault();
             $(e.delegateTarget).remove();
+        });
+        $('.dynamic-collection-item').on('click', '.dynamic-collection-reject', function (e) {
+            e.preventDefault();
+            var inputElement = e.delegateTarget.childNodes[0].nextElementSibling.children[5].firstElementChild;
+            inputElement.value = 0.00;
+            inputElement.select();
+            inputElement.blur();
         });
         $('body').on('click', '.dynamic-collection-add', function (e) {
             e.preventDefault();
@@ -1497,7 +1504,7 @@ $(document).on('DOMSubtreeModified', function() {
             return true;
         }
         if(element.attr('title') === '' || !element.attr('title')){
-            element.parent().css("border-color",'#dc3545');
+            element.parent().css("border",'2px solid black');
         }else{
             element.parent().css("border-color",'');
         }

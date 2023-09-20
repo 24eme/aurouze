@@ -42,7 +42,7 @@ class SocieteType extends AbstractType {
                 ->add('raisonSociale', TextType::class, array('label' => 'Raison sociale* :'))
                 ->add('codeComptable', TextType::class, array('label' => 'Code comptable* :'))
                 ->add('commentaire', TextareaType::class, array('label' => 'Commentaire société :', "attr" => array("class" => "form-control", "rows" => 6), 'required' => false, 'empty_data' => null))
-                ->add('methodeDeFacturation',TextareaType::class, array('label' => 'Méthode de facturation:','required' => false))
+                ->add('methodeDeFacturation',TextareaType::class, array('label' => 'Procédure de facturation:','required' => false))
                 ->add('type', ChoiceType::class, array('label' => 'Type* :', 'choices' => array_merge(array('' => ''), $this->getTypes()), "attr" => array("class" => "select2 select2-simple")))
                 ->add('actif', CheckboxType::class, array('label' => ' ', 'required' => false, "attr" => array("class" => "switcher", "data-size" => "mini")))
                 ->add('save', SubmitType::class, array('label' => 'Enregistrer', "attr" => array("class" => "btn btn-success pull-right")))

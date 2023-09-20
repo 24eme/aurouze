@@ -50,7 +50,7 @@ class ContratAcceptationType extends AbstractType {
         $builder->add('dateCreation', DateType::class, array_merge($required, array(
             "attr" => array_merge($datePicker, array(
                 'data-date-format' => 'dd/mm/yyyy'
-                    ), $readonly),
+                    )),
             'widget' => 'single_text',
             'format' => 'dd/MM/yyyy',
             'label' => "Date d'édition :",

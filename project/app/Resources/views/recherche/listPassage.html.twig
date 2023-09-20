@@ -22,21 +22,27 @@
                 {% elseif (passage.planifie) %}
                 <button class="btn btn-xs btn-block btn-warning">{{
                     passage.getStatutLibelle() }}</button>
-                {% elseif (passage.annule) %}
+                {% elseif (passage.isAnnule) %}
                 <button class="btn btn-xs btn-block btn-danger">{{
                     passage.getStatutLibelle() }}</button>
                 {% elseif (passage.realise) %}
                 <button class="btn btn-xs btn-block btn-success">{{
                     passage.getStatutLibelle() }}</button>
                 {% endif %}</td>
-                <td><a data-toggle="modal" data-remote="false"
+                <td>
+                <a data-toggle="modal" data-remote="false"
     				data-target="#modal-calendrier-infos"
-    				href="{{path('passage_visualisation', { 'id': passage.id })}}"> {% if
-    				(passage.APlanifie) %} {{ passage.dateDebut | localizeddate("medium", "none",
-    				null, null, "MMMM yyyy") | capitalize }} {% else %} {{ passage.dateDebut
-    				| localizeddate('full', 'none') | capitalize }} {% endif %} {%
-    				if(passage.duree) %} à {{passage.dateDebut | date("H") }}h{{passage.dateDebut |
-    				date("i") }}{% endif %} </a></td>
+                    href="{{path('passage_visualisation', { 'id': passage.id })}}">
+                    {% if (passage.APlanifie) %}
+                        {{ passage.dateDebut | localizeddate("medium", "none",null, null, "MMMM yyyy") | capitalize }}
+                    {% else %}
+                        {{ passage.dateDebut | localizeddate('full', 'none') | capitalize }}
+                    {% endif %}
+                    {% if (passage.duree) %}
+                        à {{passage.dateDebut | date("H") }}h{{passage.dateDebut | date("i") }}
+                    {% endif %}
+                    </a>
+                </td>
                 <td><a href="{{ path('passage_etablissement', {'id': passage.etablissement.id }) }}">{{ passage.etablissementInfos.nom }} <small>({{ passage.etablissementInfos.adresse.commune }})</small></a></td>
                 <td>{% for prestation in passage.prestations %} {% if(prestation.wordToPicto)
     			%} <span class="step size-24" title="{{  prestation.nomToString }}"

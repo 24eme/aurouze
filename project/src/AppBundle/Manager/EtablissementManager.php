@@ -27,8 +27,12 @@ class EtablissementManager {
 
     const SECTEUR_PARIS = "PARIS";
     const SECTEUR_SEINE_ET_MARNE = "SEINE_ET_MARNE";
-    const TYPE_ETB_BOULANGERIE = "BOULANGERIE";
     const TYPE_ETB_RESTAURANT = "RESTAURANT";
+    const TYPE_ETB_AGENCE = "AGENCE";
+    const TYPE_ETB_ASSOCIATION = "ASSOCIATION";
+    const TYPE_ETB_EVENEMENTIEL = "EVENEMENTIEL";
+    const TYPE_ETB_METIER_DE_BOUCHE = "METIER_DE_BOUCHE";
+    const TYPE_ETB_BOULANGERIE = "BOULANGERIE";
     const TYPE_ETB_ADMINISTRATION = "ADMINISTRATION";
     const TYPE_ETB_MAIRIE = "MAIRIE";
     const TYPE_ETB_ENTREPRISE_PRIVEE = "ENTREPRISE_PRIVEE";
@@ -42,9 +46,14 @@ class EtablissementManager {
     const TYPE_ETB_IMMEUBLE = "IMMEUBLE";
     const TYPE_ETB_NON_SPECIFIE = "NON_SPECIFIE";
 
+
     public static $type_libelles = array(
-        self::TYPE_ETB_BOULANGERIE => "Boulangerie",
         self::TYPE_ETB_RESTAURANT => "Restaurant",
+        self::TYPE_ETB_AGENCE => "Agence",
+        self::TYPE_ETB_ASSOCIATION => "Association",
+        self::TYPE_ETB_EVENEMENTIEL => "Événementiel",
+        self::TYPE_ETB_METIER_DE_BOUCHE => "Métier de bouche",
+        self::TYPE_ETB_BOULANGERIE => "Boulangerie",
         self::TYPE_ETB_ADMINISTRATION => "Administration",
         self::TYPE_ETB_MAIRIE => "Mairie",
         self::TYPE_ETB_ENTREPRISE_PRIVEE => "Entreprise privée",
@@ -58,8 +67,12 @@ class EtablissementManager {
         self::TYPE_ETB_IMMEUBLE => "Immeuble",
         self::TYPE_ETB_NON_SPECIFIE => "Non spécifié");
     public static $type_icon = array(
-        self::TYPE_ETB_BOULANGERIE => "cake",
         self::TYPE_ETB_RESTAURANT => "local-dining",
+        self::TYPE_ETB_AGENCE => "store",
+        self::TYPE_ETB_ASSOCIATION => "groups",
+        self::TYPE_ETB_EVENEMENTIEL => "festival",
+        self::TYPE_ETB_METIER_DE_BOUCHE => "food_bank",
+        self::TYPE_ETB_BOULANGERIE => "cake",
         self::TYPE_ETB_ADMINISTRATION => "description",
         self::TYPE_ETB_MAIRIE => "account-balance",
         self::TYPE_ETB_ENTREPRISE_PRIVEE => "store",

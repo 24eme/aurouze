@@ -113,7 +113,7 @@ class PassageManager
 
 
     public function delete(Passage $passage){
-      if (! $passage->isAPlanifie()) {
+      if (!($passage->isAPlanifie() || $passage->isAnnule())) {
         return;
       }
       $this->dm->remove($passage);

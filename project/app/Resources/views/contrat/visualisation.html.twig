@@ -16,26 +16,34 @@
             </h3>
 
         </div>
-        <div class="col-xs-5 text-right" style="padding-top: 22px; ">
-            <div class="btn-group">
+        <div class="col-xs-5" style="padding-top: 22px;">
+            <div class="btn-group col-xs-9" >
+                <a class="btn btn-sm btn-default" href="{{ path('contrat_markdown', {'id': contrat.id }) }}"><span class="glyphicon glyphicon glyphicon-file"></span> Voir le PDF</a>
+                <a href="{% if (contrat.isBrouillon()) %}{{ path('contrat_modification', {'id': contrat.getId()}) }}{% else %}{{ path('contrat_acceptation', {'id': contrat.getId()}) }}{% endif %}" class="btn btn-sm btn-default"><span class="glyphicon glyphicon-pencil"></span> Modifier</a>
+            </div>
+            <div class="btn-group pull-right">
+            <button class="btn btn-sm btn-default dropdown-toggle" type="button" id="actionButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+              Autres Actions
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right">
+                <li><a href="{{ path('contrat_transfert', {'id': contrat.getId()}) }}" class="btn-sm" ><span class="glyphicon glyphicon-refresh"></span> Transférer</a></li>
                 {%  if (contrat.isReactivable()) %}
-                    <a href="{{ path('contrat_reactivation', {'id': contrat.getId()}) }}" class="btn btn-sm btn-default" onclick="return confirm('Êtes-vous sûre de vouloir réactiver le contrat n° '+{{ contrat.numeroArchive }}+'?');"><span class=" glyphicon glyphicon-ok"></span> Réactiver</a>
+                    <li><a href="{{ path('contrat_reactivation', {'id': contrat.getId()}) }}" class="btn-sm" onclick="return confirm('Êtes-vous sûre de vouloir réactiver le contrat n° '+{{ contrat.numeroArchive }}+'?');"><span class=" glyphicon glyphicon-ok"></span> Réactiver</a></li>
                 {%  endif %}
                 {%  if (contrat.isReconductible) %}
-                    <a href="{{ path('contrat_reconduction', {'id': contrat.getId()}) }}" class="btn btn-sm btn-default" onclick="var a = prompt('Pourcentage d\'augmentation (%) :', 0); if(a === null) { return false; } a = a.replace(',', '.'); a = parseFloat(a); if(isNaN(a)) { a = parseInt(a); } if(isNaN(a)) { console.log(a); return false;} this.href = this.href + '?augmentation=' + a;"><span class="glyphicon glyphicon-log-in"></span> Reconduire</a>
+                    <li><a href="{{ path('contrat_reconduction', {'id': contrat.getId()}) }}" class="btn-sm" onclick="var a = prompt('Pourcentage d\'augmentation (%) :', 0); if(a === null) { return false; } a = a.replace(',', '.'); a = parseFloat(a); if(isNaN(a)) { a = parseInt(a); } if(isNaN(a)) { console.log(a); return false;} this.href = this.href + '?augmentation=' + a;"><span class="glyphicon glyphicon-log-in"></span> Reconduire</a></li>
                 {% endif %}
                 {%  if (contrat.isCopiable) %}
-                    <a href="{{ path('contrat_copie', {'id': contrat.getId()}) }}" class="btn btn-sm btn-default" onclick="return confirm('Êtes-vous sûre de créer un nouveau contrat avec les infos de ce contrat ?');"><span class="glyphicon glyphicon-duplicate"></span> Dupliquer</a>
+                    <li><a href="{{ path('contrat_copie', {'id': contrat.getId()}) }}" class="btn-sm" onclick="return confirm('Êtes-vous sûre de créer un nouveau contrat avec les infos de ce contrat ?');"><span class="glyphicon glyphicon-duplicate"></span> Dupliquer</a></li>
                 {% endif %}
                 {%  if (contrat.isAnnulable()) %}
-                    <a href="{{ path('contrat_annulation', {'id': contrat.getId()}) }}" class="btn btn-sm btn-default" onclick="return confirm('Êtes-vous sûre de vouloir résilier le contrat n° '+{{ contrat.numeroArchive }}+'?');"><span class="glyphicon glyphicon-remove"></span> Résilier</a>
+                    <li><a href="{{ path('contrat_annulation', {'id': contrat.getId()}) }}" class="btn-sm" onclick="return confirm('Êtes-vous sûre de vouloir résilier le contrat n° '+{{ contrat.numeroArchive }}+'?');"><span class="glyphicon glyphicon-remove"></span> Résilier</a></li>
                 {%  endif %}
                 {%  if (contrat.isEnAttenteAcceptation() or contrat.isBrouillon()) %}
-                    <a href="{{ path('contrat_suppression', {'id': contrat.getId()}) }}" class="btn btn-sm btn-default" onclick="return confirm('Êtes-vous sûre de vouloir supprimer le contrat n° '+{{ contrat.numeroArchive }}+'?');"><span class="glyphicon glyphicon-remove"></span>&nbsp;Supprimer</a>
+                    <li><a href="{{ path('contrat_suppression', {'id': contrat.getId()}) }}" class="btn-sm" onclick="return confirm('Êtes-vous sûre de vouloir supprimer le contrat n° '+{{ contrat.numeroArchive }}+'?');"><span class="glyphicon glyphicon-remove"></span>&nbsp;Supprimer</a></li>
                 {%  endif %}
-                <a class="btn btn-sm btn-default" href="{{ path('contrat_markdown', {'id': contrat.id }) }}"><span class="glyphicon glyphicon glyphicon-file"></span> Voir le PDF</a>
-                <a href="{{ path('contrat_transfert', {'id': contrat.getId()}) }}" class="btn btn-sm btn-default"><span class="glyphicon glyphicon-refresh"></span> Transférer</a>
-                <a href="{% if (contrat.isBrouillon()) %}{{ path('contrat_modification', {'id': contrat.getId()}) }}{% else %}{{ path('contrat_acceptation', {'id': contrat.getId()}) }}{% endif %}" class="btn btn-sm btn-default"><span class="glyphicon glyphicon-pencil"></span> Modifier</a>
+            </ul>
             </div>
         </div>
     </div>

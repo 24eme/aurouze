@@ -574,6 +574,15 @@ class Devis implements DocumentSocieteInterface, DocumentPlanifiableInterface, F
     }
 
     /**
+     * Get commentaire
+     * @return null
+     */
+    public function getCommentaire()
+    {
+        return null;
+    }
+
+    /**
      * Get commentaireTechnicien
      * @return string $commentaireTechnicien
      */

@@ -142,6 +142,13 @@ class PaiementsController extends Controller {
       $traitees = array();
       foreach ($factures as $facture) {
         $facture->updateMontantPaye();
+
+        $relanceCommentaire = $facture->getRelanceCommentaire() ? $facture->getRelanceCommentaire() : "";
+
+        if($facture->getMontantPaye() == 0 && stripos($relanceCommentaire, "REJET BANQUE") === false){
+            $facture->setRelanceCommentaire($relanceCommentaire."\nREJET BANQUE");
+        }
+
         $traitees[] = $facture->getId();
       }
       foreach ($oldFactures as $facture) {

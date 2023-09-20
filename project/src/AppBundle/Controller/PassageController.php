@@ -140,16 +140,8 @@ class PassageController extends Controller
 
         $passages = $passageManager->getRepository()->findToPlan($secteur, $dateDebut, clone $dateFin, $frequence);
 
-        $devis = array();
         if(!$frequence){
             $passages = $passages->toArray();
-            $devis = $devisManager->getRepository()->findToPlan($secteur, $dateDebut, clone $dateFin);
-            $devis = $devis->toArray();
-        }
-
-
-        foreach ($devis as $key => $d) {
-            $passages[] = $d;
         }
 
         usort($passages, array("AppBundle\Document\Passage", "triPerHourPrecedente"));

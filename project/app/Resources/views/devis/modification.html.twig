@@ -174,11 +174,11 @@
             </div>
             <div class="col-xs-4 text-right">
               {{ form_widget(form.edit) }}
-              {% if facture %}
+            {% if facture is defined %}
               <a class="btn btn-default" href="{{ path('facturable_pdf', {'document': facture.id, 'key': facture.getSecretKey()}) }}">
                 <i class="glyphicon glyphicon-eye-open"></i>&nbsp;Voir la facture en PDF
               </a>
-            {% else %}
+            {% elseif devis is defined and devis.id is not null %}
               <a class="btn btn-default" href="{{ path('devis_create-facture', {'id': devis.id, 'planification' : '0'}) }}" onclick="return confirm('Êtes vous sûr de vouloir facturer directement ce devis?')">
                 <i class="glyphicon glyphicon-euro"></i>&nbsp;Facturer
               </a>

@@ -562,14 +562,13 @@ public static $export_factures_en_retards = array(
 
     }
 
-    public function getFacturesSocieteForCsv($societe, $dateDebut = null,$dateFin = null) {
+    public function getFacturesSocieteForCsv($societe, $dateDebut = null,$dateFin = null,$etablissement = null) {
         if(!$dateDebut){
           $dateDebut = new \DateTime();
           $dateFin = new \DateTime();
           $dateFin->modify("+1 month");
         }
         $facturesObjs = $this->getRepository()->exportBySocieteAndDate($societe, $dateDebut,$dateFin);
-
         $facturesArray = array();
         $facturesArray["00"] = new \stdClass();
         $facturesArray["00"]->facture = null;
@@ -586,9 +585,13 @@ public static $export_factures_en_retards = array(
 
         $debit = 0;
         $credit = 0;
+
         foreach ($facturesObjs as $facture) {
               if( ! $facture->getNumeroFacture()){
                 continue;
+              }
+              if($etablissement && (!$facture->getContrat() || !in_array($etablissement->getId(), $facture->getContrat()->getEtablissementIds()))) {
+                  continue;
               }
               if($facture->isAvoir() && $facture->getOrigineAvoir()){
                   $factureOrigine = $facture->getOrigineAvoir();
@@ -626,32 +629,47 @@ public static $export_factures_en_retards = array(
       $credit = 0;
       foreach ($facture->getPaiements() as $paiements) {
             foreach ($paiements->getPaiement() as $paiement) {
-            if ($paiement->getFacture()->getId() == $facture->getId()) {
-              if($paiement->getMontant()){
-                    $credit += $paiement->getMontant();
-              }
-              $factureLigne[self::EXPORT_SOCIETE_DATE] = $facture->getDateFacturation()->format('d/m/Y');
-              $factureLigne[self::EXPORT_SOCIETE_PIECE] =  $facture->getNumeroFacture();
-              if($facture->isAvoir()){
-                $factureLigne[self::EXPORT_SOCIETE_TYPE] =  "Avoir";
-                if($facture->getOrigineAvoir()){
-                  $factureLigne[self::EXPORT_SOCIETE_TYPE] .= " (facture ".$facture->getOrigineAvoir()->getNumeroFacture().')';
-                }
-              }else{
-                $factureLigne[self::EXPORT_SOCIETE_TYPE] = "Prestation Facture" ;
-              }
-              $factureLigne[self::EXPORT_SOCIETE_ECHEANCE] =  $facture->getDateLimitePaiement()->format('d/m/Y');
-              $factureLigne[self::EXPORT_SOCIETE_DEBIT] =  number_format($facture->getMontantTTC(), 2, ",", "");
-              $factureLigne[self::EXPORT_SOCIETE_CREDIT] =  ($facture->isAvoir())? number_format($facture->getMontantTTC() , 2, ",", "") : number_format($credit , 2, ",", "");
-              if($facture->isAvoir() && $facture->getAvoirPartielRemboursementCheque()){
-                $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] =  $paiement->getMoyenPaiementLibelle();
-              }else{
-                $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] =  $paiement->getMoyenPaiementLibelle();
-              }
+                if ($paiement->getFacture()->getId() == $facture->getId()) {
+                  if($paiement->getMontant()){
+                        $credit += $paiement->getMontant();
+                  }
+                  $factureLigne[self::EXPORT_SOCIETE_DATE] = $facture->getDateFacturation()->format('d/m/Y');
+                  $factureLigne[self::EXPORT_SOCIETE_PIECE] =  $facture->getNumeroFacture();
+                  if($facture->isAvoir()){
+                    $factureLigne[self::EXPORT_SOCIETE_TYPE] =  "Avoir";
+                    if($facture->getOrigineAvoir()){
+                      $factureLigne[self::EXPORT_SOCIETE_TYPE] .= " (facture ".$facture->getOrigineAvoir()->getNumeroFacture().')';
+                    }
+                  }else{
+                    $factureLigne[self::EXPORT_SOCIETE_TYPE] = "Prestation Facture" ;
+                  }
+                  $factureLigne[self::EXPORT_SOCIETE_ECHEANCE] =  $facture->getDateLimitePaiement()->format('d/m/Y');
+                  $factureLigne[self::EXPORT_SOCIETE_DEBIT] =  number_format($facture->getMontantTTC(), 2, ",", "");
+                  $factureLigne[self::EXPORT_SOCIETE_CREDIT] =  ($facture->isAvoir())? number_format($facture->getMontantTTC() , 2, ",", "") : number_format($credit , 2, ",", "");
+                  if(count($facture->getPaiements()) > 1){
+                      $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] = "";
+                      foreach($facture->getPaiements() as $ps){
+                          foreach($ps->getPaiement() as $p){
+                              if ($p->getFacture()->getId() != $facture->getId()) {
+                                  continue;
+                              }
+                              $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] .= "\n".$p->getMoyenPaiementLibelle()."\n(".$p->getDatePaiement()->format('d/m/Y').')';
+                          }
+                      }
+                  }else{
+                      if($facture->isAvoir() && $facture->getAvoirPartielRemboursementCheque()){
+                        $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] =  $paiement->getMoyenPaiementLibelle();
+                      }else{
+                        $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] =  $paiement->getMoyenPaiementLibelle();
+                      }
 
-              $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] .= "\n(".$paiement->getDatePaiement()->format('d/m/Y').')';
+                      $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] .= "\n(".$paiement->getDatePaiement()->format('d/m/Y').')';
+                  }
+                  if($facture->getPayeeAvecTropPercu()){
+                      $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] .= "\n et Réglée avec le trop perçu";
+                  }
+                }
             }
-          }
         }
         if(!count($facture->getPaiements())){
           $factureLigne[self::EXPORT_SOCIETE_DATE] = $facture->getDateFacturation()->format('d/m/Y');
@@ -667,7 +685,11 @@ public static $export_factures_en_retards = array(
           $factureLigne[self::EXPORT_SOCIETE_ECHEANCE] =  $facture->getDateLimitePaiement()->format('d/m/Y');
           $factureLigne[self::EXPORT_SOCIETE_DEBIT] =  number_format($facture->getMontantTTC(), 2, ",", "");
           $factureLigne[self::EXPORT_SOCIETE_CREDIT] =  ($facture->isAvoir())? number_format($facture->getMontantTTC() , 2, ",", "") : "0";
-          $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] = ($facture->getAvoirPartielRemboursementCheque())? "Remboursement par chèque le ".$facture->getDateFacturation()->format('d/m/Y') : "-";
+          if($facture->getPayeeAvecTropPercu()){
+              $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] = "Réglée avec le trop perçu";
+          }else{
+              $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] = ($facture->getAvoirPartielRemboursementCheque())? "Remboursement par chèque le ".$facture->getDateFacturation()->format('d/m/Y') : "-";
+          }
         }
       return $factureLigne;
     }
