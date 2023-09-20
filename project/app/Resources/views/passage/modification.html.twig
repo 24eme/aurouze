@@ -12,6 +12,10 @@
         	{{ form_end(form) }}
 
             <a class="btn btn-default" href="{{ path('passage_etablissement', {'id': passage.etablissement.id })}}">Annuler</a>
+            {% if (passage.isAPlanifie or passage.isAnnule) %}
+                <a class="btn btn-danger pull-right" style="margin-right:6px;" href="{{ path('passage_suppression', {'id': passage.id}) }}" onclick="return confirm('Confirmez-vous la suppression de ce passage ?')">Supprimer le passage</a>
+            {% endif %}
+
         </div>
     </div>
 {% endblock %}
