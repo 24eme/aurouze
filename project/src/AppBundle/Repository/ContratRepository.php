@@ -228,7 +228,7 @@ class ContratRepository extends DocumentRepository {
 
     public function findAllContratWithDateReconduction(){
       $dateLimite = new \DateTime();
-      $dateLimite->modify('-2 year');
+      $dateLimite->modify('-6 months');
 
       $q = $this->createQueryBuilder();
       $q->field('dateReconduction')->notEqual(null);
