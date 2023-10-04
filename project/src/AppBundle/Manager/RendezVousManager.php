@@ -56,7 +56,7 @@ class RendezVousManager {
         /*     $rdv->setDateFin($passage->getDateFin()); */
         /* } */
 
-        $rdv->setDescription($planifiable->getEtablissement()->getCommentaire());
+        $rdv->setDescription(null);
 
         return $rdv;
     }
