@@ -180,8 +180,14 @@
           </div>
           <hr />
           <div class="form-group">
+              <label class="col-sm-2 control-label">Commentaire Permanent</label>
+              <div class="col-sm-10">
+                <p class="form-control-static">{{ rdv.devis.etablissement.commentaire | nl2br }}</p>
+              </div>
+          </div>
+          <div class="form-group">
               {{ form_errors(form.description) }}
-              {{ form_label(form.description, "Com. interne", {'label_attr': {'class': 'col-xs-2 contral-label'}}) }}
+              {{ form_label(form.description, "Commentaire interne", {'label_attr': {'class': 'col-xs-2 contral-label'}}) }}
               <div class="col-xs-10">
                   {{ form_widget(form.description) }}
               </div>
