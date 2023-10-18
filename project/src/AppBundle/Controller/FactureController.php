@@ -415,7 +415,7 @@ class FactureController extends Controller
         $dm->persist($facture);
         $dm->flush();
 
-        return $this->redirectToRoute('facture_societe', array('id' => $societe->getSociete()->getId(),"etablissement_id" => $request->get('etablissement_id')));
+        return $this->redirectToRoute('facture_societe', array('id' => $facture->getSociete()->getId(),"etablissement_id" => $request->get('etablissement_id')));
     }
 
 
