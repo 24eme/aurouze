@@ -30,7 +30,7 @@
 			<div class="text-right" style="padding-right: 12px;"><small><strong>{{ form.factureMontantTTC.vars.value | number_format(2, ',', ' ')}}</strong></small></div>
 		</div>
 		<div class="col-xs-1" style="padding: 0 0 0 2px;">
-            <button type="button" tabindex="-1" class="btn btn-default dynamic-collection-remove pull-right" style="margin-left: 8px; position: absolute;" disabled><span class="glyphicon glyphicon-remove"></span></button>
+            <button type="button" tabindex="-1" class="btn btn-default dynamic-collection-remove pull-right" style="margin-left: 8px; position: absolute;" {% if (form.moyenPaiement.vars.value == "PRELEVEMENT_BANQUAIRE") %}disabled{% endif %}><span class="glyphicon glyphicon-remove"></span></button>
             {% if (form.moyenPaiement.vars.value == "PRELEVEMENT_BANQUAIRE") %}
                 <button title="Rejeter" type="button" class="btn btn-default dynamic-collection-reject pull-right" style="color:red;"><span class="glyphicon glyphicon-remove-sign"></span></button>
             {% endif %}
