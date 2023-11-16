@@ -41,11 +41,10 @@
     {{ planifiable.etablissementInfos.adresse.adresse }}<br/>
     {{ planifiable.etablissementInfos.adresse.codePostal }}&nbsp;{{ planifiable.etablissementInfos.adresse.commune }}
     <br/><br/><h3><span class="ui-btn ui-btn-a ui-icon-info ui-btn-icon-notext ui-btn-inline ui-shadow"></span><span style="text-decoration: underline;">Informations</span></h3>
-    <p style="margin-top: 10px; margin-bottom: 0px;">
-    {% if(planifiable.rendezvous.description) %}
-        {{ planifiable.rendezvous.description | nl2br}}
-    {% endif %}
-    {% if(not planifiable.etablissement.commentaire and not planifiable.rendezvous.description) %}
+    <p style="margin-top: 10px;">
+    {% if planifiable.rendezvous.informations %}
+        {{ planifiable.rendezvous.informations | nl2br}}
+    {% else %}
         <span class="text-muted">Aucune</span>
     {% endif %}
     </p>

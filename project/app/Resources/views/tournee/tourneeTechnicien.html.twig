@@ -66,11 +66,11 @@
               <span  class="step size-18" ><i class="mdi mdi-local-shipping" style="cursor: pointer;"></i></span>
             {% endif %}
             </p>
-            {% if planifiable.commentaire %}
+            {% if planifiable.etablissement.commentaire or rendezvous.description %}
             <p class="">
                 Informations :
-                {{planifiable.commentaire | striptags | slice(0, 50)}}
-                {% if planifiable.commentaire | length > 50 %}...{% endif %}
+                {{ rendezvous.informations | slice(0, 50)}}
+                {% if rendezvous.informations | length > 50 %}...{% endif %}
             </p>
             {% endif %}
             {% if rendezvous.prerequis is defined and rendezvous.prerequis %}

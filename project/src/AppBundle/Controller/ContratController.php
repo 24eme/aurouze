@@ -666,6 +666,7 @@ class ContratController extends Controller {
      */
     public function contrats_reconduire_massivement(Request $request) {
         set_time_limit(0);
+        ini_set('memory_limit', '1024M');
         $dm = $this->get('doctrine_mongodb')->getManager();
         $cm = $this->get('contrat.manager');
         $contratsAReconduire = array();

@@ -482,4 +482,18 @@ class RendezVous {
     {
         $this->prerequis = $prerequis;
     }
+
+    public function getInformations() {
+        $informations = null;
+
+        if($this->getPlanifiable()) {
+            $informations .= $this->getPlanifiable()->getEtablissement()->getCommentaire();
+        }
+
+        $informations .= "\n\n".str_replace($informations, "", $this->description);
+
+        $informations = trim($informations);
+
+        return $informations;
+    }
 }

@@ -174,7 +174,7 @@
             </div>
             <div class="col-xs-4 text-right">
               {{ form_widget(form.edit) }}
-            {% if facture is defined %}
+            {% if facture is defined and facture %}
               <a class="btn btn-default" href="{{ path('facturable_pdf', {'document': facture.id, 'key': facture.getSecretKey()}) }}">
                 <i class="glyphicon glyphicon-eye-open"></i>&nbsp;Voir la facture en PDF
               </a>

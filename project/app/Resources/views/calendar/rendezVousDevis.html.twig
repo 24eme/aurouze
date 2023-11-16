@@ -180,8 +180,14 @@
           </div>
           <hr />
           <div class="form-group">
+              <label class="col-sm-2 control-label">Commentaire Permanent</label>
+              <div class="col-sm-10">
+                <p class="form-control-static">{{ rdv.devis.etablissement.commentaire | nl2br }}</p>
+              </div>
+          </div>
+          <div class="form-group">
               {{ form_errors(form.description) }}
-              {{ form_label(form.description, "Com. interne", {'label_attr': {'class': 'col-xs-2 contral-label'}}) }}
+              {{ form_label(form.description, "Commentaire interne", {'label_attr': {'class': 'col-xs-2 contral-label'}}) }}
               <div class="col-xs-10">
                   {{ form_widget(form.description) }}
               </div>
@@ -202,7 +208,7 @@
                 Fermer
               </button>
             </div>
-            <div class="col-xs-6 text-center">
+            <div class="col-xs-7 text-center">
               <div class="btn-group">
                 {% if rdv.id %}
                   <a class="btn btn-sm btn-default text-danger rdv-deplanifier-link"
@@ -211,20 +217,20 @@
                       <span class="text-danger"><i class="glyphicon glyphicon-trash"></i> Supprimer RDV</span>
                   </a>
                 {% endif %}
-                {% if (rdv.devis.numeroDevis) %}
-                  <a class="btn btn-sm btn-default" href="{{ path('facturable_pdf', {'document': rdv.devis.id ,'key': rdv.devis.getSecretKey()}) }}">
-                    <i class="glyphicon glyphicon-file"></i> Voir le PDF du devis
-                  </a>
-                {% endif %}
                 {% if (rdv.id and rdv.planifiable) %}
                   <a class="btn btn-sm btn-default" href="{{ path('devis_modification', {'id': rdv.devis.id, 'service': service })}}"></span> Modification du devis</a>
                 {% endif %}
+                {% if (rdv.devis.numeroDevis) %}
+                  <a class="btn btn-sm btn-default" href="{{ path('facturable_pdf', {'document': rdv.devis.id ,'key': rdv.devis.getSecretKey()}) }}">
+                    <i class="glyphicon glyphicon-file"></i> PDF du devis
+                  </a>
+                {% endif %}
                 {% if (rdv.planifiable and rdv.planifiable.isValideTechnicien and rdv.planifiable.isSaisieTechnicien) %}
-                    <a class="btn btn-sm btn-default" href="{{ path('devis_pdf_rapport_download', {'id': rdv.devis.id, 'service': service })}}" data-toggle="tooltip" ><span class="glyphicon glyphicon-file"></span> Télécharger le rapport de devis</a>
+                    <a class="btn btn-sm btn-default" href="{{ path('devis_pdf_rapport_download', {'id': rdv.devis.id, 'service': service })}}" data-toggle="tooltip" ><span class="glyphicon glyphicon-file"></span> Rapport de devis</a>
                 {% endif %}
                 </div>
             </div>
-            <div class="col-xs-4 text-right">
+            <div class="col-xs-3 text-right">
             {% if rdv.id and form is defined %}
                 <button data-loading-text="En cours ..." autocomplete="off" class="btn btn-primary btn-block" type="submit">Modifier</button>
             {% elseif form is defined %}
@@ -239,12 +245,7 @@
                       data-toggle="tooltip" >
                          <span class="glyphicon glyphicon-file"></span>&nbsp;Facturer le devis produit
                    </a>
-                {% else  %}
-                <a class="btn btn-sm btn-default"
-                   href="{{ path('facture_societe', {'id': rdv.devis.societe.id })}}"
-                   title="Retour aux facture"
-                   data-toggle="tooltip" >Retour aux factures</a>
-                <br><br>
+                {% elseif (rdv.passage.emailTransmission) %}
                 <a class="btn btn-sm btn-default"
                    href="{{ path('devis_transmission_email', {'id': rdv.planifiable.id, 'service': service })}}"
                    title="Envoyer le rapport par mail">

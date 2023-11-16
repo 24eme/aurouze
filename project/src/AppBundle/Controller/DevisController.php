@@ -276,8 +276,8 @@ class DevisController extends Controller
         }
 
         $dm = $this->get('doctrine_mongodb')->getManager();
-        $fm = $this->get('facture.manager');
-        $parameters = $fm->getParameters();
+        $pm = $this->get('passage.manager');
+        $parameters = $pm->getParameters();
         $appname = $this->container->getParameter('instanceapp');
 
         if(!$parameters['coordonnees'] || !$parameters['coordonnees']['email'] || !$parameters['coordonnees']['nom']){
