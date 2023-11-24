@@ -98,7 +98,14 @@ class PassageController extends Controller
         $anneeMois = "courant";
         $dateFinAll = $dateFin;
 
-        if(strlen($request->get('periode')) == 4) {
+        if($request->get('periode') == '6lastmonths') {
+            $anneeMois = $request->get('periode');
+            $dateDebut = new \DateTime();
+            $dateDebut->modify("last day of this month");
+            $dateDebut->modify("-6 month");
+            $dateFin = new \DateTime();
+            $dateFin->modify("last day of this month");
+        } elseif(strlen($request->get('periode')) == 4) {
             $anneeMois = $request->get('periode');
             $dateDebut = \DateTime::createFromFormat('Ymd',$anneeMois.'0101');
             $dateFin = clone $dateDebut;

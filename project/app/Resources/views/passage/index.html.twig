@@ -25,6 +25,8 @@
                                 {% endif %}
                             {% else %}Plus d'options{% endif %} <span class="caret"></span></a>
                         <ul id="dropdown-more-date-content" class="dropdown-menu" aria-labelledby="dropdown-more-date" style="max-height: 200px;overflow-y: auto;">
+                            <li {% if (anneeMois == '6lastmonths') %}class="active"{% endif %}><a href="{{ path('passage_secteur', {"secteur" : secteur, "periode" : '6lastmonths', "lat" : coordinatesCenter.lat, "lon" : coordinatesCenter.lon, "zoom": coordinatesCenter.zoom }) }}">6 derniers mois</a></li>
+                            <li role="separator" class="divider"></li>
                             {% for k,v in morePassages %}
                             <li {% if (k == anneeMois) %}class="active"{% endif %}><a href="{{ path('passage_secteur', {"secteur" : secteur, "periode" : k, "lat" : coordinatesCenter.lat, "lon" : coordinatesCenter.lon, "zoom": coordinatesCenter.zoom }) }}">
                                 {% if k | length == 4 %}
