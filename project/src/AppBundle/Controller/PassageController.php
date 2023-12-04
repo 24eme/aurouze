@@ -98,13 +98,11 @@ class PassageController extends Controller
         $anneeMois = "courant";
         $dateFinAll = $dateFin;
 
-        if($request->get('periode') == '6lastmonths') {
+        if($request->get('periode') == 'currentyear') {
             $anneeMois = $request->get('periode');
-            $dateDebut = new \DateTime();
-            $dateDebut->modify("last day of this month");
-            $dateDebut->modify("-6 month");
             $dateFin = new \DateTime();
-            $dateFin->modify("last day of this month");
+            $dateFin->modify("last day of previous month");
+            $dateDebut = new \DateTime($dateFin->format('Y').'-01-01 00:00:00');
         } elseif(strlen($request->get('periode')) == 4) {
             $anneeMois = $request->get('periode');
             $dateDebut = \DateTime::createFromFormat('Ymd',$anneeMois.'0101');
