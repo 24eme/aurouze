@@ -101,7 +101,7 @@ class PassageController extends Controller
         if($request->get('periode') == '6lastmonths') {
             $anneeMois = $request->get('periode');
             $dateDebut = new \DateTime();
-            $dateDebut->modify("last day of this month");
+            $dateDebut->modify("last day of last month");
             $dateDebut->modify("-6 month");
             $dateFin = new \DateTime();
             $dateFin->modify("last day of this month");
