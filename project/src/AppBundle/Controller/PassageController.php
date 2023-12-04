@@ -104,7 +104,7 @@ class PassageController extends Controller
             $dateDebut->modify("last day of previous month");
             $dateDebut->modify("-6 month");
             $dateFin = new \DateTime();
-            $dateFin->modify("last day of this month");
+            $dateFin->modify("last day of previous month");
         } elseif(strlen($request->get('periode')) == 4) {
             $anneeMois = $request->get('periode');
             $dateDebut = \DateTime::createFromFormat('Ymd',$anneeMois.'0101');
