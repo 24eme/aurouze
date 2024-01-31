@@ -477,7 +477,7 @@
                 $(e.delegateTarget).remove();
             });
             $(item).find('input, select').eq(0).focus();
-            $.callbackDynamicCollection($(item));
+            $.callbackDynamicCollection();
 
             if (item[0].dataset.repeat !== undefined && item[0].dataset.repeat.length > 0 && item[0].previousElementSibling) {
                 const el = item[0]
@@ -520,41 +520,7 @@
         });
     }
 
-    $.callbackDynamicCollection = function (el = null) {
-        if (el) {
-            el.find('.datepicker').datepicker({autoclose: true, todayHighlight: true, toggleActive: true, language: "fr"});
-            el.find('.select2-simple').each((index, value) => $(value).select2({ theme: 'bootstrap', allowClear: true }));
-
-            el.find('.select2-ajax').each(function (index, value) {
-                var urlComponent = $(value).attr('data-url') + "?";
-                if ($(value).attr('data-nonactif') == '1') {
-                    urlComponent += "nonactif=1";
-                } else {
-                    urlComponent += "nonactif=0";
-                }
-                $(value).select2({ theme: 'bootstrap', minimumInputLength: 2, allowClear: true, ajax: {
-                        type: "GET",
-                        url: urlComponent,
-                        delay: 500,
-                        data: function (params) {
-                            var queryParameters = {
-                                term: params.term
-
-                            }
-                            return queryParameters;
-                        },
-                        processResults: function (data) {
-                            return {
-                                results: data
-                            };
-                        }
-                    }
-                });
-            })
-
-            return false;
-        }
-
+    $.callbackDynamicCollection = function () {
         $.initSelect2();
         $.initSelect2Ajax();
         $.initDatePicker();
