@@ -1,8 +1,10 @@
+{% set paiement = facture.getMontantReelPaye() %}
+{% set restant = facture.getMontantTTC() - paiement %}
 Bonjour,
 
-Je me permets de vous solliciter par mail, car sauf erreur de notre part, notre mail du {{ facture.getRelanceObjNumero(1).dateRelance | localizeddate("medium", "none", null, null,  "dd/MM/yyyy") }} est resté sans réponse de votre part, la facture n°{{ facture.getNumeroFacture()}} d'un montant de {{ facture.getMontantTTC() }} € du {{ facture.getDateFacturation().format('d/m/Y') }} reste impayée dans nos comptes à ce jour.
+Je me permets de vous solliciter par mail, car sauf erreur de notre part, notre mail du {{ facture.getRelanceObjNumero(1).dateRelance | localizeddate("medium", "none", null, null,  "dd/MM/yyyy") }} est resté sans réponse de votre part, la facture n°{{ facture.getNumeroFacture()}} d'un montant de {{ facture.getMontantTTC() }} € du {{ facture.getDateFacturation().format('d/m/Y') }} reste {% if paiement > 0 %}en partie {% endif %}impayée dans nos comptes à ce jour.
 
-Je vous remercie de nous faire parvenir votre règlement de {{ facture.getMontantTTC() }} € avant le  {{ dateLimite }}.
+Je vous remercie de nous faire parvenir votre règlement {% if paiement > 0 %}complémentaire {% endif %}de {{ restant }} € avant le  {{ dateLimite }}.
 
 Ce règlement peut être effectué par virement (IBAN : {{ banque.emailIBAN }} - BIC : {{ banque.emailBIC }}) ou par chèque à l’adresse indiquée sur la facture. Merci de me prévenir par retour de ce mail de la date de votre régularisation, afin que je puisse en informer la Direction.
 
