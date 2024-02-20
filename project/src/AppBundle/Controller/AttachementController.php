@@ -170,7 +170,7 @@ class AttachementController extends Controller {
   }
 
    /**
-   * @Route("/societe/attachement/{id}/ajout", name="societe_upload_attachement")
+   * @Route("/societe/attachement/{id}/ajout", name="societe_upload_attachement", methods={"POST", "PUT"})
    */
    public function attachementSocieteUploadAction(Request $request, $id) {
       ini_set ('gd.jpeg_ignore_warning', 1);

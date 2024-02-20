@@ -28,7 +28,7 @@ class FactureLigneType extends AbstractType {
 			->add('libelle', TextType::class, array("attr" => array("class" => "typeahead form-control", "placeholder" => "Libellé (Produit ou autre)")))
 		    ->add('quantite', TextType::class, array('attr' => array('placeholder' => "Quantité")))
 				->add('prixUnitaire', NumberType::class, array('attr' => array('min' => "0", 'placeholder' => "Prix unitaire", "class" => "form-control prix-unitaire"), 'scale' => 2))
-			->add('tauxTaxe', NumberType::class, array('attr' => array('placeholder' => "Taux de TVA"), 'scale' => 2));
+			->add('tauxTaxe', NumberType::class, array('attr' => array('placeholder' => "Taux de TVA"), 'scale' => 3));
 	}
 
 	public function setDefaultOptions(OptionsResolverInterface $resolver)

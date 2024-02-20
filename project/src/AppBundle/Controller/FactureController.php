@@ -1439,10 +1439,26 @@ class FactureController extends Controller
         }
 
 
-        private function updateEmetteur(Facture $facture,Contrat $contrat = null){
-            $commercial_SEINE_ET_MARNE = ($this->container->getParameter("commercial_seine_et_marne")) ? $this->container->getParameter("commercial_seine_et_marne") : null;
-            if(($facture->getCommercial() && $facture->getCommercial()->getNom() == $commercial_SEINE_ET_MARNE) or ($facture->getContrat() && $facture->getContrat()->getCommercial() && $facture->getContrat()->getCommercial()->getNom() == $commercial_SEINE_ET_MARNE )or ($contrat and $contrat->getZone() == ContratManager::ZONE_SEINE_ET_MARNE)) {
+        private function updateEmetteur(Facture $facture, Contrat $contrat = null)
+        {
+            $commercial_SEINE_ET_MARNE = $this->container->getParameter("commercial_seine_et_marne") ?: null;
+
+            if (
+                ($facture->getCommercial() && $facture->getCommercial()->getNom() == $commercial_SEINE_ET_MARNE)
+                || ($facture->getContrat() && $facture->getContrat()->getCommercial() && $facture->getContrat()->getCommercial()->getNom() == $commercial_SEINE_ET_MARNE)
+                || ($contrat && $contrat->getZone() == ContratManager::ZONE_SEINE_ET_MARNE)
+            ) {
                 $parameters = $this->container->getParameter('facture');
+
+                if (array_key_exists($parameters['emetteur_SEINE_ET_MARNE']) === false) {
+                    $this->container->get('monolog.logger.request')->error(
+                        sprintf("Contrat : %s ou Facture : %s a une zone 77 alors que la région n'est pas configuré",
+                            ($contrat) ? $contrat->_id : '', $facture->_id
+                        )
+                    );
+                    return false;
+                }
+
                 $facture->getEmetteur()->setNom($parameters['emetteur_SEINE_ET_MARNE']['nom']);
                 $facture->getEmetteur()->setAdresse($parameters['emetteur_SEINE_ET_MARNE']['adresse']);
                 $facture->getEmetteur()->setCodePostal($parameters['emetteur_SEINE_ET_MARNE']['code_postal']);
