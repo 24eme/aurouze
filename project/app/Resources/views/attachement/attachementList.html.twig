@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-xs-12">
-        <table class="table table-bordered">
+        <table class="table table-bordered" id="attachment-table">
             <thead>
                 <tr>
                     <th class="col-xs-2">Date</th>
@@ -53,10 +53,21 @@
 
       </div>
   </div>
-{% for attachement in attachements %}
+{% for attachement in attachements if attachement.isImage %}
   <!-- The Modal -->
   <div id="modal-viewer-{{attachement.id }}" class="modalViewer">
     <span class="modalViewerClose">&times;</span>
     <img class="modalViewerContent" id="img" />
   </div>
 {% endfor %}
+
+<template id="template-thumbnail">
+  <div class="thumbnail thumbnail-overlayed" data-cible="modal-viewer-__attachmentID__" >
+    <img src="" alt="thumbnail photo __attachmentID__" class="img-thumbnail vignette"
+        style="margin-bottom:0; max-width : 100px; max-height : 100px;"
+        data-src="{{ path('attachement_download', { id: '__attachmentID__', noattachment: true })}}"
+      />
+    <div class="overlay">
+    </div>
+  </div>
+</template>

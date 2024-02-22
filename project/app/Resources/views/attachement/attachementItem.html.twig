@@ -1,11 +1,7 @@
 {% if attachement.isPdf %}
     <a class="btn btn-sm btn-default" href="{{ path('attachement_download', { id: attachement.id })}}"><span class="glyphicon glyphicon-file"></span> PDF</a>
 {% elseif attachement.isImage %}
-  <div class="thumbnail thumbnail-overlayed" data-cible="modal-viewer-{{attachement.id }}" >
-    <img src="{{ path('attachement_download', { id: attachement.id, noattachment: true })}}" alt="{{ attachement.originalName }}" class="img-thumbnail vignette" style="margin-bottom:0; max-width : 100px; max-height : 100px;"/>
-    <div class="overlay">
-    </div>
-  </div>
+  <button class="btn btn-sm btn-default attachment-loader" data-attachment="{{ attachement.id }}"><span class="glyphicon glyphicon-picture"></span> Voir la photo</button>
  {% else %}
     <a class="btn btn-sm btn-default" href="{{ path('attachement_download', { id: attachement.id })}}"><span class="glyphicon glyphicon-download-alt"></span></a>
  {% endif %}
