@@ -27,7 +27,10 @@ class RendezVousRepository extends DocumentRepository
             $query->sort('dateDebut', 'desc');
         }else{
             $query->sort('dateDebut', 'asc');
+            $query->field('passage')->prime(true);
+            $query->field('devis')->prime(true);
         }
+
         return $query->getQuery()->execute();
     }
 
