@@ -290,9 +290,17 @@ class CalendarController extends Controller {
 
         $periodeStart = $periodeStart->format('Y-m-d');
         $periodeEnd = $request->get('end');
-        $rdvs = $dm->getRepository('AppBundle:RendezVous')->findByDateAndParticipant($periodeStart, $periodeEnd, $technicien);
         $calendarData = array();
 
+        $rdvs = $dm->getRepository('AppBundle:RendezVous')->findByDateAndParticipant($periodeStart, $periodeEnd, $technicien);
+        $etablissements = array_map(function ($r) {
+            if ($r->getPlanifiable()) return $r->getPlanifiable()->getEtablissement()->getId();
+        }, $rdvs->toArray());
+        $etablissements = $dm->getRepository('AppBundle:Etablissement')->createQueryBuilder()
+                                                     ->field('id')->in(array_filter($etablissements, fn ($v) => !is_null($v)))
+                                                     ->getQuery()
+                                                     ->execute()
+                                                     ->toArray();
         foreach ($rdvs as $rdv) {
             $calendarData[] = $this->buildEventObjCalendar($rdv,$technicien);
         }
