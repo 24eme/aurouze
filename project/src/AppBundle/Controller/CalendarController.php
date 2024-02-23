@@ -458,8 +458,7 @@ class CalendarController extends Controller {
     }
 
     public function buildEventObjCalendar($rdv,$technicien){
-        $event = $rdv->getEventJson($technicien->getCouleur());
-        $em = $this->get('etablissement.Manager');
+        $event = $rdv->getEventJson();
 
         if ($rdv->getPlanifiable() && $rdv->getPlanifiable()->getEtablissement()) {
             $planifiableCoord = $rdv->getPlanifiable()->getEtablissement()->getAdresse()->getCoordonnees();
