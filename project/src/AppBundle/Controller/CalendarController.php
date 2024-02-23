@@ -297,7 +297,7 @@ class CalendarController extends Controller {
             if ($r->getPlanifiable()) return $r->getPlanifiable()->getEtablissement()->getId();
         }, $rdvs->toArray());
         $etablissements = $dm->getRepository('AppBundle:Etablissement')->createQueryBuilder()
-                                                     ->field('id')->in(array_filter($etablissements, fn ($v) => !is_null($v)))
+                                                     ->field('id')->in(array_filter($etablissements, function ($v) { return !is_null($v); }))
                                                      ->getQuery()
                                                      ->execute()
                                                      ->toArray();
