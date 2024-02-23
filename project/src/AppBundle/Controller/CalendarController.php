@@ -477,9 +477,6 @@ class CalendarController extends Controller {
             }
             if($rdv->getPlanifiable()->getTypePlanifiable() == Passage::DOCUMENT_TYPE){
               $event->retourMap = $this->generateUrl('passage_secteur', array('secteur' => $secteur, 'mois' => $dateRetour,'lat' => $planifiableCoord->getLat(),'lon' => $planifiableCoord->getLon(),'zoom' => $z));
-              if ($secteur) {
-                  $event->retourMap = $this->generateUrl('passage_secteur',array('secteur' => $secteur, 'mois' => $dateRetour,'lat' => $planifiableCoord->getLat(),'lon' => $planifiableCoord->getLon(),'zoom' => $z));
-              }
             }else{
               $event->livraison = true;
             }
