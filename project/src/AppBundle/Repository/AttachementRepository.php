@@ -59,7 +59,7 @@ class AttachementRepository extends DocumentRepository {
     public function findByPassageAndVisibleClient($passage)
     {
         $attachments = array();
-        $query = $this->createQueryBuilder()->select('_id', 'updatedAt', 'imageName', 'titre', 'originalName', 'etablissement', 'societe', 'visibleTechnicien', 'ext','visibleClient','base64')
+        $query = $this->createQueryBuilder()->select('_id', 'updatedAt', 'imageName', 'titre', 'originalName', 'etablissement', 'societe', 'visibleTechnicien', 'ext','visibleClient')
                                             ->field('etablissement')->equals($passage->getEtablissement())
                                             ->field('visibleClient')->equals(true);
         if($passage->getDateDebut()){
