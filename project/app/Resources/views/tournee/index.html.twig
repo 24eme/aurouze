@@ -28,7 +28,9 @@
     		<div class="col-xs-2">
           <br/>
     			<h4>
+          <a href="{{app.request.uri ~ '#' ~ planifiablesTechnicien.technicien.id}}" id="{{planifiablesTechnicien.technicien.id}}">
             <i class="mdi mdi-face mdi-lg" ></i><br/><strong>{{ planifiablesTechnicien.technicien.identite }}</strong>
+            </a>
           </h4>
           <br/><br/>
           <a href="{{ path('calendar',{ 'technicien': planifiablesTechnicien.technicien.id, 'date': date | localizeddate('medium', 'none', null, null, 'yyyy-MM-dd') , 'id': '0' }) }}" ><span class="glyphicon glyphicon-calendar"></span>&nbsp;calendrier</a>
@@ -38,7 +40,7 @@
           <div class="list-group-item" style="{{ planifiable.getColors }}">
               <a data-toggle="modal" data-remote="false"
               data-target="#modal-calendrier-infos"
-              href="{{ path(planifiable.typeplanifiable|lower ~ '_visualisation', { 'id': planifiable.id, 'service': app.request.uri }) }}" class="deco-none">
+              href="{{ path(planifiable.typeplanifiable|lower ~ '_visualisation', { 'id': planifiable.id, 'service': app.request.uri ~ '#' ~ planifiablesTechnicien.technicien.id }) }}" class="deco-none">
               <div class="row">
                 <div class="col-xs-2">{{planifiable.dateDebut | date("H") }}h{{planifiable.dateDebut | date("i") }}</div>
                 <div class="col-xs-7"><strong>{% if planifiable.etablissement.societe.raisonSociale != planifiable.etablissementInfos.nom %}{{ planifiable.etablissement.societe.raisonSociale }}, {% endif %}{{ planifiable.etablissementInfos.nom }}</strong></div>
