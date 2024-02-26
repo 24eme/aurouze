@@ -162,13 +162,25 @@ class Societe implements InterlocuteurInterface {
         }
     }
 
-
     public function generateCodeComptable($generateCodeComptable,$generateCodeComptableParticulier){
+
+      $from = array(
+      'à', 'á', 'â', 'ã', 'ä', 'å', 'æ', 'À', 'Á', 'Â', 'Ã', 'Ä', 'Å', 'Æ', 'ß', 'ç','Ç','è', 'é', 'ê', 'ë', 'È', 'É', 'Ê', 'Ë', 'ì',
+      'í', 'î', 'ï','Ì', 'Í', 'Î', 'Ï', 'ñ', 'Ñ', 'ò', 'ó', 'ô', 'õ', 'ö', 'Ò', 'Ó', 'Ô', 'Õ', 'Ö','š', 'Š','ù', 'ú', 'û', 'ü',
+      'Ù', 'Ú', 'Û', 'Ü','ý', 'Ý', 'ž', 'Ž'
+      );
+
+      $to = array(
+      'a', 'a', 'a', 'a', 'a', 'a', 'a', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'B',  'c', 'C','e', 'e', 'e',
+      'e', 'E', 'E', 'E', 'E', 'i', 'i', 'i', 'i','I', 'I', 'I', 'I', 'n', 'N','o', 'o', 'o', 'o', 'o','O',
+      'O', 'O', 'O', 'O','s', 'S', 'u', 'u', 'u', 'u','U', 'U', 'U', 'U', 'y',  'Y', 'z', 'Z'
+      );
+
         if($generateCodeComptableParticulier && ($this->getType() == EtablissementManager::TYPE_ETB_PARTICULIER)){
-            $this->setCodeComptable($generateCodeComptableParticulier);
+            $this->setCodeComptable(strtoupper($generateCodeComptableParticulier));
         }
         elseif($generateCodeComptable){
-            $this->setCodeComptable("2".substr($this->getRaisonSociale(), 0, 3).$this->getIdentifiant());
+            $this->setCodeComptable("2". substr((strtoupper(preg_replace("/[^a-z]/i", "",(str_replace($from, $to, $this->getRaisonSociale()))))), 0, 3).$this->getIdentifiant());
         }
     }
 

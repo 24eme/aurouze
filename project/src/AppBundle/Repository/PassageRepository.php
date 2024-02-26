@@ -354,5 +354,3 @@ class PassageRepository extends DocumentRepository {
         return PassageManager::$applications;
     }
 }
-
-// https://mensuel.framapad.org/p/gtto36jkdl-9jn0?lang=fr

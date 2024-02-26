@@ -1144,33 +1144,46 @@
     }
 
     $.initAttachements = function(){
+        const template = document.querySelector('template#template-thumbnail')
+        $('.attachment-loader').each(function () {
+            const attachmentID = $(this).data('attachment')
+            const td = $(this).parent()
 
-        $('.thumbnail').each(function(){
-            var modal = $('#'+$(this).data('cible'));
-            var img = $(this).find('img');
-            var modalImg = modal.find("#img");
-            var captionText = modal.find(".caption");
-            var close = modal.find(".modal-viewer-close");
-            $(this).click(function(){
+            $(this).click(function() {
+                $(this).remove()
+                td.html('Chargement…')
 
-                if(modal.css("display") == "none"){
-                    modal.css("display", "block");
-                    modalImg.attr('src',img.attr('src'));
-                }else{
+                let clone = template.cloneNode(true)
+                clone.innerHTML = clone.innerHTML.replaceAll('__attachmentID__', attachmentID)
+
+                let div = document.importNode(clone.content, true)
+                div.querySelector('img').src = div.querySelector('img').dataset.src
+
+                td.html(div)
+            })
+        })
+
+        $('#attachment-table').on('click', function (e) {
+            if (el = e.target.closest('.thumbnail')) {
+                var modal = $("#"+el.dataset.cible)
+                var img = $(el).find('img');
+                var modalImg = modal.find("#img");
+                var captionText = modal.find(".caption");
+                var close = modal.find(".modal-viewer-close");
+
+                modal.css("display", "block");
+                modalImg.attr('src',img.attr('src'));
+
+                modal.click(function(){
+                    if($(this).css("display") != "none"){
+                        $(this).css("display", "none");
+                    }
+                });
+
+                close.click(function() {
                     modal.css("display", "none");
-                }
-            });
-
-            modal.click(function(){
-                if($(this).css("display") != "none"){
-                    $(this).css("display", "none");
-                }
-            });
-
-            close.click(function() {
-                modal.css("display", "none");
-            });
-
+                });
+            }
         });
     }
 
