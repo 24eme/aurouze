@@ -245,7 +245,7 @@
                       data-toggle="tooltip" >
                          <span class="glyphicon glyphicon-file"></span>&nbsp;Facturer le devis produit
                    </a>
-                {% elseif (rdv.passage.emailTransmission) %}
+                {% elseif (rdv.planifiable.emailTransmission) %}
                 <a class="btn btn-sm btn-default"
                    href="{{ path('devis_transmission_email', {'id': rdv.planifiable.id, 'service': service })}}"
                    title="Envoyer le rapport par mail">

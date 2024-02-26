@@ -99,7 +99,7 @@ class RendezVous {
         $this->rendezVousConfirme = true;
     }
 
-    public function getEventJson($backgroundColor) {
+    public function getEventJson() {
         $colors = $this->calculateTilesColors();
 
         $event = new \stdClass();
