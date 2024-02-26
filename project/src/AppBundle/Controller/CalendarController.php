@@ -286,13 +286,21 @@ class CalendarController extends Controller {
         $dm = $this->get('doctrine_mongodb')->getManager();
         $technicien = $dm->getRepository('AppBundle:Compte')->findOneById($request->get('technicien'));
         $periodeStart = $request->get('start');
-        $periodeStart = ((new \DateTime($periodeStart))->modify('-3 month'));
+        $periodeStart = (new \DateTime($periodeStart))->modify('-3 month');
 
         $periodeStart = $periodeStart->format('Y-m-d');
         $periodeEnd = $request->get('end');
-        $rdvs = $dm->getRepository('AppBundle:RendezVous')->findByDateAndParticipant($periodeStart, $periodeEnd, $technicien);
         $calendarData = array();
 
+        $rdvs = $dm->getRepository('AppBundle:RendezVous')->findByDateAndParticipant($periodeStart, $periodeEnd, $technicien);
+        $etablissements = array_map(function ($r) {
+            if ($r->getPlanifiable()) return $r->getPlanifiable()->getEtablissement()->getId();
+        }, $rdvs->toArray());
+        $etablissements = $dm->getRepository('AppBundle:Etablissement')->createQueryBuilder()
+                                                     ->field('id')->in(array_filter($etablissements, function ($v) { return !is_null($v); }))
+                                                     ->getQuery()
+                                                     ->execute()
+                                                     ->toArray();
         foreach ($rdvs as $rdv) {
             $calendarData[] = $this->buildEventObjCalendar($rdv,$technicien);
         }
@@ -458,8 +466,7 @@ class CalendarController extends Controller {
     }
 
     public function buildEventObjCalendar($rdv,$technicien){
-        $event = $rdv->getEventJson($technicien->getCouleur());
-        $em = $this->get('etablissement.Manager');
+        $event = $rdv->getEventJson();
 
         if ($rdv->getPlanifiable() && $rdv->getPlanifiable()->getEtablissement()) {
             $planifiableCoord = $rdv->getPlanifiable()->getEtablissement()->getAdresse()->getCoordonnees();
@@ -477,9 +484,6 @@ class CalendarController extends Controller {
             }
             if($rdv->getPlanifiable()->getTypePlanifiable() == Passage::DOCUMENT_TYPE){
               $event->retourMap = $this->generateUrl('passage_secteur', array('secteur' => $secteur, 'mois' => $dateRetour,'lat' => $planifiableCoord->getLat(),'lon' => $planifiableCoord->getLon(),'zoom' => $z));
-              if ($secteur) {
-                  $event->retourMap = $this->generateUrl('passage_secteur',array('secteur' => $secteur, 'mois' => $dateRetour,'lat' => $planifiableCoord->getLat(),'lon' => $planifiableCoord->getLon(),'zoom' => $z));
-              }
             }else{
               $event->livraison = true;
             }
