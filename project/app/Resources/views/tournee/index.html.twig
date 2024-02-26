@@ -22,13 +22,14 @@
         </div>
       </div>
   {% for technicienId,planifiablesTechnicien in planifiablesByTechniciens %}
+  <a id="{{planifiablesTechnicien.technicien.id}}" />
   <div class="panel panel-default">
   	<div class="panel-body">
     	<div class="row">
     		<div class="col-xs-2">
           <br/>
     			<h4>
-          <a href="{{app.request.uri ~ '#' ~ planifiablesTechnicien.technicien.id}}" id="{{planifiablesTechnicien.technicien.id}}">
+          <a href="{{app.request.uri ~ '#' ~ planifiablesTechnicien.technicien.id}}">
             <i class="mdi mdi-face mdi-lg" ></i><br/><strong>{{ planifiablesTechnicien.technicien.identite }}</strong>
             </a>
           </h4>
