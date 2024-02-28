@@ -7,7 +7,7 @@
     </ol>
     	<div class="row">
         <div class="col-xs-9">
-            <h2>Tournées du {{ date | localizeddate("medium", "none", null, null, "d MMMM yyyy") }}</h2></span>
+            <h2>Tournées du {{ date | localizeddate("medium", "none", null, null, "d MMMM yyyy") }}</h2>
         </div>
         <div class="col-xs-3">
             <h3><div class="form-group">
@@ -22,7 +22,7 @@
         </div>
       </div>
   {% for technicienId,planifiablesTechnicien in planifiablesByTechniciens %}
-  <a id="{{planifiablesTechnicien.technicien.id}}" />
+  <a id="{{planifiablesTechnicien.technicien.id}}"></a>
   <div class="panel panel-default">
   	<div class="panel-body">
     	<div class="row">

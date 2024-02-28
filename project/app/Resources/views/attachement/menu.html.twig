@@ -33,7 +33,7 @@
 					<small>{{ etablissement.adresse.intitule }}</small>
 				</div>
 				<div class="col-xs-2 text-right">
-                    {% if (facets[etablissement.id]) %}<span class="badge badge-muted">{{ facets[etablissement.id] }}</span>{% endif %}
+                    {% if facets[etablissement.id] is defined %}<span class="badge badge-muted">{{ facets[etablissement.id] }}</span>{% endif %}
 				</div>
 			</div>
 		</a>

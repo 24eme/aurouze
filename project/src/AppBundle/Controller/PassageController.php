@@ -983,4 +983,15 @@ class PassageController extends Controller
         return $this->render('passage/creationRapide.html.twig', array('etablissement' => $etablissement, 'contrat' => $contrat, 'form' => $form->createView()));
     }
 
+    /**
+     * @Route("/passage/{id}/reactivation", name="passage_reactivation")
+     * @ParamConverter("passage", class="AppBundle:Passage")
+     */
+    public function reactiverPassageAction(Request $request, Passage $passage) {
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $contrat = $passage->getContrat();
+        $passage->setStatut(PassageManager::STATUT_A_PLANIFIER); 
+        $dm->flush();
+        return $this->redirectToRoute('contrat_visualisation', array('id' => $contrat->getId()));
+    }
 }
