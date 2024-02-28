@@ -15,10 +15,10 @@ class BaseRepository extends DocumentRepository {
 
             return iterator_to_array($cursor);
         } catch (\MongoDB\Driver\Exception\Exception $e) {
-            return ExceptionConverter::toResultArray($e);
+
+            return array();
         }
     }
 
 
 }
-
