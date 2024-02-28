@@ -55,6 +55,9 @@ class RendezVousRepository extends BaseRepository
         $query->field('participants')->equals($participant->getId())
                 ->sort('dateDebut', 'asc');
 
+        $query->field('passage')->prime(true);
+        $query->field('devis')->prime(true);
+
         return $query->getQuery()->execute();
     }
 
