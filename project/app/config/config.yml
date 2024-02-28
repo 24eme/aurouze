@@ -76,6 +76,7 @@ knp_snappy:
         binary:     "%knp_snappy_pdfbinary%"
         options:
           enable-local-file-access: true
+          disable-smart-shrinking: true
     image:
         enabled:    true
         binary:     "%knp_snappy_imagebinary%"
