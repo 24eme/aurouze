@@ -46,14 +46,9 @@ class AttachementRepository extends DocumentRepository {
 
     public function findByEtablissement($etablissement)
 	{
-        $attachments = array();
-        foreach($this->createQueryBuilder()->select('_id', 'updatedAt', 'imageName', 'titre', 'originalName', 'etablissement', 'societe', 'visibleTechnicien', 'ext','visibleClient')->field('etablissement')->equals($etablissement)->getQuery()->execute() as $attachement) {
-            $attachments[$attachement->getId()] = $attachement;
-        }
-
-        uasort($attachments,array("AppBundle\Document\Attachement", "cmpUpdateAt"));
-        $this->getDocumentManager()->getUnitOfWork()->clear("AppBundle\Document\Attachement");//sinon le document attachement est modifié
-        return $attachments;
+        return $this->createQueryBuilder()->exclude('base64')
+                     ->field('etablissement')->equals($etablissement)
+                     ->getQuery()->execute();
     }
 
     public function findByPassageAndVisibleClient($passage)
@@ -79,26 +74,25 @@ class AttachementRepository extends DocumentRepository {
 	public function findBySocieteAndEtablissement($societe, &$facets = array())
 	{
 		$qb = $this->createQueryBuilder();
-		$attachments = array();
         $facets[$societe->getId()] = 0;
+
 		foreach ($this->findBySociete($societe) as $attachement) {
             $facets[$societe->getId()]++;
-			$attachments[$attachement->getId()] = $attachement;
 		}
 
-		foreach ($societe->getEtablissements() as $etablissement) {
-            $facets[$etablissement->getId()] = 0;
-			foreach ($this->findByEtablissement($etablissement) as $attachement) {
-                $facets[$etablissement->getId()]++;
-				$attachments[$attachement->getId()] = $attachement;
-			}
-		}
+        $etablissements = $societe->getEtablissements()->toArray();
+        $attachements = $qb->exclude('base64')->field('etablissement')->in(array_map(function ($e) { if ($e) return $e->getId(); }, $etablissements))->prime(true)
+                           ->getQuery()->execute();
 
-        $facets['total'] = count($attachments);
+        foreach ($attachements as $attachement) {
+            if (array_key_exists($attachement->getEtablissement()->getId(), $facets) === false) {
+                $facets[$attachement->getEtablissement()->getId()] = 0;
+            }
 
-		uasort($attachments,array("AppBundle\Document\Attachement", "cmpUpdateAt"));
+            $facets[$attachement->getEtablissement()->getId()]++;
+        }
 
-		return $attachments;
+        $facets['total'] = array_sum($facets);
 	}
 
 
