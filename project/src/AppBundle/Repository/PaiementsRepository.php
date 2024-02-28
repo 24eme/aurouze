@@ -7,7 +7,7 @@ use AppBundle\Document\Societe;
 use AppBundle\Tool\RechercheTool;
 use Behat\Transliterator\Transliterator;
 
-class PaiementsRepository extends DocumentRepository {
+class PaiementsRepository extends BaseRepository {
 
     public function findPaiementsByFacture($facture) {
         return $this->createQueryBuilder()
@@ -100,7 +100,7 @@ class PaiementsRepository extends DocumentRepository {
     {
     	$qSearch = "\"".str_replace(" ", "\" \"", $q)."\"";
     	$resultSet = array();
-    	$itemResultSet = $this->getDocumentManager()->getDocumentDatabase('AppBundle:Paiements')->command([
+    	$itemResultSet = $this->command([
     			'find' => 'Paiements',
     			'filter' => ['$text' => ['$search' => $qSearch]],
     			'projection' => ['score' => [ '$meta' => "textScore" ]],
@@ -108,20 +108,19 @@ class PaiementsRepository extends DocumentRepository {
     			'limit' => 100
 
     	]);
-    	if (isset($itemResultSet['cursor']) && isset($itemResultSet['cursor']['firstBatch'])) {
-    		foreach ($itemResultSet['cursor']['firstBatch'] as $itemResult) {
+    		foreach ($itemResultSet as $itemResult) {
     			$resultSet[] = array("doc" => $this->uow->getOrCreateDocument('\AppBundle\Document\Paiements', $itemResult), "score" => $itemResult['score']);
     		}
-        if(!count($itemResultSet['cursor']['firstBatch'])){
+        if(!count($itemResultSet)){
           $itemResultSet = $this->createQueryBuilder()
                           ->field('paiement.libelle')->equals(new \MongoRegex('/' . $q . '.*/i'))
                           ->getQuery()
                           ->execute();
-          foreach ($itemResultSet as $key => $paiements) {
+          foreach ($itemResultSet as $paiements) {
               $resultSet[] = array("doc" => $paiements, "score" => "1");
           }
         }
-    	}
+    	
     	return $resultSet;
     }
 

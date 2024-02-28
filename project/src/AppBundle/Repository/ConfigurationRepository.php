@@ -4,7 +4,7 @@ namespace AppBundle\Repository;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
 
-class ConfigurationRepository extends DocumentRepository {
+class ConfigurationRepository extends BaseRepository {
     public $configuration = null;
 
 
