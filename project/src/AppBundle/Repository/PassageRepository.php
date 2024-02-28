@@ -14,7 +14,7 @@ use AppBundle\Document\Contrat;
  * repository methods below.
  */
 
-class PassageRepository extends DocumentRepository {
+class PassageRepository extends BaseRepository {
 
     public function findAllPlanifieByPeriodeAndIdentifiantTechnicien($startDate, $endDate, $technicien, $onlyNonImprime = false) {
         $mongoStartDate = new MongoDate(strtotime($startDate . " 00:00:00"));
@@ -143,7 +143,7 @@ class PassageRepository extends DocumentRepository {
         $q = str_replace(",", "", $q);
         $q = "\"".str_replace(" ", "\" \"", $q)."\"";
         $resultSet = array();
-        $itemResultSet = $this->getDocumentManager()->getDocumentDatabase('AppBundle:Passage')->command([
+        $itemResultSet = $this->command([
                 'find' => 'Passage',
                 'filter' => ['$text' => ['$search' => $q]],
                 'projection' => ['score' => [ '$meta' => "textScore" ]],
@@ -151,11 +151,9 @@ class PassageRepository extends DocumentRepository {
                 'limit' => 100
 
         ]);
-        if (isset($itemResultSet['cursor']) && isset($itemResultSet['cursor']['firstBatch'])) {
-            foreach ($itemResultSet['cursor']['firstBatch'] as $itemResult) {
+            foreach ($itemResultSet as $itemResult) {
                 $resultSet[] = array("doc" => $this->uow->getOrCreateDocument('\AppBundle\Document\Passage', $itemResult), "score" => $itemResult['score']);
             }
-        }
         return $resultSet;
     }
 
