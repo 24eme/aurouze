@@ -6,7 +6,7 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
 use AppBundle\Document\Compte;
 use AppBundle\Manager\CompteManager;
 
-class CompteRepository extends DocumentRepository {
+class CompteRepository extends BaseRepository {
 
     public function findAllUtilisateursTechnicien() {
         return $this->findAllUtilisateursHasTag(CompteManager::TYPE_TECHNICIEN);
@@ -30,7 +30,7 @@ class CompteRepository extends DocumentRepository {
         $q = str_replace(",", "", $q);
         $q = "\"".str_replace(" ", "\" \"", $q)."\"";
     	$resultSet = array();
-    	$itemResultSet = $this->getDocumentManager()->getDocumentDatabase('AppBundle:Societe')->command([
+    	$itemResultSet = $this->command([
     			'find' => 'Compte',
     			'filter' => ['$text' => ['$search' => $q]],
     			'projection' => ['score' => [ '$meta' => "textScore" ]],
@@ -38,14 +38,13 @@ class CompteRepository extends DocumentRepository {
     			'limit' => 50
 
     	]);
-    	if (isset($itemResultSet['cursor']) && isset($itemResultSet['cursor']['firstBatch'])) {
-    		foreach ($itemResultSet['cursor']['firstBatch'] as $itemResult) {
+    	
+    		foreach ($itemResultSet as $itemResult) {
     			if (!$inactif && !$itemResult['actif']) {
     				continue;
     			}
     			$resultSet[] = array("doc" => $this->uow->getOrCreateDocument('\AppBundle\Document\Compte', $itemResult), "score" => $itemResult['score'], "instance" => "Compte");
     		}
-    	}
     	return $resultSet;
     }
 
