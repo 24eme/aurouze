@@ -48,6 +48,7 @@ class AttachementRepository extends DocumentRepository {
 	{
         return $this->createQueryBuilder()->exclude('base64')
                      ->field('etablissement')->equals($etablissement)
+                     ->sort('createdAt', 'desc')
                      ->getQuery()->execute();
     }
 
