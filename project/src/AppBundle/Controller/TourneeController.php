@@ -67,40 +67,56 @@ class TourneeController extends Controller {
         $historiqueAllPassages = array();
         $planifiableForms = array();
         $attachementsForms = array();
+        $attachements = [];
+
+        $etablissements = array_map(function ($r) {
+            if ($r->getPlanifiable()) return $r->getPlanifiable()->getEtablissement()->getId();
+        }, $rendezVousByTechnicien->toArray());
+        $etablissements = $dm->getRepository('AppBundle:Etablissement')->createQueryBuilder()
+                                                     ->field('id')->in(array_filter($etablissements, function ($v) { return !is_null($v); }))
+                                                     ->getQuery()
+                                                     ->execute()
+                                                     ->toArray();
+
+        $attachements = $dm->getRepository('AppBundle:Attachement')->createQueryBuilder()->exclude('base64')
+                                                     ->field('etablissement')->in(array_filter(array_keys($etablissements), function ($v) { return !is_null($v); }))
+                                                     ->getQuery()
+                                                     ->execute()
+                                                     ->toArray();
 
         $version = $this->getVersionManifest($technicienObj->getId(),$date->format('Y-m-d'));
 
         foreach ($rendezVousByTechnicien as $rendezVous) {
-          $planifiable = $rendezVous->getPlanifiable();
-          $previousPlanifiable = null;
-          if($planifiable){
-            if($planifiable->getTypePlanifiable() == Passage::DOCUMENT_TYPE){
-              $historiqueAllPassages[$planifiable->getId()] = $this->get('contrat.manager')->getHistoriquePassagesByNumeroArchive($planifiable, 2);
-              $previousPlanifiable = null;
-              foreach ($historiqueAllPassages[$planifiable->getId()] as $hPassage) {
-                $this->get('passage.manager')->synchroniseProduitsWithConfiguration($hPassage);
-                if(!$previousPlanifiable || !$previousPlanifiable->getDateDebut() || ($previousPlanifiable->getDateDebut() < $hPassage->getDateDebut())){
-                    $previousPlanifiable = $hPassage;
+            $planifiable = $rendezVous->getPlanifiable();
+            $previousPlanifiable = null;
+            if($planifiable){
+                if($planifiable->getTypePlanifiable() == Passage::DOCUMENT_TYPE){
+                    $historiqueAllPassages[$planifiable->getId()] = $this->get('contrat.manager')->getHistoriquePassagesByNumeroArchive($planifiable, 2);
+                    $previousPlanifiable = null;
+                    foreach ($historiqueAllPassages[$planifiable->getId()] as $hPassage) {
+                        $this->get('passage.manager')->synchroniseProduitsWithConfiguration($hPassage);
+                        if(!$previousPlanifiable || !$previousPlanifiable->getDateDebut() || ($previousPlanifiable->getDateDebut() < $hPassage->getDateDebut())){
+                            $previousPlanifiable = $hPassage;
+                        }
+                    }
                 }
-              }
+                $planifiableTypeName = "AppBundle\\Type\\".$planifiable->getTypePlanifiable()."MobileType";
+                $formPlanifiable = new $planifiableTypeName($dm, $planifiable->getId(), $previousPlanifiable);
+
+                $planifiableForms[$planifiable->getId()] = $this->createForm($formPlanifiable, $planifiable, array(
+                    'action' => $this->generateUrl('tournee_planifiable_rapport', array('planifiable' => $planifiable->getId(),'technicien' => $technicienObj->getId())),
+                    'method' => 'POST',
+                ))->createView();
+
+                $etbId = $planifiable->getEtablissement()->getId();
+
+                $attachementsForms[$etbId] = array('form' => $this->createForm(new AttachementType($dm, false), new Attachement(), array(
+                    'action' => $this->generateUrl('tournee_attachement_upload', array('technicien' => $technicien, 'date' => $date->format('Y-m-d'),'idetablissement' => $etbId,'retour' => 'passage_visualisation_'.$planifiable->getId())),
+                    'method' => 'POST',
+                ))->createView(),
+                'action' => $this->generateUrl('tournee_attachement_upload', array('technicien' => $technicien, 'date' => $date->format('Y-m-d'),'idetablissement' => $etbId, 'retour' => 'passage_visualisation_'.$planifiable->getId())));
             }
-            $planifiableTypeName = "AppBundle\\Type\\".$planifiable->getTypePlanifiable()."MobileType";
-            $formPlanifiable = new $planifiableTypeName($dm, $planifiable->getId(), $previousPlanifiable);
-
-            $planifiableForms[$planifiable->getId()] = $this->createForm($formPlanifiable, $planifiable, array(
-              'action' => $this->generateUrl('tournee_planifiable_rapport', array('planifiable' => $planifiable->getId(),'technicien' => $technicienObj->getId())),
-              'method' => 'POST',
-              ))->createView();
-
-            $etbId = $planifiable->getEtablissement()->getId();
-
-            $attachementsForms[$etbId] = array('form' => $this->createForm(new AttachementType($dm, false), new Attachement(), array(
-                  'action' => $this->generateUrl('tournee_attachement_upload', array('technicien' => $technicien, 'date' => $date->format('Y-m-d'),'idetablissement' => $etbId,'retour' => 'passage_visualisation_'.$planifiable->getId())),
-                  'method' => 'POST',
-              ))->createView(),
-              'action' => $this->generateUrl('tournee_attachement_upload', array('technicien' => $technicien, 'date' => $date->format('Y-m-d'),'idetablissement' => $etbId, 'retour' => 'passage_visualisation_'.$planifiable->getId())));
-            }
-          }
+        }
 
         $jourFerieJsonContent = json_decode(file_get_contents($this->get('kernel')->getRootDir().'/../web/joursFeries.json'), true);
         $isJourFerie = false;
@@ -119,6 +135,7 @@ class TourneeController extends Controller {
                                                                           'telephoneSecretariat' => $telephoneSecretariat,
                                                                           "planifiableForms" => $planifiableForms,
                                                                           "attachementsForms" => $attachementsForms,
+                                                                          'attachements' => $attachements,
                                                                           "isJourFerie" => $isJourFerie));
     }
 
