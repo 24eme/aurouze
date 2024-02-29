@@ -5,7 +5,7 @@ namespace AppBundle\Repository;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use AppBundle\Document\RendezVous;
 
-class RendezVousRepository extends DocumentRepository
+class RendezVousRepository extends BaseRepository
 {
     public function findByDateAndParticipant($startDate, $endDate, $participant, $libre = null) {
 
