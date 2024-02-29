@@ -34,7 +34,10 @@ class AttachementRepository extends DocumentRepository {
     public function findBySociete($societe)
 	{
         $attachments = array();
-		foreach($this->createQueryBuilder()->select('_id', 'updatedAt', 'imageName', 'titre', 'originalName', 'etablissement', 'societe', 'visibleTechnicien', 'ext','visibleClient')->field('societe')->equals($societe)->getQuery()->execute() as $attachement) {
+        foreach($this->createQueryBuilder()->exclude('base64')
+                ->field('societe')->equals($societe)
+                ->getQuery()->execute() as $attachement)
+        {
             $attachments[$attachement->getId()] = $attachement;
         }
 
@@ -72,28 +75,44 @@ class AttachementRepository extends DocumentRepository {
         return $attachments;
     }
 
-	public function findBySocieteAndEtablissement($societe, &$facets = array())
+    public function getSocieteAndEtablissements($societe, $count = false)
 	{
-		$qb = $this->createQueryBuilder();
-        $facets[$societe->getId()] = 0;
+        $facets = [];
+        $docs = [];
 
-		foreach ($this->findBySociete($societe) as $attachement) {
-            $facets[$societe->getId()]++;
-		}
+        $qb = $this->createQueryBuilder();
+
+        if ($count) {
+            $facets[$societe->getId()] = 0;
+            foreach ($this->findBySociete($societe) as $attachement) {
+                $facets[$societe->getId()]++;
+            }
+        } else {
+            $docs = $this->findBySociete($societe);
+        }
 
         $etablissements = $societe->getEtablissements()->toArray();
         $attachements = $qb->exclude('base64')->field('etablissement')->in(array_map(function ($e) { if ($e) return $e->getId(); }, $etablissements))->prime(true)
                            ->getQuery()->execute();
 
         foreach ($attachements as $attachement) {
-            if (array_key_exists($attachement->getEtablissement()->getId(), $facets) === false) {
+            if ($count && array_key_exists($attachement->getEtablissement()->getId(), $facets) === false) {
                 $facets[$attachement->getEtablissement()->getId()] = 0;
             }
 
-            $facets[$attachement->getEtablissement()->getId()]++;
+            if ($count) {
+                $facets[$attachement->getEtablissement()->getId()]++;
+            } else {
+                $docs[$attachement->getId()] = $attachement;
+            }
         }
 
-        $facets['total'] = array_sum($facets);
+        if ($count) {
+            $facets['total'] = array_sum($facets);
+            return $facets;
+        }
+
+        return $docs;
 	}
 
 
