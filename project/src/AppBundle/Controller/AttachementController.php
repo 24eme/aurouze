@@ -78,6 +78,7 @@ class AttachementController extends Controller {
       $etablissement = null;
       $societe = null;
       $all = boolval($request->get('all'));
+      $attachements = [];
 
       $societe = $this->get('societe.manager')->getRepository()->find($id);
       if(!$societe) {
@@ -88,17 +89,16 @@ class AttachementController extends Controller {
       $urlForm = $this->generateUrl('societe_upload_attachement', array('id' => $societe->getId()));
 
       $actif = $societe;
-      $facets = array();
-      $attachements = $attachementRepository->findBySocieteAndEtablissement($societe, $facets);
+      $facets = $attachementRepository->getSocieteAndEtablissements($societe, true);
 
-      if(!$all && !$etablissement) {
-           $attachements = $attachementRepository->findBySociete($societe, $facets);
-      }
-
-      if($etablissement) {
-        $actif = $etablissement;
-        $urlForm = $this->generateUrl('etablissement_upload_attachement', array('id' => $etablissement->getId()));
-        $attachements = $attachementRepository->findByEtablissement($etablissement);
+      if(!$all && !$etablissement) { // visu société
+          $attachements = $attachementRepository->findBySociete($societe);
+      } elseif($etablissement) { // visu établissement
+          $actif = $etablissement;
+          $urlForm = $this->generateUrl('etablissement_upload_attachement', array('id' => $etablissement->getId()));
+          $attachements = $attachementRepository->findByEtablissement($etablissement);
+      } else { // visu tous les documents
+          $attachements = $attachementRepository->getSocieteAndEtablissements($societe);
       }
 
       $form = $this->createForm(new AttachementType($dm), $attachement, array(
