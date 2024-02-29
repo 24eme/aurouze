@@ -25,6 +25,8 @@ class AttachementRepository extends DocumentRepository {
 
         return $this->createQueryBuilder()
              ->select('_id', 'updatedAt', 'imageName', 'titre', 'originalName', 'etablissement', 'societe', 'visibleTechnicien', 'ext','visibleClient')
+             ->field('etablissement')->prime(true)
+             ->field('societe')->prime(true)
              ->limit(10)
              ->sort(array('_id' => -1))
              ->getQuery()
