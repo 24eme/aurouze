@@ -188,6 +188,9 @@ class PassageRepository extends BaseRepository {
 
         $q = $this->createQueryBuilder();
         $q->field('statut')->equals(PassageManager::STATUT_A_PLANIFIER)
+          ->field('contrat')->prime(true)
+          ->field('etablissement')->prime(true)
+          ->field('techniciens')->prime(true)
           ->field('datePrevision')->lte($mongoEndDate);
 
         if($dateDebut){
