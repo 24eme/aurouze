@@ -228,6 +228,9 @@ class ContratRepository extends BaseRepository {
       $q = $this->createQueryBuilder();
       $q->field('mouvements.facture')->equals(false);
       $q->field('mouvements.facturable')->equals(true);
+      $q->field('mouvements.origineDocumentGeneration')->prime(true);
+      $q->field('mouvements.societe')->prime(true);
+      $q->field('etablissements')->prime(true);
       $query = $q->getQuery();
       return $query->execute();
     }
