@@ -32,7 +32,12 @@ class ContratRepository extends BaseRepository {
     }
 
     public function findLast() {
-    	return $this->findBy(array(), array('dateCreation' => 'DESC', 'identifiant' => 'DESC'), 100);
+        return $this->createQueryBuilder()
+                    ->field('societe')->prime(true)
+                    ->field('etablissements')->prime(true)
+                    ->sort(['dateCreation' => 'DESC', 'identifiant' => 'DESC'])
+                    ->limit(100)
+                ->getQuery()->execute();
     }
 
     public function findAllSortedByNumeroArchive() {
