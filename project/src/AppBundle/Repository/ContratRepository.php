@@ -17,9 +17,11 @@ class ContratRepository extends BaseRepository {
     }
 
     public function findByEtablissement($etablissement) {
-        return $this->findBy(
-                        array('societe' => $etablissement->getSociete()->getId()),
-                        array('dateFin' => 'DESC'));
+        return $this->createQueryBuilder()
+                    ->field('societe')->equals($etablissement->getSociete()->getId())
+                    ->field('contratPassages.passages')->prime(true)
+                    ->sort('dateFin', 'DESC')
+                    ->getQuery()->execute();
     }
 
     public function findContratMouvements($societe, $isFacturable, $isFacture) {
