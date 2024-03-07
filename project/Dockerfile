@@ -4,6 +4,8 @@ RUN sed -i s/deb.debian.org/archive.debian.org/g /etc/apt/sources.list
 RUN sed -i s/security.debian.org/archive.debian.org/g /etc/apt/sources.list
 RUN sed -i s/stretch-updates/stretch/g /etc/apt/sources.list
 
+RUN sed -i 's/$/ contrib non-free/' /etc/apt/sources.list
+
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
     iputils-ping \
@@ -40,6 +42,9 @@ RUN cd /tmp/ && curl -fsSLk 'https://pecl.php.net/get/mongodb-1.9.2.tgz' -o mong
         && make install \
     ) \
     && rm -r mongodb \
+    && docker-php-ext-configure intl \
+    && docker-php-ext-install intl \
+    && docker-php-ext-install calendar \
     && docker-php-ext-enable mongodb
 
 ENV APACHE_DOCUMENT_ROOT /var/www/html/web/

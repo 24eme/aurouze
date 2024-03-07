@@ -119,7 +119,8 @@
     </div>
   <div class="ui-bar ui-bar-a">
     <div class="ui-grid-solo">
-      {% for attachement in attachements %}
+      {% if attachements[planifiable.etablissement.id] is defined %}
+      {% for attachement in attachements[planifiable.etablissement.id] %}
           {% if attachement.visibleTechnicien %}
               <div class="ui-block-a">
                   {% if attachement.isImage %}
@@ -137,6 +138,7 @@
               </div>
           {% endif %}
       {% endfor %}
+      {% endif %}
     </div>
 </div>
     <div class="ui-bar ui-bar-a">
