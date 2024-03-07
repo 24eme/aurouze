@@ -3,6 +3,11 @@ umask(0002);
 
 use Symfony\Component\HttpFoundation\Request;
 
+if (isset($_SERVER['PHP_AUTH_USER']) && preg_match("/^[0-9]+/", $_SERVER['PHP_AUTH_USER']) && !preg_match('#(/tournee-technicien/|/attachement/download)#', $_SERVER['REQUEST_URI'])) {
+    header('HTTP/1.0 403 Forbidden');
+    exit('You are not allowed to access this part of application');
+}
+
 /**
  * @var Composer\Autoload\ClassLoader
  */

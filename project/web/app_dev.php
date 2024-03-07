@@ -4,6 +4,11 @@ umask(0002);
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Debug\Debug;
 
+if (isset($_SERVER['PHP_AUTH_USER']) && preg_match("/^[0-9]+/", $_SERVER['PHP_AUTH_USER']) && !preg_match('#(/tournee-technicien/|/attachement/download)#', $_SERVER['REQUEST_URI'])) {
+    header('HTTP/1.0 403 Forbidden');
+    exit('You are not allowed to access this part of application');
+}
+
 // If you don't want to setup permissions the proper way, just uncomment the following PHP line
 // read http://symfony.com/doc/current/book/installation.html#checking-symfony-application-configuration-and-setup
 // for more information
