@@ -17,9 +17,11 @@ class ContratRepository extends BaseRepository {
     }
 
     public function findByEtablissement($etablissement) {
-        return $this->findBy(
-                        array('societe' => $etablissement->getSociete()->getId()),
-                        array('dateFin' => 'DESC'));
+        return $this->createQueryBuilder()
+                    ->field('societe')->equals($etablissement->getSociete()->getId())
+                    ->field('contratPassages.passages')->prime(true)
+                    ->sort('dateFin', 'DESC')
+                    ->getQuery()->execute();
     }
 
     public function findContratMouvements($societe, $isFacturable, $isFacture) {
@@ -32,7 +34,12 @@ class ContratRepository extends BaseRepository {
     }
 
     public function findLast() {
-    	return $this->findBy(array(), array('dateCreation' => 'DESC', 'identifiant' => 'DESC'), 100);
+        return $this->createQueryBuilder()
+                    ->field('societe')->prime(true)
+                    ->field('etablissements')->prime(true)
+                    ->sort(['dateCreation' => 'DESC', 'identifiant' => 'DESC'])
+                    ->limit(100)
+                ->getQuery()->execute();
     }
 
     public function findAllSortedByNumeroArchive() {
@@ -221,6 +228,9 @@ class ContratRepository extends BaseRepository {
       $q = $this->createQueryBuilder();
       $q->field('mouvements.facture')->equals(false);
       $q->field('mouvements.facturable')->equals(true);
+      $q->field('mouvements.origineDocumentGeneration')->prime(true);
+      $q->field('mouvements.societe')->prime(true);
+      $q->field('etablissements')->prime(true);
       $query = $q->getQuery();
       return $query->execute();
     }

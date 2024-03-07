@@ -54,6 +54,7 @@ class DevisRepository extends BaseRepository {
 
       $q = $this->createQueryBuilder();
       $q->field('statut')->equals(PassageManager::STATUT_A_PLANIFIER)
+              ->field('etablissement')->prime(true)
               ->field('datePrevision')->lte($mongoEndDate);
 
       if($dateDebut){
