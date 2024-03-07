@@ -78,11 +78,15 @@ class TourneeController extends Controller {
                                                      ->execute()
                                                      ->toArray();
 
-        $attachements = $dm->getRepository('AppBundle:Attachement')->createQueryBuilder()->exclude('base64')
+        $attachementsResult = $dm->getRepository('AppBundle:Attachement')->createQueryBuilder()->exclude('base64')
                                                      ->field('etablissement')->in(array_filter(array_keys($etablissements), function ($v) { return !is_null($v); }))
                                                      ->getQuery()
                                                      ->execute()
                                                      ->toArray();
+
+        foreach($attachementsResult as $attachement) {
+            $attachements[$attachement->getEtablissement()->getId()][] = $attachement;
+        }
 
         $version = $this->getVersionManifest($technicienObj->getId(),$date->format('Y-m-d'));
 
