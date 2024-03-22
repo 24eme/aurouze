@@ -45,6 +45,7 @@ class EtablissementManager {
     const TYPE_ETB_HOTEL = "HOTEL";
     const TYPE_ETB_IMMEUBLE = "IMMEUBLE";
     const TYPE_ETB_DISCOTHEQUE = "DISCOTHEQUE";
+    const TYPE_ETB_SCOLAIRE = "ETABLISSEMENT SCOLAIRE";
     const TYPE_ETB_NON_SPECIFIE = "NON_SPECIFIE";
 
 
@@ -67,6 +68,7 @@ class EtablissementManager {
         self::TYPE_ETB_HOTEL => "Hôtel",
         self::TYPE_ETB_IMMEUBLE => "Immeuble",
         self::TYPE_ETB_DISCOTHEQUE => "Discothèque",
+        self::TYPE_ETB_SCOLAIRE => "Etablissement scolaire",
         self::TYPE_ETB_NON_SPECIFIE => "Non spécifié");
     public static $type_icon = array(
         self::TYPE_ETB_RESTAURANT => "local-dining",
@@ -87,6 +89,7 @@ class EtablissementManager {
         self::TYPE_ETB_HOTEL => "local-hotel",
         self::TYPE_ETB_IMMEUBLE => "location-city",
         self::TYPE_ETB_DISCOTHEQUE => "music-note",
+        self::TYPE_ETB_SCOLAIRE => "school",
         self::TYPE_ETB_NON_SPECIFIE => "do-not-disturb");
     public static $secteurs_departements = array(
         self::SECTEUR_PARIS => array('75','94'),
