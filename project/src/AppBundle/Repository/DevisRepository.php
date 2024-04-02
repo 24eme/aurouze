@@ -28,7 +28,6 @@ class DevisRepository extends BaseRepository {
             ->field('dateDebut')->gte($mongoStartDate)
             ->field('dateDebut')->lte($mongoEndDate)
             ->field('rendezVous')->prime(true)
-            ->field('contrat')->prime(true)
             ->field('techniciens')->prime(true)
             ->field('etablissement')->prime(true);
 
