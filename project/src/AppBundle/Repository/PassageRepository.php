@@ -303,7 +303,10 @@ class PassageRepository extends BaseRepository {
       $queryBuilder = $this->createQueryBuilder('Passage');
       $query = $queryBuilder->field('dateFin')->notEqual(null)
               ->field('dateDebut')->gte($mongoStartDate)
-              ->field('dateDebut')->lte($mongoEndDate);
+              ->field('dateDebut')->lte($mongoEndDate)
+              ->field('contrat')->prime(true)
+              ->field('techniciens')->prime(true)
+              ->field('etablissement')->prime(true);
       if($technicien){
           $queryBuilder->field('techniciens')->equals($technicien->getId());
       }
