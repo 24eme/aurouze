@@ -486,10 +486,7 @@ class PassageController extends Controller
         $contrat->verifyAndClose();
 
         $dm->flush();
-        if ($passage->getMouvementDeclenchable()) {
-
-            return $this->redirectToRoute('facture_societe', array('id' => $passage->getSociete()->getId()));
-        } elseif($request->get('service')) {
+        if($request->get('service')) {
 
             return  $this->redirect($request->get('service'));
         } else {
