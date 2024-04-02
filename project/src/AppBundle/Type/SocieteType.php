@@ -11,6 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use AppBundle\Document\Contrat;
 use AppBundle\Type\Adresse;
 use AppBundle\Type\ContactCoordonnee;
 use AppBundle\Manager\EtablissementManager;
@@ -44,7 +45,11 @@ class SocieteType extends AbstractType {
                 ->add('commentaire', TextareaType::class, array('label' => 'Commentaire société :', "attr" => array("class" => "form-control", "rows" => 6), 'required' => false, 'empty_data' => null))
                 ->add('methodeDeFacturation',TextareaType::class, array('label' => 'Procédure de facturation:','required' => false))
                 ->add('type', ChoiceType::class, array('label' => 'Type* :', 'choices' => array_merge(array('' => ''), $this->getTypes()), "attr" => array("class" => "select2 select2-simple")))
-                ->add('actif', CheckboxType::class, array('label' => ' ', 'required' => false, "attr" => array("class" => "switcher", "data-size" => "mini")))
+                ->add('actif', CheckboxType::class, array(
+                    'label' => ' ', 'required' => false,
+                    "attr" => array("class" => "switcher", "data-size" => "mini"),
+                    'disabled' => $this->hasContratEnCours($builder->getData()) ? true : false
+                ))
                 ->add('save', SubmitType::class, array('label' => 'Enregistrer', "attr" => array("class" => "btn btn-success pull-right")))
                 ->add('adresse', AdresseType::class, array('data_class' => 'AppBundle\Document\Adresse'))
                 ->add('contactCoordonnee', ContactCoordonneeType::class, array('data_class' => 'AppBundle\Document\ContactCoordonnee'))
@@ -111,6 +116,17 @@ class SocieteType extends AbstractType {
             $result[$tag] = $tag;
         }
         return $result;
+    }
+
+    public function hasContratEnCours($societe)
+    {
+        $contrats = $this->dm->getRepository('AppBundle:Contrat')->findBySociete($societe);
+
+        $contrats = array_filter($contrats, function (Contrat $c) {
+            return $c->isEnCoursStatutLibelle();
+        });
+
+        return count($contrats) > 0;
     }
 
     /**
