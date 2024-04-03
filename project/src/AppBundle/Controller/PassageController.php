@@ -25,6 +25,7 @@ use AppBundle\Document\Prestation;
 use AppBundle\Manager\EtablissementManager;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Doctrine\ODM\MongoDB\LockMode;
+use Symfony\Component\HttpFoundation\Cookie;
 
 class PassageController extends Controller
 {
@@ -162,6 +163,9 @@ class PassageController extends Controller
         $geojson = $this->buildGeoJson($passages);
         $passagesFiltreExportForm = $this->getPassagesFiltreExportForm();
 
+        $response = new Response();
+        $response->headers->setCookie(new Cookie('secteurZone', $secteur, time() + (365 * 24 * 60 * 60)));
+
         return $this->render('passage/index.html.twig', array(
             'passages' => $passages,
             'anneeMois' => $anneeMois,
@@ -178,7 +182,7 @@ class PassageController extends Controller
             'passagesFiltreExportForm' => $passagesFiltreExportForm->createView(),
             'frequence' => $frequence,
             'frequences' => $frequences
-        ));
+        ), $response);
     }
 
 
