@@ -296,21 +296,34 @@ class PassageRepository extends BaseRepository {
       return $result;
     }
 
-    public function findAllPassagesForTechnicien(\DateTime $date, $technicien = null)
+    public function findAllPassagesForTechnicien(\DateTime $date, $technicien = null, $confirme = true)
     {
       $mongoStartDate = new MongoDate(strtotime($date->format("Y-m-d") . " 00:00:00"));
       $mongoEndDate = new MongoDate(strtotime($date->format("Y-m-d") . " 23:59:59"));
       $queryBuilder = $this->createQueryBuilder('Passage');
       $query = $queryBuilder->field('dateFin')->notEqual(null)
               ->field('dateDebut')->gte($mongoStartDate)
-              ->field('dateDebut')->lte($mongoEndDate);
+              ->field('dateDebut')->lte($mongoEndDate)
+              ->field('rendezVous')->prime(true)
+              ->field('contrat')->prime(true)
+              ->field('techniciens')->prime(true)
+              ->field('etablissement')->prime(true);
       if($technicien){
           $queryBuilder->field('techniciens')->equals($technicien->getId());
       }
       $queryBuilder->sort('dateDebut', 'asc');
       $query = $queryBuilder->getQuery();
 
-      return $query->execute();
+      $passages = $query->execute();
+
+      return array_filter($passages->toArray(), function ($passage) use ($confirme) {
+          if ($confirme === true) {
+            return $passage->getRendezVous()->getRendezVousConfirme() === $confirme;
+          }
+
+          // on retourne tous les passages sinon
+          return true;
+      });
     }
 
 
