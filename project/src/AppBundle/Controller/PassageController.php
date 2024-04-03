@@ -70,7 +70,7 @@ class PassageController extends Controller
         $secteur = "0";
 
         if($this->getParameter('secteurs')) {
-            $secteur = 'PARIS';
+            $secteur = $request->cookies->get('secteurZone', 'PARIS');
         }
         $passagesFiltreExportForm = $this->getPassagesFiltreExportForm();
         return $this->redirectToRoute('passage_secteur', array('secteur' => $secteur,'passagesFiltreExportForm' => $passagesFiltreExportForm->createView()));
