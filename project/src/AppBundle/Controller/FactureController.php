@@ -1450,7 +1450,7 @@ class FactureController extends Controller
             ) {
                 $parameters = $this->container->getParameter('facture');
 
-                if (array_key_exists($parameters['emetteur_SEINE_ET_MARNE']) === false) {
+                if (array_key_exists('emetteur_SEINE_ET_MARNE', $parameters) === false) {
                     $this->container->get('monolog.logger.request')->error(
                         sprintf("Contrat : %s ou Facture : %s a une zone 77 alors que la région n'est pas configuré",
                             ($contrat) ? $contrat->_id : '', $facture->_id

@@ -142,7 +142,10 @@ class RendezVous {
         }
 
         if ($planifiable->isSaisieTechnicien()) {
-            if ($planifiable->isPdfNonEnvoye() || $planifiable->isPdfNonEnvoye() === null) {
+            if ($planifiable->getTypePlanifiable() === Devis::DOCUMENT_TYPE && $planifiable->getIdentifiantFacture()) {
+                $colors['text'] = self::COLOR_TEXT_GREEN;
+                $colors['background'] = self::COLOR_STATUS_GREEN;
+            } elseif ($planifiable->isPdfNonEnvoye() || $planifiable->isPdfNonEnvoye() === null) {
                 $colors['text'] = self::COLOR_TEXT_BROWN;
                 $colors['background'] = self::COLOR_STATUS_GOLD;
             } else {
