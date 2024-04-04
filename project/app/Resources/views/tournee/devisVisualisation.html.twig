@@ -99,14 +99,14 @@
               <div class="ui-block-a">
                   {% if attachement.isImage %}
                 <a href="#popupPhoto-{{ attachement.id }}" data-rel="popup" data-position-to="window" class="ui-btn ui-corner-all ui-shadow" data-transition="fade">
-                  <img src="{{ attachement.getBase64Src() }}" alt="{{ attachement.originalName }}" style="width: 100%; margin-bottom:0"/>
+                  <img src="{{ attachement.getBase64Src() }}" alt="{{ attachement.titre ?: attachement.originalName }}" style="width: 100%; margin-bottom:0"/>
                 </a>
                 <div data-role="popup" id="popupPhoto-{{ attachement.id }}" class="photopopup" data-overlay-theme="a" data-corners="false" data-tolerance="30,15">
-                    <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a><img src="{{ attachement.getBase64Src() }}" alt="{{ attachement.originalName }}">
+                    <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a><img src="{{ attachement.getBase64Src() }}" alt="{{ attachement.titre ?: attachement.originalName }}">
                 </div>
                 {% else %}
                 <a href="{{ attachement.getBase64Src() }}" class="ui-btn ui-corner-all ui-shadow" >
-                 {{ attachement.originalName }}
+                 {{ attachement.titre ?: attachement.originalName }}
                 </a>
                 {% endif %}
               </div>
