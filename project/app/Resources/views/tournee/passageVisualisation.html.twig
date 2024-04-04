@@ -119,24 +119,26 @@
     </div>
   <div class="ui-bar ui-bar-a">
     <div class="ui-grid-solo">
-      {% for attachement in attachements %}
+      {% if attachements[planifiable.etablissement.id] is defined %}
+      {% for attachement in attachements[planifiable.etablissement.id] %}
           {% if attachement.visibleTechnicien %}
               <div class="ui-block-a">
                   {% if attachement.isImage %}
                 <a href="#popupPhoto-{{ attachement.id }}" data-rel="popup" data-position-to="window" class="ui-btn ui-corner-all ui-shadow" data-transition="fade">
-                  <img src="{{ path('attachement_download', { id: attachement.id, noattachment: true }) }}" alt="{{ attachement.originalName }}" style="width: 100%; margin-bottom:0"/>
+                  <img src="{{ path('attachement_download', { id: attachement.id, noattachment: true }) }}" alt="{{ attachement.titre ?: attachement.originalName }}" style="width: 100%; margin-bottom:0"/>
                 </a>
                 <div data-role="popup" id="popupPhoto-{{ attachement.id }}" class="photopopup" data-overlay-theme="a" data-corners="false" data-tolerance="30,15">
-                    <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a><img src="{{ path('attachement_download', { id: attachement.id, noattachment: true }) }}" alt="{{ attachement.originalName }}">
+                    <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a><img src="{{ path('attachement_download', { id: attachement.id, noattachment: true }) }}" alt="{{ attachement.titre ?: attachement.originalName }}">
                 </div>
                 {% else %}
                 <a href="{{ path('attachement_download', { id: attachement.id, noattachment: true }) }}" class="ui-btn ui-corner-all ui-shadow" >
-                 {{ attachement.originalName }}
+                 {{ attachement.titre ?: attachement.originalName }}
                 </a>
                 {% endif %}
               </div>
           {% endif %}
       {% endfor %}
+      {% endif %}
     </div>
 </div>
     <div class="ui-bar ui-bar-a">

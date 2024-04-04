@@ -34,7 +34,7 @@ class TourneeController extends Controller {
         $passageManager = $this->get('devis.manager');
         $devisForAllTechniciens = $passageManager->getRepository()->findAllDevisForTechnicien($date);
 
-        $planifiablesByTechniciens = $this->sortPlanifiablesByTechnicien(array_merge($passagesForAllTechniciens->toArray(),$devisForAllTechniciens->toArray()));
+        $planifiablesByTechniciens = $this->sortPlanifiablesByTechnicien(array_merge($passagesForAllTechniciens, $devisForAllTechniciens));
         return $this->render('tournee/index.html.twig', array('planifiablesByTechniciens' => $planifiablesByTechniciens, "date" => $date));
     }
 
@@ -78,11 +78,15 @@ class TourneeController extends Controller {
                                                      ->execute()
                                                      ->toArray();
 
-        $attachements = $dm->getRepository('AppBundle:Attachement')->createQueryBuilder()->exclude('base64')
+        $attachementsResult = $dm->getRepository('AppBundle:Attachement')->createQueryBuilder()->exclude('base64')
                                                      ->field('etablissement')->in(array_filter(array_keys($etablissements), function ($v) { return !is_null($v); }))
                                                      ->getQuery()
                                                      ->execute()
                                                      ->toArray();
+
+        foreach($attachementsResult as $attachement) {
+            $attachements[$attachement->getEtablissement()->getId()][] = $attachement;
+        }
 
         $version = $this->getVersionManifest($technicienObj->getId(),$date->format('Y-m-d'));
 
