@@ -149,13 +149,15 @@ ___
 **LE CLIENT**
 ```
 
+{% if conditions_generales %}
 	J'atteste avoir pris connaissance des conditions générales des ventes.
 
+{% endif %}
 	Nom du signataire :
 
 	Date de signature  :
 
-	Signature de la proposition et des conditions générales des ventes à nous retourner.
+	Signature de la proposition {% if conditions_generales %}et des conditions générales des ventes {% endif %}à nous retourner.
 
 	Tampon :
 
@@ -169,8 +171,10 @@ Un exemplaire à conserver.
 Un exemplaire à nous retourner.
 
 
+{% if conditions_generales %}
 ## Conditions générales
 Voir annexe.
+{% endif %}
 {% if contrat.tvaReduite  %}
 ___
 
