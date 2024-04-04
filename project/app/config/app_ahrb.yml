@@ -5,3 +5,4 @@ parameters:
     date_facturation: null
     code_comptable_auto: true
     code_comptable_particulier: "2PART"
+    contrat_conditions_generales: false
