@@ -912,7 +912,7 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
         if ($nbMvts > $nbFactures) {
             $nbFactures = $nbMvts;
         }
-        return sprintf("Facture %s/%s - Proposition n° %s du %s au %s", count($this->getMouvements()) + 1, $nbFactures, $this->getNumeroArchive(), $this->getDateDebut()->format('m/Y'), $this->getDateFin()->format('m/Y'));
+        return sprintf("Facture %s/%s - Proposition n° %s du %s au %s", count($this->getMouvements()) + 1, $nbFactures, $this->getNumeroArchive(), $this->getDateDebut()->format('d/m/Y'), $this->getDateFin()->format('d/m/Y'));
     }
 
     public function restaureMouvements($documentGenere = null) {

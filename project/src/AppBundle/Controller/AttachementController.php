@@ -221,8 +221,13 @@ class AttachementController extends Controller {
 
             $attachement->convertBase64AndRemove();
             $dm->flush();
+          } else {
+              foreach ($uploadAttachementForm->getErrors(true, true) as $formError) {
+                  $request->getSession()->getFlashBag()->add('upload_error', $formError->getMessage());
+              }
 
           }
+
           return $this->redirectToRoute('attachements_etablissement', array('id' => $etablissement->getId()));
       }
   }

@@ -34,7 +34,7 @@ class RendezVousRepository extends BaseRepository
         return $query->getQuery()->execute();
     }
 
-    public function findByDateDebutAndParticipant($startDate, $participant) {
+    public function findByDateDebutAndParticipant($startDate, $participant, $confirme = true) {
         $mongoStartDate = new \MongoDate(strtotime($startDate." midnight"));
         $startDateTime = \DateTime::createFromFormat('Y-m-d',$startDate);
         $endDateTime = $startDateTime->modify("+1 day");
@@ -54,6 +54,8 @@ class RendezVousRepository extends BaseRepository
 
         $query->field('participants')->equals($participant->getId())
                 ->sort('dateDebut', 'asc');
+
+        $query->field('rendezVousConfirme')->equals($confirme);
 
         $query->field('passage')->prime(true);
         $query->field('devis')->prime(true);

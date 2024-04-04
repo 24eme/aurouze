@@ -34,7 +34,7 @@ class TourneeController extends Controller {
         $passageManager = $this->get('devis.manager');
         $devisForAllTechniciens = $passageManager->getRepository()->findAllDevisForTechnicien($date);
 
-        $planifiablesByTechniciens = $this->sortPlanifiablesByTechnicien(array_merge($passagesForAllTechniciens->toArray(),$devisForAllTechniciens->toArray()));
+        $planifiablesByTechniciens = $this->sortPlanifiablesByTechnicien(array_merge($passagesForAllTechniciens, $devisForAllTechniciens));
         return $this->render('tournee/index.html.twig', array('planifiablesByTechniciens' => $planifiablesByTechniciens, "date" => $date));
     }
 

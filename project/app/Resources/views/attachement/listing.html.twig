@@ -20,6 +20,14 @@
 <div class="text-right">
         <a class="btn btn-lg btn-default" data-toggle="modal" data-target="#document-modal-{{actif.id}}" ><span class="glyphicon glyphicon-plus"></span>&nbsp;Ajouter document</a>
 </div>
+
+{% for flashMessage in app.session.flashBag.get('upload_error') %}
+  <div class="alert alert-danger alert-dismissible" role="alert" style="margin-top: 10px">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    {{ flashMessage }}
+  </div>
+{% endfor %}
+
 <div class="row" style="margin-top: 20px;">
     <div class="col-xs-9">
     {{ include('attachement/attachementAjoutModal.html.twig', {'actif' : actif, 'form' : form, 'url' : urlForm}) }}

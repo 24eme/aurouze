@@ -105,23 +105,30 @@ class CalendarController extends Controller {
             $periodeStart = date("Y-m-d", strtotime("+1 day", strtotime($periodeStart)));
         }
 
-        $allTechniciens = $techniciens = $dm->getRepository('AppBundle:Compte')->findAllUtilisateursCalendrier();
+        $allTechniciens = [];
+        $techniciens = $dm->getRepository('AppBundle:Compte')->findAllUtilisateursCalendrier();
         $techniciensFinal = array();
 
         $techniciensFiltre = $request->get("techniciens", unserialize($request->cookies->get('techniciens', serialize(array()))));
         $response->headers->setCookie(new Cookie('techniciens', serialize($techniciensFiltre), time() + (365 * 24 * 60 * 60)));
 
-        foreach($techniciens as $technicien) {
-            if(in_array($technicien->getId(), $techniciensFiltre)) {
+        foreach ($techniciens as $technicien) {
+            if ($technicien->isActif() === false) {
+                continue;
+            }
+
+            $allTechniciens[$technicien->getId()] = $technicien;
+
+            if (empty($techniciensFiltre)) {
+                $techniciensFinal[$technicien->getId()] = $technicien;
+                continue;
+            }
+
+            if (in_array($technicien->getId(), $techniciensFiltre)) {
                 $techniciensFinal[$technicien->getId()] = $technicien;
             }
         }
 
-        if(!count($techniciensFinal) > 0) {
-            foreach($techniciens as $technicien) {
-                $techniciensFinal[$technicien->getId()] = $technicien;
-            }
-        }
         $techniciens = $techniciensFinal;
         $techniciensOnglet = $techniciens;
 
