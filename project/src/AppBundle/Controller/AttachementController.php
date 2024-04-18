@@ -41,6 +41,7 @@ class AttachementController extends Controller {
         file_put_contents($tmpfilename, base64_decode($attachement->getBase64()));
 
         $response = new BinaryFileResponse($tmpfilename);
+        $response->deleteFileAfterSend(true);
 
         if(!$request->get('noattachment')) {
             $response->setContentDisposition(

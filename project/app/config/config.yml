@@ -51,6 +51,7 @@ twig:
         calendar_extra: "%calendar_extra%"
         certification_bois: "%certification_bois%"
         banque: '%banque%'
+        conditions_generales: "%contrat_conditions_generales%"
 doctrine_mongodb:
     connections:
         default:
