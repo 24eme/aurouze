@@ -19,21 +19,34 @@ use AppBundle\Manager\ContratManager;
 class DevisRepository extends BaseRepository {
 
 
-  public function findAllDevisForTechnicien(\DateTime $date, $technicien = null)
+  public function findAllDevisForTechnicien(\DateTime $date, $technicien = null, $confirme = true)
   {
     $mongoStartDate = new MongoDate(strtotime($date->format("Y-m-d") . " 00:00:00"));
     $mongoEndDate = new MongoDate(strtotime($date->format("Y-m-d") . " 23:59:59"));
     $queryBuilder = $this->createQueryBuilder('Passage');
     $query = $queryBuilder->field('dateFin')->notEqual(null)
             ->field('dateDebut')->gte($mongoStartDate)
-            ->field('dateDebut')->lte($mongoEndDate);
+            ->field('dateDebut')->lte($mongoEndDate)
+            ->field('rendezVous')->prime(true)
+            ->field('techniciens')->prime(true)
+            ->field('etablissement')->prime(true);
+
     if($technicien){
         $queryBuilder->field('techniciens')->equals($technicien->getId());
     }
     $queryBuilder->sort('dateDebut', 'asc');
     $query = $queryBuilder->getQuery();
 
-    return $query->execute();
+    $devis = $query->execute();
+
+    return array_filter($devis->toArray(), function ($d) use ($confirme) {
+        if ($confirme === true) {
+            return $d->getRendezVous()->getRendezVousConfirme() === $confirme;
+        }
+
+        // on retourne tous les passages sinon
+        return true;
+    });
   }
 
   public function findBySociete(Societe $societe, $withCanceled = false)

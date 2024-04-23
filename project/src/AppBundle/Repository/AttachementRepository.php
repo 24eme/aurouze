@@ -51,10 +51,17 @@ class AttachementRepository extends BaseRepository {
 
     public function findByEtablissement($etablissement)
 	{
-        return $this->createQueryBuilder()->exclude('base64')
+        $attachments = [];
+        foreach ($this->createQueryBuilder()->exclude('base64')
                      ->field('etablissement')->equals($etablissement)
-                     ->sort('updatedAt', 'desc')
-                     ->getQuery()->execute();
+                     ->getQuery()->execute() as $attachment)
+        {
+            $attachments[$attachment->getId()] = $attachment;
+        }
+
+        uasort($attachments, array("AppBundle\Document\Attachement", "cmpUpdateAt"));
+        $this->getDocumentManager()->getUnitOfWork()->clear("AppBundle\Document\Attachement");
+        return $attachments;
     }
 
     public function findByPassageAndVisibleClient($passage)

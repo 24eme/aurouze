@@ -106,7 +106,16 @@ class SocieteType extends AbstractType {
             return array();
         }
 
-        return $config->getProvenances()->toArray();
+        $provenances = [];
+        foreach ($config->getProvenances() as $provenance) {
+            if ($provenance->getStatut() !== "ACTIF") {
+                continue;
+            }
+
+            $provenances[$provenance->getIdentifiant()] = $provenance->getNom();
+        }
+
+        return $provenances;
     }
 
     public function getTags() {
