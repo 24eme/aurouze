@@ -96,6 +96,11 @@ class ContactCoordonnee {
      */
     public function getTelephoneFixe()
     {
+        return $this->telephoneFixe;
+    }
+
+    public function getTelephoneFixeFormatte()
+    {
         return trim(chunk_split($this->telephoneFixe, 2, ' '));
     }
 
@@ -118,6 +123,11 @@ class ContactCoordonnee {
      */
     public function getTelephoneMobile()
     {
+        return $this->telephoneMobile;
+    }
+
+    public function getTelephoneMobileFormatte()
+    {
         return trim(chunk_split($this->telephoneMobile, 2, ' '));
     }
 
@@ -139,6 +149,11 @@ class ContactCoordonnee {
      * @return string $fax
      */
     public function getFax()
+    {
+        return $this->fax;
+    }
+
+    public function getFaxFormatte()
     {
         return trim(chunk_split($this->fax, 2, ' '));
     }
