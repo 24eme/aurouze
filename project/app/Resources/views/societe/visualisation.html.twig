@@ -39,13 +39,13 @@
                         {% if (societe.contactCoordonnee.telephoneFixe or societe.contactCoordonnee.telephoneMobile or societe.contactCoordonnee.fax or societe.contactCoordonnee.email or societe.contactCoordonnee.emailFacturation or societe.contactCoordonnee.siteInternet or societe.contactCoordonnee.libelle)  %}
                         	{% if(societe.contactCoordonnee.libelle is defined and societe.contactCoordonnee.libelle)%}{{ societe.contactCoordonnee.libelle }}&nbsp;{%endif%}
                             {% if (societe.contactCoordonnee.telephoneFixe is defined and societe.contactCoordonnee.telephoneFixe)%}
-                                <i class="glyphicon glyphicon-earphone"></i>&nbsp;{{ societe.contactCoordonnee.telephoneFixe }}&nbsp;
+                                <i class="glyphicon glyphicon-earphone"></i>&nbsp;{{ societe.contactCoordonnee.telephoneFixeFormatte }}&nbsp;
                             {%endif%}
                             {% if (societe.contactCoordonnee.telephoneMobile is defined and societe.contactCoordonnee.telephoneMobile)%}
-                                <i class="glyphicon glyphicon-phone"></i>&nbsp;{{ societe.contactCoordonnee.telephoneMobile }}&nbsp;
+                                <i class="glyphicon glyphicon-phone"></i>&nbsp;{{ societe.contactCoordonnee.telephoneMobileFormatte }}&nbsp;
                             {% endif %}
                             {% if (societe.contactCoordonnee.fax is defined and societe.contactCoordonnee.fax)%}
-                                <i class="glyphicon glyphicon-print"></i>&nbsp;{{ societe.contactCoordonnee.fax }}&nbsp;
+                                <i class="glyphicon glyphicon-print"></i>&nbsp;{{ societe.contactCoordonnee.faxFormatte }}&nbsp;
                             {% endif %}
                             {% if(societe.contactCoordonnee.email is defined and societe.contactCoordonnee.email)%}
                                 <i class="glyphicon glyphicon-envelope"></i>&nbsp;<a href="mailto:{{ societe.contactCoordonnee.email }}">{{ societe.contactCoordonnee.email }}</a>&nbsp;
