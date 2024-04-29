@@ -21,13 +21,13 @@
             {% if(not etablissement.sameContactCoordonneeThanSociete) %}
             {%if(etablissement.contactCoordonnee.libelle is defined and etablissement.contactCoordonnee.libelle)%}{{ etablissement.contactCoordonnee.libelle }}<br />{%endif%}
             {% if(etablissement.contactCoordonnee.telephoneFixe is defined and etablissement.contactCoordonnee.telephoneFixe)%}
-                <a href="callto:{{ etablissement.contactCoordonnee.telephoneFixe }}"><i class="glyphicon glyphicon-earphone"></i>&nbsp;{{ etablissement.contactCoordonnee.telephoneFixe }}</a><br />
+                <a href="callto:{{ etablissement.contactCoordonnee.telephoneFixe }}"><i class="glyphicon glyphicon-earphone"></i>&nbsp;{{ etablissement.contactCoordonnee.telephoneFixeFormatte }}</a><br />
             {% endif %}
             {% if(etablissement.contactCoordonnee.telephoneMobile is defined and etablissement.contactCoordonnee.telephoneMobile)%}
-                <a href="callto:{{ etablissement.contactCoordonnee.telephoneMobile }}"><i class="glyphicon glyphicon-phone"></i>&nbsp;{{ etablissement.contactCoordonnee.telephoneMobile }}</a><br />
+                <a href="callto:{{ etablissement.contactCoordonnee.telephoneMobile }}"><i class="glyphicon glyphicon-phone"></i>&nbsp;{{ etablissement.contactCoordonnee.telephoneMobileFormatte }}</a><br />
             {% endif %}
             {% if(etablissement.contactCoordonnee.fax is defined and etablissement.contactCoordonnee.fax)%}
-                <a href="callto:{{ etablissement.contactCoordonnee.fax }}"><i class="glyphicon glyphicon-print"></i>&nbsp;{{ etablissement.contactCoordonnee.fax }}</a><br />
+                <a href="callto:{{ etablissement.contactCoordonnee.fax }}"><i class="glyphicon glyphicon-print"></i>&nbsp;{{ etablissement.contactCoordonnee.faxFormatte }}</a><br />
             {% endif %}&nbsp;
             {% if(etablissement.contactCoordonnee.email is defined and etablissement.contactCoordonnee.email)%}
                 <a href="mailto:{{ etablissement.contactCoordonnee.email }}"><i class="glyphicon glyphicon-envelope"></i>&nbsp;{{ etablissement.contactCoordonnee.email }}</a><br />

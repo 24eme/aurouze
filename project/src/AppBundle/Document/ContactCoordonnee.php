@@ -85,7 +85,7 @@ class ContactCoordonnee {
      */
     public function setTelephoneFixe($telephoneFixe)
     {
-        $this->telephoneFixe = $telephoneFixe;
+        $this->telephoneFixe = str_replace([" ", ".", "-"], "", $telephoneFixe);
         return $this;
     }
 
@@ -99,6 +99,11 @@ class ContactCoordonnee {
         return $this->telephoneFixe;
     }
 
+    public function getTelephoneFixeFormatte()
+    {
+        return trim(chunk_split($this->telephoneFixe, 2, ' '));
+    }
+
     /**
      * Set telephoneMobile
      *
@@ -107,7 +112,7 @@ class ContactCoordonnee {
      */
     public function setTelephoneMobile($telephoneMobile)
     {
-        $this->telephoneMobile = $telephoneMobile;
+        $this->telephoneMobile = str_replace([" ", ".", "-"], "", $telephoneMobile);
         return $this;
     }
 
@@ -121,6 +126,11 @@ class ContactCoordonnee {
         return $this->telephoneMobile;
     }
 
+    public function getTelephoneMobileFormatte()
+    {
+        return trim(chunk_split($this->telephoneMobile, 2, ' '));
+    }
+
     /**
      * Set fax
      *
@@ -129,7 +139,7 @@ class ContactCoordonnee {
      */
     public function setFax($fax)
     {
-        $this->fax = $fax;
+        $this->fax = str_replace([" ", ".", "-"], "", $fax);
         return $this;
     }
 
@@ -141,6 +151,11 @@ class ContactCoordonnee {
     public function getFax()
     {
         return $this->fax;
+    }
+
+    public function getFaxFormatte()
+    {
+        return trim(chunk_split($this->fax, 2, ' '));
     }
 
     /**
