@@ -1,1 +1,36 @@
-{% include 'recherche/listSociete.html.twig' with {'items': items} only %}
+<table class="table table-striped table-hover">
+{% for item in items %}
+    <tr style="cursor: pointer;" onclick="document.location.href='{{ path('passage_etablissement', { 'id': item.doc.id}) }}'">
+    <td>{{ item.instance }}<br /><small>{{ item.doc.identifiant }}</small></td>
+    <td>
+        {% if not item.doc.actif %}<small class="pull-right"><label class="label label-xs label-danger">SUSPENDU</label></small>{% endif %}
+        <i class="mdi mdi-{{ item.doc.icon }} mdi-lg"></i>&nbsp;{{ item.doc.libelleComplet }}<br />
+        <small>
+            {% if (item.doc.contactCoordonnee.telephoneFixe or item.doc.contactCoordonnee.telephoneMobile or item.doc.contactCoordonnee.fax or item.doc.contactCoordonnee.email or item.doc.contactCoordonnee.siteInternet or item.doc.contactCoordonnee.libelle)  %}
+            	{% if(societe.contactCoordonnee.libelle is defined and societe.contactCoordonnee.libelle)%}{{ societe.contactCoordonnee.libelle }}&nbsp;{%endif%}
+                {% if (item.doc.contactCoordonnee.telephoneFixe is defined and item.doc.contactCoordonnee.telephoneFixe)%}
+                    <i class="glyphicon glyphicon-earphone"></i>&nbsp;{{ item.doc.contactCoordonnee.telephoneFixe }}&nbsp;
+                {%endif%}
+                {% if (item.doc.contactCoordonnee.telephoneMobile is defined and item.doc.contactCoordonnee.telephoneMobile)%}
+                    <i class="glyphicon glyphicon-phone"></i>&nbsp;{{ item.doc.contactCoordonnee.telephoneMobile }}&nbsp;
+                {% endif %}
+                {% if (item.doc.contactCoordonnee.fax is defined and item.doc.contactCoordonnee.fax)%}
+                    <i class="glyphicon glyphicon-print"></i>&nbsp;{{ item.doc.contactCoordonnee.fax }}&nbsp;
+                {% endif %}
+                {% if(item.doc.contactCoordonnee.email is defined and item.doc.contactCoordonnee.email)%}
+                    <i class="glyphicon glyphicon-envelope"></i>&nbsp;{{ item.doc.contactCoordonnee.email }}&nbsp;
+                {% endif %}
+                {% if(item.doc.contactCoordonnee.emailFacturation is defined and item.doc.contactCoordonnee.emailFacturation)%}
+                    <i class="glyphicon glyphicon-envelope"></i>&nbsp;{{ item.doc.contactCoordonnee.emailFacturation }}&nbsp;
+                {% endif %}
+                {% if(item.doc.contactCoordonnee.siteInternet is defined and item.doc.contactCoordonnee.siteInternet)%}
+                    <i class="glyphicon glyphicon-globe"></i>&nbsp;{{ item.doc.contactCoordonnee.siteInternet }}&nbsp;
+                {% endif %}
+            {% else %}
+                <em class="text-muted">Aucune information de contact définie</em>
+            {% endif %}
+        </small>
+    </td>
+</tr>
+{% endfor %}
+</table>
