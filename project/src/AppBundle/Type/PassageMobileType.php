@@ -102,12 +102,17 @@ class PassageMobileType extends AbstractType
         		'required' => false,
         		'attr' => array("class" => "phoenix ui-li-has-count", "multiple" => "multiple", "data-native-menu" => "false","placeholder" => 'Applications')
         ));
-      //  $builder->get('applications')->resetViewTransformers();
+
         $defaultEmail = $builder->getData()->getEmailTransmission();
-        if(!$defaultEmail && $this->previousPassage){
-          if($this->previousPassage->getEmailTransmission()){
-            $defaultEmail = $this->previousPassage->getEmailTransmission();
-          }
+        if (! $defaultEmail) {
+            $passagesAvecEmail = $this->dm->getRepository('AppBundle:Passage')->findByEtablissementWithEmailTransmission($builder->getData()->getEtablissement());
+
+            if (count($passagesAvecEmail)) {
+                $passagesAvecEmail->next();
+                $defaultEmail = $passagesAvecEmail->current()->getEmailTransmission();
+            } else {
+                $defaultEmail = $builder->getData()->getEtablissement()->getEmail();
+            }
         }
 
         $defaultSecondEmail = $builder->getData()->getSecondEmailTransmission();
@@ -127,13 +132,13 @@ class PassageMobileType extends AbstractType
           'label' => 'Email :',
           'required' => false,
           'data' => $defaultEmail,
-          'attr' => array('class' => " phoenix","placeholder" => 'Email de transmission')));
+          'attr' => array("placeholder" => 'Email de transmission')));
 
         $builder->add('secondEmailTransmission', EmailType::class, array(
           'label' => 'Second email :',
           'required' => false,
           'data' => $defaultSecondEmail,
-          'attr' => array('class' => " phoenix","placeholder" => 'Email supplémentaire de transmission')));
+          'attr' => array("placeholder" => 'Email supplémentaire de transmission')));
 
         $builder->add('nomTransmission', TextType::class, array(
           'label' => 'Nom :',
