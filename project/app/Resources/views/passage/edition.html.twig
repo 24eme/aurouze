@@ -101,6 +101,13 @@
                       </div>
                   </div>
                   <div class="row">
+                      <div class="well well-sm col-xs-10 text-small" role="alert">
+                          <i class="mdi mdi-mail mdi-lg"></i> Emails<br/>
+                          Établissement : {{ passage.etablissement.contactCoordonnee.email ?? "<i>non renseigné</i>" }}<br/>
+                          Société : {{ passage.etablissement.societe.contactCoordonnee.email }}
+                      </div>
+                  </div>
+                  <div class="row">
                       <div class="col-xs-10">
                           {{ form_row(form.secondEmailTransmission) }}
                       </div>

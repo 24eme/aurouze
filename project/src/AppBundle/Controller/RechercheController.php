@@ -162,7 +162,7 @@ class RechercheController extends Controller {
 				$newResult->periode .= '&nbsp;-&nbsp;'.$object->getDateFin()->format('M Y');
 			}
             $newResult->prix = $object->getPrixHt();
-            $newResult->garantie = ($object->getDureeGarantie())? 'Garantie&nbsp;'.$object->getDureeGarantie().'&nbsp;mois' : 'Aucune ganrantie';
+            $newResult->garantie = ($object->getDureeGarantie())? 'Garantie&nbsp;'.$object->getDureeGarantie().'&nbsp;mois' : 'Aucune garantie';
             $result[] = $newResult;
         }
         return $result;

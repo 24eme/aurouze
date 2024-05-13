@@ -57,7 +57,7 @@
               <div class="row">
                 <div class="col-xs-2">
                   {% if((planifiable.isGarantie is defined and planifiable.isControle is defined) and (planifiable.isGarantie or planifiable.isControle)) %}
-                    <span class="badge badge-warning">{% if(planifiable.isGarantie) %}ganrantie{% elseif(planifiable.isControle) %}contrôle{% endif %}</span>
+                    <span class="badge badge-warning">{% if(planifiable.isGarantie) %}garantie{% elseif(planifiable.isControle) %}contrôle{% endif %}</span>
                   {% endif %}
                   {% if(planifiable.mouvementDeclenchable is defined and planifiable.mouvementDeclenchable and planifiable.getContrat.getNbFactures > 0) %}
                     <a href="{{ path('facture_societe', { 'id': planifiable.societe.id }) }}" class="deco-none"><span class="badge{% if (planifiable.isMouvementAlreadyFacture) %} badge-success  {% else %} badge-inverse {% endif %}">{% if (planifiable.isMouvementAlreadyFacture) %}facturé{% else %}facturant{% endif %}</span></a>

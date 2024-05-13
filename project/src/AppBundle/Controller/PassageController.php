@@ -438,27 +438,6 @@ class PassageController extends Controller
 
         $contrat = $dm->getRepository('AppBundle:Contrat')->findOneById($passage->getContrat()->getId());
 
-        $lastPassageRealise = null;
-        foreach ($cm->getPassagesByNumeroArchiveContrat($contrat, true) as $etab => $ps) {
-            foreach ($ps as $p) {
-                if ($p->isRealise()) { $lastPassageRealise = $p; break; }
-            }
-        }
-
-        if(!$passage->getEmailTransmission()){
-            if($lastPassageRealise){
-                $passage->setEmailTransmission($lastPassageRealise->getEmailTransmission());
-            }
-            elseif($passage->getEtablissement()->getEmail()){
-                $passage->setEmailTransmission($passage->getEtablissement()->getEmail());
-            }
-            elseif($contrat->getSociete()->getContactCoordonnee()->getEmail()){
-                $passage->setEmailTransmission($contrat->getSociete()->getContactCoordonnee()->getEmail());
-            }
-            $dm->persist($passage);
-            $dm->flush();
-        }
-
         if (!$form->isSubmitted() || !$form->isValid()) {
             if($this->container->getParameter("commercial_seine_et_marne")){
                 $contrat->setZone($this->container->getParameter("commercial_seine_et_marne"));

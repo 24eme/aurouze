@@ -112,6 +112,18 @@ class PassageRepository extends BaseRepository {
         return$query->execute();
     }
 
+    public function findByEtablissementWithEmailTransmission($etablissement)
+    {
+        $query = $this->createQueryBuilder('Passage')
+                    ->field('etablissement')->equals($etablissement->getId())
+                    ->field('statut')->equals(PassageManager::STATUT_REALISE)
+                    ->field('emailTransmission')->notEqual(null)
+                    ->sort('dateFin', 'desc')
+                    ->getQuery();
+
+        return $query->execute();
+    }
+
     public function findLastPassages($etablissement, $passage = null) {
         $query = $this->createQueryBuilder('Passage')
                 ->field('dateFin')->exists(true)
