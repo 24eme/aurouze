@@ -134,7 +134,9 @@ $(function () {
             );
         },
         drop: function () {
-            $(this).remove();
+            if(!document.querySelector('#eventForm > * > *')) {
+                $(this).remove();
+            }
         },
         eventResize: function (event) {
             $.post(
