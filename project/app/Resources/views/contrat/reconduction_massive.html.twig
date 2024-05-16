@@ -44,17 +44,10 @@
 {{ form_end(formContratsAReconduire) }}
 
 {{ form_start(formReconduction) }}
-  <div class="row">
-      <div class="col-xs-8">
-          <h3>{{  contratsAReconduire|length }} contrats à reconduire </h3>
-      </div>
-      <div class="col-xs-4 text-right">
-        <a href="{{ path('contrats_reconduction_historique') }}">Historique des reconduction</a>
-      </div>
-  </div>
-  <div class="row">
-      <div class="col-xs-12">
-          <table class="table table-bordered">
+    <a class="pull-right" style="margin-top: 5px;" href="{{ path('contrats_reconduction_historique') }}">Historique des reconduction</a>
+    <h3 style="margin-top: 0;">{{ contratsAReconduire|length }} contrats à reconduire </h3>
+
+    <table class="table table-bordered">
               <thead>
                   <tr>
                       <th class="col-xs-2">Client</th>
@@ -114,9 +107,8 @@
                         </td>
                   </tr>
               {% endfor %}
-          </table>
-    </div>
-</div>
+    </table>
+
 <div class="row">
     <div class="col-xs-3 pull-right">
       <div class="input-group">
