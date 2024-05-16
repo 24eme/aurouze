@@ -53,17 +53,6 @@
       </div>
   </div>
   <div class="row">
-      <div class="col-xs-3 pull-right">
-      	<div class="input-group">
-      			{{ form_widget(formReconduction.augmentation) }}
-      			<span class="input-group-btn">
-          		{{ form_widget(formReconduction.reconduire,  {'attr': {'class': 'btn-loading btn btn-primary pull-right', 'data-loading-text': "Reconduction en cours ..."}}) }}
-          		</span>
-        </div>
-      </div>
-  </div>
-  <br/>
-  <div class="row">
       <div class="col-xs-12">
           <table class="table table-bordered">
               <thead>
@@ -126,7 +115,16 @@
                   </tr>
               {% endfor %}
           </table>
-
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-3 pull-right">
+      <div class="input-group">
+              {{ form_widget(formReconduction.augmentation) }}
+              <span class="input-group-btn">
+              {{ form_widget(formReconduction.reconduire,  {'attr': {'class': 'btn-loading btn btn-primary pull-right', 'data-loading-text': "Reconduction en cours ..."}}) }}
+              </span>
+      </div>
     </div>
 </div>
 {{ form_end(formReconduction) }}
