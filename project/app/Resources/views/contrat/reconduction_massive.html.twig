@@ -122,7 +122,7 @@
       <div class="input-group">
               {{ form_widget(formReconduction.augmentation) }}
               <span class="input-group-btn">
-              {{ form_widget(formReconduction.reconduire,  {'attr': {'class': 'btn-loading btn btn-primary pull-right', 'data-loading-text': "Reconduction en cours ..."}}) }}
+              {{ form_widget(formReconduction.reconduire,  {'attr': {'class': 'btn-loading btn btn-primary pull-right', 'onclick': 'return confirm("Êtes-vous sûr de vouloir reconduire les contrats sélectionnées ?")', 'data-loading-text': "Reconduction en cours ..."}}) }}
               </span>
       </div>
     </div>
