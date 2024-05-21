@@ -44,28 +44,10 @@
 {{ form_end(formContratsAReconduire) }}
 
 {{ form_start(formReconduction) }}
-  <div class="row">
-      <div class="col-xs-8">
-          <h3>{{  contratsAReconduire|length }} contrats à reconduire </h3>
-      </div>
-      <div class="col-xs-4 text-right">
-        <a href="{{ path('contrats_reconduction_historique') }}">Historique des reconduction</a>
-      </div>
-  </div>
-  <div class="row">
-      <div class="col-xs-3 pull-right">
-      	<div class="input-group">
-      			{{ form_widget(formReconduction.augmentation) }}
-      			<span class="input-group-btn">
-          		{{ form_widget(formReconduction.reconduire,  {'attr': {'class': 'btn-loading btn btn-primary pull-right', 'data-loading-text': "Reconduction en cours ..."}}) }}
-          		</span>
-        </div>
-      </div>
-  </div>
-  <br/>
-  <div class="row">
-      <div class="col-xs-12">
-          <table class="table table-bordered">
+    <a class="pull-right" style="margin-top: 5px;" href="{{ path('contrats_reconduction_historique') }}">Historique des reconduction</a>
+    <h3 style="margin-top: 0;">{{ contratsAReconduire|length }} contrats à reconduire </h3>
+
+    <table class="table table-bordered">
               <thead>
                   <tr>
                       <th class="col-xs-2">Client</th>
@@ -125,8 +107,16 @@
                         </td>
                   </tr>
               {% endfor %}
-          </table>
+    </table>
 
+<div class="row">
+    <div class="col-xs-3 pull-right">
+      <div class="input-group">
+              {{ form_widget(formReconduction.augmentation) }}
+              <span class="input-group-btn">
+              {{ form_widget(formReconduction.reconduire,  {'attr': {'class': 'btn-loading btn btn-primary pull-right', 'data-loading-text': "Reconduction en cours ..."}}) }}
+              </span>
+      </div>
     </div>
 </div>
 {{ form_end(formReconduction) }}

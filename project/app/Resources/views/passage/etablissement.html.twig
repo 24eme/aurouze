@@ -23,8 +23,8 @@
             </p>
             {% if etablissement.commentaire or etablissement.commentairePlanification %}
                 <p>
-                    <strong>Commentaire de planification : </strong> <br/>{{ etablissement.commentairePlanification | nl2br }} <br/> <br/>
-                    <strong>Information techniciens: </strong> <br/>{{ etablissement.commentaire | nl2br }} <br/>
+                    <strong>Commentaire Interne de Planification : </strong> <br/>{{ etablissement.commentairePlanification | nl2br }} <br/> <br/>
+                    <strong>Commentaire Permanent Techniciens : </strong> <br/>{{ etablissement.commentaire | nl2br }} <br/>
                     <a href="{{ path('etablissement_modification', {'societe': etablissement.getSociete().getId(),'id': etablissement.getId()}) }}"><small>(Modifier)</small></a>
                 </p>
             {% else %}

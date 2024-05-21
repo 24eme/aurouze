@@ -35,7 +35,7 @@ class ReconductionType extends AbstractType {
         		$builder->add($contrat->getId(), CheckboxType::class, array('label' => ' ', 'required' => false, 'label_attr' => array('class' => 'small')));
 			}
       	}
-      	$builder->add('augmentation', TextType::class, array('required' => false, 'attr' => array('placeholder' => 'Augmentation (%)')));
+      	$builder->add('augmentation', TextType::class, array('required' => true, 'attr' => array('placeholder' => 'Augmentation (%)')));
       	$builder->add('reconduire', 'submit', array('label' => "Reconduire", "attr" => array("class" => "btn btn-primary pull-right")));
 	}
         
