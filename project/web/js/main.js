@@ -726,13 +726,13 @@
               },
               notFound: function(query) {
             	  if (target) {
-            		  return "<div class=\"searchable_result tt-suggestion tt-selectable\"><span class=\"glyphicon glyphicon-search\"></span> <a id=\"search_more_submit\" href=\"\">Cliquez ici pour optimiser la recherche \""+query.query+"\" dans la recherche avancée</a></div>";
+                    return "<a id=\"search_more_submit\" href=\"\"><div class=\"searchable_result tt-suggestion tt-selectable\"><span class=\"glyphicon glyphicon-search\"></span> Cliquez ici pour optimiser la recherche \""+query.query+"\" dans la recherche avancée</div></a>";
             	  }
 
               },
               footer: function(query, suggestions) {
             	  if (target) {
-	                return "<div class=\"searchable_result tt-suggestion tt-selectable\"><span class=\"glyphicon glyphicon-search\"></span> <a id=\"search_more_submit\" href=\"\">Cliquez ici pour optimiser la recherche \""+query.query+"\" dans la recherche avancée</div></a>";
+                    return "<a id=\"search_more_submit\" href=\"\"><div class=\"searchable_result tt-suggestion tt-selectable\"><span class=\"glyphicon glyphicon-search\"></span> Cliquez ici pour optimiser la recherche \""+query.query+"\" dans la recherche avancée</div></a>";
 	              }
               }
           }
