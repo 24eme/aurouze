@@ -43,6 +43,6 @@ db.Passage.createIndex({"dateDebut":1,"techniciens":1}, {"background":false});
 db.RendezVous.createIndex({"dateDebut":1}, {"background":false});
 db.RendezVous.createIndex({"passage":1}, {"background":false});
 db.RendezVous.createIndex({"participants":1}, {"background":false});
-db.RendezVous.createIndex({"dateDebut":1,"participants":1}, {"background":false});
+db.RendezVous.createIndex({"participants":1,"dateDebut":1}, {"background":false});
 db.Societe.createIndex({"_fts":"text","_ftsx":1}, {"default_language":"french","weights":{"$**":1},"language_override":"language","textIndexVersion":3});
 db.Societe.createIndex({"identifiant":1}, {"background":false});
