@@ -27,7 +27,6 @@ class RechercheController extends Controller {
 							"Etablissement" => "Etablissement",
 							"Compte" => "Compte",
 							"Contrat" => "Contrat",
-							"Passage" => "Passage",
 							"Facture" => "Facture",
 							"Devis" => "Devis",
 							"Paiements" => "Paiements",

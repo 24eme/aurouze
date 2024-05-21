@@ -131,6 +131,9 @@ body {
   margin: 0;
 }
 
+#search_more_submit {
+    text-decoration: none;
+}
 
 .searchable_result a {
 	color: #333;
