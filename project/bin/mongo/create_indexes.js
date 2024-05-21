@@ -40,6 +40,8 @@ db.Passage.createIndex({"statut":1,"datePrevision":1,"zone":1}, {"background":fa
 db.Passage.createIndex({"etablissement":1}, {"background":false});
 db.Passage.createIndex({"dateDebut":1}, {"background":false});
 db.Passage.createIndex({"dateDebut":1,"techniciens":1}, {"background":false});
+db.Passage.createIndex({"nettoyages":1}, {"background":false});
+db.Passage.createIndex({"applications":1}, {"background":false});
 db.RendezVous.createIndex({"dateDebut":1}, {"background":false});
 db.RendezVous.createIndex({"passage":1}, {"background":false});
 db.RendezVous.createIndex({"participants":1}, {"background":false});
