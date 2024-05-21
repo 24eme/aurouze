@@ -64,7 +64,7 @@ class ContratSuppressionCommand extends ContainerAwareCommand {
 
         $this->dm->flush();
 
-        /*$ancienContrat = $this->dm->getRepository("AppBundle:Contrat")->findLastContratByNumero($contrat->getNumeroArchive());
+        $ancienContrat = $this->dm->getRepository("AppBundle:Contrat")->findLastContratByNumero($contrat->getNumeroArchive());
 
         if(!$ancienContrat) {
             echo "ERROR;Pas d'ancien contrat ".$contrat->getNumeroArchive()."\n";
@@ -73,7 +73,7 @@ class ContratSuppressionCommand extends ContainerAwareCommand {
         echo "ANCIEN_CONTRAT:".$ancienContrat->getId()."\n";
         $ancienContrat->setReconduit(false);
 
-        $this->dm->flush();*/
+        $this->dm->flush();
     }
 
 

@@ -92,7 +92,7 @@ class CalendarController extends Controller {
         $calendarTool = new CalendarDateTool($request->get('date'), $request->get('mode'), $this->container->getParameter('calendar_extra'));
 
         $periodeStart = $calendarTool->getDateDebutSemaine('Y-m-d');
-        $periodeStart = ((new \DateTime($periodeStart))->modify('-3 month'));
+        $periodeStart = ((new \DateTime($periodeStart))->modify('-1 month'));
         $periodeStart = $periodeStart->format('Y-m-d');
 
         $periodeEnd = $calendarTool->getDateFinSemaine('Y-m-d');
