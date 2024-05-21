@@ -16,7 +16,7 @@ db.Attachement.files.createIndex({"societe":1}, {"background":false});
 db.Compte.createIndex({"_fts":"text","_ftsx":1}, {"default_language":"french","weights":{"$**":1},"language_override":"language","textIndexVersion":3});
 db.Compte.createIndex({"tags.identifiant":1}, {"background":false});
 db.Compte.createIndex({"societe":1}, {"background":false});
-db.Contrat.createIndex({"_fts":"text","_ftsx":1}, {"default_language":"french","weights":{{"numeroArchive":1, "markdown":1},"language_override":"language","textIndexVersion":3});
+db.Contrat.createIndex({"_fts":"text","_ftsx":1}, {"default_language":"french","weights":{"numeroArchive":1, "markdown":1},"language_override":"language","textIndexVersion":3});
 db.Contrat.createIndex({"mouvements.facture":1,"mouvements.facturable":1}, {"background":false});
 db.Contrat.createIndex({"societe":1}, {"background":false});
 db.Contrat.createIndex({"numeroArchive":1}, {"background":false});
