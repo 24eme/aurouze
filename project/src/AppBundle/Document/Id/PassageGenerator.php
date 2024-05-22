@@ -33,8 +33,6 @@ class PassageGenerator extends AbstractIdGenerator
             return $id;
         }
 
-        $this->updateNumeroArchive($db);
-
         $command = array();
         $command['findandmodify'] = 'doctrine_increment_ids';
         $command['query'] = array('_id' => "PassageArchive");
@@ -46,25 +44,5 @@ class PassageGenerator extends AbstractIdGenerator
         $document->setNumeroArchive($result['value']['current_id']);
 
         return $id;
-    }
-
-    public function updateNumeroArchive($db) {
-        $command = array();
-        $command['aggregate'] = "Passage";
-        $command['pipeline'] = array(array('$group' => array('_id' => 'numero_archive_maxium', 'numeroArchive' => array('$max' => '$numeroArchive'))));
-        $result = $db->command($command);
-        if(count($result["result"]) > 0) {
-            $number = $result["result"][0]['numeroArchive']*1;
-            $result = $db->selectCollection('doctrine_increment_ids')->findOne(array('_id' => "PassageArchive"));
-            if(isset($result) && $result['current_id'] < $number) {
-                $command = array();
-                $command['findandmodify'] = 'doctrine_increment_ids';
-                $command['query'] = array('_id' => "PassageArchive");
-                $command['update'] = array('current_id' => $number);
-                $command['upsert'] = true;
-                $command['new'] = true;
-                $db->command($command);
-            }
-        }
     }
 }
