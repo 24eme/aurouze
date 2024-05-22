@@ -41,6 +41,7 @@ db.Passage.createIndex({"dateDebut":1}, {"background":true});
 db.Passage.createIndex({"dateDebut":1,"techniciens":1}, {"background":true});
 db.Passage.createIndex({"nettoyages":1}, {"background":true});
 db.Passage.createIndex({"applications":1}, {"background":true});
+db.Passage.createIndex({"numeroArchive":1}, {"background":true});
 db.RendezVous.createIndex({"dateDebut":1}, {"background":true});
 db.RendezVous.createIndex({"passage":1}, {"background":true});
 db.RendezVous.createIndex({"participants":1}, {"background":true});
