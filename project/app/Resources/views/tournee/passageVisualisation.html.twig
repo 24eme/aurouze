@@ -131,7 +131,7 @@
                     <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a><img src="{{ path('attachement_download', { id: attachement.id, noattachment: true }) }}" alt="{{ attachement.titre ?: attachement.originalName }}">
                 </div>
                 {% else %}
-                <a href="{{ path('attachement_download', { id: attachement.id, noattachment: true }) }}" class="ui-btn ui-corner-all ui-shadow" >
+                <a rel="external" data-ajax="false" download="{{ attachement.originalName }}" href="{{ path('attachement_download', { id: attachement.id }) }}" class="ui-btn ui-corner-all ui-shadow">
                  {{ attachement.titre ?: attachement.originalName }}
                 </a>
                 {% endif %}
