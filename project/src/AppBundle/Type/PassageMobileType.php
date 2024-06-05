@@ -134,11 +134,11 @@ class PassageMobileType extends AbstractType
           'data' => $defaultEmail,
           'attr' => array("placeholder" => 'Email de transmission')));
 
-        // $builder->add('secondEmailTransmission', EmailType::class, array(
-        //   'label' => 'Second email :',
-        //   'required' => false,
-        //   'data' => $defaultSecondEmail,
-        //   'attr' => array("placeholder" => 'Email supplémentaire de transmission')));
+        $builder->add('secondEmailTransmission', EmailType::class, array(
+          'label' => 'Second email :',
+          'required' => false,
+          'data' => $defaultSecondEmail,
+          'attr' => array("placeholder" => 'Email supplémentaire de transmission')));
 
         $builder->add('nomTransmission', TextType::class, array(
           'label' => 'Nom :',
