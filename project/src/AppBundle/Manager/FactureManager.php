@@ -171,16 +171,27 @@ public static $export_factures_en_retards = array(
         return $facture;
     }
 
-    public function updateEmetteur($facture, $contrat = null) {
-      $parameters = $this->getParameters();
-
+    public function getZone($facture, $contrat = null) {
+      $zone = ContratManager::ZONE_PARIS;
       $commercial_SEINE_ET_MARNE = $this->config->get("commercial_seine_et_marne");
-      $emetteur = 'emetteur'; 
       if (
           ($facture->getCommercial() && $facture->getCommercial()->getNom() == $commercial_SEINE_ET_MARNE)
           || ($facture->getContrat() && $facture->getContrat()->getCommercial() && $facture->getContrat()->getCommercial()->getNom() == $commercial_SEINE_ET_MARNE)
           || ($contrat && $contrat->getZone() == ContratManager::ZONE_SEINE_ET_MARNE)
       ) {
+
+        $zone = ContratManager::ZONE_SEINE_ET_MARNE;
+      }
+
+      return $zone;
+  }
+
+    public function updateEmetteur($facture, $contrat = null) {
+      $parameters = $this->getParameters();
+
+      $commercial_SEINE_ET_MARNE = $this->config->get("commercial_seine_et_marne");
+      $emetteur = 'emetteur'; 
+      if ($this->getZone($facture, $contrat)) {
 
           if (array_key_exists('emetteur_SEINE_ET_MARNE', $parameters) === false) {
             
