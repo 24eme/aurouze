@@ -3,7 +3,9 @@
 namespace AppBundle\Manager;
 
 use Doctrine\ODM\MongoDB\DocumentManager as DocumentManager;
+use AppBundle\Config\Config;
 use AppBundle\Document\Facture;
+use AppBundle\Document\Contrat;
 use AppBundle\Document\Devis;
 use AppBundle\Document\LigneFacturable;
 use AppBundle\Document\Societe;
@@ -15,6 +17,7 @@ class FactureManager {
     protected $dm;
     protected $mm;
     protected $parameters;
+    protected $config;
 
     const DEFAUT_FREQUENCE_JOURS = 10;
 
@@ -138,14 +141,14 @@ public static $export_factures_en_retards = array(
   self::EXPORT_RETARD_MONTANT_PAYE => "Montant payé",
   self::EXPORT_RETARD_NB_RELANCES => "Nombre de relances"
 );
-    function __construct(DocumentManager $dm, MouvementManager $mm, $parameters) {
+    function __construct(DocumentManager $dm, MouvementManager $mm, Config $config) {
         $this->dm = $dm;
         $this->mm = $mm;
-        $this->parameters = $parameters;
+        $this->config = $config;
     }
 
     public function getParameters() {
-        return $this->parameters;
+        return $this->config->get('facture');
     }
 
     public function getRepository() {
@@ -158,20 +161,46 @@ public static $export_factures_en_retards = array(
         return $this->getRepository()->findBy(array('societe' => $societe->getId()), array('dateEmission' => 'desc'));
     }
 
-    public function createVierge(Societe $societe) {
+    public function createVierge(Societe $societe, $contrat = null) {
         $facture = new Facture();
         $facture->setSociete($societe);
         $facture->setDateEmission(new \DateTime());
-        $parameters = $this->getParameters();
-        $facture->getEmetteur()->setNom($parameters['emetteur']['nom']);
-        $facture->getEmetteur()->setAdresse($parameters['emetteur']['adresse']);
-        $facture->getEmetteur()->setCodePostal($parameters['emetteur']['code_postal']);
-        $facture->getEmetteur()->setCommune($parameters['emetteur']['commune']);
-        $facture->getEmetteur()->setTelephone($parameters['emetteur']['telephone']);
-        $facture->getEmetteur()->setFax($parameters['emetteur']['fax']);
-        $facture->getEmetteur()->setEmail($parameters['emetteur']['email']);
+
+        $this->updateEmetteur($facture, $contrat);
 
         return $facture;
+    }
+
+    public function updateEmetteur($facture, $contrat = null) {
+      $parameters = $this->getParameters();
+
+      $commercial_SEINE_ET_MARNE = $this->config->get("commercial_seine_et_marne");
+      $emetteur = 'emetteur'; 
+      if (
+          ($facture->getCommercial() && $facture->getCommercial()->getNom() == $commercial_SEINE_ET_MARNE)
+          || ($facture->getContrat() && $facture->getContrat()->getCommercial() && $facture->getContrat()->getCommercial()->getNom() == $commercial_SEINE_ET_MARNE)
+          || ($contrat && $contrat->getZone() == ContratManager::ZONE_SEINE_ET_MARNE)
+      ) {
+
+          if (array_key_exists('emetteur_SEINE_ET_MARNE', $parameters) === false) {
+            
+              throw new \Exception(sprintf("Contrat : %s ou Facture : %s a une zone 77 alors que la région n'est pas configuré",
+              ($contrat) ? $contrat->_id : '', $facture->_id
+            )); 
+            
+          }
+          $emetteur = 'emetteur_SEINE_ET_MARNE';
+          
+         
+      }
+
+      $facture->getEmetteur()->setNom($parameters[$emetteur]['nom']);
+      $facture->getEmetteur()->setAdresse($parameters[$emetteur]['adresse']);
+      $facture->getEmetteur()->setCodePostal($parameters[$emetteur]['code_postal']);
+      $facture->getEmetteur()->setCommune($parameters[$emetteur]['commune']);
+      $facture->getEmetteur()->setTelephone($parameters[$emetteur]['telephone']);
+      $facture->getEmetteur()->setFax($parameters[$emetteur]['fax']);
+      $facture->getEmetteur()->setEmail($parameters[$emetteur]['email']);
     }
 
     public function createFromDevis(Devis $devis, $planification = true)
