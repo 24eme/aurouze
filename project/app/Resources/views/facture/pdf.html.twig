@@ -158,11 +158,7 @@ Condition de réglement : {{ facture.frequencePaiementLibelle }}
 <small>
 <p class="text-center" style="line-height: 13px;">
     <small>
-    {% if (facture.emetteur.codePostal == 77720)%}
-        {{ parameters.emetteur_SEINE_ET_MARNE.infos }}<br />
-    {% else %}
-        {{ parameters.emetteur.infos }}<br />
-    {% endif %}
+    {{ parameters.emetteur.infos }}<br />
     {{ parameters.emetteur.banque }}<br />
     {{ parameters.emetteur.virement }}<br />
     {% if parameters.emetteur.numero_agrement is defined %}Agrément du Ministère de l'Agriculture A. I. F. {{ parameters.emetteur.numero_agrement }}<br />{% endif %}
