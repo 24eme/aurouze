@@ -117,6 +117,12 @@
       {{ form_widget(form.emailTransmission) }}
     </div>
 
+    <h3 class="ui-bar ui-bar-a ui-corner-all"><strong>Email supplémentaire</strong></h3>
+    <div class="ui-body ui-body">
+      {{ form_errors(form.secondEmailTransmission) }}
+      {{ form_widget(form.secondEmailTransmission) }}
+    </div>
+
     <div>{{ form_widget(form.signatureBase64) }}</div>
     <h3 class="ui-bar ui-bar-a ui-corner-all">
       <a class="ui-btn ui-icon-edit ui-btn-icon-left" data-id="{{ planifiable.id }}" href="#signature_{{ planifiable.id }}" >Signer</a>

@@ -359,3 +359,10 @@ input:required:invalid {
 textarea:required:invalid{
   border : 2px solid black;
 }
+
+.error-message {
+	display: table;
+	margin-left: 17rem;
+	margin-top: -18rem;
+	font-size: 20px;
+}

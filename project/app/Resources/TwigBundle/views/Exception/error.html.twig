@@ -5,8 +5,9 @@
 {% block body %}
 
     <img src="{{ asset("/images/error.svg") }}" style="padding-top: 10%; min-width:70%; max-width:100%; margin: 0 auto; display:block" class="row justify-content-center"/>
-    
-    
-    </div>
+
+	<span class="text-danger error-message">
+		<strong><span>Error {{ status_code }}</span><span>: {{ status_text }}</span></strong>
+    </span>
 
 {% endblock %}
