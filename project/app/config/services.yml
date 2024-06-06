@@ -61,7 +61,7 @@ services:
 
     paiements.manager:
         class: AppBundle\Manager\PaiementsManager
-        arguments: [@doctrine_mongodb.odm.default_document_manager, @facture.manager]
+        arguments: [@doctrine_mongodb.odm.default_document_manager, @facture.manager, "%facture%"]
 
     societe.importer:
         class: AppBundle\Import\SocieteCsvImporter
