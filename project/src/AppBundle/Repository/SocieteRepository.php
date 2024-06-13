@@ -16,19 +16,15 @@ use Doctrine\Common\Collections\ArrayCollection;
 class SocieteRepository extends BaseRepository {
 
     public function findByTerms($queryString, $withNonActif = false, $limit = 1000, $mixWith = false) {
-        $terms = explode(" ", trim(preg_replace("/[ ]+/", " ", $queryString)));
 
         $results = array();
-        foreach ($terms as $term) {
-            if (strlen($term) < 2) {
-                continue;
-            }
+
             $q = $this->createQueryBuilder();
-            $q->addOr($q->expr()->field('identifiant')->equals(new \MongoRegex('/.*' . $term . '.*/i')))
-              ->addOr($q->expr()->field('raisonSociale')->equals(new \MongoRegex('/.*' . RechercheTool::getCorrespondances($term) . '.*/i')))
-              ->addOr($q->expr()->field('adresse.adresse')->equals(new \MongoRegex('/.*' . RechercheTool::getCorrespondances($term) . '.*/i')))
-              ->addOr($q->expr()->field('adresse.codePostal')->equals(new \MongoRegex('/.*' . $term . '.*/i')))
-              ->addOr($q->expr()->field('adresse.commune')->equals(new \MongoRegex('/.*' . RechercheTool::getCorrespondances($term) . '.*/i')));
+            $q->addOr($q->expr()->field('identifiant')->equals(new \MongoRegex('/.*' . $queryString . '.*/i')))
+              ->addOr($q->expr()->field('raisonSociale')->equals(new \MongoRegex('/.*' . RechercheTool::getCorrespondances($queryString) . '.*/i')))
+              ->addOr($q->expr()->field('adresse.adresse')->equals(new \MongoRegex('/.*' . RechercheTool::getCorrespondances($queryString) . '.*/i')))
+              ->addOr($q->expr()->field('adresse.codePostal')->equals(new \MongoRegex('/.*' . $queryString . '.*/i')))
+              ->addOr($q->expr()->field('adresse.commune')->equals(new \MongoRegex('/.*' . RechercheTool::getCorrespondances($queryString) . '.*/i')));
             if (!$withNonActif) {
                 $q->field('actif')->equals(true);
             }
@@ -47,7 +43,6 @@ class SocieteRepository extends BaseRepository {
 						} else {
 								$results = $currentResults;
 						}
-        }
         //$etablissements = $this->dm->getRepository('Etablissement')->findByTerms($queryString);
         //$results = array_merge($results, $etablissements);
         return is_null($results) ? array() : $results;

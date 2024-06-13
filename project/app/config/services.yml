@@ -17,6 +17,12 @@ services:
         arguments: [@doctrine_mongodb]
         tags:
             - { name: request.param_converter }
+
+    app.config:
+        class: AppBundle\Config\Config
+        arguments: [@service_container]
+
+
     twig.extension.intl:
         class: Twig_Extensions_Extension_Intl
         tags:
@@ -87,7 +93,7 @@ services:
 
     facture.manager:
         class: AppBundle\Manager\FactureManager
-        arguments: [@doctrine_mongodb.odm.default_document_manager, @mouvement.manager, "%facture%"]
+        arguments: [@doctrine_mongodb.odm.default_document_manager, @mouvement.manager, @app.config]
 
     facture.importer:
         class: AppBundle\Import\FactureCsvImporter

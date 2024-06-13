@@ -130,7 +130,7 @@ class FactureController extends Controller
         }
 
         if (!isset($facture)) {
-            $facture = $fm->createVierge($societe);
+            $facture = $fm->createVierge($societe, $contrat);
             $df = ($this->container->getParameter('date_facturation'))? new \DateTime($this->container->getParameter('date_facturation')) : new \DateTime();
             $facture->setDateFacturation($df);
             $factureLigne = new LigneFacturable();
@@ -204,7 +204,7 @@ class FactureController extends Controller
             $origine->updateMontantPaye();
         }
 
-        $this->updateEmetteur($facture,$contrat);
+        $fm->updateEmetteur($facture,$contrat);
 
         $dm->flush();
 
@@ -321,7 +321,7 @@ class FactureController extends Controller
               $facture->setDescription($contrat->getDescription());
             }
 
-            $this->updateEmetteur($facture,$contrat);
+            $fm->updateEmetteur($facture,$contrat);
 
             $dm->persist($facture);
             $dm->flush();
@@ -1437,36 +1437,4 @@ class FactureController extends Controller
             ksort($mouvements);
             return $this->render('facture/listMouvementsPouvantEtreFacturesAction.html.twig',array('mouvements'=>$mouvements, 'secteur'=>$secteur));
         }
-
-
-        private function updateEmetteur(Facture $facture, Contrat $contrat = null)
-        {
-            $commercial_SEINE_ET_MARNE = $this->container->getParameter("commercial_seine_et_marne") ?: null;
-
-            if (
-                ($facture->getCommercial() && $facture->getCommercial()->getNom() == $commercial_SEINE_ET_MARNE)
-                || ($facture->getContrat() && $facture->getContrat()->getCommercial() && $facture->getContrat()->getCommercial()->getNom() == $commercial_SEINE_ET_MARNE)
-                || ($contrat && $contrat->getZone() == ContratManager::ZONE_SEINE_ET_MARNE)
-            ) {
-                $parameters = $this->container->getParameter('facture');
-
-                if (array_key_exists('emetteur_SEINE_ET_MARNE', $parameters) === false) {
-                    $this->container->get('monolog.logger.request')->error(
-                        sprintf("Contrat : %s ou Facture : %s a une zone 77 alors que la région n'est pas configuré",
-                            ($contrat) ? $contrat->_id : '', $facture->_id
-                        )
-                    );
-                    return false;
-                }
-
-                $facture->getEmetteur()->setNom($parameters['emetteur_SEINE_ET_MARNE']['nom']);
-                $facture->getEmetteur()->setAdresse($parameters['emetteur_SEINE_ET_MARNE']['adresse']);
-                $facture->getEmetteur()->setCodePostal($parameters['emetteur_SEINE_ET_MARNE']['code_postal']);
-                $facture->getEmetteur()->setCommune($parameters['emetteur_SEINE_ET_MARNE']['commune']);
-                $facture->getEmetteur()->setTelephone($parameters['emetteur_SEINE_ET_MARNE']['telephone']);
-                $facture->getEmetteur()->setFax($parameters['emetteur_SEINE_ET_MARNE']['fax']);
-                $facture->getEmetteur()->setEmail($parameters['emetteur_SEINE_ET_MARNE']['email']);
-            }
-        }
-
 }
