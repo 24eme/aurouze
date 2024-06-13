@@ -26,7 +26,7 @@
             <div class="col-xs-12" style="margin-bottom: 30px; {% if not app.request.get('etablissement_id') %}opacity: 0.75;{% endif %}">
                 <div class="input-group">
                     <span class="input-group-addon">Filtrer pour un établissement</span>
-                    <select onchange="document.querySelector('#form_etablissement_filtre').submit();" name="etablissement_id" class="form-control">
+                    <select onchange="document.querySelector('#form_etablissement_filtre').submit();" name="etablissement_id" class="form-control select2 select2-simple">
                         <option value="">Tous</option>
                     {% for etablissement in etablissements %}
                         <option {% if app.request.get('etablissement_id') == etablissement.id %}selected="selected"{% endif %} value="{{ etablissement.id }}">{{ etablissement.libelleComplet }}</option>
