@@ -170,6 +170,7 @@ trait FacturableControllerTrait
           $type => $document,
           'devisLie' => $devisLie,
           'pages' => $pages,
+          'fm' => $this->get('facture.manager'),
           'parameters' => $manager->getParameters(),
       ));
 
