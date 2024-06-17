@@ -190,8 +190,8 @@ public static $export_factures_en_retards = array(
       $parameters = $this->getParameters();
 
       $commercial_SEINE_ET_MARNE = $this->config->get("commercial_seine_et_marne");
-      $emetteur = 'emetteur'; 
-      if ($this->getZone($facture, $contrat)) {
+      $emetteur = 'emetteur';
+      if ($this->getZone($facture, $contrat) === ContratManager::ZONE_SEINE_ET_MARNE) {
 
           if (array_key_exists('emetteur_SEINE_ET_MARNE', $parameters) === false) {
             
