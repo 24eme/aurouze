@@ -107,7 +107,7 @@
                                 <span class="pull-right">{% if(contratManager.isContratEnRetardPaiement(contrat)) %}<span class="glyphicon glyphicon-warning-sign" title="En retard de paiement" data-html="true" data-toggle="tooltip"></span>{% endif %}&nbsp;&nbsp;&nbsp;</span>
                             </h4>
                         </div>
-                        <div id="contrat-{{ contrat.id }}-passages" class="collapse {% if(not contratObj.actif) %} out {% else%} in {% endif %} list-group">
+                        <div id="contrat-{{ contrat.id }}-passages" class="collapse {% if(not contratObj.actif) or (contrat.isAnnule) %} out {% else%} in {% endif %} list-group">
                            <div class="list-group-item {% if(contrat.isAnnule) %} list-group-item-danger
                              {% elseif(contrat.isFini) %}list-group-item-success
                              {% elseif(contrat.isBrouillon or contrat.isEnAttenteAcceptation) %} list-group-item-warning {% endif %}
