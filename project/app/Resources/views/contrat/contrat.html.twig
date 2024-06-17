@@ -280,7 +280,7 @@
                     <td>{% if mouvement.quantite < 0 %}{{ mouvement.libelle|replace({'Facture': 'Avoir'}) }}{% else %}{{ mouvement.libelle }}{% endif %}</td>
                     <td class="text-right">{{ facture.dateFacturation | localizeddate("medium", "none", null, null, "d MMM yyyy") }}</td>
                     <td class="text-center"><a href="{{ path('facturable_pdf', {'document': facture.id ,'key': facture.getSecretKey()})}}"><span class="glyphicon glyphicon-file"></span>&nbsp;{{ facture.numeroFacture }}</a></td>
-                    {% set montant = mouvement.montantHT * mouvement.quantite %}
+                    {% set montant = mouvement.montantHT %}
                     {% set montantTTC = montant + (montant * mouvement.tauxTaxe) %}
                     {% set total = total + montant %}
                     {% set totalTTC = totalTTC + montantTTC %}
@@ -328,12 +328,14 @@
           </tr>
         </tfoot>
         {% endif %}
-        <td>Total </td>
-        <td></td>
-        <td></td>
-        <td class="text-right">{{ "%0.2f" | format(total) }} €</td>
-        <td></td>
-        <td class="text-right">{{ "%0.2f" | format(totalTTC) }} €</td>
+        <tr>
+        <th>Total </th>
+        <th></th>
+        <th></th>
+        <th class="text-right">{{ "%0.2f" | format(total) }} €</th>
+        <th></th>
+        <th class="text-right">{{ "%0.2f" | format(totalTTC) }} €</th>
+        </tr>
     </table>
 </div>
 {% endif %}
