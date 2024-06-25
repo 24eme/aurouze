@@ -364,11 +364,19 @@ class CalendarController extends Controller {
 
         $edition = (!$rdv->getPlanifiable() || (!$rdv->getPlanifiable()->isRealise()));
 
+        $service = $request->get('service');
+        $service = $service ? $service . "#" . $rdv->getId() : $request->get('service');
+
+        $doubleServiceHash= count(explode("#", $service)) >= 2;
+        if($doubleServiceHash) {
+            $service = strstr($service, '#', true);
+        }
+
         if(!$edition && !$request->get('forceEdition', false)) {
             return $this->render($template, array(
                 'rdv' => $rdv,
                 'documents' => $documents,
-                'service' => $request->get('service')
+                'service' => $service ?: $request->get('service'),
             ));
         }
 
@@ -384,7 +392,7 @@ class CalendarController extends Controller {
 
 
         if (!$form->isSubmitted() || !$form->isValid()) {
-            return $this->render($template, array('rdv' => $rdv, 'form' => $form->createView(), 'service' => $request->get('service')));
+            return $this->render($template, array('rdv' => $rdv, 'form' => $form->createView(), 'service' => $service ));
         }
 
         if(!$rdv->getId()) {

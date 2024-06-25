@@ -117,5 +117,26 @@
                 return window.location = url
             })
         })
+
+        $(document).ready(function() {
+            const rdvHash = window.location.hash
+
+            if(rdvHash) {
+                const newRdvHash = rdvHash.replace("#", "");
+
+                window.location.hash = ''
+
+                return  $.get(
+                $('#calendrier').data('urlRead'), {
+                id: newRdvHash,
+                service: encodeURI(location.href)
+            }, function (response) {
+                $('#modal-calendrier-infos').html(response);
+                $('#modal-calendrier-infos').modal();
+                $.callbackEventForm();
+            }
+            );
+            }
+        })
     </script>
 {% endblock %}
