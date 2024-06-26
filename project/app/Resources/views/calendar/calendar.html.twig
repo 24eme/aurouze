@@ -56,6 +56,19 @@
                 </div>
             {% endif %}
         </div>
+
+            <div id="flash-message" style="width: 200px; position: absolute; left: 0; right: 0; margin: 0 auto;">
+                {% if app.session.flashBag.has('success') %}
+                    <div class="alert" style="padding: 10px; background-color: #e8ffcb ">
+                        {% for msg in app.session.flashBag.get('success') %}
+                        <div class="text-center">
+                            {{ msg }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
         <div class="col-sm-8 text-right">
             <a class="btn btn-default" href="{{ path('listeRendezVousTechnicien', {'technicien':technicien}) }}">RDV libres</a>
             <a href="#" class="btn btn-default datepicker" id="datepicker-calendar-technicien" /><span class="glyphicon glyphicon-calendar"></span></a>
@@ -137,6 +150,11 @@
             }
             );
             }
+
+            if($('#flash-message').html().trim()){
+                $('#flash-message').hide().delay(10).fadeIn().delay(4000).fadeOut();
+            }
         })
+
     </script>
 {% endblock %}
