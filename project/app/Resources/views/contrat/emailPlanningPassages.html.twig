@@ -1,12 +1,12 @@
 Bonjour,  %0A%0A
 
 {% for etablissement in contrat.etablissements %}
-Veuillez trouver ci-dessous la proposition de planning pour {{ etablissement.nom }} - contrat n° {{ contrat.numeroArchive }}: %0A%0A
+Veuillez trouver ci-dessous la proposition de planning d'interventions pour {{ etablissement.nom }} - contrat n° {{ contrat.numeroArchive }}: %0A%0A
 {% endfor %}
 
 
 {% for contratPassage in contrat.contratPassages %}
 {% for passage in contratPassage.getPassagesSorted() %}
-- Le {{ passage.dateDebut | localizeddate('full', 'none') | capitalize }} à {{ passage.timeDebut}}%0A
+- Le {{ passage.dateDebut | localizeddate('full', 'none') | capitalize }} à {{ passage.timeDebut}} {% if passage.realise %}| (Réalisé) {% endif %} %0A
 {% endfor %}
 {% endfor %}
