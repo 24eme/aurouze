@@ -699,10 +699,14 @@ class PassageController extends Controller
             var_dump('NO mailer config'); exit;
         }
 
-        if($request->get('service')) {
+        if($request->get('service') && $passage->getPdfNonEnvoye() == false) {
+            $request->getSession()
+            ->getFlashBag()
+            ->add('success', "L'email a bien été envoyé !");
 
             return $this->redirect($request->get('service'));
         }
+
 
         return $this->redirectToRoute('passage_etablissement', array('id' => $passage->getEtablissement()->getId()));
     }
