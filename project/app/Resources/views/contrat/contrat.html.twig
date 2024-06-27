@@ -160,9 +160,12 @@
             {% for etablissement in contrat.getEtablissements %}
                 <div class="list-group-item">
                     <div class="row">
-                		<div class="col-xs-10">
+                    <div class="col-xs-7">
                 			<i class="mdi mdi-{{ etablissement.icon }} mdi-lg"></i>
                 			<a href="{{ path('passage_etablissement', { 'id': etablissement.id }) }}">{{ etablissement.getNom(false) }} - {{ etablissement.adresse.intitule }}</a>
+                        </div>
+                        <div class="col-xs-3">
+                            <a href="mailto:{{ etablissement.contactCoordonnee.email }}?subject=Proposition de planning  - {{ etablissement.nom }} : contrat n°{{ contrat.numeroArchive }}&body={{ include('contrat/emailPlanningPassages.html.twig')}}" class="btn btn-block btn-xs btn-default"><i class="glyphicon glyphicon-envelope"></i> Envoyer liste des passages par email</a><br />
                         </div>
                         <div class="col-xs-2">
                         	<a href="{{ path('passage_creation', {'id_contrat': contrat.id, 'id_etablissement': etablissement.id })}}" class="btn btn-block btn-xs btn-default">Créer un passage</a>
