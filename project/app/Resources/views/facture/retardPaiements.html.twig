@@ -89,10 +89,10 @@
             	<strong>{{ factureEnRetard.societe.raisonSociale }}</strong><br />
             	<small>{{ factureEnRetard.societe.adresseComplete }}</small><br />
 				{% if (factureEnRetard.societe.contactCoordonnee.telephoneFixe is defined and factureEnRetard.societe.contactCoordonnee.telephoneFixe)%}
-	            	<small><i class="glyphicon glyphicon-earphone"></i>&nbsp;{{ factureEnRetard.societe.contactCoordonnee.telephoneFixe }}</small>&nbsp;
+	            	<small><i class="glyphicon glyphicon-earphone"></i>&nbsp;{{ factureEnRetard.societe.contactCoordonnee.telephoneFixeFormatte }}</small>&nbsp;
 	            {%endif%}
 	            {% if (factureEnRetard.societe.contactCoordonnee.telephoneMobile is defined and factureEnRetard.societe.contactCoordonnee.telephoneMobile)%}
-	                <small><i class="glyphicon glyphicon-phone"></i>&nbsp;{{ factureEnRetard.societe.contactCoordonnee.telephoneMobile }}</small>&nbsp;
+	                <small><i class="glyphicon glyphicon-phone"></i>&nbsp;{{ factureEnRetard.societe.contactCoordonnee.telephoneMobileFormatte }}</small>&nbsp;
 	            {% endif %}
 				{% if factureEnRetard.societe.contactCoordonnee.email %}
 					<small>{{ factureEnRetard.societe.contactCoordonnee.email }}</small>
@@ -144,10 +144,10 @@
 									<br /><small><a href="mailto:{{ factureEnRetard.societe.contactCoordonnee.email }}">{{ factureEnRetard.societe.contactCoordonnee.email }}</a></small>
 								{% endif %}
 								{% if (factureEnRetard.societe.contactCoordonnee.telephoneFixe is defined and factureEnRetard.societe.contactCoordonnee.telephoneFixe)%}
-	                                <br /><small><i class="glyphicon glyphicon-earphone"></i>&nbsp;{{ factureEnRetard.societe.contactCoordonnee.telephoneFixe }}</small>
+									<br /><small><i class="glyphicon glyphicon-earphone"></i>&nbsp;{{ factureEnRetard.societe.contactCoordonnee.telephoneFixeFormatte }}</small>
 	                            {%endif%}
 	                            {% if (factureEnRetard.societe.contactCoordonnee.telephoneMobile is defined and factureEnRetard.societe.contactCoordonnee.telephoneMobile)%}
-	                                <br /><small><i class="glyphicon glyphicon-phone"></i>&nbsp;{{ factureEnRetard.societe.contactCoordonnee.telephoneMobile }}</small>
+	                                <br /><small><i class="glyphicon glyphicon-phone"></i>&nbsp;{{ factureEnRetard.societe.contactCoordonnee.telephoneMobileFormatte }}</small>
 	                            {% endif %}
 							</td>
               <td>
