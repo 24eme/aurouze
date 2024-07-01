@@ -9,13 +9,13 @@
             {% if (item.doc.contactCoordonnee.telephoneFixe or item.doc.contactCoordonnee.telephoneMobile or item.doc.contactCoordonnee.fax or item.doc.contactCoordonnee.email or item.doc.contactCoordonnee.siteInternet or item.doc.contactCoordonnee.libelle)  %}
             	{% if(societe.contactCoordonnee.libelle is defined and societe.contactCoordonnee.libelle)%}{{ societe.contactCoordonnee.libelle }}&nbsp;{%endif%}
                 {% if (item.doc.contactCoordonnee.telephoneFixe is defined and item.doc.contactCoordonnee.telephoneFixe)%}
-                    <i class="glyphicon glyphicon-earphone"></i>&nbsp;{{ item.doc.contactCoordonnee.telephoneFixe }}&nbsp;
+                    <i class="glyphicon glyphicon-earphone"></i>&nbsp;{{ item.doc.contactCoordonnee.telephoneFixeFormatte }}&nbsp;
                 {%endif%}
                 {% if (item.doc.contactCoordonnee.telephoneMobile is defined and item.doc.contactCoordonnee.telephoneMobile)%}
-                    <i class="glyphicon glyphicon-phone"></i>&nbsp;{{ item.doc.contactCoordonnee.telephoneMobile }}&nbsp;
+                    <i class="glyphicon glyphicon-phone"></i>&nbsp;{{ item.doc.contactCoordonnee.telephoneMobileFormatte }}&nbsp;
                 {% endif %}
                 {% if (item.doc.contactCoordonnee.fax is defined and item.doc.contactCoordonnee.fax)%}
-                    <i class="glyphicon glyphicon-print"></i>&nbsp;{{ item.doc.contactCoordonnee.fax }}&nbsp;
+                    <i class="glyphicon glyphicon-print"></i>&nbsp;{{ item.doc.contactCoordonnee.faxFormatte }}&nbsp;
                 {% endif %}
                 {% if(item.doc.contactCoordonnee.email is defined and item.doc.contactCoordonnee.email)%}
                     <i class="glyphicon glyphicon-envelope"></i>&nbsp;{{ item.doc.contactCoordonnee.email }}&nbsp;
