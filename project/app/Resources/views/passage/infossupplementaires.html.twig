@@ -63,10 +63,10 @@
           <li class="list-inline-item"><i class="mdi mdi-contacts mdi-lg"></i> {{ etablissement.contactCoordonnee.libelle }}</li>
         {% endif %}
         {% if etablissement.contactCoordonnee.telephoneFixe %}
-          <li class="list-inline-item"><i class="mdi mdi-call mdi-lg"></i> {{ etablissement.contactCoordonnee.telephoneFixe }}</li>
+          <li class="list-inline-item"><i class="mdi mdi-call mdi-lg"></i> {{ etablissement.contactCoordonnee.telephoneFixeFormatte }}</li>
         {% endif %}
         {% if etablissement.contactCoordonnee.telephoneMobile %}
-          <li class="list-inline-item"><i class="mdi mdi-smartphone mdi-lg"></i> {{ etablissement.contactCoordonnee.telephoneMobile }}</li>
+          <li class="list-inline-item"><i class="mdi mdi-smartphone mdi-lg"></i> {{ etablissement.contactCoordonnee.telephoneMobileFormatte }}</li>
         {% endif %}
         {% if etablissement.contactCoordonnee.email %}
           <li class="list-inline-item"><i class="mdi mdi-mail mdi-lg"></i>
