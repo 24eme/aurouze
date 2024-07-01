@@ -36,7 +36,7 @@
           <li>
             <i class="glyphicon glyphicon-earphone"></i>
             {% if resultat.contactCoordonnee.telephoneFixe %}
-              {{ resultat.contactCoordonnee.telephoneFixe }}
+              {{ resultat.contactCoordonnee.telephoneFixeFormatte }}
             {% else %}
               –
             {% endif %}
@@ -44,7 +44,7 @@
           <li>
             <i class="glyphicon glyphicon-phone"></i>
             {% if resultat.contactCoordonnee.telephoneMobile %}
-              {{ resultat.contactCoordonnee.telephoneMobile }}
+              {{ resultat.contactCoordonnee.telephoneMobileFormatte }}
             {% else %}
               –
             {% endif %}
@@ -52,7 +52,7 @@
           <li>
             <i class="glyphicon glyphicon-print"></i>
             {% if resultat.contactCoordonnee.fax %}
-              {{ resultat.contactCoordonnee.fax }}
+              {{ resultat.contactCoordonnee.faxFormatte }}
             {% else %}
               –
             {% endif %}
