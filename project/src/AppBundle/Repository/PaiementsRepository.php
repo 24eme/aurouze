@@ -83,6 +83,7 @@ class PaiementsRepository extends BaseRepository {
     	$q = $this->createQueryBuilder();
     	$q->field('dateCreation')->gte($dateDebut);
     	$q->field('dateCreation')->lte($dateFin);
+        $q->field('paiement.facture')->prime(true);
         if($prelevement){
     	       $q->field('prelevement')->equals($prelevement);
         }else{
