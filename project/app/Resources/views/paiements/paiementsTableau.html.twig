@@ -7,7 +7,6 @@
     <th class="col-xs-3">Libelle</th>
     <th class="col-xs-2">Facture</th>
     <th class="col-xs-1 text-center">Montant</th>
-    <th class="col-xs-1 text-center">Total</th>
     <th class="col-xs-2 text-center">Actions</th>
   </tr>
   </thead>
@@ -16,7 +15,7 @@
   {% for paiements in paiementsDocs %}
     {% for regKey, reglement in paiements.aggregatePaiements %}
       {% if loop.first %}
-          <tr>
+          <tr class="active">
               <th>
                   {{ paiements.dateCreation | localizeddate("medium", "none", null, null, "d MMM yyyy") }}
                   {% if not (paiements.isImprime) and regKey == "CHEQUE"%}
@@ -24,7 +23,7 @@
                   {% endif %}
               </th>
               <th class="clearfix">{{ reglement.libelle }} <span class="badge pull-right" style="background: #F3BFCC; color: #000">{{reglement.factures}}</span></th>
-              <th colspan="4" class="text-right">{{ reglement.montant | number_format(2, ',', ' ') }} €</th>
+              <th colspan="3" class="text-right">Total : {{ reglement.montant | number_format(2, ',', ' ') }} €</th>
               <th class="text-right">
                   {% if (paiements.isImprime) and regKey == "CHEQUE" %}
                       <a class="btn btn-xs btn-default" href="{{ path('paiements_export_banque', {'id': paiements.id }) }}" title="{% if(paiements.isRemiseEspece) %}Espèce{% else %}{{ paiements.nbPaiementUniqueParMoyen }} chèq.{% endif %}">
@@ -49,14 +48,11 @@
             <td>{{ libelle.libelle }}</td>
             <td><a href="{{ path('facturable_pdf', {'document': paiement.facture.id , 'key': paiement.facture.getSecretKey()})}}">Facture n° {{ paiement.facture.numeroFacture }}</a></td>
             <td class="text-right">{{ paiement.montant | number_format(2, ',', ' ') }}&nbsp;€</td>
-            <td class="text-right">
-              <span class="text-muted">{{ reglement.montant | number_format(2, ',', ' ') }}&nbsp;€</span>
-            </td>
             <td class="text-right"></td>
           </tr>
           {% endfor %}
       {% endfor %}
-      <tr><td colspan="7"></td></tr>
+      <tr style="background-color: #fff"><td colspan="7"></td></tr>
     {% endfor %}
   {% endfor %}
   </tbody>
