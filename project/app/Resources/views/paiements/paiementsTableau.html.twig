@@ -12,58 +12,53 @@
   </tr>
   </thead>
 
+  <tbody>
   {% for paiements in paiementsDocs %}
-  {% set date = null %}
-  {% for regKey, reglement in paiements.aggregatePaiements %}
-    {% for libKey, libelle in reglement.items %}
-        {% for paiement in libelle.items %}
-        <tr>
-          <td>
-            {% if paiements.dateCreation != date %}
-              <strong>{{ paiements.dateCreation | localizeddate("medium", "none", null, null, "d MMM yyyy") }}</strong>
-              {% if not (paiements.isImprime) and regKey == "CHEQUE"%}
-              <span style="float:right" class="glyphicon glyphicon-pushpin"></span>
-              {% endif %}
-            {% else %}
-              <span class="text-muted">{{ paiements.dateCreation | localizeddate("medium", "none", null, null, "d MMM yyyy") }}</span>
-            {% endif %}
-          </td>
-          <td>
-          {% if paiements.dateCreation != date %}
-            <strong>{{ reglement.libelle }}</strong>
-            <span  style="float:right; border-radius:8px;background-color:#F3BFCC;padding: 0px 2px;" class="text-right">{{reglement.factures}}</span>
-          {% else %}
-            <span class="text-muted">{{ reglement.libelle }}</span>
-          {% endif %}
-
-          </td>
-          <td>{{ libelle.libelle }}</td>
-          <td><a href="{{ path('facturable_pdf', {'document': paiement.facture.id , 'key': paiement.facture.getSecretKey()})}}">Facture n° {{ paiement.facture.numeroFacture }}</a></td>
-          <td class="text-right">{{ paiement.montant | number_format(2, ',', ' ') }}&nbsp;€</td>
-          <td class="text-right">
-          {% if paiements.dateCreation != date %}
-            <strong>{{ reglement.montant | number_format(2, ',', ' ') }}&nbsp;€</strong>
-          {% else %}
-            <span class="text-muted">{{ reglement.montant | number_format(2, ',', ' ') }}&nbsp;€</span>
-          {% endif %}
-          </td>
-          <td class="text-right">
-          {% if paiements.dateCreation != date %}
-            {% if (paiements.isImprime) and regKey == "CHEQUE" %}
-          <a  type="button" class="btn btn-xs btn-default" href="{{ path('paiements_export_banque', {'id': paiements.id }) }}" title="&nbsp;{% if(paiements.isRemiseEspece) %}Espèce{% else %}{{ paiements.nbPaiementUniqueParMoyen }} chèq.{% endif %}">
-                <span class="glyphicon glyphicon-print"></span>
-              </a>
-            {% endif %}
-            <a  type="button" class="btn btn-xs btn-warning" href="{{ path('paiements_modification', {'id': paiements.id })}}">
-              <span class="glyphicon glyphicon-pencil"></span>
-            </a>
-          {% endif %}
-          </td>
-          {% set  date = paiements.dateCreation %}
-        </tr>
+    {% for regKey, reglement in paiements.aggregatePaiements %}
+      {% if loop.first %}
+          <tr>
+              <th>
+                  {{ paiements.dateCreation | localizeddate("medium", "none", null, null, "d MMM yyyy") }}
+                  {% if not (paiements.isImprime) and regKey == "CHEQUE"%}
+                      <span class="glyphicon glyphicon-pushpin pull-right"></span>
+                  {% endif %}
+              </th>
+              <th class="clearfix">{{ reglement.libelle }} <span class="badge pull-right" style="background: #F3BFCC; color: #000">{{reglement.factures}}</span></th>
+              <th colspan="4" class="text-right">{{ reglement.montant | number_format(2, ',', ' ') }} €</th>
+              <th class="text-right">
+                  {% if (paiements.isImprime) and regKey == "CHEQUE" %}
+                      <a class="btn btn-xs btn-default" href="{{ path('paiements_export_banque', {'id': paiements.id }) }}" title="{% if(paiements.isRemiseEspece) %}Espèce{% else %}{{ paiements.nbPaiementUniqueParMoyen }} chèq.{% endif %}">
+                          <span class="glyphicon glyphicon-print"></span>
+                      </a>
+                  {% endif %}
+                  <a class="btn btn-xs btn-warning" href="{{ path('paiements_modification', {'id': paiements.id })}}">
+                      <span class="glyphicon glyphicon-pencil"></span>
+                  </a>
+              </th>
+          </tr>
+      {% endif %}
+      {% for libKey, libelle in reglement.items %}
+          {% for paiement in libelle.items %}
+          <tr>
+            <td>
+                <span class="text-muted">{{ paiements.dateCreation | localizeddate("medium", "none", null, null, "d MMM yyyy") }}</span>
+            </td>
+            <td>
+              <span class="text-muted">{{ reglement.libelle }}</span>
+            </td>
+            <td>{{ libelle.libelle }}</td>
+            <td><a href="{{ path('facturable_pdf', {'document': paiement.facture.id , 'key': paiement.facture.getSecretKey()})}}">Facture n° {{ paiement.facture.numeroFacture }}</a></td>
+            <td class="text-right">{{ paiement.montant | number_format(2, ',', ' ') }}&nbsp;€</td>
+            <td class="text-right">
+              <span class="text-muted">{{ reglement.montant | number_format(2, ',', ' ') }}&nbsp;€</span>
+            </td>
+            <td class="text-right"></td>
+          </tr>
+          {% endfor %}
+      {% endfor %}
+      <tr><td colspan="7"></td></tr>
     {% endfor %}
   {% endfor %}
-  {% endfor %}
-  {% endfor %}
+  </tbody>
 </table>
 {% endif %}
