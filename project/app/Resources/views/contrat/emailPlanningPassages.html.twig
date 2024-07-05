@@ -1,28 +1,12 @@
-Bonjour,  %0A%0A
-
-{% for etablissement in contrat.etablissements %}
+Bonjour,
 
 Dans le cadre du contrat n°{{ contrat.numeroArchive }}, nous vous prions de bien vouloir trouver ci-dessous un planning annuel prévisionnel des interventions pour la période {{ contrat.dateDebut | date('Y')}}/{{ contrat.dateFin | date('Y')}} sur votre établissement.
 
+{% for passage in passages %}
+- {{ passage.dateDebut | localizeddate('full', 'none') | capitalize }} à {{ passage.timeDebut}} {% if passage.realise %}| (Réalisé) {% endif %}%0A
 {% endfor %}
-
-%0A%0A
-
-{% for contratPassage in contrat.contratPassages %}
-
-{% for passage in contratPassage.getPassagesSorted() %}
-
-    - {{ passage.dateDebut | localizeddate('full', 'none') | capitalize }} à {{ passage.timeDebut}} {% if passage.realise %}| (Réalisé) {% endif %} %0A
-{% endfor %}
-{% endfor %}
-
-%0A%0A
 
 Nous vous remercions de bien vouloir confirmer ces dates par retour de mail dans les meilleurs délais et restons à votre disposition pour tout compléments d’informations.
 
-%0A%0A
-
-
 Cordialement,
-%0D%0A
 Service planification,
