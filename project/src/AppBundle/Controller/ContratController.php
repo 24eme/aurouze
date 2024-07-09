@@ -414,7 +414,7 @@ class ContratController extends Controller {
         $passages = [];
         foreach ($contrat->getEtablissements() as $etablissement) {
             if ($passagesEtablissement = $contrat->getPassagesEtablissementNode($etablissement)) {
-                $passages = $passagesEtablissement->getPassagesDateSorted(true);
+                $passages = $passagesEtablissement->getPassagesDateSorted();
             }
         }
         $passagesHistories = [];
