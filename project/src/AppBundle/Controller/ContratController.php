@@ -449,7 +449,7 @@ class ContratController extends Controller {
         $mailtoPassages = [];
         foreach ($contrat->getEtablissements() as $etablissement) {
             $passagesEtablissement = $contrat->getPassagesEtablissementNode($etablissement);
-            $mailtoPassages[$etablissement->getId()] = html_entity_decode(str_replace("\n", "%0A", strip_tags($this->renderView('contrat/emailPlanningPassages.html.twig', ['contrat' => $contrat, 'passages' => $passagesEtablissement->getPassages()]))), ENT_QUOTES | ENT_XML1, 'UTF-8');
+            $mailtoPassages[$etablissement->getId()] = $this->renderView('contrat/emailPlanningPassages.html.twig', ['contrat' => $contrat, 'passages' => $passagesEtablissement->getPassages()]);
         }
 
         return $this->render('contrat/visualisation.html.twig', array('contrat' => $contrat, 'factures' => $factures, 'societe' => $contrat->getSociete(), 'recapProduits' => $recapProduits, 'lastPassageRealise' => $lastPassageRealise, 'mailtoPassages' => $mailtoPassages));
