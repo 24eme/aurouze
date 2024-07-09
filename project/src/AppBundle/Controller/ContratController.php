@@ -431,7 +431,7 @@ class ContratController extends Controller {
         }
         $filename = sprintf("contrat_%s_bons_suivis_passages.pdf", $contrat->getNumeroArchive());
         $pdfOptions = $this->getPdfGenerationOptions();
-        $pdfOptions['zoom' => 0.8];
+        $pdfOptions['zoom'] = 0.8;
         return new Response(
             $this->get('knp_snappy.pdf')->getOutputFromHtml($html, $pdfOptions), 200, array(
                 'Content-Type' => 'application/pdf',
