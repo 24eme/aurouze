@@ -405,7 +405,7 @@ class ContratController extends Controller {
     }
 
     /**
-     * @Route(/contrat/{id}/pdf-bons-suivi-massif", name="contrat_pdf_bons_suivis_massif")
+     * @Route("/contrat/{id}/pdf-bons-suivi-massif", name="contrat_pdf_bons_suivis_massif")
      * @ParamConverter("contrat", class="AppBundle:Contrat")
      */
     public function pdfBonsSuivisMassifAction(Request $request, Contrat $contrat) {
