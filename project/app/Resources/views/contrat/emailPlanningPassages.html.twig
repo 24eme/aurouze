@@ -3,7 +3,7 @@ Bonjour,
 Dans le cadre du contrat n°{{ contrat.numeroArchive }}, nous vous prions de bien vouloir trouver ci-dessous un planning annuel prévisionnel des interventions pour la période {{ contrat.dateDebut | date('Y')}}/{{ contrat.dateFin | date('Y')}} sur votre établissement.
 %0D%0A%0D%0A
 {% for passage in passages %}
-- {{ passage.dateDebut | localizeddate('full', 'none') | capitalize }} à {{ {{passage.dateDebut | date("H") }}h{{passage.dateDebut | date("i") }} {% if passage.realise %}| (Réalisé) {% endif %}%0D%0A
+- {{ passage.dateDebut | localizeddate('full', 'none') | capitalize }} à {{passage.dateDebut | date("H") }}h{{passage.dateDebut | date("i") }} {% if passage.realise %}| (Réalisé) {% endif %}%0D%0A
 {% endfor %}
 %0D%0A
 Nous vous remercions de bien vouloir confirmer ces dates par retour de mail dans les meilleurs délais et restons à votre disposition pour tout compléments d'informations.
