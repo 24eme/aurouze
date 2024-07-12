@@ -165,7 +165,7 @@
                 			<a href="{{ path('passage_etablissement', { 'id': etablissement.id }) }}">{{ etablissement.getNom(false) }} - {{ etablissement.adresse.intitule }}</a>
                         </div>
                         <div class="col-xs-3">
-                            <a href="mailto:{{ etablissement.contactCoordonnee.email }}?subject=Proposition de planning - {{ etablissement.nom }} : contrat n°{{ contrat.numeroArchive }}&body={{ mailtoPassages[etablissement.id] }}" class="btn btn-block btn-xs btn-default"><i class="glyphicon glyphicon-envelope"></i> Envoyer le planning par email</a><br />
+                            <a href="mailto:{{ etablissement.contactCoordonnee.email }}?subject=Planning annuel {{ contrat.dateDebut | date('Y')}}/{{ contrat.dateFin | date('Y')}} - {{ etablissement.nom }}, {{ etablissement.adresse.intitule }} : contrat n°{{ contrat.numeroArchive }}&body={{ mailtoPassages[etablissement.id] }}" class="btn btn-block btn-xs btn-default"><i class="glyphicon glyphicon-envelope"></i> Envoyer le planning par email</a><br />
                         </div>
                         <div class="col-xs-2">
                         	<a href="{{ path('passage_creation', {'id_contrat': contrat.id, 'id_etablissement': etablissement.id })}}" class="btn btn-block btn-xs btn-default">Créer un passage</a>
