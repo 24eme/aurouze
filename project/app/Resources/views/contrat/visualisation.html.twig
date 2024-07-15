@@ -43,6 +43,7 @@
                 {%  if (contrat.isEnAttenteAcceptation() or contrat.isBrouillon()) %}
                     <li><a href="{{ path('contrat_suppression', {'id': contrat.getId()}) }}" class="btn-sm" onclick="return confirm('Êtes-vous sûre de vouloir supprimer le contrat n° '+{{ contrat.numeroArchive }}+'?');"><span class="glyphicon glyphicon-remove"></span>&nbsp;Supprimer</a></li>
                 {%  endif %}
+                <li><a href="{{ path('contrat_pdf_bons_suivis_massif', {'id': contrat.getId()}) }}" class="btn-sm" ><span class="glyphicon glyphicon-file"></span> PDF bons/suivis</a></li>
             </ul>
             </div>
         </div>
