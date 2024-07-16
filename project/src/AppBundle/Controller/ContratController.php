@@ -485,7 +485,9 @@ class ContratController extends Controller {
         $mailtoPassages = [];
         foreach ($contrat->getEtablissements() as $etablissement) {
             $passagesEtablissement = $contrat->getPassagesEtablissementNode($etablissement);
-            $mailtoPassages[$etablissement->getId()] = $this->renderView('contrat/emailPlanningPassages.html.twig', ['contrat' => $contrat, 'passages' => $passagesEtablissement->getPassages()]);
+            if ($passagesEtablissement) {
+                $mailtoPassages[$etablissement->getId()] = $this->renderView('contrat/emailPlanningPassages.html.twig', ['contrat' => $contrat, 'passages' => $passagesEtablissement->getPassages()]);
+            }
         }
 
         return $this->render('contrat/visualisation.html.twig', array('contrat' => $contrat, 'factures' => $factures, 'societe' => $contrat->getSociete(), 'recapProduits' => $recapProduits, 'lastPassageRealise' => $lastPassageRealise, 'mailtoPassages' => $mailtoPassages));
