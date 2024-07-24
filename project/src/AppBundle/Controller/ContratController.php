@@ -143,8 +143,8 @@ class ContratController extends Controller {
                     $contrat->addContratPassage($etbN,$contratPassages);
                 }
 
-                if ($formValues['factures']) {
-                    foreach ($factures as $facture) {
+                foreach ($factures as $facture) {
+                    if (isset($formValues['facture_'.$facture->getNumeroFacture()]) && $formValues['facture_'.$facture->getNumeroFacture()]) {
                         $facture->setSociete($formValues['societe']);
                     }
                 }
