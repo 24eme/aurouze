@@ -21,7 +21,9 @@
                 </td>
                 <td>
                     <a href="{{ path('attachement_download', { id: attachement.id })}}">
-            <p><span class="glyphicon glyphicon-download-alt"></span>&nbsp;{% if attachement.titre %}{{ attachement.titre }}{% else %}{{ attachement.originalName }}{% endif %}</p></a>
+            <p style="display:inline-block;"><span class="glyphicon glyphicon-download-alt"></span>&nbsp;{% if attachement.titre %}{{ attachement.titre }}{% else %}{{ attachement.originalName }}{% endif %}</p></a>
+
+            <a style="margin-left:5px" href="{{ path('attachement_modification', { id: attachement.id} )}}"><span class="glyphicon glyphicon-pencil"></span></a>
                 </td>
                 <td>
                 {% if attachement.societe %}
