@@ -144,7 +144,9 @@ class ContratController extends Controller {
                 }
 
                 foreach ($factures as $facture) {
-                    $facture->setSociete($formValues['societe']);
+                    if (isset($formValues['facture_'.$facture->getNumeroFacture()]) && $formValues['facture_'.$facture->getNumeroFacture()]) {
+                        $facture->setSociete($formValues['societe']);
+                    }
                 }
 
                 foreach ($contrat->getMouvements() as $mouvement) {
@@ -482,7 +484,15 @@ class ContratController extends Controller {
             }
         }
 
-        return $this->render('contrat/visualisation.html.twig', array('contrat' => $contrat, 'factures' => $factures, 'societe' => $contrat->getSociete(), 'recapProduits' => $recapProduits, 'lastPassageRealise' => $lastPassageRealise));
+        $mailtoPassages = [];
+        foreach ($contrat->getEtablissements() as $etablissement) {
+            $passagesEtablissement = $contrat->getPassagesEtablissementNode($etablissement);
+            if ($passagesEtablissement) {
+                $mailtoPassages[$etablissement->getId()] = $this->renderView('contrat/emailPlanningPassages.html.twig', ['contrat' => $contrat, 'passages' => $passagesEtablissement->getPassages()]);
+            }
+        }
+
+        return $this->render('contrat/visualisation.html.twig', array('contrat' => $contrat, 'factures' => $factures, 'societe' => $contrat->getSociete(), 'recapProduits' => $recapProduits, 'lastPassageRealise' => $lastPassageRealise, 'mailtoPassages' => $mailtoPassages));
     }
 
     /**

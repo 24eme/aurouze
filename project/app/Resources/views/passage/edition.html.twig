@@ -97,7 +97,11 @@
                   </div>
                   <div class="row">
                       <div class="col-xs-10">
-                          {{ form_row(form.emailTransmission) }}
+                          <div class="form-group">
+                              {{ form_label(form.emailTransmission) }}<br/>
+                              <small class="text-muted">Plusieurs emails possibles, séparés par une virgule (<kbd>,</kbd>)</small>
+                              {{ form_widget(form.emailTransmission) }}
+                          </div>
                       </div>
                   </div>
                   <div class="row">

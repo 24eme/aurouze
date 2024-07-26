@@ -409,8 +409,9 @@
         });
     }
 
-    $.initDatePicker = function () {
-        $('.datepicker').datepicker({autoclose: true, todayHighlight: true, toggleActive: true, language: "fr"});
+    $.initDatePicker = function (el = null) {
+        var elements = el ? el.find('.datepicker') : $('.datepicker')
+        elements.datepicker({autoclose: true, todayHighlight: true, toggleActive: true, language: "fr"});
     }
 
     $.initDatePickerMonthDate = function () {
@@ -436,8 +437,9 @@
 	        });
     }
 
-    $.initTimePicker = function () {
-        $('.input-timepicker').each(function () {
+    $.initTimePicker = function (el = null) {
+        var elements = el ? el.find('.input-timepicker') : $('.input-timepicker')
+        elements.each(function () {
             var defaultTiming = ($(this).attr('data-default')) ? $(this).attr('data-default') : '';
             $(this).timepicker({
                 format: 'HH:ii p',
@@ -477,7 +479,7 @@
                 $(e.delegateTarget).remove();
             });
             $(item).find('input, select').eq(0).focus();
-            $.callbackDynamicCollection();
+            $.callbackDynamicCollection($(item));
 
             if (item[0].dataset.repeat !== undefined && item[0].dataset.repeat.length > 0 && item[0].previousElementSibling) {
                 const el = item[0]
@@ -520,11 +522,12 @@
         });
     }
 
-    $.callbackDynamicCollection = function () {
-        $.initSelect2();
-        $.initSelect2Ajax();
-        $.initDatePicker();
-        $.initTimePicker();
+    $.callbackDynamicCollection = function (el = null) {
+        $.initSelect2(el);
+        $.initSelect2Ajax(el);
+        $.initDatePicker(el);
+        $.initTimePicker(el);
+
         $.initTypeheadFacture();
     }
 
@@ -577,8 +580,9 @@
                 }
         );
     };
-    $.initSelect2 = function () {
-        $('.select2-simple').each(function () {
+    $.initSelect2 = function (el = null) {
+        var elements = el ? el.find('.select2-simple') : $('.select2-simple')
+        elements.each(function () {
             $(this).select2({
                 theme: 'bootstrap',
                 allowClear: true
@@ -586,8 +590,9 @@
         });
     }
 
-    $.initSelect2Ajax = function () {
-        $('.select2-ajax').each(function () {
+    $.initSelect2Ajax = function (el = null) {
+        var elements = el ? el.find('.select2-ajax') : $('.select2-ajax')
+        elements.each(function () {
             var urlComponent = $(this).attr('data-url') + "?";
             if ($(this).attr('data-nonactif') == '1') {
                 urlComponent += "nonactif=1";

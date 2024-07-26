@@ -17,11 +17,13 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 class ContratTransfertType extends AbstractType {
 
     protected $contrat;
+    protected $factures;
     protected $dm;
-    
+
     public function __construct(Contrat $c, DocumentManager $documentManager) {
         $this->contrat = $c;
         $this->dm = $documentManager;
+        $this->factures = $this->dm->getRepository('AppBundle:Facture')->findAllByContrat($c);
     }
 
     /**
@@ -29,8 +31,22 @@ class ContratTransfertType extends AbstractType {
      * @param array $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options) {
-        $builder->add('factures', CheckboxType::class, array('label' => 'Transférer les factures égalements', 'required' => false, 'data' => true, 'label_attr' => array('class' => 'control-label')));
-        $builder->add('documents', CheckboxType::class, array('label' => 'Transférer les documents de l\' établissement égalements', 'required' => false, 'data' => false, 'label_attr' => array('class' => 'control-label')));
+        foreach ($this->factures as $facture) {
+            $type_facture = 'la facture';
+            if ($facture->isDevis()) {
+                $type_facture = 'le devis';
+            }
+            if ($facture->isAvoir()) {
+                $type_facture = "l'avoir";
+            }
+            $builder->add('facture_'.$facture->getNumeroFacture(), CheckboxType::class, [
+                'label' => "Transférer $type_facture ". $facture->getNumeroFacture(),
+                'required' => false,
+                'data' => true,
+                'label_attr' => ['class' => 'control-label']
+            ]);
+        }
+        $builder->add('documents', CheckboxType::class, array('label' => 'Transférer également les documents de l\'établissement', 'required' => false, 'data' => false, 'label_attr' => array('class' => 'control-label')));
         $builder->addEventListener(FormEvents::PRE_SET_DATA, array($this, 'onPreSetData'));
         $builder->addEventListener(FormEvents::PRE_SUBMIT, array($this, 'onPreSubmit'));
     }
