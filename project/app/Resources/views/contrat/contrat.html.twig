@@ -165,7 +165,9 @@
                 			<a href="{{ path('passage_etablissement', { 'id': etablissement.id }) }}">{{ etablissement.getNom(false) }} - {{ etablissement.adresse.intitule }}</a>
                         </div>
                         <div class="col-xs-3">
-                            <a href="mailto:{{ etablissement.contactCoordonnee.email }}?subject=Proposition de planning  - {{ etablissement.nom }} : contrat n°{{ contrat.numeroArchive }}&body={{ include('contrat/emailPlanningPassages.html.twig')}}" class="btn btn-block btn-xs btn-default"><i class="glyphicon glyphicon-envelope"></i> Envoyer le planning par email</a><br />
+                            {% if mailtoPassages[etablissement.id] is defined %}
+                              <a href="mailto:{{ etablissement.contactCoordonnee.email }}?subject=Planning annuel {{ contrat.dateDebut | date('Y')}}/{{ contrat.dateFin | date('Y')}} - {{ etablissement.nom }}, {{ etablissement.adresse.intitule }}&body={{ mailtoPassages[etablissement.id] }}" class="btn btn-block btn-xs btn-default"><i class="glyphicon glyphicon-envelope"></i> Envoyer le planning par email</a><br />
+                            {% endif %}
                         </div>
                         <div class="col-xs-2">
                         	<a href="{{ path('passage_creation', {'id_contrat': contrat.id, 'id_etablissement': etablissement.id })}}" class="btn btn-block btn-xs btn-default">Créer un passage</a>
@@ -280,7 +282,10 @@
         {% for facture in factures %}
             {% for mouvement in facture.lignes %}
                 <tr>
-                    <td>{% if mouvement.quantite < 0 %}{{ mouvement.libelle|replace({'Facture': 'Avoir'}) }}{% else %}{{ mouvement.libelle }}{% endif %}</td>
+                    <td>
+                        {% if mouvement.quantite < 0 %}{{ mouvement.libelle|replace({'Facture': 'Avoir'}) }}{% else %}{{ mouvement.libelle }}{% endif %}
+                            {% if facture.societe != contrat.societe %}<br /><small>Facturé à la société : <a href="{{ path('facture_societe', {'id': facture.societe.id}) }}">{{ facture.destinataire.nom }}</a></small>{% endif %}
+                    </td>
                     <td class="text-right">{{ facture.dateFacturation | localizeddate("medium", "none", null, null, "d MMM yyyy") }}</td>
                     <td class="text-center"><a href="{{ path('facturable_pdf', {'document': facture.id ,'key': facture.getSecretKey()})}}"><span class="glyphicon glyphicon-file"></span>&nbsp;{{ facture.numeroFacture }}</a></td>
                     {% set montant = mouvement.montantHT %}

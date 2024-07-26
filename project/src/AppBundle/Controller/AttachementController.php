@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Type\AttachementNameType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -232,5 +233,38 @@ class AttachementController extends Controller {
           return $this->redirectToRoute('attachements_etablissement', array('id' => $etablissement->getId()));
       }
   }
+
+    /**
+   * @Route("/etablissement/attachement/{id}/modification", name="attachement_modification")
+   */
+    public function attachementModificationAction(Request $request, $id) {
+        $dm = $this->get('doctrine_mongodb')->getManager();
+
+        $attachement = $dm->getRepository('AppBundle:Attachement')->findOneById($request->get('id'));
+        $societe = $attachement->getSociete();
+        $etablissement = $attachement->getEtablissement();
+
+        $form = $this->createForm(new AttachementNameType($dm), $attachement);
+
+        if($request->isMethod('POST')) {
+            $form->handleRequest($request);
+
+            if($form->isSubmitted() && $form->isValid()) {
+                $attachement = $form->getData();
+                $dm->flush();
+
+                if(!is_null($societe)) {
+                return $this->redirectToRoute('attachements_societe', array('id' => $societe->getId()));
+
+                }elseif (!is_null($etablissement)) {
+                    return $this->redirectToRoute('attachements_etablissement', array('id' => $etablissement->getId()));
+
+                }else{
+                    return $this->redirectToRoute('attachements_last');
+                }
+            }
+        }
+        return $this->render('attachement/modification.html.twig', array('form' => $form->createView()));
+    }
 
 }

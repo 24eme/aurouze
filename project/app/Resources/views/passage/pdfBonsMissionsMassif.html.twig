@@ -1,0 +1,12 @@
+{% extends 'base_pdf.html.twig' %}
+
+{% block body %}
+    {% for passage in passages %}
+        <div style="page-break-after: always;">
+            {% include 'passage/pdfBonsStandalone.html.twig' with {'passage': passage, 'parameters': parameters} %}
+        </div>
+        <div style="page-break-after: always;">
+            {% include 'passage/pdfMissionStandalone.html.twig' with {'passage': passage, 'passagesHistory': passagesHistories[passage.id]} %}
+        </div>
+    {% endfor %}
+{% endblock %}

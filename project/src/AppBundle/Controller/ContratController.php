@@ -144,7 +144,9 @@ class ContratController extends Controller {
                 }
 
                 foreach ($factures as $facture) {
-                    $facture->setSociete($formValues['societe']);
+                    if (isset($formValues['facture_'.$facture->getNumeroFacture()]) && $formValues['facture_'.$facture->getNumeroFacture()]) {
+                        $facture->setSociete($formValues['societe']);
+                    }
                 }
 
                 foreach ($contrat->getMouvements() as $mouvement) {
@@ -405,6 +407,42 @@ class ContratController extends Controller {
     }
 
     /**
+     * @Route("/contrat/{id}/pdf-bons-suivi-massif", name="contrat_pdf_bons_suivis_massif")
+     * @ParamConverter("contrat", class="AppBundle:Contrat")
+     */
+    public function pdfBonsSuivisMassifAction(Request $request, Contrat $contrat) {
+        $fm = $this->get('facture.manager');
+        $pm = $this->get('passage.manager');
+        $passages = [];
+        foreach ($contrat->getEtablissements() as $etablissement) {
+            if ($passagesEtablissement = $contrat->getPassagesEtablissementNode($etablissement)) {
+                $passages = $passagesEtablissement->getPassagesDateSorted();
+            }
+        }
+        $passagesHistories = [];
+        foreach ($passages as $passage) {
+            $passagesHistories[$passage->getId()] = $pm->getRepository()->findHistoriqueByEtablissementAndPrestationsAndNumeroContrat($passage->getContrat(), $passage->getEtablissement(), $passage->getPrestations());
+        }
+        $html = $this->renderView('passage/pdfBonsMissionsMassif.html.twig', array(
+            'passages' => $passages,
+            'passagesHistories' => $passagesHistories,
+            'parameters' => $fm->getParameters(),
+        ));
+        if ($request->get('output') == 'html') {
+            return new Response($html, 200);
+        }
+        $filename = sprintf("contrat_%s_bons_suivis_passages.pdf", $contrat->getNumeroArchive());
+        $pdfOptions = $this->getPdfGenerationOptions();
+        $pdfOptions['zoom'] = 0.8;
+        return new Response(
+            $this->get('knp_snappy.pdf')->getOutputFromHtml($html, $pdfOptions), 200, array(
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="' . $filename . '"'
+            )
+        );
+    }
+
+    /**
      * @Route("/contrat/{id}/visualisation", name="contrat_visualisation")
      * @ParamConverter("contrat", class="AppBundle:Contrat")
      */
@@ -446,7 +484,15 @@ class ContratController extends Controller {
             }
         }
 
-        return $this->render('contrat/visualisation.html.twig', array('contrat' => $contrat, 'factures' => $factures, 'societe' => $contrat->getSociete(), 'recapProduits' => $recapProduits, 'lastPassageRealise' => $lastPassageRealise));
+        $mailtoPassages = [];
+        foreach ($contrat->getEtablissements() as $etablissement) {
+            $passagesEtablissement = $contrat->getPassagesEtablissementNode($etablissement);
+            if ($passagesEtablissement) {
+                $mailtoPassages[$etablissement->getId()] = $this->renderView('contrat/emailPlanningPassages.html.twig', ['contrat' => $contrat, 'passages' => $passagesEtablissement->getPassages()]);
+            }
+        }
+
+        return $this->render('contrat/visualisation.html.twig', array('contrat' => $contrat, 'factures' => $factures, 'societe' => $contrat->getSociete(), 'recapProduits' => $recapProduits, 'lastPassageRealise' => $lastPassageRealise, 'mailtoPassages' => $mailtoPassages));
     }
 
     /**

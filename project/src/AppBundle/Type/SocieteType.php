@@ -132,7 +132,7 @@ class SocieteType extends AbstractType {
         $contrats = $this->dm->getRepository('AppBundle:Contrat')->findBySociete($societe);
 
         $contrats = array_filter($contrats, function (Contrat $c) {
-            return $c->isEnCoursStatutLibelle();
+            return $c->isEnCours();
         });
 
         return count($contrats) > 0;
