@@ -654,14 +654,14 @@ class PassageController extends Controller
         $message = \Swift_Message::newInstance()
             ->setSubject($suject)
             ->setFrom(array($fromEmail => $fromName))
-            ->setTo(explode(";",$passage->getEmailTransmission()))
+            ->setTo(explode(",", $passage->getEmailTransmission()))
             ->setReplyTo($replyEmail)
             ->setBody($body,'text/plain');
 
         if ($passage->getSecondEmailTransmission()) {
-            $emailsTransmissions = explode(";",$passage->getEmailTransmission());
-            $secondEmailsTransmission = explode(";",$passage->getSecondEmailTransmission());
-            $to = array_merge($emailsTransmissions,$secondEmailsTransmission);
+            $emailsTransmissions = explode(",", $passage->getEmailTransmission());
+            $secondEmailsTransmission = explode(",", $passage->getSecondEmailTransmission());
+            $to = array_unique(array_merge($emailsTransmissions, $secondEmailsTransmission));
             $message->setTo($to);
         }
 

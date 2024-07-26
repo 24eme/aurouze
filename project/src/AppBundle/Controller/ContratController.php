@@ -144,7 +144,9 @@ class ContratController extends Controller {
                 }
 
                 foreach ($factures as $facture) {
-                    $facture->setSociete($formValues['societe']);
+                    if (isset($formValues['facture_'.$facture->getNumeroFacture()]) && $formValues['facture_'.$facture->getNumeroFacture()]) {
+                        $facture->setSociete($formValues['societe']);
+                    }
                 }
 
                 foreach ($contrat->getMouvements() as $mouvement) {
