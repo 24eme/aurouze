@@ -1,0 +1,25 @@
+{% extends "base.html.twig" %}
+{% set _menu_active = 'attachements' %}
+{% set societe = form.vars.value.societe %}
+{% set etablissement = form.vars.value.etablissement %}
+
+{% block body %}
+
+<ol class="breadcrumb">
+    <li><a href="{{ path('attachements_last') }}">Documents</a></li>
+    {% if(societe) %}
+        <li><a href="{{ path('attachements_societe',{ 'id' : societe.id }) }}">&nbsp;{{ societe.raisonSociale }} </small></a></li>
+    {% endif %}
+
+    {% if(etablissement) %}
+        <li><a href="{{ path('attachements_etablissement',{ 'id' : etablissement.id }) }}">&nbsp;{{ etablissement.getNom(false) }}&nbsp;<small>{{ etablissement.adresse.intitule }}</small></a></li>
+    {% endif %}
+</ol>
+
+<div style="margin-top:30px">
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    {{ form_end(form) }}
+</div>
+
+{% endblock %}
