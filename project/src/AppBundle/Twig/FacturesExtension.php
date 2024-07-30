@@ -10,7 +10,8 @@ class FacturesExtension extends AbstractExtension
     public function getFilters()
     {
         return [
-            new TwigFilter('sommeRetards', [$this, 'sommeFacturesRetard'])
+            new TwigFilter('sommeRetards', [$this, 'sommeFacturesRetard']),
+            new TwigFilter('sommePaiements', [$this, 'sommePaiements'])
         ];
     }
 
@@ -25,5 +26,10 @@ class FacturesExtension extends AbstractExtension
         }, 0);
 
         return number_format($total - $paye, 2, ',', ' ');
+    }
+
+    public function sommePaiements(array $paiements)
+    {
+        return array_sum(array_column($paiements, 'montant'));
     }
 }

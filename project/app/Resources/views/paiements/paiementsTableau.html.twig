@@ -23,7 +23,7 @@
                   {% endif %}
               </th>
               <th class="clearfix">{{ reglement.libelle }} <span class="badge pull-right" style="background: #F3BFCC; color: #000">{{reglement.factures}}</span></th>
-              <th colspan="3" class="text-right">Total : {{ reglement.montant | number_format(2, ',', ' ') }} €</th>
+              <th colspan="3" class="text-right">Total : {{ paiements.aggregatePaiements | sommePaiements | number_format(2, ',', ' ') }} €</th>
               <th class="text-right">
                   {% if (paiements.isImprime) and regKey == "CHEQUE" %}
                       <a class="btn btn-xs btn-default" href="{{ path('paiements_export_banque', {'id': paiements.id }) }}" title="{% if(paiements.isRemiseEspece) %}Espèce{% else %}{{ paiements.nbPaiementUniqueParMoyen }} chèq.{% endif %}">
