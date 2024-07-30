@@ -30,29 +30,29 @@ class PaiementsController extends Controller {
 
         $paiementsDocs = $this->get('paiements.manager')->getRepository()->findByPeriode($periode);
         $paiementsDocsPrelevement = $this->get('paiements.manager')->getRepository()->findByPeriode($periode,true);
-        $dm = $this->get('doctrine_mongodb')->getManager();
 
-        $tabPaiementsChequesNonTerminé = array();
-        $tabOthersPaiements = array();
         $totalMontantPaye = 0;
+        $sortedPaiements = [];
 
         foreach($paiementsDocs as $paiements){
-            foreach($paiements->getAggregatePaiements() as $k => $v){
-                if(!$paiements->isImprime() && $k == "CHEQUE"){
-                    $tabPaiementsChequesNonTerminé[] =$paiements;
-                }
-                else{
-                    $tabOthersPaiements[] = $paiements;
-                }
+            if (array_key_exists("CHEQUE", $paiements->getAggregatePaiements()) && ! $paiements->isImprime()) {
+                $sortedPaiements[] = $paiements;
             }
-            $totalMontantPaye += $paiements->getMontantTotal();
+        }
+
+        foreach($paiementsDocs as $paiements){
+            if (array_key_exists("CHEQUE", $paiements->getAggregatePaiements()) && ! $paiements->isImprime()) {
+                continue;
+            }
+
+            $sortedPaiements[] = $paiements;
         }
 
         foreach($paiementsDocsPrelevement as $paiements){
             $totalMontantPaye += $paiements->getMontantTotal();
         }
 
-        $paiementsDocs = array_merge($tabPaiementsChequesNonTerminé, $tabOthersPaiements);
+        $paiementsDocs = $sortedPaiements;
         return $this->render('paiements/index.html.twig', array('paiementsDocs' => $paiementsDocs, 'paiementsDocsPrelevement' => $paiementsDocsPrelevement, 'periode' => $periode, 'totalMontantPaye' => $totalMontantPaye));
     }
 
