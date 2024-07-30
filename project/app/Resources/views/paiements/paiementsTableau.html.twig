@@ -22,7 +22,7 @@
                       <span class="glyphicon glyphicon-pushpin pull-right"></span>
                   {% endif %}
               </th>
-              <th class="clearfix">{{ paiements.aggregatePaiements | aggregateTypePaiements }} <span class="badge pull-right" style="background: #F3BFCC; color: #000">{{reglement.factures}}</span></th>
+              <th class="clearfix">{{ paiements.aggregatePaiements | aggregateTypePaiements }} <span class="badge pull-right" style="background: #F3BFCC; color: #000">{{ paiements.aggregatePaiements | sommeFactures }}</span></th>
               <th colspan="3" class="text-right">Total : {{ paiements.aggregatePaiements | sommePaiements | number_format(2, ',', ' ') }} €</th>
               <th class="text-right">
                   {% if (paiements.isImprime) and regKey == "CHEQUE" %}
