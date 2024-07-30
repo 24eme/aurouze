@@ -158,7 +158,7 @@ public static $export_factures_en_retards = array(
 
     public function findBySociete(Societe $societe) {
 
-        return $this->getRepository()->findBy(array('societe' => $societe->getId()), array('dateEmission' => 'desc'));
+        return $this->getRepository()->findBy(array('societe' => $societe->getId()), array('dateFacturation' => 'desc'));
     }
 
     public function createVierge(Societe $societe, $contrat = null) {
@@ -194,15 +194,15 @@ public static $export_factures_en_retards = array(
       if ($this->getZone($facture, $contrat) === ContratManager::ZONE_SEINE_ET_MARNE) {
 
           if (array_key_exists('emetteur_SEINE_ET_MARNE', $parameters) === false) {
-            
+
               throw new \Exception(sprintf("Contrat : %s ou Facture : %s a une zone 77 alors que la région n'est pas configuré",
               ($contrat) ? $contrat->_id : '', $facture->_id
-            )); 
-            
+            ));
+
           }
           $emetteur = 'emetteur_SEINE_ET_MARNE';
-          
-         
+
+
       }
 
       $facture->getEmetteur()->setNom($parameters[$emetteur]['nom']);
