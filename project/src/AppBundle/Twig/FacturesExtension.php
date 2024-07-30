@@ -11,7 +11,8 @@ class FacturesExtension extends AbstractExtension
     {
         return [
             new TwigFilter('sommeRetards', [$this, 'sommeFacturesRetard']),
-            new TwigFilter('sommePaiements', [$this, 'sommePaiements'])
+            new TwigFilter('sommePaiements', [$this, 'sommePaiements']),
+            new TwigFilter('aggregateTypePaiements', [$this, 'aggregateTypePaiements'])
         ];
     }
 
@@ -31,5 +32,10 @@ class FacturesExtension extends AbstractExtension
     public function sommePaiements(array $paiements)
     {
         return array_sum(array_column($paiements, 'montant'));
+    }
+
+    public function aggregateTypePaiements(array $paiements)
+    {
+        return implode(", ", array_column($paiements, 'libelle'));
     }
 }
