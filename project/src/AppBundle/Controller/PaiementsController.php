@@ -37,7 +37,8 @@ class PaiementsController extends Controller {
         foreach($paiementsDocs as $paiements){
             if (array_key_exists("CHEQUE", $paiements->getAggregatePaiements()) && ! $paiements->isImprime()) {
                 $sortedPaiements[] = $paiements;
-            }
+                $totalMontantPaye += $paiements->getMontantTotal();
+           }
         }
 
         foreach($paiementsDocs as $paiements){
@@ -46,6 +47,7 @@ class PaiementsController extends Controller {
             }
 
             $sortedPaiements[] = $paiements;
+            $totalMontantPaye += $paiements->getMontantTotal();
         }
 
         foreach($paiementsDocsPrelevement as $paiements){
