@@ -169,6 +169,14 @@ class PassageRepository extends BaseRepository {
         return $resultSet;
     }
 
+    public function findByNumeroArchive($q) {
+        return $this->createQueryBuilder()
+                        ->field('numeroArchive')
+                        ->equals($q)
+                        ->getQuery()
+                        ->getIterator();
+    }
+
     public function findTechniciens() {
         $techniciens = array();
         $date = new \DateTime();

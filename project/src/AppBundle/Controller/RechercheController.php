@@ -30,6 +30,7 @@ class RechercheController extends Controller {
 							"Facture" => "Facture",
 							"Devis" => "Devis",
 							"Paiements" => "Paiements",
+                            "Passage" => "Passage",
 						);
 
 		$resultats = array();
@@ -37,6 +38,8 @@ class RechercheController extends Controller {
 		foreach($searchable as $collection => $libelle) {
 			if ($collection == 'Paiements') {
 				$items = $dm->getRepository('AppBundle:'.$collection)->findPaiementByQuery($query);
+            } elseif ($collection == 'Passage') {
+				$items = $dm->getRepository('AppBundle:'.$collection)->findByNumeroArchive($query);
 			}elseif ($collection == 'Facture') {
 				$items = $dm->getRepository('AppBundle:'.$collection)->findByQuery($query);
 				foreach ($items as $item) {

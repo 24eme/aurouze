@@ -102,6 +102,7 @@ class AttachementController extends Controller {
       } else { // visu tous les documents
           $attachements = $attachementRepository->getSocieteAndEtablissements($societe);
       }
+      uasort($attachements, array("AppBundle\Document\Attachement", "cmpUpdateAt"));
 
       $form = $this->createForm(new AttachementType($dm), $attachement, array(
               'action' => $urlForm,
