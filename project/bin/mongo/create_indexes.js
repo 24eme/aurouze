@@ -13,7 +13,7 @@ db.Societe.dropIndexes();
 db.Attachement.chunks.createIndex({"files_id":1,"n":1}, {"unique":true});
 db.Attachement.files.createIndex({"etablissement":1}, {"background":true});
 db.Attachement.files.createIndex({"societe":1}, {"background":true});
-db.Attachement.files.createIndex({"updatedAt": 1}, {"background": true});
+db.Attachement.files.createIndex({"updatedAt":1, "_id":1}, {"background":true});
 db.Compte.createIndex({"_fts":"text","_ftsx":1}, {"default_language":"french","weights":{"$**":1},"language_override":"language","textIndexVersion":3});
 db.Compte.createIndex({"tags.identifiant":1}, {"background":true});
 db.Compte.createIndex({"societe":1}, {"background":true});
