@@ -338,7 +338,7 @@ class PassageRepository extends BaseRepository {
 
       return array_filter($passages->toArray(), function ($passage) use ($confirme) {
           if ($confirme === true) {
-            return $passage->getRendezVous()->getRendezVousConfirme() === $confirme;
+            return $passage->getRendezVous() && $passage->getRendezVous()->getRendezVousConfirme() === $confirme;
           }
 
           // on retourne tous les passages sinon
