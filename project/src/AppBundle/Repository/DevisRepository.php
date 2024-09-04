@@ -41,7 +41,7 @@ class DevisRepository extends BaseRepository {
 
     return array_filter($devis->toArray(), function ($d) use ($confirme) {
         if ($confirme === true) {
-            return $d->getRendezVous()->getRendezVousConfirme() === $confirme;
+            return $d->getRendezVous() && $d->getRendezVous()->getRendezVousConfirme() === $confirme;
         }
 
         // on retourne tous les passages sinon
