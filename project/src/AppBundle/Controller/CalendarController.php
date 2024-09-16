@@ -205,9 +205,25 @@ class CalendarController extends Controller {
         $technicien = $dm->getRepository('AppBundle:Compte')->findOneById($request->get('technicien'));
         $rdv = $rvm->createFromPlanifiable($planifiable);
 
+        if($planifiable->getTypePlanifiable() != Devis::DOCUMENT_TYPE) {
+            $contrat = $rdv->getPassage()->getContrat();
+            $numeroPassage = $rdv->getPassage()->getNumeroPassage();
+            $numeroAuditPassage = $contrat->getAuditPassage();
+            $commercialId = $contrat->getCommercial()->getId();
+            $commercial = $dm->getRepository('AppBundle:Compte')->findOneById($commercialId);
+        }
+
         $rdv->setDateDebut(new \DateTime($request->get('start')));
         $rdv->setDateFin(new \DateTime($request->get('end')));
         $rdv->removeAllParticipants();
+
+
+        if($planifiable->getTypePlanifiable() != Devis::DOCUMENT_TYPE)  {
+            if($numeroPassage == $numeroAuditPassage) {
+                $rdv->addParticipant($commercial);
+            }
+        }
+
         $rdv->addParticipant($technicien);
 
         $dm->persist($rdv);
