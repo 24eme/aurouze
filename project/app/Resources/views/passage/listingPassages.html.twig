@@ -113,6 +113,9 @@
 			{% if passage.multiTechnicien > 1 %}<i class="mdi mdi-group mdi-lg"></i>{% else %}<i class="mdi mdi-face mdi-lg"></i>{% endif %}
 			{% for technicien in passage.techniciens %}
 				{{ technicien.identite }}
+                {% if passage.audit and contrat.commercial.identite not in passage.techniciens %}
+                    {{ contrat.commercial.identite }}
+                {% endif %}
 			{% endfor %}
 		</div>
 		<div class="col-xs-2 text-right">
