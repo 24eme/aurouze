@@ -182,7 +182,7 @@
                                           data-container="body"
   																				class="fc-time-grid-event fc-v-event fc-event fc-start fc-end toggle-tooltip"
   																				nb="{{ eventsDates[date]|keys|length }}" data-toggle="modal" data-remote="false" data-target="#modal-calendrier-infos" href="{{path('calendarRead', { 'id': event.id, 'service': app.request.uri })}}"
-                                          title="{{ event.resume }}" ><small style="word-wrap: break-word;">{{ event.resume }}</small>
+                                          title="{{ event.resume }}" ><small style="word-wrap: break-word;"></small>
   																			</a>
   																			{% endfor %}
                                         <a style="
