@@ -11,6 +11,10 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use AppBundle\Transformer\ProduitTransformer;
 
@@ -65,9 +69,16 @@ class PassageType extends AbstractType
         $builder->get('applications')->resetViewTransformers();
 
         $builder->add('commentaireInterne', TextareaType::class, array('label' => 'Commentaire interne (non transmis au client) :', 'required' => false, "attr" => array("class" => "form-control", "rows" => 3)));
-        $builder->add('emailTransmission', EmailType::class, array('label' => 'Email * :','required' => false, 'attr' => array("placeholder" => 'Email de transmission', 'multiple' => '')));
+        $builder->add('emailTransmission', TextType::class, array(
+            'label' => 'Email * :',
+            'required' => false,
+            'attr' => array("placeholder" => 'Email de transmission', 'multiple' => ''),
+            'constraints' => [new Assert\Callback([$this, 'validateEmails'])]
+        ));
         $builder->add('secondEmailTransmission', EmailType::class, array('label' => 'Second Email :','required' => false, 'attr' => array("placeholder" => 'Second email de transmission')));
         $builder->add('nomTransmission', TextType::class, array('label' => 'Nom :', 'required' => false, 'attr' => array("placeholder" => 'Nom du responsable')));
+
+        $builder->addEventListener(FormEvents::PRE_SUBMIT, [$this, 'onPreSubmit']);
     }
 
     /**
@@ -78,6 +89,40 @@ class PassageType extends AbstractType
         $resolver->setDefaults(array(
             'data_class' => 'AppBundle\Document\Passage'
         ));
+    }
+
+    public function validateEmails($values, ExecutionContextInterface $context)
+    {
+        if (! $values) { return true; }
+        $emails = explode(';', $values);
+        $emails = array_filter($emails, 'strlen'); // pas d'email vide
+
+        $bad = array_filter($emails, function ($email) {
+            return filter_var(trim($email), FILTER_VALIDATE_EMAIL) === false;
+        });
+
+        if (count($bad) > 0) {
+            $context->buildViolation("Un ou plusieurs emails invalides : {{ emails }}")
+                    ->setParameter('{{ emails }}', implode(', ', $bad))
+                    ->atPath('emailTransmission')
+                    ->addViolation();
+        }
+    }
+
+    public function onPreSubmit(FormEvent $event)
+    {
+        $passage = $event->getData();
+
+        if (! $passage) {
+            return;
+        }
+
+        $emails = explode(';', $passage['emailTransmission']);
+        $emails = array_filter($emails, 'strlen'); // pas d'email vide
+        $emails = array_map('trim', $emails);
+
+        $passage['emailTransmission'] = implode(';', $emails);
+        $event->setData($passage);
     }
 
     /**
