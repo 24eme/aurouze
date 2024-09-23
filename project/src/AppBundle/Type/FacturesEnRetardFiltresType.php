@@ -39,7 +39,7 @@ class FacturesEnRetardFiltresType extends AbstractType {
 						        "required" => false,
                 		"attr" => array("class" => "select2 select2-simple nbRelance")));
 		$builder->add('dateFactureBasse', DateType::class, array('required' => false,
-                        "label" => "Du",
+                        "label" => "Date limite de règlement : Du",
                 		"attr" => array('class' => 'input-inline datepicker dateFactureBasse',
                 				'data-provide' => 'datepicker',
                 				'data-date-format' => 'dd/mm/yyyy'
