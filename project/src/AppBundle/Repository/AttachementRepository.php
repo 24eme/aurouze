@@ -28,7 +28,7 @@ class AttachementRepository extends BaseRepository {
              ->field('etablissement')->prime(true)
              ->field('societe')->prime(true)
              ->limit(10)
-             ->sort(array('_id' => -1))
+             ->sort(array('updatedAt' => -1, '_id' => -1))
              ->getQuery()
              ->execute();
     }

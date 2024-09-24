@@ -2,6 +2,8 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Document\ContratPassages;
+use AppBundle\Document\RendezVous;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -237,7 +239,7 @@ class ContratController extends Controller {
             if ($contrat->isEnAttenteAcceptation() && !$isBrouillon && $contrat->getDateDebut()) {
                 $contratManager->generateAllPassagesForContrat($contrat);
                 $dateFin = clone $contrat->getDateDebut();
-                $dateFin = $dateFin->modify("+" . $contrat->getDuree() . " month");
+                $dateFin = $dateFin->modify("+" . $contrat->getDuree() . " month -1 day");
                 $contrat->setDateFin($dateFin);
                 $contrat->setStatut(ContratManager::STATUT_EN_COURS);
                 $dm->persist($contrat);
@@ -263,6 +265,22 @@ class ContratController extends Controller {
             $dm->flush();
             return $this->redirectToRoute('contrat_visualisation', array('id' => $contrat->getId()));
         }
+
+        if ($contrat->getAuditPassage() != null && is_int($contrat->getAuditPassage())) {
+            $numeroAuditPassage = $contrat->getAuditPassage();
+            foreach ($contrat->getContratPassages() as $contratPassages) {
+                foreach ($contratPassages->getPassages() as $passage) {
+                    $passage->setAudit(null);
+                    $numeroPassage = $passage->getNumeroPassage();
+                    if ($numeroAuditPassage == $numeroPassage) {
+                        $passage->setAudit(true);
+                        $dm->persist($passage);
+                        $dm->flush();
+                    }
+                }
+            }
+        }
+
         $factures = $contratManager->getAllFactureForContrat($contrat);
         return $this->render('contrat/acceptation.html.twig', array('contrat' => $contrat, 'factures' => $factures, 'form' => $form->createView(), 'societe' => $contrat->getSociete()));
     }

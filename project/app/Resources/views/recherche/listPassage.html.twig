@@ -12,7 +12,7 @@
     </thead>
     <tbody>
         {% for item in items %}
-            {% set passage = item.doc %}
+            {% set passage = item %}
             <tr>
                 <td><a data-toggle="modal" data-remote="false"
     				data-target="#modal-calendrier-infos" href="{{ path('passage_visualisation', { 'id': passage.id }) }}">n°&nbsp;{{ passage.numeroArchive }}</a></td>

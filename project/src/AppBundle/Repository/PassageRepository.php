@@ -169,6 +169,14 @@ class PassageRepository extends BaseRepository {
         return $resultSet;
     }
 
+    public function findByNumeroArchive($q) {
+        return $this->createQueryBuilder()
+                        ->field('numeroArchive')
+                        ->equals($q)
+                        ->getQuery()
+                        ->getIterator();
+    }
+
     public function findTechniciens() {
         $techniciens = array();
         $date = new \DateTime();
@@ -330,7 +338,7 @@ class PassageRepository extends BaseRepository {
 
       return array_filter($passages->toArray(), function ($passage) use ($confirme) {
           if ($confirme === true) {
-            return $passage->getRendezVous()->getRendezVousConfirme() === $confirme;
+            return $passage->getRendezVous() && $passage->getRendezVous()->getRendezVousConfirme() === $confirme;
           }
 
           // on retourne tous les passages sinon

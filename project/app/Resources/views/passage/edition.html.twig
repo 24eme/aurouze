@@ -99,7 +99,8 @@
                       <div class="col-xs-10">
                           <div class="form-group">
                               {{ form_label(form.emailTransmission) }}<br/>
-                              <small class="text-muted">Plusieurs emails possibles, séparés par une virgule (<kbd>,</kbd>)</small>
+                              <small class="text-muted">Plusieurs emails possibles, séparés par un point virgule (<kbd>;</kbd>)</small>
+                              {{ form_errors(form.emailTransmission) }}
                               {{ form_widget(form.emailTransmission) }}
                           </div>
                       </div>

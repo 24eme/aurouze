@@ -88,6 +88,13 @@
                 {% endif %}
                 <span class="glyphicon glyphicon-pencil"></span>
                 </a>
+
+                {% if (passage.isAPlanifie or passage.isAnnule) %}
+                <a class="btn btn-link btn-xs" href="{{ path('passage_suppression', {'id': passage.id }) }}" onclick="return confirm('Confirmez-vous la suppression de ce passage ?')">
+                <span class="glyphicon glyphicon-trash" style="color:grey"></span>
+                </a>
+                {% endif %}
+
             {% if (passage.audit) %} <span class="glyphicon glyphicon-user text-danger" data-toggle="tooltip" data-placement="top" title="Audit {{ passage.audit }}">&nbsp;</span>{% endif %}
         </div>
 		<div class="col-xs-2">
@@ -106,6 +113,9 @@
 			{% if passage.multiTechnicien > 1 %}<i class="mdi mdi-group mdi-lg"></i>{% else %}<i class="mdi mdi-face mdi-lg"></i>{% endif %}
 			{% for technicien in passage.techniciens %}
 				{{ technicien.identite }}
+                {% if passage.audit and contrat.commercial.identite not in passage.techniciens %}
+                    {{ contrat.commercial.identite }}
+                {% endif %}
 			{% endfor %}
 		</div>
 		<div class="col-xs-2 text-right">

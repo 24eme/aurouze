@@ -83,16 +83,16 @@
 
                     <ul class="nav navbar-nav pull-right">
                         <li class="{%if (_menu_active == 'recherche') %}active{% endif %}"><a href="{{ path('recherche')}}" title="Recherche"><span class="glyphicon glyphicon-search"></span><span class="hidden-lg hidden-md hidden-sm"> Recherche</span></a></li>
-                    <li class="{%if (_menu_active == 'calendar') %}active{% endif %}"><a href="{{ path('calendarManuel') }}" title="Calendrier"><span class="glyphicon glyphicon-calendar"></span><span class="hidden-lg hidden-md hidden-sm"> Calendrier</a></span></li>
+                    <li class="{%if (_menu_active == 'calendar') %}active{% endif %}"><a href="{{ path('calendarManuel') }}" title="Calendrier"><span class="glyphicon glyphicon-calendar"></span><span class="hidden-lg hidden-md hidden-sm"> Calendrier</span></a></li>
                         <li class="{%if (_menu_active == 'statistiques') %}active{% endif %}"><a href="{{ path('statistiques') }}" title="Statistiques"><span class="glyphicon glyphicon-stats"></span><span class="hidden-lg hidden-md hidden-sm"> Statistiques</span></a></li>
                         <li class="{%if (_menu_active == 'tournee') %}active{% endif %}"><a href="{{ path('tournees') }}" title="Tournées"><span class="glyphicon glyphicon-road"></span><span class="hidden-lg hidden-md hidden-sm"> Tournées</span></a></li>
                         <li class="dropdown {%if (_menu_active == 'configuration' or _menu_active == 'erreurs' ) %}active{% endif %}">
                           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Plus"><span class="glyphicon glyphicon-option-horizontal" ></span><span class="hidden-lg hidden-md hidden-sm"> Paramètres</span></a>
                           <ul class="dropdown-menu dropdown-menu-right">
                             <li class="{%if (_menu_active == 'configuration') %}active{% endif %}"><a href="{{ path('configuration') }}"><span class="glyphicon glyphicon-cog" ></span>&nbsp;&nbsp;Paramètres</a></li>
-                            <li class="{%if (_menu_active == 'erreurs') %}active{% endif %}"><a href="{{ path('passage_erreurs') }}"><span class="mdi mdi-lg mdi-announcement"></span>&nbsp;Passages non réalisés</li>
-                            <li class="{%if (_menu_active == 'contrat_erreurs') %}active{% endif %}"><a href="{{ path('contrats_erreurs') }}"><span class="mdi mdi-lg mdi-announcement"></span>&nbsp;Contrats en erreur</li>
-                              <li class="{%if (_menu_active == 'contrat_decalage') %}active{% endif %}"><a href="{{ path('contrats_decalage') }}"><span class="mdi mdi-lg mdi-announcement"></span>&nbsp;Contrats décalés</li>
+                            <li class="{%if (_menu_active == 'erreurs') %}active{% endif %}"><a href="{{ path('passage_erreurs') }}"><span class="mdi mdi-lg mdi-announcement"></span>&nbsp;Passages non réalisés</a></li>
+                            <li class="{%if (_menu_active == 'contrat_erreurs') %}active{% endif %}"><a href="{{ path('contrats_erreurs') }}"><span class="mdi mdi-lg mdi-announcement"></span>&nbsp;Contrats en erreur</a></li>
+                            <li class="{%if (_menu_active == 'contrat_decalage') %}active{% endif %}"><a href="{{ path('contrats_decalage') }}"><span class="mdi mdi-lg mdi-announcement"></span>&nbsp;Contrats décalés</a></li>
                             <li><a href="{{ path('contrats_reconduction_massive') }}" ><span class="glyphicon glyphicon-refresh"></span>&nbsp;Reconduction massive</a></li>
                           </ul>
                     </li>
