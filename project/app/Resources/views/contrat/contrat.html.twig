@@ -166,7 +166,7 @@
                         </div>
                         <div class="col-xs-3">
                             {% if mailtoPassages[etablissement.id] is defined %}
-                              <a href="mailto:{{ etablissement.contactCoordonnee.email }}?subject=Planning annuel {{ contrat.dateDebut | date('Y')}}/{{ contrat.dateFin | date('Y')}} - {{ etablissement.nom }}, {{ etablissement.adresse.intitule }}&body={{ mailtoPassages[etablissement.id] }}" class="btn btn-block btn-xs btn-default"><i class="glyphicon glyphicon-envelope"></i> Envoyer le planning par email</a><br />
+                              <a href="mailto:{{ etablissement.contactCoordonnee.email }}?subject=Planning annuel {{ contrat.dateDebut | date('Y')}}/{{ contrat.dateFin | date('Y')}} - {{ etablissement.nom|url_encode }}, {{ etablissement.adresse.intitule|url_encode }}&body={{ mailtoPassages[etablissement.id] }}" class="btn btn-block btn-xs btn-default"><i class="glyphicon glyphicon-envelope"></i> Envoyer le planning par email</a><br />
                             {% endif %}
                         </div>
                         <div class="col-xs-2">
