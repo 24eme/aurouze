@@ -2241,7 +2241,7 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
     }
 
     public function isPassableEnAttente(){
-        if(!$this->isEnCours()){
+        if(!$this->isEnCoursStatutLibelle()){
             return false;
         }
         foreach ($this->getContratPassages() as $contratPassage) {
