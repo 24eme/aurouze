@@ -1,4 +1,4 @@
-<tr {% if document.pdfNonEnvoye is defined and document.pdfNonEnvoye is same as(false) %}class="success"{% endif %}>
+<tr>
   <td>{{ document.datePrevision | localizeddate('medium', 'none', null, null, 'd MMMM yyyy') }}</td>
   <td class="text-left">
       <a href="{{ path('devis_societe', { 'id': document.societe.id }) }}">{{ document.societe.raisonSociale }}</a>
