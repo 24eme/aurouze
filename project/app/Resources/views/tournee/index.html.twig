@@ -75,6 +75,9 @@
                     {% endif %}
                     {% endfor %}
                   {% endif %}
+                  {% if planifiable.typeplanifiable == constant('AppBundle\\Document\\Devis::DOCUMENT_TYPE') %}
+                    <span  class="step size-18" ><i class="mdi mdi-local-shipping" style="cursor: pointer;"></i></span>
+                  {% endif %}
                 </div>
                 <div class="col-xs-3">
                       {% if(planifiable.duree is defined and planifiable.duree) %}<span><i class="mdi mdi-schedule mdi-lg"></i>&nbsp;{{planifiable.duree }}</span>{% endif %}
