@@ -662,7 +662,7 @@ class ContratController extends Controller {
 
         return new Response(file_get_contents($tmpfile.'.pdf'), 200, array(
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'attachment; filename="contrat-' . $contrat->getNumeroArchive() . '.pdf"'
+            'Content-Disposition' => 'attachment; filename="proposition-' . $contrat->getNumeroArchive() . '.pdf"'
                 )
         );
     }
