@@ -58,7 +58,10 @@ class DevisRepository extends BaseRepository {
         $queryBuilder->field('statut')->notEqual(PassageManager::STATUT_ANNULE);
     }
 
-    return $queryBuilder->getQuery()->execute();
+    return $queryBuilder
+        ->sort(array('datePrevision' => -1, '_id' => -1,))
+        ->getQuery()
+        ->execute();
   }
 
   public function findToPlan($secteur = EtablissementManager::SECTEUR_PARIS, \DateTime $dateDebut = null, \DateTime $dateFin) {
