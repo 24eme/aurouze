@@ -415,7 +415,7 @@ class PassageController extends Controller
     public function visualisationAction(Request $request, Passage $passage) {
 
         if ($passage->getRendezVous()) {
-            return $this->redirectToRoute('calendarRead', array('id' => $passage->getRendezVous()->getId(), 'service' => $request->get('service')));
+            return $this->redirectToRoute('calendarRead', array('id' => $passage->getRendezVous()->getId(), 'service' => urlencode($request->get('service'))));
         }
 
         return $this->forward('AppBundle:Calendar:calendarRead', array('planifiable' => $passage->getId(), 'service' => $request->get('service')));
@@ -446,7 +446,7 @@ class PassageController extends Controller
                 $dm->persist($contrat);
                 $dm->flush();
             }
-            return $this->render('passage/edition.html.twig', array('passage' => $passage, 'form' => $form->createView(), 'service' => $request->get('service')));
+            return $this->render('passage/edition.html.twig', array('passage' => $passage, 'form' => $form->createView(), 'service' => urldecode($request->get('service'))));
         }
 
 
@@ -471,7 +471,7 @@ class PassageController extends Controller
         $dm->flush();
         if($request->get('service')) {
 
-            return  $this->redirect($request->get('service'));
+            return  $this->redirect(urldecode($request->get('service')));
         } else {
 
             return $this->redirectToRoute('passage_etablissement', array('id' => $passage->getEtablissement()->getId()));
