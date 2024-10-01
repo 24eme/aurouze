@@ -50,8 +50,16 @@ class DevisController extends Controller
 
         $devis = $devisManager->findBySociete($societe);
 
+        $factureManager = $this->get('facture.manager');
+
+        $factures = [];
+
+        foreach ($devis as $devisFacture) {
+            $factures[$devisFacture->getId()] = $factureManager->getRepository()->findOneBy(['numeroDevis' => $devisFacture->getNumeroDevis()]);;
+        }
+
         return $this->render('devis/societe.html.twig',
-            compact('societe', 'devis')
+            compact('societe', 'devis', 'factures')
         );
     }
 
