@@ -62,6 +62,15 @@
                   {% if(planifiable.mouvementDeclenchable is defined and planifiable.mouvementDeclenchable and planifiable.getContrat.getNbFactures > 0) %}
                     <a href="{{ path('facture_societe', { 'id': planifiable.societe.id }) }}" class="deco-none"><span class="badge{% if (planifiable.isMouvementAlreadyFacture) %} badge-success  {% else %} badge-inverse {% endif %}">{% if (planifiable.isMouvementAlreadyFacture) %}facturé{% else %}facturant{% endif %}</span></a>
                   {% endif %}
+                  {% if attribute(planifiable, 'MontantHT') is defined and planifiable.montantHT > 0 %} {# Si devis #}
+                    <a href="{{ path('facture_societe', { 'id': planifiable.societe.id }) }}" class="deco-none">
+                      {% if planifiable.identifiantFacture %}
+                        <span class="badge badge-success">facturé</span>
+                      {% else %}
+                        <span class="badge badge-inverse">facturant</span>
+                      {% endif %}
+                    </a>
+                  {% endif %}
                 </div>
                 <div class="col-xs-7">
                   {% if planifiable.prestations is defined %}
@@ -74,6 +83,9 @@
                     <span class="label label-xs label-primary">{{ prestation.nomToString }}</span>
                     {% endif %}
                     {% endfor %}
+                  {% endif %}
+                  {% if planifiable.typeplanifiable == constant('AppBundle\\Document\\Devis::DOCUMENT_TYPE') %}
+                    <span  class="step size-18" ><i class="mdi mdi-local-shipping" style="cursor: pointer;"></i></span>
                   {% endif %}
                 </div>
                 <div class="col-xs-3">
