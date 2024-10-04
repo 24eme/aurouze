@@ -63,10 +63,6 @@ class PassageController extends Controller
      * @Route("/passage", name="passage")
      */
     public function indexAction(Request $request) {
-
-        $passageManager = $this->get('passage.manager');
-        $secteur = $this->getParameter('secteurs');
-
         $secteur = "0";
 
         if($this->getParameter('secteurs')) {
@@ -974,7 +970,7 @@ class PassageController extends Controller
     public function reactiverPassageAction(Request $request, Passage $passage) {
         $dm = $this->get('doctrine_mongodb')->getManager();
         $contrat = $passage->getContrat();
-        $passage->setStatut(PassageManager::STATUT_A_PLANIFIER); 
+        $passage->setStatut(PassageManager::STATUT_A_PLANIFIER);
         $dm->flush();
         return $this->redirectToRoute('contrat_visualisation', array('id' => $contrat->getId()));
     }

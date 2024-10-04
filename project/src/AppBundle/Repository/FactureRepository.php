@@ -6,6 +6,8 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
 use AppBundle\Tool\RechercheTool;
 use AppBundle\Document\societe;
 use AppBundle\Manager\FactureManager;
+use AppBundle\Manager\EtablissementManager;
+
 /**
  * FactureRepository
  *
@@ -152,7 +154,7 @@ class FactureRepository extends BaseRepository {
         return $q;
     }
 
-    public function findFactureRetardDePaiement($dateFactureBasse = null, $dateFactureHaute = null, $nbRelance = null, $societe = null, $commerciaux = null, $dateMois = null){
+    public function findFactureRetardDePaiement($dateFactureBasse = null, $dateFactureHaute = null, $nbRelance = null, $societe = null, $secteur = null, $dateMois = null, $commercial_SEINE_ET_MARNE = null){
       $today = new \DateTime();
       // Factures
       $qF = $this->makeBaseFactureRetardDePaiement($nbRelance, $societe);
@@ -191,30 +193,47 @@ class FactureRepository extends BaseRepository {
       }
       $resultsDevis = $qD->getQuery()->execute();
 
+      $commerciauxNom = [];
+      $commerciauxNomToExclude = [];
+
+      if ($secteur == EtablissementManager::SECTEUR_PARIS) {
+        $commerciauxNomToExclude = [$commercial_SEINE_ET_MARNE];
+      } elseif($secteur == EtablissementManager::SECTEUR_SEINE_ET_MARNE) {
+        $commerciauxNom = [$commercial_SEINE_ET_MARNE];
+      }
       $results = array_merge($resultsFacture->toArray(), $resultsDevis->toArray());
         $retards = array();
-        foreach($results as $retard) {
-          if ($commerciaux) {
 
-            $commerciauxIds=array();
-            foreach($commerciaux as $c){
-              $commerciauxIds[]=$c->getId();
-            }
+        if(count($commerciauxNom)) {
+            foreach($results as $retard) {
+                if ($retard->getContrat() && !$retard->getContrat()->getCommercial() && !$retard->getCommercial()) {
+                    continue;
+                }
 
-            if ($retard->getContrat()) {
-              if (!$retard->getContrat()->getCommercial()) {
-        				continue;
-        			} else {
-                if (count($commerciauxIds) > 0 && !in_array($retard->getContrat()->getCommercial()->getId(),$commerciauxIds)){
-        					continue;
-        				}
-        			}
-            }elseif($retard->getCommercial() && !in_array($retard->getCommercial()->getId(),$commerciauxIds)){
-              continue;
+                if ($retard->getContrat() && $retard->getContrat()->getCommercial() && !in_array($retard->getContrat()->getCommercial()->getNom(), $commerciauxNom)){
+                    continue;
+                }
+
+                if(!$retard->getContrat() && $retard->getCommercial() && !in_array($retard->getCommercial()->getNom(),$commerciauxNom)){
+                    continue;
+                }
+
+                $retards[$retard->getDateFacturation()->format("YmdHis").$retard->getId()] = $retard;
             }
-        	}
-          $retards[$retard->getDateFacturation()->format("YmdHis").$retard->getId()] = $retard;
+        } elseif(count($commerciauxNomToExclude)) {
+            foreach($results as $retard) {
+                if ($retard->getContrat() && $retard->getContrat()->getCommercial() && in_array($retard->getContrat()->getCommercial()->getNom(), $commerciauxNomToExclude)){
+                    continue;
+                }
+
+                if(!$retard->getContrat() && $retard->getCommercial() && in_array($retard->getCommercial()->getNom(),$commerciauxNomToExclude)){
+                    continue;
+                }
+
+                $retards[$retard->getDateFacturation()->format("YmdHis").$retard->getId()] = $retard;
+            }
         }
+
         krsort($retards);
         return $retards;
     }

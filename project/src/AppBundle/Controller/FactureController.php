@@ -7,6 +7,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use AppBundle\Manager\FactureManager;
 use AppBundle\Manager\DevisManager;
 use AppBundle\Manager\PassageManager;
@@ -19,6 +20,7 @@ use AppBundle\Document\Contrat;
 use AppBundle\Document\Societe;
 use AppBundle\Document\Etablissement;
 use AppBundle\Document\Relance;
+use AppBundle\Document\FactureZones;
 use AppBundle\Type\FactureChoiceType;
 use AppBundle\Type\SocieteChoiceType;
 use AppBundle\Type\RelanceType;
@@ -26,6 +28,7 @@ use AppBundle\Type\FacturesEnRetardFiltresType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\HttpFoundation\Cookie;
 
 /**
  * Facture controller.
@@ -1066,13 +1069,23 @@ class FactureController extends Controller
      * @Route("/retards-de-facture", name="factures_retard")
      */
     public function retardsAction(Request $request) {
+        if($request->get('secteur')) {
+            $response = new RedirectResponse($this->generateUrl('factures_retard'));
+            $response->headers->setCookie(new Cookie('secteurZone', $request->get('secteur'), time() + (365 * 24 * 60 * 60)));
+
+            return $response;
+        }
 
         return $this->retardsFilters($request);
 
     }
 
     private function retardsFilters($request, $societe = null, $route = 'factures_retard'){
+        $secteur = null;
 
+        if($this->getParameter('secteurs')) {
+            $secteur = $request->cookies->get('secteurZone', 'PARIS');
+        }
       $dm = $this->get('doctrine_mongodb')->getManager();
       $fm = $this->get('facture.manager');
       $sm = $this->get('societe.manager');
@@ -1082,7 +1095,6 @@ class FactureController extends Controller
       $dateFactureBasse = null;
       $dateFactureHaute = null;
       $nbRelances = null;
-      $commerciaux = null;
       $dateMois = null;
 
       $formFacturesEnRetard = $this->createForm(new FacturesEnRetardFiltresType($this->container, $this->get('doctrine_mongodb')->getManager(),$societe), null, array(
@@ -1098,10 +1110,8 @@ class FactureController extends Controller
         $dateMois = $formValues["dateMois"];
         $nbRelances = intval($formValues["nbRelances"]) -1;
         $societe = $formValues["societe"];
-        $commerciaux = $formValues["commerciaux"];
       }
-
-      $facturesEnRetard = $fm->getRepository()->findFactureRetardDePaiement($dateFactureBasse, $dateFactureHaute, $nbRelances, $societe, $commerciaux,$dateMois);
+      $facturesEnRetard = $fm->getRepository()->findFactureRetardDePaiement($dateFactureBasse, $dateFactureHaute, $nbRelances, $societe, $secteur,$dateMois, $this->getParameter("commercial_seine_et_marne"));
       $formRelance = $this->createForm(new RelanceType($facturesEnRetard), null, array(
           'action' => $this->generateUrl('factures_relance_massive'),
           'method' => 'post',
@@ -1118,7 +1128,7 @@ class FactureController extends Controller
       }
 
       return $this->render('facture/retardPaiements.html.twig', array('facturesEnRetard' => $facturesEnRetard, "formRelance" => $formRelance->createView(), 'nbRelances' => $nbRelances, 'pdf' => $pdf,
-      'formFacturesARelancer' => $formFacturesEnRetard->createView(), 'commerciaux' => $commerciaux,'tabNbFacturesBySociete'=> $tabNbFacturesBySociete));
+      'formFacturesARelancer' => $formFacturesEnRetard->createView(), 'tabNbFacturesBySociete'=> $tabNbFacturesBySociete, 'secteur' => $secteur, 'etablissementManager' => $this->get('etablissement.manager')));
     }
 
 
