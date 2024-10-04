@@ -93,25 +93,25 @@
 													<th class="fc-axis fc-widget-header" style="width: 17px;"></th>
                             <th data-date="{{ calendarTool.getDate()|date("Y-m-d") }}" class="fc-day-header fc-widget-header fc-mon">
                               <div>{{ calendarTool.getShortLibelleJour(calendarTool.getDate()|date("N")) }} {{ calendarTool.getDate()|date("j") }}/{{ calendarTool.getDate()|date("n") }}</div>
-                              <div style="text-align:left; padding: 0 2px;">
+                              <div style="text-align:left; padding: 0;">
                                 {% set date = calendarTool.getDate()|date("Y-m-d") %}
                                 {% if date in eventsDates|keys %}
                                   {% for technicien,events in (eventsDates[date]) %}
+                                  <div style="display: inline-block;
+                                      margin: 0px;
+                                      overflow: hidden;
+                                      width: {{ ((100 / nbTechniciens))|round(0, 'floor') }}%;
+                                      padding: 0;"
+                                  >
                                     <a href="{{ path('calendar',{'technicien': techniciens["COMPTE-"~technicien].id, 'passage': ((passage) ? passage.id : null), 'id': ((passage) ? passage.etablissement.id : "0"), 'date': calendarTool.getDateDebut('Y-m-d'), 'mode': calendarTool.mode }) }}" data-toggle="tooltip" title="{{ techniciens["COMPTE-"~technicien].identite }}" style="
-                                    display:inline-block;
-                                    margin-right: 0;
                                     border-radius: 0;
-                                    padding: 0px 0px;
-                                    border: 0px none;
-                                    font-size: 0.75em;
                                     background-color: {{ techniciens["COMPTE-"~technicien].couleur }};
-                                    color: #fff;
-                                    overflow:hidden;
-                                    text-overflow: '';
-                                    width: {{ ((100 / nbTechniciens))|round(0, 'floor') - 0.4 }}%;"
+                                    padding: 0;
+                                    color: #eee;"
                                     class="fc-time-grid-event fc-v-event fc-event fc-start fc-end">
                                     &nbsp;<strong>{{ techniciens["COMPTE-"~technicien].prenom | slice(0,10) | upper }}</strong>
                                     </a>
+                                  </div>
                                   {% endfor %}
                                 {% endif %}
                               </div>
@@ -161,46 +161,40 @@
 															<td style="width:17px" class="fc-axis"></td>
   															<td class="{{ calendarTool.getDate()|date("Y-m-d") }}">
   																<div class="fc-content-col">
-  																	<div class="fc-event-container">
+  																	<div class="fc-event-container" style="margin: 0">
   																		{% set index = 0 %}
                                       {% set date = calendarTool.getDate()|date("Y-m-d") %}
-                                      {% if date in eventsDates|keys %}
+                                                                      {% if date in eventsDates|keys %}
   																		{% for technicien,events in (eventsDates[date]) %}
+                                                                          <div style="display: inline-block;
+                                                                              margin-right: 0px;
+                                                                              padding: 0;
+                                                                              width: {{ ((100 / nbTechniciens))|round(0, 'floor') }}%;
+                                                                              border: 0px none;"
+                                                                          >
   																			{% for event in events %}
   																			<a style="cursor: pointer;
-                                                                            background-color: {{ event.backgroundColor }}70;
-                                          border: 1px dotted black;
-                                          font-size: 0.75em;
-  																				color: {{ event.textColor }};
-                                          padding: 0 2px;
-  																				z-index: {{ index + 1 }};
-																				top: {{ (event.coefStart * 26) + 52 }}px;
-																				bottom: -{{ (event.coefEnd * 26) + 54 }}px;
-  																				left: {{ ((100 / nbTechniciens) * index)|round(0, 'floor') }}%;
-                                          border-radius: 0;
-  																				width: {{ ((100 / nbTechniciens))|round(0, 'floor') - 1 }}%;"
-                                          data-container="body"
+                                                                              background-color: {{ event.backgroundColor }}70;
+                                                                              border: 1px dotted black;
+                                                                              font-size: 0.75em;
+                                                                              color: {{ event.textColor }};
+                                                                              padding: 0;
+                                                                              z-index: {{ index + 1 }};
+                                                                              top: {{ (event.coefStart * 26) + 52 }}px;
+                                                                              bottom: -{{ (event.coefEnd * 26) + 54 }}px;
+                                                                              width: inherit;
+                                                                              left: inherit;
+                                                                              border-radius: 0;"
+                                                                            data-container="body"
   																				class="fc-time-grid-event fc-v-event fc-event fc-start fc-end toggle-tooltip"
   																				nb="{{ eventsDates[date]|keys|length }}" data-toggle="modal" data-remote="false" data-target="#modal-calendrier-infos" href="{{path('calendarRead', { 'id': event.id, 'service': app.request.uri })}}"
-                                          title="{{ event.resume }}" ><small style="word-wrap: break-word;"></small>
+                                                                                title="{{ event.resume }}" ><small style="word-wrap: break-word;"></small>
   																			</a>
   																			{% endfor %}
-                                        <a style="
-                                        display:inline-block;
-                                        top: -10px;z-index: {{ index - 1 }};
-                                        border-radius: 0;
-                                        bottom: -{{ height }}px;
-                                        left: {{ ((100 / nbTechniciens) * index)|round(0, 'floor') }}%;
-                                        background-color: white;
-                                        border: 0.5px solid black;
-                                        opacity: 0.1;
-                                        padding: 0 5px;
-                                        width: {{ ((100 / nbTechniciens))|round(0, 'floor') - 1 }}%;"
-                                        class="fc-time-grid-event fc-v-event fc-event fc-start fc-end">
-                                        </a>
   																			{% set index = index + 1 %}
-                                      {% endfor %}
-                                    {% endif %}
+                                                                          </div>
+                                                                        {% endfor %}
+                                                                      {% endif %}
   																	</div>
   																</div>
   															</td>
