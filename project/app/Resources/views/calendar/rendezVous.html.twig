@@ -311,7 +311,7 @@
                                 <a class="btn btn-sm btn-default rdv-modifier-link" href="{{ path('calendarRead', {'id': rdv.id, 'forceEdition': true, 'service': service}) }}"><span class="glyphicon glyphicon-calendar"></span> Modifier le RDV</a>
                             {% endif %}
                             {% if (rdv.id and rdv.passage) %}
-                                <a class="btn btn-sm btn-default" href="{{ path('passage_edition', {'id': rdv.passage.id, 'service': service ~ "#" ~ rdv.id})}}"><span class="glyphicon glyphicon-pencil"></span> Modifier le rapport</a>
+                                <a class="btn btn-sm btn-default" href="{{ path('passage_edition', {'id': rdv.passage.id, 'service': service })}}"><span class="glyphicon glyphicon-pencil"></span> Modifier le rapport</a>
                             {% endif %}
                             {% if (rdv.passage and not rdv.id) %}
                                 <a href="{{ path('passage_annulation',{ 'id': rdv.passage.id, 'service': service }) }}" class="btn btn-default" onclick="return confirm('Êtes vous sûr de vouloir passer ce passage en annuler ?')"><span class="text-danger">Annuler le passage</span></a>
