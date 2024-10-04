@@ -20,7 +20,6 @@ use AppBundle\Document\Contrat;
 use AppBundle\Document\Societe;
 use AppBundle\Document\Etablissement;
 use AppBundle\Document\Relance;
-use AppBundle\Document\FactureZones;
 use AppBundle\Type\FactureChoiceType;
 use AppBundle\Type\SocieteChoiceType;
 use AppBundle\Type\RelanceType;
