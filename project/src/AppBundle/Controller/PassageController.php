@@ -63,10 +63,6 @@ class PassageController extends Controller
      * @Route("/passage", name="passage")
      */
     public function indexAction(Request $request) {
-
-        $passageManager = $this->get('passage.manager');
-        $secteur = $this->getParameter('secteurs');
-
         $secteur = "0";
 
         if($this->getParameter('secteurs')) {
@@ -415,7 +411,7 @@ class PassageController extends Controller
     public function visualisationAction(Request $request, Passage $passage) {
 
         if ($passage->getRendezVous()) {
-            return $this->redirectToRoute('calendarRead', array('id' => $passage->getRendezVous()->getId(), 'service' => $request->get('service')));
+            return $this->redirectToRoute('calendarRead', array('id' => $passage->getRendezVous()->getId(), 'service' => urlencode($request->get('service'))));
         }
 
         return $this->forward('AppBundle:Calendar:calendarRead', array('planifiable' => $passage->getId(), 'service' => $request->get('service')));
@@ -446,7 +442,7 @@ class PassageController extends Controller
                 $dm->persist($contrat);
                 $dm->flush();
             }
-            return $this->render('passage/edition.html.twig', array('passage' => $passage, 'form' => $form->createView(), 'service' => $request->get('service')));
+            return $this->render('passage/edition.html.twig', array('passage' => $passage, 'form' => $form->createView(), 'service' => urldecode($request->get('service'))));
         }
 
 
@@ -471,7 +467,7 @@ class PassageController extends Controller
         $dm->flush();
         if($request->get('service')) {
 
-            return  $this->redirect($request->get('service'));
+            return  $this->redirect(urldecode($request->get('service')));
         } else {
 
             return $this->redirectToRoute('passage_etablissement', array('id' => $passage->getEtablissement()->getId()));
@@ -974,7 +970,7 @@ class PassageController extends Controller
     public function reactiverPassageAction(Request $request, Passage $passage) {
         $dm = $this->get('doctrine_mongodb')->getManager();
         $contrat = $passage->getContrat();
-        $passage->setStatut(PassageManager::STATUT_A_PLANIFIER); 
+        $passage->setStatut(PassageManager::STATUT_A_PLANIFIER);
         $dm->flush();
         return $this->redirectToRoute('contrat_visualisation', array('id' => $contrat->getId()));
     }
