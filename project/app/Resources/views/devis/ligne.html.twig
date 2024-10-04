@@ -22,7 +22,7 @@
   </td>
 
   <td class="text-center">
-      {% if factures[document.id] %}<span class="glyphicon glyphicon-ok text-muted"></span>
+      {% if factures[document.id] %}</span>
       <div style="width:max-content;"><span class="glyphicon glyphicon-file" style="margin-right:2px;" ></span><a href="{{ path('facturable_pdf', {'document': factures[document.id].id, 'key': factures[document.id].getSecretKey()}) }}">Facture n° {{ factures[document.id].numeroFacture }}</a> </div>
     {% endif %}
   </td>
