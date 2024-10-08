@@ -1068,7 +1068,7 @@ class FactureController extends Controller
      * @Route("/retards-de-facture", name="factures_retard")
      */
     public function retardsAction(Request $request) {
-        if($request->get('secteur')) {
+        if($request->get('secteur')) { // <-- requete http
             $response = new RedirectResponse($this->generateUrl('factures_retard'));
             $response->headers->setCookie(new Cookie('secteurZone', $request->get('secteur'), time() + (365 * 24 * 60 * 60)));
 
@@ -1082,7 +1082,7 @@ class FactureController extends Controller
     private function retardsFilters($request, $societe = null, $route = 'factures_retard'){
         $secteur = null;
 
-        if($this->getParameter('secteurs')) {
+        if($this->getParameter('secteurs')) { // <-- CONFIG parameters.yml
             $secteur = $request->cookies->get('secteurZone', 'PARIS');
         }
       $dm = $this->get('doctrine_mongodb')->getManager();
