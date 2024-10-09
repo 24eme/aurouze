@@ -240,7 +240,7 @@
               <div class="btn-group">
                {% if (not rdv.planifiable.identifiantFacture) %}
                    <a class="btn btn-sm btn-default"
-                      href="{{ path('devis_create-facture', {'id': rdv.devis.id , 'service': service})}}"
+                      href="{{ path('devis_create-facture', {'id': rdv.devis.id , 'service': service ~ "#" ~ rdv.id})}}"
                       title="Création de la facture"
                       data-toggle="tooltip" >
                          <span class="glyphicon glyphicon-file"></span>&nbsp;Facturer le devis produit
