@@ -884,7 +884,7 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
     }
 
     public function buildMouvement($origineDocumentGeneration = null) {
-        if ($this->getPrixRestant() <= 0 || $this->getNbFacturesRestantes() <= 0) {
+        if ($this->getPrixRestant() <= 0) {
             return null;
         }
 
