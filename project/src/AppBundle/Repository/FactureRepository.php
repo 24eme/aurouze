@@ -234,6 +234,12 @@ class FactureRepository extends BaseRepository {
             }
         }
 
+        if (empty($retards)) {
+            foreach($results as $retard) {
+                $retards[$retard->getDateFacturation()->format("YmdHis").$retard->getId()] = $retard;
+            }
+        }
+
         krsort($retards);
         return $retards;
     }
