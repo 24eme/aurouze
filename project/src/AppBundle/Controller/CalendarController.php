@@ -437,7 +437,7 @@ class CalendarController extends Controller {
 
         if($request->get('service')) {
 
-            return $this->redirect($request->get('service'));
+            return $this->redirect(urldecode($request->get('service')));
         }
 
         return $this->redirect($this->generateUrl('calendarManuel'));
