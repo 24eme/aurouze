@@ -141,7 +141,7 @@ class PassageType extends AbstractType
     	$tags = $this->dm->getRepository('AppBundle:Passage')->findAllNettoyages();
     	$result = array();
     	foreach ($tags as $tag) {
-    		$result[$tag] = $tag;
+            $result[trim($tag)] = $tag;
     	}
     	return $result;
     }
@@ -150,7 +150,7 @@ class PassageType extends AbstractType
     	$tags = $this->dm->getRepository('AppBundle:Passage')->findAllApplications();
     	$result = array();
     	foreach ($tags as $tag) {
-    		$result[$tag] = $tag;
+            $result[trim($tag)] = $tag;
     	}
     	return $result;
     }
