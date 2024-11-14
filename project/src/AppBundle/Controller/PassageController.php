@@ -700,7 +700,7 @@ class PassageController extends Controller
             ->getFlashBag()
             ->add('success', "L'email a bien été envoyé !");
 
-            return $this->redirect($request->get('service'));
+            return $this->redirect(urldecode($request->get('service')));
         }
 
 
