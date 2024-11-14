@@ -600,7 +600,6 @@ class ContratController extends Controller {
             }
         }
         $contrat->generateMouvement($firstPassageFacturable);
-        $dm->persist($firstPassageFacturable);
         $dm->persist($contrat);
         $dm->flush();
 
