@@ -158,7 +158,7 @@ public static $export_factures_en_retards = array(
 
     public function findBySociete(Societe $societe) {
 
-        return $this->getRepository()->findBy(array('societe' => $societe->getId()), array('dateFacturation' => 'desc'));
+        return $this->getRepository()->findBy(array('societe' => $societe->getId()), array('dateFacturation' => 'desc', 'numeroFacture' => 'desc'));
     }
 
     public function createVierge(Societe $societe, $contrat = null) {

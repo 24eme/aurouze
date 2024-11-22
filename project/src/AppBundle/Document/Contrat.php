@@ -888,6 +888,10 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
             return null;
         }
 
+        if ($this->getNbFacturesRestantes() <= 0) {
+            return [];
+        }
+
         $mouvement = new Mouvement();
         $mouvement->setIdentifiant(uniqid());
         $mouvement->setPrixUnitaire(round($this->getPrixRestant() / $this->getNbFacturesRestantes(), 2));
