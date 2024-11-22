@@ -30,8 +30,8 @@ class PaiementType extends AbstractType {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options) {
-    	$builder->add('moyenPaiement', ChoiceType::class, array('label' => 'Moyen de paiement', 'choices' => array_merge(array(null => null), PaiementsManager::$moyens_paiement_libelles), "attr" => array("class" => "select2 select2-simple")));
-    	$builder->add('typeReglement', ChoiceType::class, array('label' => 'Type de paiement', 'choices' => PaiementsManager::$nouveau_types_reglements_libelles, "attr" => array("class" => "select2 select2-simple")));
+        $builder->add('moyenPaiement', ChoiceType::class, array('label' => 'Moyen de paiement', 'choices' => array_merge(array(null => null), PaiementsManager::$moyens_paiement_libelles), "attr" => array("class" => "")));
+        $builder->add('typeReglement', ChoiceType::class, array('label' => 'Type de paiement', 'choices' => PaiementsManager::$nouveau_types_reglements_libelles, "attr" => array("class" => "")));
     	$builder->add('libelle', TextType::class, array('label' => 'Libellé',"required" => false, "attr" => array("placeholder" => 'Libellé')));
     	$builder->add('datePaiement', DateType::class,
     		array(
