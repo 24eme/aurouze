@@ -174,4 +174,10 @@ class ConfigurationController extends Controller {
         ));
     }
 
+    /**
+     * @Route("/public/status", name="status")
+    */
+    public function statusAction(Request $request) {
+        return new Response("OK", 200);
+    }
 }
