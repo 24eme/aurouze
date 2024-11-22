@@ -174,4 +174,10 @@ class ConfigurationController extends Controller {
         ));
     }
 
+    /**
+     * @Route("/configuration/public/status", name="configuration_status")
+    */
+    public function statusAction(Request $request) {
+        return new Response("OK", 200, ['Content-Type' => 'text/plain']);
+    }
 }
