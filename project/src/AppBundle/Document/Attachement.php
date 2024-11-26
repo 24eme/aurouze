@@ -28,6 +28,8 @@ use Symfony\Component\HttpFoundation\File\File;
 class Attachement
 {
 
+    const MONGO_BYTES_LIMIT = 16777216;
+
   /**
     * @MongoDB\Id(strategy="AUTO")
     */
@@ -472,5 +474,9 @@ class Attachement
             } else {
                 return ($b->getUpdatedAt() > $a->getUpdatedAt())? "+1" : "-1";
             }
+    }
+
+    public function verifyBase64Bytes() {
+        return strlen($this->getBase64()) <= self::MONGO_BYTES_LIMIT;
     }
 }
