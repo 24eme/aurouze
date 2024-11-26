@@ -220,10 +220,14 @@ class AttachementController extends Controller {
             $attachement->setEtablissement($etablissement);
             $dm->persist($attachement);
             $etablissement->addAttachement($attachement);
-            $dm->flush();
 
             $attachement->convertBase64AndRemove();
+            if (!$attachement->verifyBase64Bytes()) {
+                    $request->getSession()->getFlashBag()->add('upload_error_mongo', "Le fichier est trop gros, veuillez le compresser s'il s'agit d'un PDF ");
+                    return $this->redirectToRoute('attachements_etablissement', array('id' => $etablissement->getId()));
+            }
             $dm->flush();
+
           } else {
               foreach ($uploadAttachementForm->getErrors(true, true) as $formError) {
                   $request->getSession()->getFlashBag()->add('upload_error', $formError->getMessage());
