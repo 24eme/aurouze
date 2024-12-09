@@ -1105,7 +1105,7 @@ class FactureController extends Controller
       if ($formFacturesEnRetard->isSubmitted() && $formFacturesEnRetard->isValid()) {
         $formValues =  $formFacturesEnRetard->getData();
         $dateFactureBasse = $formValues["dateFactureBasse"];
-        $dateFactureHaute = $formValues["dateFactureHaute"];
+        $dateFactureHaute = $formValues["dateFactureHaute"] ? $formValues["dateFactureHaute"]->add(new \DateInterval('PT23H59M')) : null;
         $dateMois = $formValues["dateMois"];
         $nbRelances = intval($formValues["nbRelances"]) -1;
         $societe = $formValues["societe"];
