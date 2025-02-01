@@ -47,7 +47,7 @@
 				<div class="col-xs-3">
 					<span style="cursor: help;" title="{{ passage.libelle }}"
 						data-toggle="tooltip"
-						class="badge {% if(passage.isGarantie) %}badge-warning{% elseif(passage.isControle)%}badge-warning{% else %}badge-default{% endif %} {% if(passage.mouvementDeclenchable) %}badge-inverse{% endif %} btn-xs">{{
+						class="badge {% if(passage.isGarantie or passage.isHorsContrat or passage.isControle) %}badge-warning{% else %}badge-default{% endif %} {% if(passage.mouvementDeclenchable) %}badge-inverse{% endif %} btn-xs">{{
 						passage.getNumeroPassage() }}</span>
 				</div>
 				<div class="col-xs-9">
