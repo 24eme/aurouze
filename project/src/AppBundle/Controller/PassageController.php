@@ -13,6 +13,7 @@ use AppBundle\Document\Societe;
 use AppBundle\Document\Contrat;
 use AppBundle\Document\Passage;
 use AppBundle\Document\Coordonnees;
+use AppBundle\Document\LigneFacturable;
 use AppBundle\Type\PassageType;
 use AppBundle\Type\PassageCreationType;
 use AppBundle\Type\PassageModificationType;
@@ -244,6 +245,13 @@ class PassageController extends Controller
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $passage->setDateDebut($passage->getDatePrevision());
+            
+            $passageHorsContrat = $passage->isHorsContrat();
+
+            if($passageHorsContrat) {
+                $passage->setMouvementDeclenchable(true);
+            }
+
             $dm->persist($passage);
             $contrat->addPassage($etablissement, $passage);
             $contrat->preUpdate();
@@ -695,7 +703,48 @@ class PassageController extends Controller
             var_dump('NO mailer config'); exit;
         }
 
+        $passageHorsContrat = $passage->isHorsContrat();
+
         if($request->get('service') && $passage->getPdfNonEnvoye() == false) {
+            if($passageHorsContrat){
+                $fm = $this->get('facture.manager');
+                $cm = $this->get('configuration.manager');
+                $dm = $this->get('doctrine_mongodb')->getManager();
+                $configuration = $dm->getRepository('AppBundle:Configuration')->findConfiguration();
+
+                $contrat = $passage->getContrat();
+                $societe = $contrat->getSociete();
+
+                $facture = $fm->createVierge($societe, null);
+                $dateFacturation = ($this->container->getParameter('date_facturation'))? new \DateTime($this->container->getParameter('date_facturation')) : new \DateTime();
+                $facture->setDateFacturation($dateFacturation);
+
+
+                $arrayPrestationNom = array();
+                foreach ($passage->getPrestations() as $prestation) {
+                    $nomPrestation = $prestation->getNom();
+                    $arrayPrestationNom[] = $nomPrestation;
+                }
+
+                $factureLigne = new LigneFacturable();
+
+                $factureLigne->setLibelle(sprintf("Intervention hors contrat n° %s du %s", $passage->getNumeroArchive(), $passage->getDateDebut()->format('d/m/Y')));
+                $factureLigne->setDescription(sprintf("Prestations :\n - %s \n", implode("\n - ", $arrayPrestationNom)));
+                $factureLigne->setQuantite(1);
+                $factureLigne->setTauxTaxe($contrat->getTva());
+                $factureLigne->setPrixUnitaire($contrat->getPrixMouvements());
+                $factureLigne->setMontantHT($factureLigne->getQuantite() * $factureLigne->getPrixUnitaire());
+                
+                $facture->setMontantHT($factureLigne->getMontantHT());
+                $facture->setMontantTaxe($factureLigne->getMontantHT() * $factureLigne->getTauxTaxe());
+                $facture->setMontantTTC($factureLigne->getMontantHT() + $facture->getMontantTaxe());
+
+                $facture->addLigne($factureLigne);
+
+
+                $dm->persist($facture);
+                $dm->flush();
+            }
             $request->getSession()
             ->getFlashBag()
             ->add('success', "L'email a bien été envoyé !");
