@@ -1958,6 +1958,8 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
                     $passage->setNumeroOrdre("C");
                 } elseif ($passage->isGarantie()) {
                     $passage->setNumeroOrdre("G");
+                } elseif ($passage->isHorsContrat()) {
+                    $passage->setNumeroOrdre("HC");
                 } elseif($passage->isSousContrat()) {
                     $passage->setNumeroOrdre($numero);
                     $numero++;
