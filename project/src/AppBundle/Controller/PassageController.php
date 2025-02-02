@@ -708,9 +708,7 @@ class PassageController extends Controller
         if($request->get('service') && $passage->getPdfNonEnvoye() == false) {
             if($passageHorsContrat){
                 $fm = $this->get('facture.manager');
-                $cm = $this->get('configuration.manager');
                 $dm = $this->get('doctrine_mongodb')->getManager();
-                $configuration = $dm->getRepository('AppBundle:Configuration')->findConfiguration();
 
                 $contrat = $passage->getContrat();
                 $societe = $contrat->getSociete();
