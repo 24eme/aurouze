@@ -730,7 +730,7 @@ class PassageController extends Controller
                 $factureLigne->setDescription(sprintf("Prestations :\n - %s \n", implode("\n - ", $arrayPrestationNom)));
                 $factureLigne->setQuantite(1);
                 $factureLigne->setTauxTaxe($contrat->getTva());
-                $factureLigne->setPrixUnitaire($contrat->getPrixMouvements());
+                $factureLigne->setPrixUnitaire($contrat->getPrixHt() / $contrat->getNbPassages());
                 $factureLigne->setMontantHT($factureLigne->getQuantite() * $factureLigne->getPrixUnitaire());
                 
                 $facture->setMontantHT($factureLigne->getMontantHT());
