@@ -712,37 +712,13 @@ class PassageController extends Controller
 
                 $contrat = $passage->getContrat();
                 $societe = $contrat->getSociete();
-
-                $facture = $fm->createVierge($societe, null);
-                $dateFacturation = ($this->container->getParameter('date_facturation'))? new \DateTime($this->container->getParameter('date_facturation')) : new \DateTime();
-                $facture->setDateFacturation($dateFacturation);
-
-
-                $arrayPrestationNom = array();
-                foreach ($passage->getPrestations() as $prestation) {
-                    $nomPrestation = $prestation->getNom();
-                    $arrayPrestationNom[] = $nomPrestation;
-                }
-
-                $factureLigne = new LigneFacturable();
-
-                $factureLigne->setLibelle(sprintf("Intervention hors contrat n° %s du %s", $passage->getNumeroArchive(), $passage->getDateDebut()->format('d/m/Y')));
-                $factureLigne->setDescription(sprintf("Prestations :\n - %s \n", implode("\n - ", $arrayPrestationNom)));
-                $factureLigne->setQuantite(1);
-                $factureLigne->setTauxTaxe($contrat->getTva());
-                $factureLigne->setPrixUnitaire($contrat->getPrixHt() / $contrat->getNbPassages());
-                $factureLigne->setMontantHT($factureLigne->getQuantite() * $factureLigne->getPrixUnitaire());
                 
-                $facture->setMontantHT($factureLigne->getMontantHT());
-                $facture->setMontantTaxe($factureLigne->getMontantHT() * $factureLigne->getTauxTaxe());
-                $facture->setMontantTTC($factureLigne->getMontantHT() + $facture->getMontantTaxe());
+                $factureHorsContrat = $fm->createFactureHorsContrat($passage, $contrat, $societe);
 
-                $facture->addLigne($factureLigne);
-
-
-                $dm->persist($facture);
+                $dm->persist($factureHorsContrat);
                 $dm->flush();
             }
+
             $request->getSession()
             ->getFlashBag()
             ->add('success', "L'email a bien été envoyé !");

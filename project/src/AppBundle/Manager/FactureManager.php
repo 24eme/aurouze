@@ -889,4 +889,32 @@ public static $export_factures_en_retards = array(
       return $idPrestation;
 
     }
+
+    public function createFactureHorsContrat($passage, $contrat, $societe) {
+            $facture = $this->createVierge($societe, null);
+
+            $dateFacturation = ($this->getParameters('date_facturation'))? new \DateTime('now') : new \DateTime();
+            $facture->setDateFacturation($dateFacturation);
+
+            $arrayPrestationNom = array();
+            foreach ($passage->getPrestations() as $prestation) {
+                $nomPrestation = $prestation->getNom();
+                $arrayPrestationNom[] = $nomPrestation;
+            }
+
+            $factureLigne = new LigneFacturable();
+
+            $factureLigne->setLibelle(sprintf("Intervention hors contrat n° %s du %s", $passage->getNumeroArchive(), $passage->getDateDebut()->format('d/m/Y')));
+            $factureLigne->setDescription(sprintf("Prestations :\n - %s \n", implode("\n - ", $arrayPrestationNom)));
+            $factureLigne->setQuantite(1);
+            $factureLigne->setTauxTaxe($contrat->getTva());
+            $factureLigne->setPrixUnitaire($contrat->getPrixHt() / $contrat->getNbPassages());
+            $factureLigne->setMontantHT($factureLigne->getQuantite() * $factureLigne->getPrixUnitaire());
+
+            $facture->setMontantHT($factureLigne->getMontantHT());
+            $facture->setMontantTaxe($factureLigne->getMontantHT() * $factureLigne->getTauxTaxe());
+            $facture->setMontantTTC($factureLigne->getMontantHT() + $facture->getMontantTaxe());
+            $facture->addLigne($factureLigne);
+            return $facture;
+    }
 }
