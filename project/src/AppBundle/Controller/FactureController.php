@@ -485,7 +485,7 @@ class FactureController extends Controller
     	$contrat->resetFacturableMouvement($identifiant);
         $dm->flush();
 
-        return $this->redirectToRoute('facture_societe', array('id' => $societe->getId(),"etablissement_id" => $request->get('etablissement_id')));
+        return $this->redirectToRoute('facture_societe', array('id' => $contrat->getSociete()->getId(),"etablissement_id" => $request->get('etablissement_id')));
     }
 
     public function createExportSocieteForm(Societe $societe, Etablissement $etablissement = null) {
