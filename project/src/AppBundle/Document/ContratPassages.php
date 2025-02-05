@@ -144,6 +144,9 @@ class ContratPassages {
     {
     	$produits = array();
     	foreach ($this->getPassages() as $passage){
+            if($passage->isHorsContrat()) {
+                continue;
+            }
     		foreach ($passage->getProduits() as $produit) {
     			if (!isset($produits[$produit->getIdentifiant()])) {
     				$produits[$produit->getIdentifiant()] = array();
@@ -161,10 +164,10 @@ class ContratPassages {
     	return $produits;
     }
 
-    public function getNbPassagesRealises($exclude_garanti = false) {
+    public function getNbPassagesRealises($exclude_garantie = false) {
         $realises = 0;
         foreach ($this->getPassages() as $passage) {
-            if($exclude_garanti && ($passage->isGarantie() || $passage->isControle())){
+            if($exclude_garantie && ($passage->isGarantie() || $passage->isControle() || $passage->isHorsContrat())){
               continue;
             }
             $realises+=($passage->isRealise());
@@ -172,10 +175,10 @@ class ContratPassages {
         return $realises;
     }
 
-    public function getNbPassagesRealisesOuAnnule($exclude_garanti = false) {
+    public function getNbPassagesRealisesOuAnnule($exclude_garantie = false) {
         $realisesOuAnnules = 0;
         foreach ($this->getPassages() as $passage) {
-            if($exclude_garanti && ($passage->isGarantie() || $passage->isControle())){
+            if($exclude_garantie && ($passage->isGarantie() || $passage->isControle() || $passage->isHorsContrat())){
               continue;
             }
             $realisesOuAnnules+=($passage->isRealise() || $passage->isAnnule());
