@@ -832,9 +832,26 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
         return $this->getDureeFormatee($duree);
     }
 
+    public function getPrixPassage() {
+        return round($this->getPrixHt() / $this->getNbPassages(), 2);
+    }
+
+    public function getMouvementsContrat() {
+        $mouvements = [];
+        foreach ($this->getMouvements() as $mouvement) {
+            if($mouvement->isPassageHorsContrat()) {
+                continue;
+            }
+
+            $mouvements[] = $mouvement;
+        }
+
+        return $mouvements;
+    }
+
     public function getPrixMouvements() {
         $prix = 0;
-        foreach ($this->getMouvements() as $mouvement) {
+        foreach ($this->getMouvementsContrat() as $mouvement) {
             $prix = $prix + $mouvement->getPrixUnitaire();
         }
 
@@ -843,7 +860,7 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
 
     public function getPrixFactures() {
         $prix = 0;
-        foreach ($this->getMouvements() as $mouvement) {
+        foreach ($this->getMouvementsContrat() as $mouvement) {
           if($mouvement->isFacture()){
             $prix = $prix + $mouvement->getPrixUnitaire();
             }
@@ -861,7 +878,7 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
 
     public function getNbFacturesRestantes() {
     $nbFacturesGenerees = 0;
-      foreach ($this->getMouvements() as $mouvement) {
+      foreach ($this->getMouvementsContrat() as $mouvement) {
         if($mouvement->getPrixUnitaire() > 0){
           $nbFacturesGenerees++;
         }else{
@@ -872,7 +889,13 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
     }
 
     public function generateMouvement($origineDocumentGeneration = null) {
-        if ($this->getPrixRestant() <= 0 || $this->getNbFacturesRestantes() <= 0) {
+        $isHorsContrat = $origineDocumentGeneration && $origineDocumentGeneration instanceof Passage && $origineDocumentGeneration->isHorsContrat();
+
+        if (!$isHorsContrat && $this->getPrixRestant() <= 0) {
+             return null;
+        }
+
+        if(!$isHorsContrat && $this->getNbFacturesRestantes() <= 0) {
             return null;
         }
 
@@ -884,39 +907,46 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
     }
 
     public function buildMouvement($origineDocumentGeneration = null) {
-        if ($this->getPrixRestant() <= 0) {
+        $mouvement = new Mouvement();
+        $mouvement->setIdentifiant(uniqid());
+        if ($origineDocumentGeneration) {
+             $mouvement->setOrigineDocumentGeneration($origineDocumentGeneration);
+        }
+
+        if (!$mouvement->isPassageHorsContrat() && $this->getPrixRestant() <= 0) {
+            return null;
+        }
+        if (!$mouvement->isPassageHorsContrat() && $this->getNbFacturesRestantes() <= 0) {
+
             return null;
         }
 
-        if ($this->getNbFacturesRestantes() <= 0) {
-            return [];
+        if($mouvement->isPassageHorsContrat()) {
+            $mouvement->setPrixUnitaire($this->getPrixPassage());
+            $mouvement->setLibelle(sprintf("Intervention hors contrat n° %s du %s", $this->getNumeroArchive(), $origineDocumentGeneration->getDateDebut()->format('d/m/Y')));
+        } else {
+            $mouvement->setPrixUnitaire(round($this->getPrixRestant() / $this->getNbFacturesRestantes(), 2));
+            $mouvement->setLibelle($this->getLibelleMouvement());
         }
 
-        $mouvement = new Mouvement();
-        $mouvement->setIdentifiant(uniqid());
-        $mouvement->setPrixUnitaire(round($this->getPrixRestant() / $this->getNbFacturesRestantes(), 2));
         $mouvement->setQuantite(1);
         $mouvement->setTauxTaxe($this->getTva());
         $mouvement->setFacturable(true);
         $mouvement->setFacture(false);
         $mouvement->setSociete($this->getSociete());
-        $mouvement->setLibelle($this->getLibelleMouvement());
 
         $mouvement->setDocument($this);
-        if ($origineDocumentGeneration) {
-            $mouvement->setOrigineDocumentGeneration($origineDocumentGeneration);
-        }
 
         return $mouvement;
     }
 
     public function getLibelleMouvement() {
         $nbFactures = $this->getNbFactures();
-        $nbMvts = count($this->getMouvements()) + 1;
+        $nbMvts = count($this->getMouvementsContrat()) + 1;
         if ($nbMvts > $nbFactures) {
             $nbFactures = $nbMvts;
         }
-        return sprintf("Facture %s/%s - Proposition n° %s du %s au %s", count($this->getMouvements()) + 1, $nbFactures, $this->getNumeroArchive(), $this->getDateDebut()->format('d/m/Y'), $this->getDateFin()->format('d/m/Y'));
+        return sprintf("Facture %s/%s - Proposition n° %s du %s au %s", $nbMvts, $nbFactures, $this->getNumeroArchive(), $this->getDateDebut()->format('d/m/Y'), $this->getDateFin()->format('d/m/Y'));
     }
 
     public function restaureMouvements($documentGenere = null) {
@@ -1958,6 +1988,8 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
                     $passage->setNumeroOrdre("C");
                 } elseif ($passage->isGarantie()) {
                     $passage->setNumeroOrdre("G");
+                } elseif ($passage->isHorsContrat()) {
+                    $passage->setNumeroOrdre("HC");
                 } elseif($passage->isSousContrat()) {
                     $passage->setNumeroOrdre($numero);
                     $numero++;
