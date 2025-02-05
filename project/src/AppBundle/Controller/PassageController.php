@@ -13,6 +13,7 @@ use AppBundle\Document\Societe;
 use AppBundle\Document\Contrat;
 use AppBundle\Document\Passage;
 use AppBundle\Document\Coordonnees;
+use AppBundle\Document\LigneFacturable;
 use AppBundle\Type\PassageType;
 use AppBundle\Type\PassageCreationType;
 use AppBundle\Type\PassageModificationType;
@@ -244,6 +245,13 @@ class PassageController extends Controller
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $passage->setDateDebut($passage->getDatePrevision());
+            
+            $passageHorsContrat = $passage->isHorsContrat();
+
+            if($passageHorsContrat) {
+                $passage->setMouvementDeclenchable(true);
+            }
+
             $dm->persist($passage);
             $contrat->addPassage($etablissement, $passage);
             $contrat->preUpdate();
@@ -694,6 +702,8 @@ class PassageController extends Controller
         catch(Exception $e) {
             var_dump('NO mailer config'); exit;
         }
+
+        $passageHorsContrat = $passage->isHorsContrat();
 
         if($request->get('service') && $passage->getPdfNonEnvoye() == false) {
             $request->getSession()

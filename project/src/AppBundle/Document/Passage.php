@@ -204,6 +204,9 @@ class Passage implements DocumentEtablissementInterface, DocumentSocieteInterfac
         if ($this->isGarantie()) {
             return "G";
         }
+        if ($this->isHorsContrat()) {
+            return "HC";
+        }
         $numero = 1;
 
         if(!$this->getContrat()) {
@@ -409,6 +412,9 @@ class Passage implements DocumentEtablissementInterface, DocumentSocieteInterfac
         }
         if ($nbPassage == 'C') {
             return "Passage de contrôle";
+        }
+        if ($nbPassage == "HC") {
+            return "Passage hors contrat - Facturant";
         }
         $nbPassagePrevu = 0;
         if($this->getContrat()) {
@@ -727,6 +733,10 @@ class Passage implements DocumentEtablissementInterface, DocumentSocieteInterfac
 
     public function isGarantie() {
         return $this->getTypePassage() == PassageManager::TYPE_PASSAGE_GARANTIE;
+    }
+
+    public function isHorsContrat() {
+        return $this->getTypePassage() == PassageManager::TYPE_PASSAGE_HORS_CONTRAT;
     }
 
     public function copyTechnicienFromPassage(Passage $p) {
