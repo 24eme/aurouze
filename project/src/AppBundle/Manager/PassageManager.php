@@ -18,7 +18,7 @@ class PassageManager
     const TYPE_PASSAGE_CONTRAT = "CONTRAT";
     const TYPE_PASSAGE_GARANTIE = "GARANTIE";
     const TYPE_PASSAGE_CONTROLE = "CONTROLE";
-    const TYPE_PASSAGE_HORS_CONTRAT = "HORS CONTRAT";
+    const TYPE_PASSAGE_HORS_CONTRAT = "HORS CONTRAT - FACTURANT";
 
 
     const TYPE_INFESTATION_AUCUNE = "AUCUNE";
@@ -46,7 +46,7 @@ class PassageManager
         self::TYPE_PASSAGE_CONTRAT => "Sous contrat",
         self::TYPE_PASSAGE_GARANTIE => "Sous garantie",
         self::TYPE_PASSAGE_CONTROLE => "Contrôle",
-        self::TYPE_PASSAGE_HORS_CONTRAT => "Hors contrat",
+        self::TYPE_PASSAGE_HORS_CONTRAT => "Hors contrat - Facturant",
     );
 
     public static $applications = array(

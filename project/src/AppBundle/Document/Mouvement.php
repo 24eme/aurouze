@@ -4,6 +4,7 @@ namespace AppBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use AppBundle\Document\Societe;
+use AppBundle\Document\Passage;
 
 /**
  * @MongoDB\EmbeddedDocument
@@ -299,5 +300,10 @@ class Mouvement {
     public function getOrigineDocumentGeneration()
     {
         return $this->origineDocumentGeneration;
+    }
+
+    public function isPassageHorsContrat() {
+
+        return $this->getOrigineDocumentGeneration() &&  $this->getOrigineDocumentGeneration() instanceof Passage && $this->getOrigineDocumentGeneration()->isHorsContrat();
     }
 }

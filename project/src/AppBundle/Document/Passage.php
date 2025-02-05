@@ -414,7 +414,7 @@ class Passage implements DocumentEtablissementInterface, DocumentSocieteInterfac
             return "Passage de contrôle";
         }
         if ($nbPassage == "HC") {
-            return "Passage hors contrat";
+            return "Passage hors contrat - Facturant";
         }
         $nbPassagePrevu = 0;
         if($this->getContrat()) {

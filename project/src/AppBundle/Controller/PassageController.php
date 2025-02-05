@@ -706,19 +706,6 @@ class PassageController extends Controller
         $passageHorsContrat = $passage->isHorsContrat();
 
         if($request->get('service') && $passage->getPdfNonEnvoye() == false) {
-            if($passageHorsContrat){
-                $fm = $this->get('facture.manager');
-                $dm = $this->get('doctrine_mongodb')->getManager();
-
-                $contrat = $passage->getContrat();
-                $societe = $contrat->getSociete();
-                
-                $factureHorsContrat = $fm->createFactureHorsContrat($passage, $contrat, $societe);
-
-                $dm->persist($factureHorsContrat);
-                $dm->flush();
-            }
-
             $request->getSession()
             ->getFlashBag()
             ->add('success', "L'email a bien été envoyé !");
