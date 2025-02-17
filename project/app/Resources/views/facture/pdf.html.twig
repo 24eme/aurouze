@@ -3,7 +3,6 @@
 {% block body %}
 {% for lignes in pages %}
 
-<div style="display: flex; flex-direction: column; height: 1300px;">
     <div class="row">
         <div class="col-xs-6">
             <br />
@@ -54,175 +53,177 @@
         <br />
         <br />
     {% endif %}
-    <table class="table table-bordered table-condensed" style="border-bottom: 0 !important; border-right: 0 !important;  border-left: 0 !important;">
-        <thead>
-            <tr>
-                <th class="col-xs-7">Libellé</th>
-                <th class="text-center col-xs-1">Qté</th>
-                <th class="text-right col-xs-2">Prix&nbsp;unit.&nbsp;HT</th>
-                <th class="text-right col-xs-2">Sous-total&nbsp;HT</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for ligne in lignes %}
-            <tr>
-                <td>
-                    {% if(ligne.libelle is defined) %}{{ ligne.libelle|replace({' 1/1 ': ' '}) }}<br />{% endif %}
-                    {% if ligne.referenceClient is defined and ligne.referenceClient %}<small><small>Votre Réf CDE : {{ ligne.referenceClient }}</small><br /></small>{% endif %}
-                    {% if ligne.details is defined %}
-                    <small>
+
+    <div style="min-height: 800px; max-height: fit-content;">
+        <table class="table table-bordered table-condensed" style="border-bottom: 0 !important; border-right: 0 !important;  border-left: 0 !important;">
+            <thead>
+                <tr>
+                    <th class="col-xs-7">Libellé</th>
+                    <th class="text-center col-xs-1">Qté</th>
+                    <th class="text-right col-xs-2">Prix&nbsp;unit.&nbsp;HT</th>
+                    <th class="text-right col-xs-2">Sous-total&nbsp;HT</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for ligne in lignes %}
+                <tr>
+                    <td>
+                        {% if(ligne.libelle is defined) %}{{ ligne.libelle|replace({' 1/1 ': ' '}) }}<br />{% endif %}
+                        {% if ligne.referenceClient is defined and ligne.referenceClient %}<small><small>Votre Réf CDE : {{ ligne.referenceClient }}</small><br /></small>{% endif %}
+                        {% if ligne.details is defined %}
                         <small>
-                        {% for libelle, details in ligne.details %}
-                            {% if details is iterable %}
-                            {{ libelle }} :
-                            <ul class="list-unstyled" style="padding-left: 10px; margin-bottom: 0">
-                           	{% for detailLigne in details %}
-                                <li>- {{ detailLigne }}</li>
-                                {% endfor %}
-                            </ul>
-                            {% else %}
-                                {{ details | nl2br }}
-                            {% endif %}
-                        {% endfor %}
+                            <small>
+                            {% for libelle, details in ligne.details %}
+                                {% if details is iterable %}
+                                {{ libelle }} :
+                                <ul class="list-unstyled" style="padding-left: 10px; margin-bottom: 0">
+                               	{% for detailLigne in details %}
+                                    <li>- {{ detailLigne }}</li>
+                                    {% endfor %}
+                                </ul>
+                                {% else %}
+                                    {{ details | nl2br }}
+                                {% endif %}
+                            {% endfor %}
+                            </small>
                         </small>
-                    </small>
-                    {% endif %}
-                </td>
-                <td class="text-center">{% if ligne.quantite is defined %}{{ ligne.quantite }}{% endif %}</td>
-                <td class="text-right">{% if ligne.prixUnitaire is defined %}{{ ligne.prixUnitaire|number_format(2, ',', ' ')  }} €{% endif %}</td>
-                <td class="text-right">{% if ligne.montantHT is defined %}{{ ligne.montantHT|number_format(2, ',', ' ')  }} €{% endif %}</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-        {% if loop.last %}
-        <tfoot class="lead">
-            <tr>
-                <td style="height: 15px; border: 0 !important;"></td>
-                <td colspan="4" style="height: 15px; border-left: 0 !important; border-right: 0 !important;"></td>
-            </tr>
-            <tr>
-                <td rowspan="3" style="border: 0 !important; padding: 0;">{% if(not facture.isDevis) %}
-                <p class="well" style="padding: 5px; margin-bottom: 0; line-height: 10px; width: 92%;">
-                <small><small style="font-size: 60%;">
-                La loi n°2012-387 du 22 mars 2012 (art. L. 441-3 du C.Cce) nous fait l'obligation de vous indiquer :<br />
-                Application du taux minimum de pénalités de retard : trois fois le taux d'intérêt légal en vigueur (art. L. 441-6 du C.Cce)<br />
-                Indemnité forfaitaire pour frais de recouvrement : 40 euros (art. D. 441-5 du C.Cce)<br />
-                Sanction en cas de non respect des modalités ci-dessus :<br />
-                - amende de 75 000 euros pour les personnes physiques / 375 000 euros pour les personnes morales.
-            </small></small></p>
-                {% endif %}</td>
-                <td colspan="2">Total HT</td>
-                <td colspan="2" class="text-right">{{ facture.montantHT|number_format(2, ',', ' ')  }} €</td>
-            </tr>
-            <tr>
-                <td colspan="2">TVA {{ (facture.tva * 100)|number_format(2, ',', ' ') }}%</td>
-                <td colspan="2" class="text-right">{{ facture.montantTaxe|number_format(2, ',', ' ') }} €</td>
-            </tr>
-            <tr>
-                <td colspan="2">Total TTC</td>
-                <td colspan="2" class="text-right">{{ facture.montantTTC|number_format(2, ',', ' ')  }} €</td>
-            </tr>
-        </tfoot>
-        {% endif %}
-    </table>
-    {% if not loop.last %}
-        <div style="page-break-after: always;"></div>
-    {% endif %}
-    {% endfor %}
-
-    {% if (facture.isDevis) %}
-    <p>
-    Condition de réglement : {{ facture.frequencePaiementLibelle }}
-    </p>
-    {% endif %}
-
-    {% if (facture.description) %}
-    <p>
-        {{ facture.description  | nl2br }}
-    </p>
-    {% endif %}
-
-
-    {% if (devisLie) %}
-    <p>
-    Livraison à l'adresse : <strong>{{ devisLie.etablissementInfos.adresse.adresse }}
-    {{ devisLie.etablissementInfos.adresse.codePostal }}
-    {{ devisLie.etablissementInfos.adresse.commune }}</strong>
-    </p>
-    {% endif %}
-
-    {% if (devisLie and devisLie.numeroCommande) %}
-    <p>
-        Numero Commande : <strong>{{ devisLie.numeroCommande }}</strong>
-    </p>
-    {% endif %}
-
-    <div style="margin-top: auto;">
-        <small>
-        <p class="text-center" style="line-height: 18px; font-size: 15px;">
-            <small>
-            {{ parameters.emetteur.infos }}<br />
-            {{ parameters.emetteur.banque }}<br />
-            <span style="font-weight: 800;">{{ parameters.emetteur.virement }}<br /></span>
-            {% if parameters.emetteur.numero_agrement is defined %}Agrément du Ministère de l'Agriculture A. I. F. {{ parameters.emetteur.numero_agrement }}<br />{% endif %}
-            </small>
-        </p>
-        </small>
-        {% if(not facture.isAvoir) %}
-        <div style="border-top: 1px dashed #ccc; margin-top: 15px;">
-            <div class="row">
-                <div class="col-xs-12 text-center">
-                    <small><small><small>Coupon à joindre avec votre règlement</small></small></small>
-                </div>
-                <div class="col-xs-6">
-                    <p>
-                    {% if facture.isDevis %}
-                    <span class="lead" style="font-size: 15px;">Devis n°&nbsp;{{ facture.numeroDevis }} du {{ facture.dateFacturation|date("d/m/Y") }}</span><br />
-                    {% else %}
-                    <span class="lead" style="font-size: 15px;">Facture n°&nbsp;{{ facture.numeroFacture }} du {{ facture.dateFacturation|date("d/m/Y") }}</span><br />
-                    {% endif %}
-                    <small>Client : {{ facture.destinataire.raisonSociale }} ({{ facture.destinataire.codeComptable }})</small>
-                    </p>
-                </div>
-                <div class="col-xs-6 text-right">
-                    <p>
-                    <span class="lead" style="font-size: 15px;">Montant {% if facture.isFacture %}dû{% endif %} : {{ facture.montantTTC|number_format(2, ',', ' ')  }}&nbsp;€</span><br />
-                    {% if facture.isFacture %}
-                    <small>
-                    {% if facture.cloture  %}
-                        {% if facture.avoir %}
-                            Cette facture a été redressé (avoir {{ facture.avoir }})
-                        {% else %}
-                            Cette facture a été réglée le : {{ facture.getDatePaiement() }}
                         {% endif %}
-                    {% else %}
-                    {% if facture.sepa and facture.sepa.actif %}Cette facture passera automatiquement en prélèvement le : {% else %}Date limite de règlement : {% endif %}{{ facture.dateLimitePaiement|date("d/m/Y") }}
-                    {% endif %}
-                    </small>
-                {% endif %}
-
-                    </p>
-                </div>
-            </div>
-        </div>
-        {% else %}
-        <div style="border-top: 1px dashed #ccc; margin-top: 15px;">
-            <div class="row">
-                <div class="col-xs-12 text-center">
-                    <small><small><small>&nbsp;</small></small></small>
-                </div>
-                <div class="col-xs-6">
-                    <p>
-                    <span class="lead" style="font-size: 15px;">Avoir n°&nbsp;{{ facture.numeroFacture }} du {{ facture.dateFacturation|date("d/m/Y") }}</span><br />
-                    <small>Client : {{ facture.destinataire.raisonSociale }} ({{ facture.destinataire.codeComptable }})</small>
-                    </p>
-                </div>
-                <div class="col-xs-6 text-right">
-                    <p>&nbsp;</p>
-                </div>
-            </div>
-        </div>
+                    </td>
+                    <td class="text-center">{% if ligne.quantite is defined %}{{ ligne.quantite }}{% endif %}</td>
+                    <td class="text-right">{% if ligne.prixUnitaire is defined %}{{ ligne.prixUnitaire|number_format(2, ',', ' ')  }} €{% endif %}</td>
+                    <td class="text-right">{% if ligne.montantHT is defined %}{{ ligne.montantHT|number_format(2, ',', ' ')  }} €{% endif %}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+            {% if loop.last %}
+            <tfoot class="lead">
+                <tr>
+                    <td style="height: 15px; border: 0 !important;"></td>
+                    <td colspan="4" style="height: 15px; border-left: 0 !important; border-right: 0 !important;"></td>
+                </tr>
+                <tr>
+                    <td rowspan="3" style="border: 0 !important; padding: 0;">{% if(not facture.isDevis) %}
+                    <p class="well" style="padding: 5px; margin-bottom: 0; line-height: 10px; width: 92%;">
+                    <small><small style="font-size: 60%;">
+                    La loi n°2012-387 du 22 mars 2012 (art. L. 441-3 du C.Cce) nous fait l'obligation de vous indiquer :<br />
+                    Application du taux minimum de pénalités de retard : trois fois le taux d'intérêt légal en vigueur (art. L. 441-6 du C.Cce)<br />
+                    Indemnité forfaitaire pour frais de recouvrement : 40 euros (art. D. 441-5 du C.Cce)<br />
+                    Sanction en cas de non respect des modalités ci-dessus :<br />
+                    - amende de 75 000 euros pour les personnes physiques / 375 000 euros pour les personnes morales.
+                </small></small></p>
+                    {% endif %}</td>
+                    <td colspan="2">Total HT</td>
+                    <td colspan="2" class="text-right">{{ facture.montantHT|number_format(2, ',', ' ')  }} €</td>
+                </tr>
+                <tr>
+                    <td colspan="2">TVA {{ (facture.tva * 100)|number_format(2, ',', ' ') }}%</td>
+                    <td colspan="2" class="text-right">{{ facture.montantTaxe|number_format(2, ',', ' ') }} €</td>
+                </tr>
+                <tr>
+                    <td colspan="2">Total TTC</td>
+                    <td colspan="2" class="text-right">{{ facture.montantTTC|number_format(2, ',', ' ')  }} €</td>
+                </tr>
+            </tfoot>
+            {% endif %}
+        </table>
+        {% if not loop.last %}
+            <div style="page-break-after: always;"></div>
         {% endif %}
+        {% endfor %}
+
+        {% if (facture.isDevis) %}
+        <p>
+        Condition de réglement : {{ facture.frequencePaiementLibelle }}
+        </p>
+        {% endif %}
+
+        {% if (facture.description) %}
+        <p>
+            {{ facture.description  | nl2br }}
+        </p>
+        {% endif %}
+
+
+        {% if (devisLie) %}
+        <p>
+        Livraison à l'adresse : <strong>{{ devisLie.etablissementInfos.adresse.adresse }}
+        {{ devisLie.etablissementInfos.adresse.codePostal }}
+        {{ devisLie.etablissementInfos.adresse.commune }}</strong>
+        </p>
+        {% endif %}
+
+        {% if (devisLie and devisLie.numeroCommande) %}
+        <p>
+            Numero Commande : <strong>{{ devisLie.numeroCommande }}</strong>
+        </p>
+        {% endif %}
+
+        <div style="position:absolute; bottom: 0; width: 100%; padding:0 30px; left: 0; right: 0;">
+            <small>
+            <p class="text-center" style="line-height: 18px; font-size: 15px;">
+                <small>
+                {{ parameters.emetteur.infos }}<br />
+                {{ parameters.emetteur.banque }}<br />
+                <span style="font-weight: 800;">{{ parameters.emetteur.virement }}<br /></span>
+                {% if parameters.emetteur.numero_agrement is defined %}Agrément du Ministère de l'Agriculture A. I. F. {{ parameters.emetteur.numero_agrement }}<br />{% endif %}
+                </small>
+            </p>
+            </small>
+            {% if(not facture.isAvoir) %}
+            <div style="border-top: 1px dashed #ccc; margin-top: 15px;">
+                <div class="row">
+                    <div class="col-xs-12 text-center">
+                        <small><small><small>Coupon à joindre avec votre règlement</small></small></small>
+                    </div>
+                    <div class="col-xs-6">
+                        <p>
+                        {% if facture.isDevis %}
+                        <span class="lead" style="font-size: 15px;">Devis n°&nbsp;{{ facture.numeroDevis }} du {{ facture.dateFacturation|date("d/m/Y") }}</span><br />
+                        {% else %}
+                        <span class="lead" style="font-size: 15px;">Facture n°&nbsp;{{ facture.numeroFacture }} du {{ facture.dateFacturation|date("d/m/Y") }}</span><br />
+                        {% endif %}
+                        <small>Client : {{ facture.destinataire.raisonSociale }} ({{ facture.destinataire.codeComptable }})</small>
+                        </p>
+                    </div>
+                    <div class="col-xs-6 text-right">
+                        <p>
+                        <span class="lead" style="font-size: 15px;">Montant {% if facture.isFacture %}dû{% endif %} : {{ facture.montantTTC|number_format(2, ',', ' ')  }}&nbsp;€</span><br />
+                        {% if facture.isFacture %}
+                        <small>
+                        {% if facture.cloture  %}
+                            {% if facture.avoir %}
+                                Cette facture a été redressé (avoir {{ facture.avoir }})
+                            {% else %}
+                                Cette facture a été réglée le : {{ facture.getDatePaiement() }}
+                            {% endif %}
+                        {% else %}
+                        {% if facture.sepa and facture.sepa.actif %}Cette facture passera automatiquement en prélèvement le : {% else %}Date limite de règlement : {% endif %}{{ facture.dateLimitePaiement|date("d/m/Y") }}
+                        {% endif %}
+                        </small>
+                    {% endif %}
+
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div style="border-top: 1px dashed #ccc; margin-top: 15px;">
+                <div class="row">
+                    <div class="col-xs-12 text-center">
+                        <small><small><small>&nbsp;</small></small></small>
+                    </div>
+                    <div class="col-xs-6">
+                        <p>
+                        <span class="lead" style="font-size: 15px;">Avoir n°&nbsp;{{ facture.numeroFacture }} du {{ facture.dateFacturation|date("d/m/Y") }}</span><br />
+                        <small>Client : {{ facture.destinataire.raisonSociale }} ({{ facture.destinataire.codeComptable }})</small>
+                        </p>
+                    </div>
+                    <div class="col-xs-6 text-right">
+                        <p>&nbsp;</p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
     </div>
-</div>
 {% endblock %}
