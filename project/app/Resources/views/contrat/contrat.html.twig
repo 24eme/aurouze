@@ -288,7 +288,8 @@
                     </td>
                     <td class="text-right">{{ facture.dateFacturation | localizeddate("medium", "none", null, null, "d MMM yyyy") }}</td>
                     <td class="text-center"><a href="{{ path('facturable_pdf', {'document': facture.id ,'key': facture.getSecretKey()})}}"><span class="glyphicon glyphicon-file"></span>&nbsp;{{ facture.numeroFacture }}</a></td>
-                    {% set montant = mouvement.montantHT * mouvement.quantite %}
+
+                    {% set montant = (facture.origineAvoir is not empty) ? mouvement.montantHT : mouvement.montantHT * mouvement.quantite %}
                     {% set montantTTC = montant + (montant * mouvement.tauxTaxe) %}
                     {% set total = total + montant %}
                     {% set totalTTC = totalTTC + montantTTC %}
