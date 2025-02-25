@@ -10,7 +10,7 @@
                         </p>
                     	{% endif %}
                         <p class="lead text-center">
-                            {{ contrat.getTypeContratLibelle() }} {% if(contrat.typeContratOriginal and contrat.typeContrat != contrat.typeContratOriginal) %}({{ contrat.typeContratOriginalLibelle }}){% endif %} de {{ contrat.getDuree() }} mois {% if contrat.reconduit %}<button class="btn btn-xs btn-success">Reconduit</button>{% endif %}<br />
+                            {{ contrat.getTypeContratLibelle() }} de {{ contrat.getDuree() }} mois {% if contrat.reconduit %}<button class="btn btn-xs btn-success">Reconduit</button>{% endif %}<br />
                         </p>
                         {%  if contrat.getDateDebut() %}
                         <p class="lead text-center">
