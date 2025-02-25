@@ -650,8 +650,19 @@ class ContratController extends Controller {
             'page-size' => "A4"
         ]);
 
-        if(file_exists($this->get('kernel')->getRootDir().'/../data/CGV.pdf')) {
-            exec(escapeshellcmd('pdftk '.$tmpfile.' '.$this->get('kernel')->getRootDir().'/../data/CGV.pdf cat output '.$tmpfile.'.pdf'), $output, $exitcode);
+        $appname = $this->container->getParameter('instanceapp');
+        $documentCgv = file_exists($this->get('kernel')->getRootDir()."/../data/CGV.pdf") ? $this->get('kernel')->getRootDir()."/../data/CGV.pdf" : null;
+        $documentRib = file_exists($this->get('kernel')->getRootDir()."/../web/documents/rib-$appname.pdf") ? $this->get('kernel')->getRootDir()."/../web/documents/rib-$appname.pdf" : null;
+
+        if ($documentCgv || $documentRib) {
+            if ($documentCgv && $documentRib) {
+                exec(escapeshellcmd('pdftk '.$tmpfile.' '.$documentCgv.' '.$documentRib.' cat output '.$tmpfile.'.pdf'), $output, $exitcode);
+            } elseif ($documentCgv) {
+                exec(escapeshellcmd('pdftk '.$tmpfile.' '.$documentCgv. ' cat output '.$tmpfile.'.pdf'), $output, $exitcode);
+            } elseif ($documentRib) {
+                exec(escapeshellcmd('pdftk '.$tmpfile.' '.$documentRib. ' cat output '.$tmpfile.'.pdf'), $output, $exitcode);
+            }
+
             if ($exitcode !== 0) {
                 throw new \Exception('pdftk failed with error: '.implode(', ', $output));
             }
