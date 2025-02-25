@@ -652,7 +652,7 @@ class ContratController extends Controller {
 
         $appname = $this->container->getParameter('instanceapp');
         $documentCgv = file_exists($this->get('kernel')->getRootDir()."/../data/CGV.pdf") ? $this->get('kernel')->getRootDir()."/../data/CGV.pdf" : null;
-        $documentRib = file_exists($this->get('kernel')->getRootDir()."/../web/documents/rib-$appname.pdf") ? $this->get('kernel')->getRootDir()."/../web/documents/rib-$appname.pdf" : null;
+        $documentRib = file_exists($this->get('kernel')->getRootDir()."/../data/rib-$appname.pdf") ? $this->get('kernel')->getRootDir()."/../data/rib-$appname.pdf" : null;
 
         if ($documentCgv || $documentRib) {
             if ($documentCgv && $documentRib) {
