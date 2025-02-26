@@ -120,8 +120,10 @@
   <div class="ui-bar ui-bar-a">
     <div class="ui-grid-solo">
       {% if attachements[planifiable.etablissement.id] is defined %}
-      {% for attachement in attachements[planifiable.etablissement.id] %}
+      {% for attachement in attachements[planifiable.etablissement.id]|sort|reverse %}
           {% if attachement.visibleTechnicien %}
+          <br>
+          <h4>{{ attachement.updatedAt| localizeddate("medium", "none", null, null, "d MMMM yyyy")  }}</h4>
               <div class="ui-block-a">
                   {% if attachement.isImage %}
                 <a href="#popupPhoto-{{ attachement.id }}" data-rel="popup" data-position-to="window" class="ui-btn ui-corner-all ui-shadow" data-transition="fade">
