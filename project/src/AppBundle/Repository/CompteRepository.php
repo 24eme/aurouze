@@ -16,13 +16,16 @@ class CompteRepository extends BaseRepository {
         return $this->findAllUtilisateursHasTag(CompteManager::TYPE_COMMERCIAL);
     }
 
-    public function findAllUtilisateursCalendrier() {
-        return $this->findAllUtilisateursHasTag(CompteManager::TAG_CALENDRIER);
+    public function findAllUtilisateursCalendrier($sort = []) {
+        return $this->findAllUtilisateursHasTag(CompteManager::TAG_CALENDRIER, $sort);
     }
 
-    public function findAllUtilisateursHasTag($tag) {
+    public function findAllUtilisateursHasTag($tag, $sort = []) {
 
-        return $this->findBy(array('tags.identifiant' => $tag));
+        return $this->findBy(
+            array('tags.identifiant' => $tag),
+            $sort
+        );
     }
 
     public function findByQuery($q, $inactif = false)
