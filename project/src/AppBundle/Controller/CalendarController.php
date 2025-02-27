@@ -106,7 +106,7 @@ class CalendarController extends Controller {
         }
 
         $allTechniciens = [];
-        $techniciens = $dm->getRepository('AppBundle:Compte')->findAllUtilisateursCalendrier();
+        $techniciens = $dm->getRepository('AppBundle:Compte')->findAllUtilisateursCalendrier(['prenom' => 'ASC']);
         $techniciensFinal = array();
 
         $techniciensFiltre = $request->get("techniciens", unserialize($request->cookies->get('techniciens', serialize(array()))));
