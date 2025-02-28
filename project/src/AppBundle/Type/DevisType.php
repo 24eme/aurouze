@@ -112,7 +112,7 @@ class DevisType extends AbstractType
                   'attr' => ['class' => 'btn btn-success']
               ]);
 
-              if(!$builder->getData()->getRendezVous()) {
+              if($builder->getData()->getDateAcceptation() && !$builder->getData()->getRendezVous()) {
               $builder->add('plan', SubmitType::class, [
                   'label' => 'Planifier',
                   'attr' => ['class' => 'btn btn-default']
