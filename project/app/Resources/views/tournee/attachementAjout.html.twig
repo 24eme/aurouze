@@ -40,7 +40,7 @@
     <div class="form-group">
       <label class="col-xs-4 control-label control-label required" for="attachement_visibleClient">Visible des clients :</label>
       <div class="col-xs-8 text-right">
-        {{ form_widget(attachementform.form.visibleClient) }}
+        {{ form_widget(attachementform.form.visibleClient, {'attr': {'checked': 'checked'} }) }}
       </div>
     </div>
   </div>
