@@ -48,7 +48,7 @@ class CalendarController extends Controller {
             $technicienObj = $dm->getRepository('AppBundle:Compte')->findOneById($technicien);
         }
 
-        $techniciens = $dm->getRepository('AppBundle:Compte')->findAllUtilisateursCalendrier();
+        $techniciens = $dm->getRepository('AppBundle:Compte')->findAllUtilisateursCalendrier(['prenom' => 'ASC']);
         $techniciensFinal = array();
         $techniciensOnglet = $techniciens;
         foreach($techniciens as $t) {
