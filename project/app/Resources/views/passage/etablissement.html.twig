@@ -117,7 +117,7 @@
                                     <a href="{{ path('contrat_visualisation', {'id': contrat.id })}}">Voir le contrat</a>
                                     </div>
                                     <div class="col-xs-3">
-                                        {% if(contrat.isEnAttenteAcceptation() and contrat.contratPassages | length == 0) %}{{ contrat.previsionnel | length }}{% else %}{{ contrat.nbPassages}}{% endif %} passages prévus sur {{ contrat.duree }} mois
+                                        {% if(contrat.isEnAttenteAcceptation() and not contrat.nbPassages) %}{{ contrat.previsionnel | length }}{% else %}{{ contrat.nbPassages}}{% endif %} passages prévus sur {{ contrat.duree }} mois
                                     </div>
                                     <div class="col-xs-2">
                                         <a href="" title="{{ contrat.nomenclature | nl2br }}" data-html="true" data-toggle="tooltip">Voir la nomenclature</a>
