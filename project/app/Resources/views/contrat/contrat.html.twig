@@ -24,7 +24,7 @@
             				style="cursor: pointer;">&nbsp;</i></span> {%else%} <span
             				class="label label-xs label-primary">{{ prestation.nomToString }}</span>
             			{%endif%} {% endfor %}
-                        {% if(contrat.isEnAttenteAcceptation() and contrat.contratPassages | length == 0 ) %}
+                        {% if(contrat.isEnAttenteAcceptation() and not contrat.nbPassages) %}
                         {{ contrat.previsionnel | length }} passage(s)
                         {% else %}
                             {{ contrat.nbPassages }}  passage(s)
@@ -74,7 +74,7 @@
     </div>
 </div>
 
-{% if(contrat.isEnAttenteAcceptation() and contrat.contratPassages | length == 0 ) %}
+{% if(contrat.isEnAttenteAcceptation() and not contrat.nbPassages) %}
     <div class="panel panel-default">
         <div class="panel-heading"><h3 class="panel-title">Lieux de passage : {% if(editionMode is defined) %}<a class="btn btn-default btn-xs pull-right" href="{{ path('contrat_modification', {'id': contrat.id })}}">Modifier</a>{% endif %}</h3></div>
         <ul class="list-group">
@@ -107,7 +107,7 @@
     </div>
 </div>
 
-{% if(contrat.isEnAttenteAcceptation() and contrat.contratPassages | length == 0 ) %}
+{% if(contrat.isEnAttenteAcceptation() and not contrat.nbPassages ) %}
     <div class="panel panel-default">
         <div class="panel-heading">
             <h3 class="panel-title">Planning prévisionnelles des interventions (avec une date de début de contrat au {{ contrat.dateDebut | date("d/m/Y")}})</h3>
