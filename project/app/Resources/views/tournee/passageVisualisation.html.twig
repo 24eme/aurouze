@@ -123,8 +123,9 @@
       {% for attachement in attachements[planifiable.etablissement.id]|sort|reverse %}
           {% if attachement.visibleTechnicien %}
           <br>
+          <div {% if attachement.updatedAt|date("U") >= "-12 months"|date("U") %} class="recentAttachement" {% else %} class="oldAttachement ui-block-a" hidden {% endif %}
           <h4>{{ attachement.updatedAt| localizeddate("medium", "none", null, null, "d MMMM yyyy")  }}</h4>
-              <div class="ui-block-a">
+
                   {% if attachement.isImage %}
                 <a href="#popupPhoto-{{ attachement.id }}" data-rel="popup" data-position-to="window" class="ui-btn ui-corner-all ui-shadow" data-transition="fade">
                   <img src="{{ path('attachement_download', { id: attachement.id, noattachment: true }) }}" alt="{{ attachement.titre ?: attachement.originalName }}" style="width: 100%; margin-bottom:0"/>
@@ -137,10 +138,12 @@
                  {{ attachement.titre ?: attachement.originalName }}
                 </a>
                 {% endif %}
-              </div>
+            </div>
           {% endif %}
       {% endfor %}
       {% endif %}
+      <button class="show-more" data-default-text="Voir plus...">Voir plus...</button>
+
     </div>
 </div>
     <div class="ui-bar ui-bar-a">
@@ -211,3 +214,33 @@
         {% endfor %}
     </div>
   </div>
+
+
+{% block javascripts %}
+    <script>
+      $(document).ready(function() {
+        if(!$(".oldAttachement").length){
+          $(".show-more").hide();
+        }else {
+          $(".show-more").removeAttr('style').css({"background": "rgba(51, 51, 51, 0.2)", "margin-top": "15px"});
+        }
+
+        function updateButtonText() {
+            const documentsVisible = $(".oldAttachement").is(":visible");
+            if (documentsVisible) {
+                $(".show-more").text('Voir moins');
+            } else {
+                $(".show-more").text($(".show-more").data('default-text'));
+            }
+        }
+
+        $(".show-more").click(function(){
+            $(".oldAttachement").toggle();
+            updateButtonText()
+        });
+
+        updateButtonText()
+      });
+
+    </script>
+{% endblock %}
