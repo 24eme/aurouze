@@ -123,7 +123,7 @@
       {% for attachement in attachements[planifiable.etablissement.id]|sort|reverse %}
           {% if attachement.visibleTechnicien %}
           <br>
-          <div {% if attachement.updatedAt|date("U") >= "-12 months"|date("U") %} class="recentAttachement" {% else %} class="oldAttachement ui-block-a" hidden {% endif %}
+          <div {% if attachement.updatedAt|date("U") >= "-12 months"|date("U") %} class="recentAttachement" {% else %} class="oldAttachement ui-block-a" hidden {% endif %} >
           <h4>{{ attachement.updatedAt| localizeddate("medium", "none", null, null, "d MMMM yyyy")  }}</h4>
 
                   {% if attachement.isImage %}
