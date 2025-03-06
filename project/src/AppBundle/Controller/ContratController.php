@@ -364,11 +364,14 @@ class ContratController extends Controller {
                     if ($passage->isRealise() || $passage->isAnnule()) {
                         continue;
                     }
-                    if($passage->getDatePrevision()->format('Ymd') <= $contrat->getDateResiliation()->format('Ymd') && !$forcerAnnulationPassages) {
+
+                    if(!$passage->isPlanifie() && ( $passage->getDatePrevision()->format('Ymd') <= $contrat->getDateResiliation()->format('Ymd') ) && !$forcerAnnulationPassages) {
                         continue;
                     }
                     $passage->setStatut(PassageManager::STATUT_ANNULE);
                     $passage->setCommentaire("Annulé suite à l'annulation du contrat");
+                    $rdv = $passage->getRendezVous();
+                    $dm->remove($rdv);
                 }
             }
             foreach ($contrat->getMouvements() as $mouvement) {
