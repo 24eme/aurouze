@@ -123,7 +123,7 @@
       {% for attachement in attachements[planifiable.etablissement.id]|sort|reverse %}
           {% if attachement.visibleTechnicien %}
           <br>
-          <div {% if attachement.updatedAt|date("U") >= "-12 months"|date("U") %} class="recentAttachement" {% else %} class="oldAttachement ui-block-a" hidden {% endif %} >
+          <div {% if attachement.updatedAt|date("U") >= "-12 months"|date("U") %} class="recentAttachement"> {% else %} class="oldAttachement" hidden> {% endif %}
           <h4>{{ attachement.updatedAt| localizeddate("medium", "none", null, null, "d MMMM yyyy")  }}</h4>
 
                   {% if attachement.isImage %}
@@ -219,27 +219,44 @@
 {% block javascripts %}
     <script>
       $(document).ready(function() {
-        if(!$(".oldAttachement").length){
-          $(".show-more").hide();
-        }else {
-          $(".show-more").removeAttr('style').css({"background": "rgba(51, 51, 51, 0.2)", "margin-top": "15px"});
-        }
 
-        function updateButtonText() {
-            const documentsVisible = $(".oldAttachement").is(":visible");
-            if (documentsVisible) {
-                $(".show-more").text('Voir moins');
-            } else {
-                $(".show-more").text($(".show-more").data('default-text'));
+        // Délégation d'événement pour récupérer la div active du passage
+        // après que la classe .ui-page-active lui ait été attribuée dynamiquement
+
+        $(".main-mobile").on("pageshow", "div.ui-page-active", function() {
+          let activePage = $("div.ui-page-active");
+          let previousAttachement = activePage.find(".oldAttachement");
+          let showMoreButton = activePage.find(".show-more");
+
+          function showMoreButtonVisibility() {
+            if($(previousAttachement).length){
+              $(showMoreButton).removeAttr("style").css({"background": "rgba(51, 51, 51, 0.2)", "margin-top": "15px"});
+            }else {
+              $(showMoreButton).hide();
             }
-        }
+          }
 
-        $(".show-more").click(function(){
-            $(".oldAttachement").toggle();
-            updateButtonText()
+          function updateButtonText() {
+              const documentsVisible = $(previousAttachement).is(":visible");
+              if (documentsVisible) {
+                  $(showMoreButton).text("Voir moins");
+              } else {
+                  $(showMoreButton).text($(showMoreButton).data("default-text"));
+              }
+            }
+
+          function showHideDocuments() {
+            $(showMoreButton).off('click').on('click', function() {
+                $(previousAttachement).slideToggle(800, function() {
+                    updateButtonText();
+                });
+            });
+          }
+
+          showMoreButtonVisibility();
+          showHideDocuments();
+          updateButtonText();
         });
-
-        updateButtonText()
       });
 
     </script>
