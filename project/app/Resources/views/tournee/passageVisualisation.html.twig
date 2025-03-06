@@ -228,6 +228,8 @@
           let previousAttachement = activePage.find(".oldAttachement");
           let showMoreButton = activePage.find(".show-more");
 
+          $(previousAttachement).hide();
+
           function showMoreButtonVisibility() {
             if($(previousAttachement).length){
               $(showMoreButton).removeAttr("style").css({"background": "rgba(51, 51, 51, 0.2)", "margin-top": "15px"});
@@ -247,7 +249,7 @@
 
           function showHideDocuments() {
             $(showMoreButton).off('click').on('click', function() {
-                $(previousAttachement).slideToggle(800, function() {
+                $(previousAttachement).slideToggle(1000, function() {
                     updateButtonText();
                 });
             });
