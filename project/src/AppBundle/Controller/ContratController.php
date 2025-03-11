@@ -236,7 +236,7 @@ class ContratController extends Controller {
               throw new \Exception("Le contrat doit avoir date d'acceptation et date de début");
             }
 
-            if ($contrat->isEnAttenteAcceptation() && !$isBrouillon && $contrat->getDateDebut()) {
+            if ($contrat->isEnAttenteAcceptation() && !$isBrouillon && $contrat->getDateDebut() && $contrat->getTechnicien()) {
                 $contratManager->generateAllPassagesForContrat($contrat);
                 $dateFin = clone $contrat->getDateDebut();
                 $dateFin = $dateFin->modify("+" . $contrat->getDuree() . " month -1 day");
