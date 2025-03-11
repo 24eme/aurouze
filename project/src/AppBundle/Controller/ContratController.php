@@ -358,20 +358,17 @@ class ContratController extends Controller {
             $contratForm = $form->getData();
             $contrat->setTypeContratOriginal($contrat->getTypeContrat());
             $contrat->setTypeContrat(ContratManager::TYPE_CONTRAT_ANNULE);
-            $forcerAnnulationPassages = $form['forcerAnnulationPassages']->getData() == 1;
             foreach($contrat->getContratPassages() as $etb => $passagesByEtb) {
                 foreach ($passagesByEtb->getPassages() as $passage) {
                     if ($passage->isRealise() || $passage->isAnnule()) {
                         continue;
                     }
-
-                    if(!$passage->isPlanifie() && ( $passage->getDatePrevision()->format('Ymd') <= $contrat->getDateResiliation()->format('Ymd') ) && !$forcerAnnulationPassages) {
-                        continue;
-                    }
                     $passage->setStatut(PassageManager::STATUT_ANNULE);
                     $passage->setCommentaire("Annulé suite à l'annulation du contrat");
                     $rdv = $passage->getRendezVous();
-                    $dm->remove($rdv);
+                    if($rdv) {
+                        $dm->remove($rdv);
+                    }
                 }
             }
             foreach ($contrat->getMouvements() as $mouvement) {
