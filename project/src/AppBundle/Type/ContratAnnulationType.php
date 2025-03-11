@@ -40,7 +40,6 @@ class ContratAnnulationType extends AbstractType {
                     ),
                     'widget' => 'single_text',
                     'format' => 'dd/MM/yyyy'))
-                 ->add('forcerAnnulationPassages', CheckboxType::class, array('label' => "Forcer l'annulation de tous les passages non réalisés", "mapped" => false, 'required' => false))
                  ->add('commentaireResiliation', TextareaType::class, array('label' => 'Commentaire :', "required" => false, 'mapped' => false, "attr" => array("class" => "form-control", "rows" => 12)));
 
 
