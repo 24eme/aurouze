@@ -348,7 +348,7 @@ class ContratController extends Controller {
         if (!$contrat->isAnnulable()) {
             return $this->redirectToRoute('contrat_visualisation', array('id' => $contrat->getId()));
         }
-        $contrat->setDateResiliation(new \DateTime());
+        $contrat->setDateResiliation($contrat->getDateFin());
         $form = $this->createForm(new ContratAnnulationType($dm, $contrat), $contrat, array(
             'action' => $this->generateUrl('contrat_annulation', array('id' => $contrat->getId())),
             'method' => 'POST',
@@ -363,6 +363,11 @@ class ContratController extends Controller {
                     if ($passage->isRealise() || $passage->isAnnule()) {
                         continue;
                     }
+
+                    if($passage->getDatePrevision()->format('Ymd') <= $contrat->getDateResiliation()->format('Ymd')) {
+                        continue;
+                    }
+
                     $passage->setStatut(PassageManager::STATUT_ANNULE);
                     $passage->setCommentaire("Annulé suite à l'annulation du contrat");
                     $rdv = $passage->getRendezVous();
