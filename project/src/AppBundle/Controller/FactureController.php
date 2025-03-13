@@ -1369,6 +1369,7 @@ class FactureController extends Controller
 
           $fromEmail = $parameters['coordonnees']['email'];
           $fromName = $parameters['coordonnees']['nom'];
+          $replyEmail = $parameters['coordonnees']['replyEmail'];
           $prefix_subject =  $parameters['coordonnees']['prefix_objet'];
 
           $email_footer = $this->container->getParameter('email_footer');
@@ -1405,6 +1406,7 @@ class FactureController extends Controller
               ->setSubject($subject)
               ->setFrom(array($fromEmail => $fromName))
               ->setTo(explode(";", $toEmail))
+              ->setReplyTo($replyEmail)
               ->setBody($body,'text/plain')
               ->setReadReceiptTo($fromEmail);
 
