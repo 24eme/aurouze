@@ -1,36 +1,37 @@
-<div style="display: flex; flex-direction: column; height: 1300px;">
-    <div class="row">
-        <div class="col-xs-6">
-            <br />
-            <p>
-                <span class="lead">{{ facture.emetteur.nom }}</span><br />
-                {% if(facture.emetteur) %}
-                {{ facture.emetteur.adresse }}<br />
-                {{ facture.emetteur.codePostal }}, {{ facture.emetteur.commune }}<br />
-                {% endif %}
-                Tél : {{ facture.emetteur.telephone }}<br />
-                {% if(facture.emetteur.email) %}
-                E-mail: {{ facture.emetteur.email }}
-                {% endif %}
-            </p>
-        </div>
-        <div class="col-xs-6">
-            <div class="text-right">
-            <h3>2nd relance</h3>
-            <br /><br />
-            </div>
-            <br />
-            <br />
-            <p>
-           	<small>
-                {{ facture.destinataire.nomFormatee | nl2br }}<br />
-                {{ facture.destinataire.adresseFormatee | nl2br }}<br />
-                {{ facture.destinataire.codePostal }} {{ facture.destinataire.commune }}<br />
-                </small>
-            </p>
-        </div>
+<div class="row">
+    <div class="col-xs-6">
+        <br />
+        <p>
+            <span class="lead">{{ facture.emetteur.nom }}</span><br />
+            {% if(facture.emetteur) %}
+            {{ facture.emetteur.adresse }}<br />
+            {{ facture.emetteur.codePostal }}, {{ facture.emetteur.commune }}<br />
+            {% endif %}
+            Tél : {{ facture.emetteur.telephone }}<br />
+            {% if(facture.emetteur.email) %}
+            E-mail: {{ facture.emetteur.email }}
+            {% endif %}
+        </p>
     </div>
-    <br />
+    <div class="col-xs-6">
+        <div class="text-right">
+        <h3>2nd relance</h3>
+        <br /><br />
+        </div>
+        <br />
+        <br />
+        <p>
+       	<small>
+            {{ facture.destinataire.nomFormatee | nl2br }}<br />
+            {{ facture.destinataire.adresseFormatee | nl2br }}<br />
+            {{ facture.destinataire.codePostal }} {{ facture.destinataire.commune }}<br />
+            </small>
+        </p>
+    </div>
+</div>
+<br />
+
+<div style="min-height: 800px; max-height: fit-content;">
     <div class="row">
         <div class="col-xs-12">
             <h3>2nd relance</h3>
@@ -55,7 +56,7 @@
                         <ul class="list-unstyled" style="padding-left: 10px; margin-bottom: 0">
                         {% for detailLigne in details %}
                             <li>- {{ detailLigne }}</li>
-                            {% endfor %}
+                        {% endfor %}
                         </ul>
                         {% else %}
                             {{ details | nl2br }}
@@ -141,7 +142,7 @@
     </div>
     <br />
 
-    <div style="margin-top: auto;">
+    <div style="position:absolute; bottom: 0; width: 100%; padding: 0 30px;left: 0; right: 0;">
         <small>
         <p class="text-center" style="line-height: 18px; font-size: 15px;">
             <small>

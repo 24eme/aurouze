@@ -48,7 +48,7 @@ class CalendarController extends Controller {
             $technicienObj = $dm->getRepository('AppBundle:Compte')->findOneById($technicien);
         }
 
-        $techniciens = $dm->getRepository('AppBundle:Compte')->findAllUtilisateursCalendrier();
+        $techniciens = $dm->getRepository('AppBundle:Compte')->findAllUtilisateursCalendrier(['prenom' => 'ASC']);
         $techniciensFinal = array();
         $techniciensOnglet = $techniciens;
         foreach($techniciens as $t) {
@@ -106,7 +106,7 @@ class CalendarController extends Controller {
         }
 
         $allTechniciens = [];
-        $techniciens = $dm->getRepository('AppBundle:Compte')->findAllUtilisateursCalendrier();
+        $techniciens = $dm->getRepository('AppBundle:Compte')->findAllUtilisateursCalendrier(['prenom' => 'ASC']);
         $techniciensFinal = array();
 
         $techniciensFiltre = $request->get("techniciens", unserialize($request->cookies->get('techniciens', serialize(array()))));
@@ -263,14 +263,6 @@ class CalendarController extends Controller {
         if (!$form->isSubmitted() || !$form->isValid()) {
 
             return $this->render('calendar/rendezVous.html.twig', array('rdv' => $rdv, 'form' => $form->createView()));
-        }
-
-        if ($form->get("all")->getData()) {
-            $techniciens = $dm->getRepository('AppBundle:Compte')->findAllUtilisateursCalendrier();
-            $rdv->removeAllParticipants();
-            foreach ($techniciens as $technicien) {
-                $rdv->addParticipant($technicien);
-            }
         }
 
         $dm->persist($rdv);

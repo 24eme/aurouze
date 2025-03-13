@@ -67,7 +67,7 @@
   <div class="row">
     <div class="col-xs-6">
           <div class="well" style="background: #fff;">
-            <p style="text-decoration:underline;">Environnements</p>
+            <p style="text-decoration:underline;">Environnements :</p>
             <br />
             <p>{% for nettoyage in passage.nettoyages %}
                 <span class="btn btn-sm btn-default">{{ nettoyage }}</span>
@@ -93,7 +93,7 @@
     <div class="col-xs-8">
               <p>Signature du client :<br /></p>
             <div height="200px;" >
-              <img src="{{ passage.signatureBase64   }}" height="200px;" width="580px;" >
+              <img src="{{ passage.signatureBase64   }}" height="auto;" width="300px;" >
             </div>
       </div>
   </div>

@@ -39,13 +39,10 @@
                 </div>
 
             </div>
-            <div class="col-xs-12">
-                {{ form_label(form.forcerAnnulationPassages) }}
-                {{ form_errors(form.forcerAnnulationPassages) }}
-                {{ form_widget(form.forcerAnnulationPassages) }}
-            </div>
         </div>
-
+        <div>
+            <p class="text-warning col-xs-6" style="padding:0; margin-top:10px; font-weight:800;">Tous les passages après la date de résiliation seront annulés</p>
+        </div>
         {{ form_end(form) }}
 
 

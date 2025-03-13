@@ -236,7 +236,7 @@ class ContratController extends Controller {
               throw new \Exception("Le contrat doit avoir date d'acceptation et date de début");
             }
 
-            if ($contrat->isEnAttenteAcceptation() && !$isBrouillon && $contrat->getDateDebut()) {
+            if ($contrat->isEnAttenteAcceptation() && !$isBrouillon && $contrat->getDateDebut() && $contrat->getTechnicien()) {
                 $contratManager->generateAllPassagesForContrat($contrat);
                 $dateFin = clone $contrat->getDateDebut();
                 $dateFin = $dateFin->modify("+" . $contrat->getDuree() . " month -1 day");
@@ -348,7 +348,7 @@ class ContratController extends Controller {
         if (!$contrat->isAnnulable()) {
             return $this->redirectToRoute('contrat_visualisation', array('id' => $contrat->getId()));
         }
-        $contrat->setDateResiliation(new \DateTime());
+        $contrat->setDateResiliation($contrat->getDateFin());
         $form = $this->createForm(new ContratAnnulationType($dm, $contrat), $contrat, array(
             'action' => $this->generateUrl('contrat_annulation', array('id' => $contrat->getId())),
             'method' => 'POST',
@@ -358,17 +358,22 @@ class ContratController extends Controller {
             $contratForm = $form->getData();
             $contrat->setTypeContratOriginal($contrat->getTypeContrat());
             $contrat->setTypeContrat(ContratManager::TYPE_CONTRAT_ANNULE);
-            $forcerAnnulationPassages = $form['forcerAnnulationPassages']->getData() == 1;
             foreach($contrat->getContratPassages() as $etb => $passagesByEtb) {
                 foreach ($passagesByEtb->getPassages() as $passage) {
                     if ($passage->isRealise() || $passage->isAnnule()) {
                         continue;
                     }
-                    if($passage->getDatePrevision()->format('Ymd') <= $contrat->getDateResiliation()->format('Ymd') && !$forcerAnnulationPassages) {
+
+                    if($passage->getDatePrevision()->format('Ymd') <= $contrat->getDateResiliation()->format('Ymd')) {
                         continue;
                     }
+
                     $passage->setStatut(PassageManager::STATUT_ANNULE);
                     $passage->setCommentaire("Annulé suite à l'annulation du contrat");
+                    $rdv = $passage->getRendezVous();
+                    if($rdv) {
+                        $dm->remove($rdv);
+                    }
                 }
             }
             foreach ($contrat->getMouvements() as $mouvement) {
@@ -650,8 +655,19 @@ class ContratController extends Controller {
             'page-size' => "A4"
         ]);
 
-        if(file_exists($this->get('kernel')->getRootDir().'/../data/CGV.pdf')) {
-            exec(escapeshellcmd('pdftk '.$tmpfile.' '.$this->get('kernel')->getRootDir().'/../data/CGV.pdf cat output '.$tmpfile.'.pdf'), $output, $exitcode);
+        $appname = $this->container->getParameter('instanceapp');
+        $documentCgv = file_exists($this->get('kernel')->getRootDir()."/../data/CGV.pdf") ? $this->get('kernel')->getRootDir()."/../data/CGV.pdf" : null;
+        $documentRib = file_exists($this->get('kernel')->getRootDir()."/../data/rib-$appname.pdf") ? $this->get('kernel')->getRootDir()."/../data/rib-$appname.pdf" : null;
+
+        if ($documentCgv || $documentRib) {
+            if ($documentCgv && $documentRib) {
+                exec(escapeshellcmd('pdftk '.$tmpfile.' '.$documentCgv.' '.$documentRib.' cat output '.$tmpfile.'.pdf'), $output, $exitcode);
+            } elseif ($documentCgv) {
+                exec(escapeshellcmd('pdftk '.$tmpfile.' '.$documentCgv. ' cat output '.$tmpfile.'.pdf'), $output, $exitcode);
+            } elseif ($documentRib) {
+                exec(escapeshellcmd('pdftk '.$tmpfile.' '.$documentRib. ' cat output '.$tmpfile.'.pdf'), $output, $exitcode);
+            }
+
             if ($exitcode !== 0) {
                 throw new \Exception('pdftk failed with error: '.implode(', ', $output));
             }

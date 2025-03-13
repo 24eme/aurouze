@@ -10,7 +10,7 @@
                         </p>
                     	{% endif %}
                         <p class="lead text-center">
-                            {{ contrat.getTypeContratLibelle() }} {% if(contrat.typeContratOriginal and contrat.typeContrat != contrat.typeContratOriginal) %}({{ contrat.typeContratOriginalLibelle }}){% endif %} de {{ contrat.getDuree() }} mois {% if contrat.reconduit %}<button class="btn btn-xs btn-success">Reconduit</button>{% endif %}<br />
+                            {{ contrat.getTypeContratLibelle() }} de {{ contrat.getDuree() }} mois {% if contrat.reconduit %}<button class="btn btn-xs btn-success">Reconduit</button>{% endif %}<br />
                         </p>
                         {%  if contrat.getDateDebut() %}
                         <p class="lead text-center">
@@ -24,7 +24,7 @@
             				style="cursor: pointer;">&nbsp;</i></span> {%else%} <span
             				class="label label-xs label-primary">{{ prestation.nomToString }}</span>
             			{%endif%} {% endfor %}
-                        {% if(contrat.isEnAttenteAcceptation() and contrat.contratPassages | length == 0 ) %}
+                        {% if(contrat.isEnAttenteAcceptation() and not contrat.nbPassages) %}
                         {{ contrat.previsionnel | length }} passage(s)
                         {% else %}
                             {{ contrat.nbPassages }}  passage(s)
@@ -74,7 +74,7 @@
     </div>
 </div>
 
-{% if(contrat.isEnAttenteAcceptation() and contrat.contratPassages | length == 0 ) %}
+{% if(contrat.isEnAttenteAcceptation() and not contrat.nbPassages) %}
     <div class="panel panel-default">
         <div class="panel-heading"><h3 class="panel-title">Lieux de passage : {% if(editionMode is defined) %}<a class="btn btn-default btn-xs pull-right" href="{{ path('contrat_modification', {'id': contrat.id })}}">Modifier</a>{% endif %}</h3></div>
         <ul class="list-group">
@@ -107,7 +107,7 @@
     </div>
 </div>
 
-{% if(contrat.isEnAttenteAcceptation() and contrat.contratPassages | length == 0 ) %}
+{% if(contrat.isEnAttenteAcceptation() and not contrat.nbPassages ) %}
     <div class="panel panel-default">
         <div class="panel-heading">
             <h3 class="panel-title">Planning prévisionnelles des interventions (avec une date de début de contrat au {{ contrat.dateDebut | date("d/m/Y")}})</h3>
@@ -288,7 +288,8 @@
                     </td>
                     <td class="text-right">{{ facture.dateFacturation | localizeddate("medium", "none", null, null, "d MMM yyyy") }}</td>
                     <td class="text-center"><a href="{{ path('facturable_pdf', {'document': facture.id ,'key': facture.getSecretKey()})}}"><span class="glyphicon glyphicon-file"></span>&nbsp;{{ facture.numeroFacture }}</a></td>
-                    {% set montant = mouvement.montantHT * mouvement.quantite %}
+
+                    {% set montant = (facture.origineAvoir is not empty) ? mouvement.montantHT : mouvement.montantHT * mouvement.quantite %}
                     {% set montantTTC = montant + (montant * mouvement.tauxTaxe) %}
                     {% set total = total + montant %}
                     {% set totalTTC = totalTTC + montantTTC %}

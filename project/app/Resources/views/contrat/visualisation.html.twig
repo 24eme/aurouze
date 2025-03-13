@@ -38,7 +38,7 @@
                     <li><a href="{{ path('contrat_copie', {'id': contrat.getId()}) }}" class="btn-sm" onclick="return confirm('Êtes-vous sûre de créer un nouveau contrat avec les infos de ce contrat ?');"><span class="glyphicon glyphicon-duplicate"></span> Dupliquer</a></li>
                 {% endif %}
                 {%  if (contrat.isAnnulable()) %}
-                    <li><a href="{{ path('contrat_annulation', {'id': contrat.getId()}) }}" class="btn-sm" onclick="return confirm('Êtes-vous sûre de vouloir résilier le contrat n° '+{{ contrat.numeroArchive }}+'?');"><span class="glyphicon glyphicon-remove"></span> Résilier</a></li>
+                    <li><a href="{{ path('contrat_annulation', {'id': contrat.getId()}) }}" class="btn-sm"><span class="glyphicon glyphicon-remove"></span> Résilier</a></li>
                 {%  endif %}
                 {%  if (contrat.isEnAttenteAcceptation() or contrat.isBrouillon()) %}
                     <li><a href="{{ path('contrat_suppression', {'id': contrat.getId()}) }}" class="btn-sm" onclick="return confirm('Êtes-vous sûre de vouloir supprimer le contrat n° '+{{ contrat.numeroArchive }}+'?');"><span class="glyphicon glyphicon-remove"></span>&nbsp;Supprimer</a></li>

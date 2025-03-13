@@ -119,10 +119,13 @@
     </div>
   <div class="ui-bar ui-bar-a">
     <div class="ui-grid-solo">
+      <h4 class="info-docs-text" data-default-text=" "> </h4>
       {% if attachements[planifiable.etablissement.id] is defined %}
-      {% for attachement in attachements[planifiable.etablissement.id] %}
+      {% for attachement in attachements[planifiable.etablissement.id]|sort|reverse %}
           {% if attachement.visibleTechnicien %}
-              <div class="ui-block-a">
+          <br>
+          <div {% if attachement.updatedAt|date("U") >= "-12 months"|date("U") %} class="recentAttachement"> {% else %} class="previousAttachement" hidden> {% endif %}
+                <h4>{{ attachement.updatedAt| localizeddate("medium", "none", null, null, "d MMMM yyyy")  }}</h4>
                   {% if attachement.isImage %}
                 <a href="#popupPhoto-{{ attachement.id }}" data-rel="popup" data-position-to="window" class="ui-btn ui-corner-all ui-shadow" data-transition="fade">
                   <img src="{{ path('attachement_download', { id: attachement.id, noattachment: true }) }}" alt="{{ attachement.titre ?: attachement.originalName }}" style="width: 100%; margin-bottom:0"/>
@@ -135,10 +138,12 @@
                  {{ attachement.titre ?: attachement.originalName }}
                 </a>
                 {% endif %}
-              </div>
+            </div>
           {% endif %}
       {% endfor %}
       {% endif %}
+      <button class="show-all" data-default-text="Voir tout">Voir tout</button>
+
     </div>
 </div>
     <div class="ui-bar ui-bar-a">
@@ -209,3 +214,58 @@
         {% endfor %}
     </div>
   </div>
+
+
+{% block javascripts %}
+    <script>
+      $(document).ready(function() {
+
+        // Délégation d'événement pour récupérer la div active du passage
+        // après que la classe .ui-page-active lui ait été attribuée dynamiquement
+
+        $(".main-mobile").on("pageshow", "div.ui-page-active", function() {
+          let activePage = $("div.ui-page-active");
+          let recentAttachement = activePage.find(".recentAttachement")
+          let previousAttachement = activePage.find(".previousAttachement");
+          let showAllButton = activePage.find(".show-all");
+          let infoDocsText = activePage.find(".info-docs-text");
+
+
+          $(previousAttachement).hide();
+
+          function showAllButtonVisibility() {
+            $(showAllButton).removeAttr("style").css({"background": "rgba(51, 51, 51, 0.2)", "margin-top": "0px"});
+            if($(previousAttachement).length && (recentAttachement.length == 0)){
+              $(infoDocsText).text("Aucun document ces 12 derniers mois").css({"margin-top": "10px", "margin-bottom": "15px"});
+            }else if($(previousAttachement).length && recentAttachement.length){
+              $(infoDocsText).text($(infoDocsText).data("default-text"));
+            }else {
+                $(showAllButton).hide();
+            }
+          }
+
+          function updateButtonText() {
+              const documentsVisible = $(previousAttachement).is(":visible");
+              if (documentsVisible) {
+                  $(showAllButton).text("Voir moins");
+              } else {
+                  $(showAllButton).text($(showAllButton).data("default-text"));
+              }
+            }
+
+          function showHideDocuments() {
+            $(showAllButton).off('click').on('click', function() {
+                $(previousAttachement).slideToggle(1000, function() {
+                    updateButtonText();
+                });
+            });
+          }
+
+          showAllButtonVisibility();
+          showHideDocuments();
+          updateButtonText();
+        });
+      });
+
+    </script>
+{% endblock %}

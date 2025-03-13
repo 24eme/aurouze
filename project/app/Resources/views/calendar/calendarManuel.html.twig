@@ -54,12 +54,14 @@
 <div id="choix_technicien" class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-sm" role="document">
         <div class="modal-content">
-            <form action="{{ path('calendarManuel', {'date': calendarTool.getDateDebut('Y-m-d'), 'passage': ((passage) ? passage.id : null), 'mode': calendarTool.mode }) }}" method="post">
+            <form id="filter-form" action="{{ path('calendarManuel', {'date': calendarTool.getDateDebut('Y-m-d'), 'passage': ((passage) ? passage.id : null), 'mode': calendarTool.mode }) }}" method="post">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title">Filtrer les techniciens</h4>
                 </div>
                 <div class="modal-body">
+                    <button type="button" id="select-all" class="btn btn-default" style="margin-bottom:10px;" data-default-text="Tout sélectionner">Tout sélectionner</button>
+
                     {% for tech in allTechniciens %}
                     <div class="checkbox">
                       <label>
@@ -235,5 +237,28 @@
                 return window.location = url
             })
         })
+
+        $(document).ready(function() {
+            function updateButtonText() {
+                const allChecked = $('#filter-form input[type="checkbox"]').length === $('#filter-form input[type="checkbox"]:checked').length;
+                if (allChecked) {
+                    $('#select-all').text('Tout désélectionner');
+                } else {
+                    $('#select-all').text($('#select-all').data('default-text'));
+                }
+            }
+
+            $('#select-all').click(function() {
+                const allChecked = $('#filter-form input[type="checkbox"]').length === $('#filter-form input[type="checkbox"]:checked').length;
+                if (allChecked) {
+                    $('input[type="checkbox"]').prop('checked', false);
+                } else {
+                    $('input[type="checkbox"]').prop('checked', true);
+                }
+                updateButtonText();
+            });
+
+            updateButtonText();
+        });
     </script>
 {% endblock %}

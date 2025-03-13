@@ -33,14 +33,6 @@
             </div>
         </div>
 
-        <div class="main-mobile">
-            {% block body %}{% endblock %}
-        </div>
-
-
-
-        {% block javascripts %}{% endblock %}
-
         <script type="text/javascript" src="{{ asset('/component/jquery/js/jquery.js') }}?{{ commitref }}"></script>
         <script type="text/javascript" src="{{ asset('/component/jquery-ui/js/jquery-ui.js') }}?{{ commitref }}"></script>
         <script type="text/javascript" src="{{ asset('/mobile/js/jquery.mobile-1.4.5.js') }}?{{ commitref }}"></script>
@@ -51,5 +43,14 @@
         <script type="text/javascript" src="{{ asset('/mobile/js/jquery.mobile.datepicker.js') }}?{{ commitref }}"></script>
         <script type="text/javascript" src="{{ asset('/mobile/js/signature_pad.js') }}?{{ commitref }}"></script>
         <script type="text/javascript" src="{{ asset('/mobile/js/mobile.js') }}?{{ commitref }}"></script>
+
+        <div class="main-mobile">
+            {% block body %}{% endblock %}
+        </div>
+
+
+
+        {% block javascripts %}{% endblock %}
+
     </body>
 </html>

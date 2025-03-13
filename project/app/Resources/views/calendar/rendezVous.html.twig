@@ -227,10 +227,6 @@
                         <div class="col-xs-10">
                             {{ form_widget(form.participants) }}
                         </div>
-                        <div class="col-xs-10 col-xs-offset-2">
-                            {{ form_widget(form.all) }}
-                            {{ form_label(form.all) }}
-                        </div>
                     </div>
                     <hr />
                     <div class="form-group">
@@ -341,7 +337,11 @@
                             <a
                               onclick="return confirm('{{ msgconfirm }}')"
                               class="btn btn-sm {% if rdv.passage.isPdfNonEnvoye() %}btn-success{% else %}btn-default{% endif %}"
-                              href="{{ path('passage_transmission_email', {'id': rdv.passage.id, 'service': service })}}">
+                              {% if 'tournees' in service %}
+                                href="{{ path('passage_transmission_email', {'id': rdv.passage.id, 'service': service ~ "#" ~ rdv.id })}}">
+                              {% else %}
+                                href="{{ path('passage_transmission_email', {'id': rdv.passage.id, 'service': service })}}">
+                              {% endif %}
                                 <span class="glyphicon glyphicon-send"></span> Envoyer par mail
                             </a>
                             {% else %}
