@@ -193,6 +193,8 @@
                         {% if facture.cloture  %}
                             {% if facture.avoir %}
                                 Cette facture a été redressé (avoir {{ facture.avoir }})
+                            {% elseif( facture.getInPrelevement() is not empty ) %}
+                                Cette facture sera réglée par prélèvement le : {{ facture.getDatePaiement() }}
                             {% else %}
                                 Cette facture a été réglée le : {{ facture.getDatePaiement() }}
                             {% endif %}
