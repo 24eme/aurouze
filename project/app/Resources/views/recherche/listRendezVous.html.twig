@@ -35,7 +35,13 @@
         <tbody>
             {% for rdv in rdvs %}
                 <tr>
-                    <td> {{rdv.dateDebut | date('d/m/Y')}} </td>
+                    {% for participant in rdv.getParticipants() %}
+                        {% if rdv.getParticipants()|length > 1 and loop.first %}
+                            <td><a href="{{ path('calendar',{'technicien': participant.id, 'date': rdv.dateDebut | date('d-m-Y'), 'id':0 }) }}">{{rdv.dateDebut | date('d/m/Y')}}</a> </td>
+                        {% elseif rdv.getParticipants()|length == 1 %}
+                            <td><a href="{{ path('calendar',{'technicien': participant.id , 'date': rdv.dateDebut | date('d-m-Y'), 'id':0 }) }}">{{rdv.dateDebut | date('d/m/Y')}}</a> </td>
+                        {% endif %}
+                    {% endfor %}
                     <td> {{rdv.dateDebut | date('H:i') }}/{{rdv.dateFin | date('H:i') }}</td>
                     <td>
                         {% for participant in rdv.getParticipants() %}
