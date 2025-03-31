@@ -1387,14 +1387,22 @@ class FactureController extends Controller
             $body = $this->render('facture/mailFacture.html.twig', ['facture' => $facture,'email_footer' => $email_footer])->getContent();
           }
 
-          if($facture->getSociete()->getContactCoordonnee()->getEmailFacturation()){
-            $toEmail = $facture->getSociete()->getContactCoordonnee()->getEmailFacturation();
-          }
-          elseif($facture->getSociete()->getContactCoordonnee()->getEmail()) {
-            $toEmail = $facture->getSociete()->getContactCoordonnee()->getEmail();
+          $emailFacturationSociete = $facture->getSociete()->getContactCoordonnee()->getEmailFacturation();
+          $emailFacturationEtablissement = array();
+
+          foreach($facture->getContrat()->getEtablissements() as $etablissement) {
+              $emailFacturationEtablissement[] = $etablissement->getContactCoordonnee()->getEmailFacturation();
           }
 
+          $emailFacturationSociete = $facture->getSociete()->getContactCoordonnee()->getEmailFacturation()
+            ? explode(";", $facture->getSociete()->getContactCoordonnee()->getEmailFacturation())
+            : $facture->getSociete()->getContactCoordonnee()->getEmail();
 
+          $toEmail = $emailFacturationSociete;
+
+          if(empty($emailFacturationEtablissement) === false){
+              $toEmail = array_unique(array_merge($emailFacturationSociete, $emailFacturationEtablissement));
+          }
           else{
             var_dump('NO mailer config');
             $request->getSession()->getFlashBag()->add('notice', 'success');
@@ -1405,7 +1413,7 @@ class FactureController extends Controller
           $message = \Swift_Message::newInstance()
               ->setSubject($subject)
               ->setFrom(array($fromEmail => $fromName))
-              ->setTo(explode(";", $toEmail))
+              ->setTo($toEmail)
               ->setReplyTo($replyEmail)
               ->setBody($body,'text/plain')
               ->setReadReceiptTo($fromEmail);
