@@ -82,7 +82,7 @@
                                       Contrat en cours jusqu'au {{ contrat.dateFin | localizeddate("medium", "none", null, null, "d MMMM yyyy") }}
                                     {% endif %}
                                 {% elseif (contrat.isEnAttenteAcceptation) %}
-                                    Contrat en cours d'acceptation prévu jusqu'au {{ contrat.dateFin | localizeddate("medium", "none", null, null, "d MMMM yyyy") }}
+                                    Contrat en cours d'acceptation créé le {{ contrat.dateCreation | localizeddate("medium", "none", null, null, "d MMMM yyyy") }}
                                 {% elseif (contrat.isFini) %}
                                   {% if  contratObj.displayStatut == "REALISE_NON_TERMINE" %}
                                     Contrat en cours et réalisé ({{ contrat.dateDebut | localizeddate("medium", "none", null, null, "d MMMM yyyy") | capitalize }} au {{ contrat.dateFin | localizeddate("medium", "none", null, null, "d MMMM yyyy") | capitalize }})
