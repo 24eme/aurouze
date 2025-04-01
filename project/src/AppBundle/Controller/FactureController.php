@@ -1387,11 +1387,14 @@ class FactureController extends Controller
             $body = $this->render('facture/mailFacture.html.twig', ['facture' => $facture,'email_footer' => $email_footer])->getContent();
           }
 
-          $emailFacturationSociete = $facture->getSociete()->getContactCoordonnee()->getEmailFacturation();
           $emailFacturationEtablissement = array();
 
           foreach($facture->getContrat()->getEtablissements() as $etablissement) {
-              $emailFacturationEtablissement[] = $etablissement->getContactCoordonnee()->getEmailFacturation();
+              if($etablissement->getContactCoordonnee()->getEmailFacturation()){
+                  foreach(explode(";", $etablissement->getContactCoordonnee()->getEmailFacturation()) as $email){
+                      $emailFacturationEtablissement[] = $email;
+                  }
+              }
           }
 
           $emailFacturationSociete = $facture->getSociete()->getContactCoordonnee()->getEmailFacturation()
