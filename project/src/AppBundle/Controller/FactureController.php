@@ -1406,7 +1406,8 @@ class FactureController extends Controller
           if(empty($emailFacturationEtablissement) === false){
               $toEmail = array_unique(array_merge($emailFacturationSociete, $emailFacturationEtablissement));
           }
-          else{
+
+          if(empty($toEmail)) {
             var_dump('NO mailer config');
             $request->getSession()->getFlashBag()->add('notice', 'success');
             $referer = $request->headers->get('referer');
