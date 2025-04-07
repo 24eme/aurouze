@@ -1399,7 +1399,7 @@ class FactureController extends Controller
 
           $emailFacturationSociete = $facture->getSociete()->getContactCoordonnee()->getEmailFacturation()
             ? explode(";", $facture->getSociete()->getContactCoordonnee()->getEmailFacturation())
-            : $facture->getSociete()->getContactCoordonnee()->getEmail();
+            : explode(";", $facture->getSociete()->getContactCoordonnee()->getEmail());
 
           $toEmail = $emailFacturationSociete;
 
