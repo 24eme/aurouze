@@ -1409,7 +1409,7 @@ class FactureController extends Controller
 
           if(empty($toEmail)) {
             var_dump('NO mailer config');
-            $request->getSession()->getFlashBag()->add('notice', 'success');
+            $request->getSession()->getFlashBag()->add('notice', "la société n'a pas d'email");
             $referer = $request->headers->get('referer');
             return $this->redirect($referer);
           }
@@ -1434,7 +1434,7 @@ class FactureController extends Controller
               $dm->flush();
           }
           catch(Exception $e) {
-              var_dump('NO mailer config');
+              $request->getSession()->getFlashBag()->add('error', $e->getMessage());
           }
           $request->getSession()->getFlashBag()->add('notice', 'success');
           $referer = $request->headers->get('referer');

@@ -21,6 +21,20 @@
         </div>
         {% endif %}
 
+        {% for flashMessage in app.session.flashBag.get('error') %}
+          <div class="alert alert-danger alert-dismissible" role="alert" style="margin-top: 10px">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            {{ flashMessage }}
+          </div>
+        {% endfor %}
+
+        {% for flashMessage in app.session.flashBag.get('notice') %}
+          <div class="alert alert-warning alert-dismissible" role="alert" style="margin-top: 10px">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            {{ flashMessage }}
+          </div>
+        {% endfor %}
+
         {% if etablissements | length > 1 %}
         <form id="form_etablissement_filtre" action="" method="GET">
             <div class="col-xs-12" style="margin-bottom: 30px; {% if not app.request.get('etablissement_id') %}opacity: 0.75;{% endif %}">
