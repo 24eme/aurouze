@@ -131,7 +131,9 @@ class PaiementsController extends Controller {
             $dm->flush();
             $this->updateFactureByPaiements($oldFactures, $paiements);
 
-            return $this->redirectToRoute('paiements_modification', array('id' => $paiements->getId()));
+            $url = $this->generateUrl('paiements_modification', array('id' => $paiements->getId()));
+
+            return $this->redirect(sprintf('%s#%s', $url, 'endpage'));
         }
 
         return $this->render('paiements/modification.html.twig', array('paiements' => $paiements, 'form' => $form->createView(), 'facturesArray' => $paiements->getFacturesArray()));
