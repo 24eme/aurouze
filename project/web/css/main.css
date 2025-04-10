@@ -366,3 +366,33 @@ textarea:required:invalid{
 	margin-top: -18rem;
 	font-size: 20px;
 }
+
+/* Page tournée ajout d'attachement */
+
+.attachement-item {
+    display: flex  !important;
+    align-items: center;
+    justify-content: center;
+    padding: 11px 15px !important;
+    font-weight: normal !important;
+}
+
+.attachement-item::after {
+    width: 30px !important;
+    height: 30px !important;
+    margin-top:0 !important;
+    left:20%;
+    top: 0.4em;
+}
+
+@media only screen and (max-width: 500px){
+    .attachement-item::after {
+        left:15%;
+    }
+}
+
+@media only screen and (min-width: 700px){
+    .attachement-item::after {
+        left:30%;
+    }
+}
