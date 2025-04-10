@@ -1387,25 +1387,7 @@ class FactureController extends Controller
             $body = $this->render('facture/mailFacture.html.twig', ['facture' => $facture,'email_footer' => $email_footer])->getContent();
           }
 
-          $emailFacturationEtablissement = array();
-
-          foreach($facture->getContrat()->getEtablissements() as $etablissement) {
-              if($etablissement->getContactCoordonnee()->getEmailFacturation()){
-                  foreach(explode(";", $etablissement->getContactCoordonnee()->getEmailFacturation()) as $email){
-                      $emailFacturationEtablissement[] = $email;
-                  }
-              }
-          }
-
-          $emailFacturationSociete = $facture->getSociete()->getContactCoordonnee()->getEmailFacturation()
-            ? explode(";", $facture->getSociete()->getContactCoordonnee()->getEmailFacturation())
-            : explode(";", $facture->getSociete()->getContactCoordonnee()->getEmail());
-
-          $toEmail = $emailFacturationSociete;
-
-          if(empty($emailFacturationEtablissement) === false){
-              $toEmail = array_unique(array_merge($emailFacturationSociete, $emailFacturationEtablissement));
-          }
+          $toEmail = $facture->getDestinatairesEmail();
 
           if(empty($toEmail)) {
             var_dump('NO mailer config');
