@@ -1402,4 +1402,30 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
         return $this->pdfTelecharge;
     }
 
+    public function getDestinatairesEmail() {
+        $emailFacturationEtablissement = array();
+
+        if($this->getContrat()) {
+            foreach($this->getContrat()->getEtablissements() as $etablissement) {
+                if($etablissement->getContactCoordonnee()->getEmailFacturation()){
+                    foreach(explode(";", $etablissement->getContactCoordonnee()->getEmailFacturation()) as $email){
+                        $emailFacturationEtablissement[] = $email;
+                    }
+                }
+            }
+        }
+
+        $emailFacturationSociete = $this->getSociete()->getContactCoordonnee()->getEmailFacturation()
+          ? explode(";", $this->getSociete()->getContactCoordonnee()->getEmailFacturation())
+          : explode(";", $this->getSociete()->getContactCoordonnee()->getEmail());
+
+        $toEmail = $emailFacturationSociete;
+
+        if(empty($emailFacturationEtablissement) === false){
+            $toEmail = array_unique(array_merge($emailFacturationSociete, $emailFacturationEtablissement));
+        }
+
+        return $toEmail;
+    }
+
 }
