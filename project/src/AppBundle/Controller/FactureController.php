@@ -75,7 +75,7 @@ class FactureController extends Controller
                     continue;
                 }
 
-                if($m->getOrigineDocumentGeneration()){
+                if($m->getOrigineDocumentGeneration() && $m->getOrigineDocumentGeneration()->getDateDebut()){
                     $mouvements[$m->getOrigineDocumentGeneration()->getDateDebut()->format('Y-m-d H:i:s').uniqid()] = $m;
                 } else {
                     $mouvementsSansPassage[] = $m;
