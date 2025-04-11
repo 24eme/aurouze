@@ -647,7 +647,7 @@ class PassageController extends Controller
         $fromEmail = $parameters['coordonnees']['email'];
         $fromName = $parameters['coordonnees']['nom'];
 
-        $replyEmail = $parameters['coordonnees']['replyEmail'];
+        $replyEmail = ($passage->getZone() === '77') ? $parameters['coordonnees']['replyEmail_seine_et_marne'] : $parameters['coordonnees']['replyEmail'];
 
         $suject = "[".ucfirst($appname)."] - Rapport de visite du ".$passage->getDateDebut()->format("d/m/Y")." à ".$passage->getDateDebut()->format("H\hi");
         $body = $this->renderView(
