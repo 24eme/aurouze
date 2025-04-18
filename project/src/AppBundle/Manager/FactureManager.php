@@ -273,6 +273,64 @@ public static $export_factures_en_retards = array(
         return $facture;
     }
 
+    public function createFactureEchelonnee(Societe $societe, $contrat = null ) {
+        if ($contrat->getTypeFacturation() == ContratManager::TYPE_FACTURATION_ECHELONNEE){
+            $montantTotalHT = $contrat->getPrixHt();
+
+            $nbFactures = $contrat->getNbFactures();
+
+            $commercial = $contrat->getCommercial();
+            $dateFacturation = new \DateTime();
+
+            for($i = 0; $i < $nbFactures; $i++) {
+                $facture = $this->createVierge($societe, $contrat);
+                $facture->setDateFacturation($dateFacturation);
+                $facture->setCommercial($commercial);
+                $facture->setDateEmission($facture->getDateFacturation());
+
+                $factureLigne = new LigneFacturable();
+                $factureLigne->setPrixUnitaire($montantTotalHT / $nbFactures);
+                $factureLigne->setTauxTaxe(0.2);
+                $factureLigne->setQuantite(1);
+
+                if ($i === $nbFactures - 1) {
+                    $roundDecimalUp = pow(10, 2);
+                    $factureLigne->setMontantHT(ceil($contrat->getPrixRestant() * $roundDecimalUp) / $roundDecimalUp);
+                } else {
+                    $factureLigne->setMontantHT(round($factureLigne->getPrixUnitaire(), 2));
+                }
+
+                $factureLigne->setMontantTaxe($factureLigne->getPrixUnitaire() + $factureLigne->getMontantHT());
+                $factureLigne->setOrigineDocument($contrat);
+
+                $mouvement = $contrat->buildMouvement();
+                $mouvement->setFacture(true);
+                $mouvement->setOrigineDocumentGeneration($contrat);
+
+                $factureLigne->setOrigineMouvement($mouvement->getIdentifiant());
+
+                $factureLigne->setLibelle($contrat->getLibelleMouvement());
+                if($contrat->getTvaReduite()){
+                    $factureLigne->setTauxTaxe(0.1);
+                }
+
+                $facture->addLigne($factureLigne);
+
+                $tauxTaxe = $factureLigne->getTauxTaxe();
+                $montantHT = $factureLigne->getMontantHT();
+                $facture->setMontantHT($montantHT);
+                $facture->setMontantTaxe($montantHT * $tauxTaxe);
+                $facture->setMontantTTC($montantHT + $facture->getMontantTaxe());
+
+                $this->dm->persist($facture);
+                $this->dm->flush();
+                $dateFacturation->modify("+1 month");
+                $contrat->addMouvement($mouvement);
+            }
+            return $facture;
+        }
+    }
+
     public function getMouvementsBySociete(Societe $societe) {
 
         return $this->mm->getMouvementsBySociete($societe, true, false);

@@ -58,10 +58,11 @@
                 <div class="row">
                     <div class="col-xs-7">
                         <p class="lead text-center">{{ contrat.getPrixHt()|number_format(2, ',', ' ') }} € HT <small>soit {{ ((1+contrat.tva) * contrat.getPrixHt)|number_format(2, ',', ' ') }} € TTC (TVA à {{ (contrat.tva * 100) | number_format(2, ',', ' ') }}%)</small></p>
-                        <p class="lead text-center">{{ contrat.nbFactures }} facture(s)<small style="font-size:small">&nbsp;(associés à un passage)</small></p>
+                        <p class="lead text-center">{{ contrat.nbFactures }} facture(s)<small style="font-size:small"></small></p>
                     </div>
                     <div class="col-xs-5">
                         Fréquence de paiement : <strong>{{ contrat.frequencePaiementLibelle }}</strong><br />
+                        Type de facturation : <strong>{{ contrat.typeFacturation }}</strong><br />
                     	Numéro de commande : <strong>{% if contrat.referenceClient %}{{ contrat.referenceClient }}{% else %}Non défini{% endif %}</strong><br />
                         Destinataire de la facture : <strong>{% if contrat.factureDestinataire %}{{ contrat.factureDestinataire }}{% else %}{{ contrat.societe.raisonSociale }}{% endif %}</strong>
                         <br />
@@ -276,10 +277,11 @@
             <td colspan="4"><em>Aucune facture</em></td>
         </tr>
         {% endif %}
+
         {% set total=0 %}
         {% set totalTTC=0 %}
         {% set i=1 %}
-        {% for facture in factures %}
+        {% for facture in factures|sort %}
             {% for mouvement in facture.lignes %}
                 <tr>
                     <td>
@@ -313,7 +315,7 @@
         {% endfor %}
         </tbody>
         {% set mouvement = contrat.buildMouvement() %}
-        {% if(mouvement) %}
+        {% if(mouvement and not contrat.hasFacturationEchelonnee()) %}
         <tfoot style="opacity: 0.6">
             <tr>
                 <td>{{ mouvement.libelle }}</td>
@@ -325,6 +327,20 @@
             </tr>
         </tfoot>
         {% endif %}
+
+        {% if contrat.nbFactures >= 2 and contrat.hasFacturationEchelonnee() %}
+        <tfoot>
+          <tr>
+            <td>Factures échelonnées à créer</td>
+            <td class="text-right"></td>
+            <td class="text-center"><a onclick="return confirm('Etes vous sûr de vouloir préparer des factures échelonnées ? ');" href="{{ path('facture_echelonnee_creation', {'societe': contrat.societe.id,'type': 'facture', 'typeFacturation': contrat.typeFacturation, 'nbFactures': contrat.nbFactures, 'contratId' : contrat.id})}}">Préparer des factures échelonnées</a></td>
+            <td class="text-right"></td>
+            <td class="text-right"></td>
+            <td class="text-right"></td>
+          </tr>
+        </tfoot>
+        {% endif %}
+
         {% if contrat.nbFactures == 0 %}
         <tfoot>
           <tr>
