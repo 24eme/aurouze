@@ -184,6 +184,11 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
     protected $nbFactures;
 
     /**
+     * @MongoDB\Field(type="string")
+     */
+    protected $typeFacturation;
+
+    /**
      * @MongoDB\Field(type="float")
      */
     protected $prixHt;
@@ -693,6 +698,26 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
      */
     public function getNbFactures() {
         return $this->nbFactures;
+    }
+
+    /**
+    * Set typeFacturation
+    *
+    * @param string $typeFacturation
+    * @return self
+    */
+    public function setTypeFacturation($typeFacturation) {
+        $this->typeFacturation = $typeFacturation;
+        return $this;
+    }
+
+    /**
+    * Get typeFacturation
+    *
+    * @return string $typeFacturation
+    */
+    public function getTypeFacturation() {
+        return $this->typeFacturation;
     }
 
     /**
@@ -2290,5 +2315,10 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
         return true;
     }
 
-
+    public function hasFacturationEchelonnee() {
+        if($this->getTypeFacturation() == ContratManager::TYPE_FACTURATION_ECHELONNEE){
+          return true;
+        }
+        return false;
+    }
 }
