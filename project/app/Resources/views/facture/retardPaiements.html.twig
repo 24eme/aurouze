@@ -180,7 +180,7 @@
 							<td>
 								<textarea rows="3" data-url="{{ path('facture_relance_commentaire_add', {'id': factureEnRetard.id }) }}" data-id="{{factureEnRetard.id}}" class="input-inline form-control commentaire" id="facture_retard_commentaire_ajax" >{{ factureEnRetard.relanceCommentaire }}</textarea>
 							</td>
-              <td class="text-left">
+              <td class="text-left" style="padding-top:21px;">
 								{% if factureEnRetard.has1ereRelance %}
 										<a data-toggle="tooltip"
 										 title="{% if(factureEnRetard.getRelanceObjNumero(1)) %}1ère relance du {{ factureEnRetard.getRelanceObjNumero(1).dateRelance | localizeddate("medium", "none", null, null,  "dd/MM/yyyy") }} {% else %}1ère relance (non datée){% endif %}"
@@ -199,10 +199,10 @@
 							</td>
               <td class="text-center">
 								<div class="row" >
-										<div class="col-xs-6" style="padding-top:6px;">
+										<div class="col-xs-6" style="margin:10px 0;">
 											<a data-toggle="tooltip" title="cloturer" href="{{ path('facture_cloturer', {'id': factureEnRetard.societe.id, 'factureId': factureEnRetard.id, 'retour':'relance' }) }}" class="btn btn-default btn-xs relance_lien_cloturer"><span class="glyphicon glyphicon-check"></span>&nbsp;</a>
 										</div>
-										<div class="col-xs-6 text-left">
+										<div class="col-xs-6 text-right">
 	                    {% set fieldFrom = attribute(formRelance,idCheckbox) %}
 	                    {{ form_widget(fieldFrom) }}
 										</div>
