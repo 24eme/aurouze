@@ -116,12 +116,15 @@
           <thead>
             <tr>
               <th class="col-xs-2">Date</th>
-              <th class="col-xs-3">Client</th>
+              <th class="col-xs-1">Client</th>
               <th class="col-xs-2">Facture</th>
               <th class="col-xs-2">Montant Total / Payé</th>
               <th class="col-xs-2">Commentaire</th>
               <th class="col-xs-1">Relance(s)</th>
-              <th class="col-xs-1"></th>
+              <th class="col-xs-2">
+                  <label style="margin:0; "for="select-all">Clôtur. &hairsp;|&hairsp;  Sélect.</label>
+                  <input type="checkbox" id="select-all" name="select-all" />
+              </th>
 			  <th class="col-xs-1"></th>
             </tr>
           </thead>
@@ -247,4 +250,14 @@
 			  </div>
 			</div>
 			{% endif %}
+{% endblock %}
+
+{% block  javascripts %}
+    <script>
+      $(document).ready(function(){
+          $("#select-all").click(function(){
+              $("input[type='checkbox']").prop("checked", $(this).prop("checked"));
+          });
+      });
+    </script>
 {% endblock %}
