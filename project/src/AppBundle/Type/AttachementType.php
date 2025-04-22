@@ -44,6 +44,7 @@ class AttachementType extends AbstractType {
                 'data-date-format' => 'dd/mm/yyyy'),
             'widget' => 'single_text',
             'format' => 'dd/MM/yyyy',
+            'data' => new \DateTime("now"),
             'label' => 'Date d\'ajout :',
             ));
           if($this->visibleTechnicienOption){
