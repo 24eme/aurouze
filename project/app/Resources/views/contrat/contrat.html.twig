@@ -328,7 +328,7 @@
         </tfoot>
         {% endif %}
 
-        {% if contrat.nbFactures >= 2 and contrat.hasFacturationEchelonnee() %}
+        {% if contrat.nbFactures >= 2 and contrat.hasFacturationEchelonnee() and contrat.mouvements|length == 0%}
         <tfoot>
           <tr>
             <td>Factures échelonnées à créer</td>
