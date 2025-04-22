@@ -102,7 +102,7 @@ class DevisController extends Controller
             $dm->flush();
 
             if ($form->get('edit')->isClicked()) {
-                return $this->redirectToRoute('devis_societe', array('id' => $societe->getId()));
+                return $this->redirectToRoute('devis_modification', array('id' => $devis->getId()));
             } elseif ($form->get('plan')->isClicked()) {
                 return $this->redirectToRoute('calendar', array(
                     'planifiable' => $devis->getId(),
