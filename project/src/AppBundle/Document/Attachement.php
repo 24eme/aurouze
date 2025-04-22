@@ -85,6 +85,11 @@ class Attachement
    protected $originalName;
 
    /**
+    * @MongoDB\Field(type="string")
+    */
+   protected $numeroContrat;
+
+   /**
     * @MongoDB\ReferenceOne(targetDocument="Societe", inversedBy="attachements", simple=true)
     */
    protected $societe;
@@ -366,6 +371,28 @@ class Attachement
 
     public function removeFile(){
         unlink(realpath('../web/documents/'.$this->getImageName()));
+    }
+
+    /**
+     * Set numeroContrat
+     *
+     * @param string $numeroContrat
+     * @return $this
+     */
+    public function setNumeroContrat($numeroContrat)
+    {
+        $this->numeroContrat = $numeroContrat;
+        return $this;
+    }
+
+    /**
+     * Get numeroContrat
+     *
+     * @return string $numeroContrat
+     */
+    public function getNumeroContrat()
+    {
+        return $this->numeroContrat;
     }
 
     /**
