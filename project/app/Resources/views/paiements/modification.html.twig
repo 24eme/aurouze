@@ -80,7 +80,7 @@
 		<div class="row form-group">
 			<div class="col-xs-12">
 				<div class="col-xs-12"></div>
-				<a href="javascript:void(0);" style="margin-left: 2px; position: absolute;" data-collection-target="#paiements_paiement" class="btn btn-primary dynamic-collection-add pull-right"><span class="glyphicon glyphicon-plus-sign"></span></a>
+				<a id="plus-button" href="javascript:void(0);" style="margin-left: 2px; position: absolute;" data-collection-target="#paiements_paiement" class="btn btn-primary dynamic-collection-add pull-right"><span class="glyphicon glyphicon-plus-sign"></span></a>
 			</div>
 			<div class="col-xs-12 text-right" style="margin: 10px 0 0 0;">
 				<span style="padding-right: 12px;">Total : <strong class="sommeTotal">{{ paiements.getMontantTotal() | number_format(2, ',', ' ') }}</strong></span>
@@ -88,7 +88,7 @@
 		</div>
 
 
-        <div class="row">
+        <div class="row" style="margin-bottom:20px;">
 					<div class="col-xs-4 text-left"></div>
             <div id="endpage" class="col-xs-4 text-center">
                 {{ form_widget(form.save) }}
@@ -97,4 +97,17 @@
         </div>
         {{ form_end(form) }}
     </div>
+{% endblock %}
+
+
+{% block javascripts %}
+    <script>
+      $(document).on('click', '#plus-button', function(event) {
+          event.preventDefault();
+          let documentHeight = $(document).height();
+          $('html, body').animate({
+              scrollTop: documentHeight
+          }, 0);
+      });
+    </script>
 {% endblock %}

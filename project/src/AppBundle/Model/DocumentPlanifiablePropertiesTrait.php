@@ -36,7 +36,6 @@ trait DocumentPlanifiablePropertiesTrait
 
     /**
      * @MongoDB\Field(type="date")
-     * @Assert\NotBlank
      * @Assert\Date
      */
     protected $datePrevision;

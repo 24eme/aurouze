@@ -76,7 +76,8 @@ class DevisType extends AbstractType
                         'data-date-format' => 'dd/mm/yyyy'
                     ),
                     'widget' => 'single_text',
-                    'format' => 'dd/MM/yyyy'
+                    'format' => 'dd/MM/yyyy',
+                    'required' => false
                 );
 
                 if(!$datePrevisionModifiable){
