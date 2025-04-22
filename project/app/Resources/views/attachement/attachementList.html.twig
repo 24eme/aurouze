@@ -16,8 +16,6 @@
             <tr>
                 <td>
                     {{ attachement.updatedAt | localizeddate("medium", "none", null, null, "dd MMM yyyy") }}
-                    <br />
-                    <span class="text-muted">{{ attachement.updatedAt | localizeddate("medium", "none", null, null, "HH:mm") }}</span>
                 </td>
                 <td>
                     <a href="{{ path('attachement_download', { id: attachement.id })}}">
