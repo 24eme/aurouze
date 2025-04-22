@@ -287,6 +287,7 @@ public static $export_factures_en_retards = array(
                 $facture->setDateFacturation($dateFacturation);
                 $facture->setCommercial($commercial);
                 $facture->setDateEmission($facture->getDateFacturation());
+                $facture->setDateLimitePaiement($facture->calculDateLimitePaiement());
 
                 $factureLigne = new LigneFacturable();
                 $factureLigne->setPrixUnitaire($montantTotalHT / $nbFactures);

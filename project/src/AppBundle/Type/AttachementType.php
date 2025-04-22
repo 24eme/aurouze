@@ -9,6 +9,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Vich\UploaderBundle\Form\Type\VichFileType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 
 
 
@@ -34,7 +35,18 @@ class AttachementType extends AbstractType {
             'allow_delete' => false,
             'label' => 'Choisir un document (.jpg, .png, .pdf)',
           ))
-          ->add('titre', TextType::class, array('label' => 'Nom* :','required' => false));
+          ->add('titre', TextType::class, array('label' => 'Nom* :','required' => false))
+          ->add('updatedAt', DateType::class, array(
+            'required' => false,
+            'attr' => array(
+                'class' => 'input-inline datepicker',
+                'data-provide' => 'datepicker',
+                'data-date-format' => 'dd/mm/yyyy'),
+            'widget' => 'single_text',
+            'format' => 'dd/MM/yyyy',
+            'data' => new \DateTime("now"),
+            'label' => 'Date d\'ajout :',
+            ));
           if($this->visibleTechnicienOption){
               $builder->add('visibleTechnicien', CheckboxType::class, array('label' => ' ', 'required' => false, "attr" => array("class" => "switcher", "data-size" => "mini")));
           }
