@@ -175,6 +175,9 @@ class PassageMobileType extends AbstractType
     	$tags = $this->dm->getRepository('AppBundle:Passage')->findAllNettoyages();
     	$result = array();
     	foreach ($tags as $tag) {
+            if(!is_string($tag)) {
+                continue;
+            }
     		$result[$tag] = $tag;
     	}
     	return $result;
