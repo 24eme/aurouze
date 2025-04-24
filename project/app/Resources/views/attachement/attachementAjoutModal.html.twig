@@ -30,6 +30,15 @@
                     <hr />
                     <div class="row">
                         <div class="form-group">
+                        {{ form_label(form.numeroContrat, "Lié à au contrat n° :", {'label_attr': {'class': 'col-xs-4 control-label'}}) }}
+                          <div class="col-xs-8">
+                              {{ form_widget(form.numeroContrat) }}
+                          </div>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="row">
+                        <div class="form-group">
                         {{ form_label(form.updatedAt, "Date d'ajout :", {'label_attr': {'class': 'col-xs-4 control-label'}}) }}
                           <div class="col-xs-8">
                               {{ form_widget(form.updatedAt) }}

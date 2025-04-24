@@ -278,7 +278,7 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
         if(!$this->getContrat()){
           return false;
         }
-        if(!$this->getContrat()->getNbFactures()){
+        if(!$this->getContrat()->getNbFactures() || $this->getContrat()->getFacturationManuelle()){
           return true;
         }
         return false;
