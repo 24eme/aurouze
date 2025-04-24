@@ -214,10 +214,10 @@ class FactureController extends Controller
     }
 
     /**
-     * @Route("/societe/{societe}/creation-echelonnee-facture/{contratId}", name="facture_echelonnee_creation", defaults={"contratId" = "0"})
+     * @Route("/societe/{societe}/creation-factures-manuelles/{contratId}", name="factures_manuelles_creation", defaults={"contratId" = "0"})
      * @ParamConverter("societe", class="AppBundle:Societe")
      */
-    public function creationEchelonneeAction(Request $request, Societe $societe, $contratId) {
+    public function creationManuellesAction(Request $request, Societe $societe, $contratId) {
         $dm = $this->get('doctrine_mongodb')->getManager();
         $contratManager = $this->get('contrat.manager');
         $fm = $this->get('facture.manager');
@@ -227,7 +227,8 @@ class FactureController extends Controller
             $contrat = $contratManager->getRepository()->findOneById($contratId);
         }
 
-        $fm->createFactureEchelonnee($societe, $contrat);
+        $facture = $fm->createFacturesManuelles($societe, $contrat);
+
 
         return $this->redirectToRoute('facture_societe', array('id' => $societe->getId(),"etablissement_id" => $request->get('etablissement_id')));
     }
