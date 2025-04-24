@@ -273,14 +273,22 @@ public static $export_factures_en_retards = array(
         return $facture;
     }
 
-    public function createFactureEchelonnee(Societe $societe, $contrat = null ) {
-        if ($contrat->getTypeFacturation() == ContratManager::TYPE_FACTURATION_ECHELONNEE){
+    public function createFacturesManuelles(Societe $societe, $contrat = null ) {
+        if ($contrat->getFacturationManuelle()){
             $montantTotalHT = $contrat->getPrixHt();
 
             $nbFactures = $contrat->getNbFactures();
 
             $commercial = $contrat->getCommercial();
             $dateFacturation = new \DateTime();
+
+            $startDate = $contrat->getDateDebut();
+            $endDate = $contrat->getDateFin();
+
+            $period= $startDate->diff($endDate)->format('%a');
+            $interval = $period / $nbFactures;
+
+            $currentDate = clone $startDate;
 
             for($i = 0; $i < $nbFactures; $i++) {
                 $facture = $this->createVierge($societe, $contrat);
@@ -294,23 +302,11 @@ public static $export_factures_en_retards = array(
                 $factureLigne->setTauxTaxe(0.2);
                 $factureLigne->setQuantite(1);
 
-                if ($i === $nbFactures - 1) {
-                    $roundDecimalUp = pow(10, 2);
-                    $factureLigne->setMontantHT(ceil($contrat->getPrixRestant() * $roundDecimalUp) / $roundDecimalUp);
-                } else {
-                    $factureLigne->setMontantHT(round($factureLigne->getPrixUnitaire(), 2));
-                }
-
-                $factureLigne->setMontantTaxe($factureLigne->getPrixUnitaire() + $factureLigne->getMontantHT());
+                $factureLigne->setMontantHT($factureLigne->getPrixUnitaire());
                 $factureLigne->setOrigineDocument($contrat);
 
-                $mouvement = $contrat->buildMouvement();
-                $mouvement->setFacture(true);
-                $mouvement->setOrigineDocumentGeneration($contrat);
-
-                $factureLigne->setOrigineMouvement($mouvement->getIdentifiant());
-
-                $factureLigne->setLibelle($contrat->getLibelleMouvement());
+                $numeroFacture = $i + 1;
+                $factureLigne->setLibelle(sprintf("Facture %s/%s - Proposition n° %s du %s au %s", $numeroFacture, $nbFactures, $contrat->getNumeroArchive(), $contrat->getDateDebut()->format('d/m/Y'), $contrat->getDateFin()->format('d/m/Y')));
                 if($contrat->getTvaReduite()){
                     $factureLigne->setTauxTaxe(0.1);
                 }
@@ -325,8 +321,14 @@ public static $export_factures_en_retards = array(
 
                 $this->dm->persist($facture);
                 $this->dm->flush();
-                $dateFacturation->modify("+1 month");
-                $contrat->addMouvement($mouvement);
+
+                $dateFacturation->modify('+ ' . round($interval) . " days");
+
+                if($facture->getNumeroFacture()){
+                    $facture->removeNumeroFacture();
+                    $this->dm->persist($facture);
+                    $this->dm->flush();
+                }
             }
             return $facture;
         }

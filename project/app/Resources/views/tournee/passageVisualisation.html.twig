@@ -122,7 +122,7 @@
       <h4 class="info-docs-text" data-default-text=" "> </h4>
       {% if attachements[planifiable.etablissement.id] is defined %}
       {% for attachement in attachements[planifiable.etablissement.id]|sort|reverse %}
-          {% if attachement.visibleTechnicien %}
+          {% if attachement.visibleTechnicien and (attachement.numeroContrat == planifiable.contrat.numeroArchive or not attachement.numeroContrat) %}
           <br>
           <div {% if attachement.updatedAt|date("U") >= "-12 months"|date("U") %} class="recentAttachement"> {% else %} class="previousAttachement" hidden> {% endif %}
                 <h4>{{ attachement.updatedAt| localizeddate("medium", "none", null, null, "d MMMM yyyy")  }}</h4>

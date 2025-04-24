@@ -34,6 +34,9 @@
             			<strong>Lieu&nbsp;:&nbsp;</strong><small>{{ attachement.etablissement.adresse.intitule }}</small>
                     </a>
                 {% endif %}
+                {% if attachement.numeroContrat %}
+                    <br /><a href="{{ path('recherche', {'q': attachement.numeroContrat   })}}"><strong>Contrat&nbsp;:</strong> <small>n°&nbsp;{{ attachement.numeroContrat }}</strong></small></a>
+                {% endif %}
                 </td>
                 <td>
                     {{ include('attachement/attachementItem.html.twig', {'attachement' : attachement}) }}
