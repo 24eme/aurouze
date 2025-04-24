@@ -76,6 +76,9 @@ class AttachementController extends Controller {
     public function visualisationAction(Request $request, $id) {
       $dm = $this->get('doctrine_mongodb')->getManager();
       $attachement = new Attachement();
+      if($request->get('numerocontrat')) {
+          $attachement->setNumeroContrat($request->get('numerocontrat'));
+      }
       $attachementRepository = $this->get('attachement.manager')->getRepository();
       $etablissement = null;
       $societe = null;
@@ -109,7 +112,7 @@ class AttachementController extends Controller {
               'method' => 'POST',
       ));
 
-      return $this->render('attachement/listing.html.twig', array('attachements'  => $attachements, 'societe' => $societe, 'etablissement' => $etablissement, 'actif' => $actif, 'urlForm' => $urlForm, 'form' => $form->createView(), 'all' => $all, 'facets' => $facets));
+      return $this->render('attachement/listing.html.twig', array('attachements'  => $attachements, 'societe' => $societe, 'etablissement' => $etablissement, 'actif' => $actif, 'urlForm' => $urlForm, 'form' => $form->createView(), 'all' => $all, 'facets' => $facets, 'add' => boolval($request->get('add'))));
     }
 
     /**

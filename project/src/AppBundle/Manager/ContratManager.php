@@ -40,9 +40,6 @@ class ContratManager implements MouvementManagerInterface {
     const ZONE_SEINE_ET_MARNE = "77";
     const ZONE_PARIS = "75";
 
-    const TYPE_FACTURATION_INDIVIDUELLE = "À chaque passage";
-    const TYPE_FACTURATION_ECHELONNEE = "Echelonnée";
-
     const EXPORT_PCA_CLIENT = 0;
     const EXPORT_PCA_NUMERO_CONTRAT = 1;
     const EXPORT_PCA_TYPE_CONTRAT = 2;
@@ -143,11 +140,6 @@ class ContratManager implements MouvementManagerInterface {
       self::EXPORT_PCA_CONTROLE => "Contrôle"
 
     );
-
-    public static $typesFacturationLibelles = array(
-        self::TYPE_FACTURATION_INDIVIDUELLE => "Facturation à chaque passage",
-        self::TYPE_FACTURATION_ECHELONNEE => "Facturation échelonnée",
-        );
 
     protected $dm;
     protected $parameters;

@@ -18,7 +18,7 @@
 
 {{ include('societe/choixForm.html.twig', {'urlTarget': path('societe_visualisation', {'id': '_id_'}), 'autofocus': true })}}
 <div class="text-right">
-        <a class="btn btn-lg btn-default" data-toggle="modal" data-target="#document-modal-{{actif.id}}" ><span class="glyphicon glyphicon-plus"></span>&nbsp;Ajouter document</a>
+        <a id="btn-add-document" class="btn btn-lg btn-default" data-toggle="modal" data-target="#document-modal-{{actif.id}}" ><span class="glyphicon glyphicon-plus"></span>&nbsp;Ajouter document</a>
 </div>
 
 {% for flashMessage in app.session.flashBag.get('upload_error') %}
@@ -44,4 +44,12 @@
         {{ include('attachement/menu.html.twig', {'societe' : societe, 'etablissement' : etablissement, 'actif' : actif, 'facets': facets, 'all' : all }) }}
     </div>
 </div>
+
+{% if(add) %}
+<script>
+    document.addEventListener("DOMContentLoaded", (event) => {
+        document.getElementById('btn-add-document').click();
+    });
+</script>
+{% endif %}
 {% endblock %}
