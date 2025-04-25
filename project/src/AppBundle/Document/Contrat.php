@@ -184,9 +184,9 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
     protected $nbFactures;
 
     /**
-     * @MongoDB\Field(type="string")
+     * @MongoDB\Field(type="bool")
      */
-    protected $typeFacturation;
+    protected $facturationManuelle;
 
     /**
      * @MongoDB\Field(type="float")
@@ -701,23 +701,23 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
     }
 
     /**
-    * Set typeFacturation
+    * Set facturationManuelle
     *
-    * @param string $typeFacturation
+    * @param boolean $facturationManuelle
     * @return self
     */
-    public function setTypeFacturation($typeFacturation) {
-        $this->typeFacturation = $typeFacturation;
+    public function setFacturationManuelle($facturationManuelle) {
+        $this->facturationManuelle = $facturationManuelle;
         return $this;
     }
 
     /**
-    * Get typeFacturation
+    * Get facturationManuelle
     *
-    * @return string $typeFacturation
+    * @return boolean $facturationManuelle
     */
-    public function getTypeFacturation() {
-        return $this->typeFacturation;
+    public function getFacturationManuelle() {
+        return $this->facturationManuelle;
     }
 
     /**
@@ -2313,12 +2313,5 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
             }
         }
         return true;
-    }
-
-    public function hasFacturationEchelonnee() {
-        if($this->getTypeFacturation() == ContratManager::TYPE_FACTURATION_ECHELONNEE){
-          return true;
-        }
-        return false;
     }
 }
