@@ -248,10 +248,9 @@ class AttachementController extends Controller {
     public function attachementModificationAction(Request $request, $id) {
         $dm = $this->get('doctrine_mongodb')->getManager();
 
-        $attachement = $dm->getRepository('AppBundle:Attachement')->findOneById($request->get('id'));
+        $attachement = $dm->getRepository('AppBundle:Attachement')->findForAttachements($request->get('id'));
         $societe = $attachement->getSociete();
         $etablissement = $attachement->getEtablissement();
-
         $form = $this->createForm(new AttachementNameType($dm), $attachement);
 
         if($request->isMethod('POST')) {
