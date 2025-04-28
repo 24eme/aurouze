@@ -41,7 +41,7 @@ class AttachementNameType extends AbstractType {
             ->add('titre', TextType::class, array(
                     'label' => 'Modifier le titre',
                 ))
-            /*->add('updatedAt', DateType::class, array(
+            ->add('updatedAt', DateType::class, array(
                 'required' => false,
                 'attr' => array(
                     'class' => 'input-inline datepicker',
@@ -50,7 +50,7 @@ class AttachementNameType extends AbstractType {
                 'widget' => 'single_text',
                 'format' => 'dd/MM/yyyy',
                 'label' => 'Modifier la date d\'ajout',
-                ))*/
+                ))
             ->add('save', SubmitType::class, array(
             'label' => 'Sauvegarder'
             ))
