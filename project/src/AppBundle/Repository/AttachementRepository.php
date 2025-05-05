@@ -24,7 +24,7 @@ class AttachementRepository extends BaseRepository {
     public function findLast() {
 
         return $this->createQueryBuilder()
-             ->select('_id', 'updatedAt', 'imageName', 'titre', 'originalName', 'etablissement', 'societe', 'visibleTechnicien', 'ext','visibleClient')
+             ->exclude('base64')
              ->field('etablissement')->prime(true)
              ->field('societe')->prime(true)
              ->limit(10)
