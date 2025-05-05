@@ -12,7 +12,7 @@ use AppBundle\Document\Devis as Devis;
 use AppBundle\Document\Attachement;
 use AppBundle\Type\PassageMobileType;
 use AppBundle\Type\DevisMobileType;
-use AppBundle\Type\AttachementType;
+use AppBundle\Type\AttachementTourneeType;
 
 class TourneeController extends Controller {
 
@@ -114,7 +114,7 @@ class TourneeController extends Controller {
 
                 $etbId = $planifiable->getEtablissement()->getId();
 
-                $attachementsForms[$etbId] = array('form' => $this->createForm(new AttachementType($dm, false), new Attachement(), array(
+                $attachementsForms[$etbId] = array('form' => $this->createForm(new AttachementTourneeType($dm, false), new Attachement(), array(
                     'action' => $this->generateUrl('tournee_attachement_upload', array('technicien' => $technicien, 'date' => $date->format('Y-m-d'),'idetablissement' => $etbId,'retour' => 'passage_visualisation_'.$planifiable->getId())),
                     'method' => 'POST',
                 ))->createView(),
@@ -286,23 +286,25 @@ class TourneeController extends Controller {
        $attachement = new Attachement();
        $dm = $this->get('doctrine_mongodb')->getManager();
        $etablissement = $this->get('etablissement.manager')->getRepository()->find($idetablissement);
-       $uploadAttachementForm = $this->createForm(new AttachementType($dm,false), $attachement, array(
+       $uploadAttachementForm = $this->createForm(new AttachementTourneeType($dm,false), $attachement, array(
            'action' => $this->generateUrl('tournee_attachement_upload', array('technicien' => $technicien, 'date' => $date,'idetablissement' => $idetablissement,'retour' => $retour)),
            'method' => 'POST',
        ));
        if ($request->isMethod('POST')) {
            $uploadAttachementForm->handleRequest($request);
            if($uploadAttachementForm->isValid()){
-             $f = $uploadAttachementForm->getData()->getImageFile();
-             if($f){
-                 $attachement->setVisibleTechnicien(true);
-                 $attachement->setVisibleClient(true);
-                 $attachement->setEtablissement($etablissement);
-                 $dm->persist($attachement);
-                 $etablissement->addAttachement($attachement);
-                 $dm->flush();
-                 $attachement->convertBase64AndRemove();
-                 $dm->flush();
+             $files = $uploadAttachementForm->getData()->getImageFile();
+             if($files){
+                 foreach ($files as $file) {
+                     $file->setVisibleTechnicien(true);
+                     $file->setVisibleClient(true);
+                     $file->setEtablissement($etablissement);
+                     $dm->persist($file);
+                     $etablissement->addAttachement($file);
+                     $dm->flush();
+                     $file->convertBase64AndRemove();
+                     $dm->flush();
+                 }
              }
            }
            $urlRetour = $this->generateUrl('tournee_technicien', array('technicien' => $technicien, 'date' => $date))."#".$retour;

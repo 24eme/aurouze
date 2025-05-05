@@ -20,7 +20,7 @@
   <form method="post" action="{{ attachementform.action }}" {{ form_enctype(attachementform.form) }} data-ajax="false" class="attachementform" >
   <div class="row">
         <div class="form-group">
-            {{ form_label(attachementform.form.imageFile, "Fichier :", {'label_attr': {'class': 'col-xs-4 control-label'}}) }}
+            {{ form_label(attachementform.form.imageFile, null, {'label_attr': {'class': 'col-xs-4 control-label'}}) }}
             <div class="col-xs-8">
                 {{ form_widget(attachementform.form.imageFile,{'attr' : {'accept' : "image/*;capture=camera"}}) }}
             </div>
