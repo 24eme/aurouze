@@ -12,7 +12,6 @@ use AppBundle\Document\Devis as Devis;
 use AppBundle\Document\Attachement;
 use AppBundle\Type\PassageMobileType;
 use AppBundle\Type\DevisMobileType;
-use AppBundle\Type\AttachementType;
 use AppBundle\Type\AttachementTourneeType;
 
 class TourneeController extends Controller {
