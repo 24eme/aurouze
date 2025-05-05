@@ -385,6 +385,10 @@ textarea:required:invalid{
     top: 0.4em;
 }
 
+.datepicker {
+    z-index: 1100;
+}
+
 @media only screen and (max-width: 500px){
     .attachement-item::after {
         left:15%;
