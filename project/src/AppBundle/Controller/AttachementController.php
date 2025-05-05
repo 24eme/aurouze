@@ -258,6 +258,7 @@ class AttachementController extends Controller {
 
             if($form->isSubmitted() && $form->isValid()) {
                 $attachement = $form->getData();
+                $dm->persist($attachement);
                 $dm->flush();
 
                 if(!is_null($societe)) {
