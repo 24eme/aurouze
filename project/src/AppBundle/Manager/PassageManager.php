@@ -220,4 +220,8 @@ class PassageManager
       $resultCsv[] = $totaux;
       return $resultCsv;
     }
+
+    public function getHistoriquePassagesByEtablissement(Passage $passage, $etablissementId) {
+        return $this->getRepository()->findPassageForEtablissementBeforeCurrentPassageDate($etablissementId, $passage->getDureeDate());
+    }
 }

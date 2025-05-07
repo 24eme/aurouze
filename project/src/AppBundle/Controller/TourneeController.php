@@ -94,13 +94,21 @@ class TourneeController extends Controller {
             $planifiable = $rendezVous->getPlanifiable();
             $previousPlanifiable = null;
             if($planifiable){
+                $etbId = $planifiable->getEtablissement()->getId();
                 if($planifiable->getTypePlanifiable() == Passage::DOCUMENT_TYPE){
                     $historiqueAllPassages[$planifiable->getId()] = $this->get('contrat.manager')->getHistoriquePassagesByNumeroArchive($planifiable, 2);
                     $previousPlanifiable = null;
                     foreach ($historiqueAllPassages[$planifiable->getId()] as $hPassage) {
                         $this->get('passage.manager')->synchroniseProduitsWithConfiguration($hPassage);
+
                         if(!$previousPlanifiable || !$previousPlanifiable->getDateDebut() || ($previousPlanifiable->getDateDebut() < $hPassage->getDateDebut())){
                             $previousPlanifiable = $hPassage;
+                        }
+                    }
+                    if(count($historiqueAllPassages[$planifiable->getId()]) < 1) {
+                        $historiquePassagesEtablissement = $this->get('passage.manager')->getHistoriquePassagesByEtablissement($planifiable, $etbId);
+                        foreach ($historiquePassagesEtablissement as $hPassage) {
+                            $this->get('passage.manager')->synchroniseProduitsWithConfiguration($hPassage);
                         }
                     }
                 }
@@ -112,7 +120,6 @@ class TourneeController extends Controller {
                     'method' => 'POST',
                 ))->createView();
 
-                $etbId = $planifiable->getEtablissement()->getId();
 
                 $attachementsForms[$etbId] = array('form' => $this->createForm(new AttachementTourneeType($dm, false), new Attachement(), array(
                     'action' => $this->generateUrl('tournee_attachement_upload', array('technicien' => $technicien, 'date' => $date->format('Y-m-d'),'idetablissement' => $etbId,'retour' => 'passage_visualisation_'.$planifiable->getId())),
@@ -136,6 +143,7 @@ class TourneeController extends Controller {
                                                                           "date" => $date,
                                                                           "version" => $version,
                                                                           "historiqueAllPassages" => $historiqueAllPassages,
+                                                                          "historiquePassagesEtablissement" => $historiquePassagesEtablissement,
                                                                           'telephoneSecretariat' => $telephoneSecretariat,
                                                                           "planifiableForms" => $planifiableForms,
                                                                           "attachementsForms" => $attachementsForms,
