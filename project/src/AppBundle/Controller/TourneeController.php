@@ -65,6 +65,7 @@ class TourneeController extends Controller {
         $rendezVousByTechnicien = $this->get('rendezvous.manager')->getRepository()->findByDateDebutAndParticipant($date->format('Y-m-d'),$technicienObj);
 
         $historiqueAllPassages = array();
+        $historiquePassagesEtablissement = [];
         $planifiableForms = array();
         $attachementsForms = array();
         $attachements = [];
@@ -97,6 +98,7 @@ class TourneeController extends Controller {
                 $etbId = $planifiable->getEtablissement()->getId();
                 if($planifiable->getTypePlanifiable() == Passage::DOCUMENT_TYPE){
                     $historiqueAllPassages[$planifiable->getId()] = $this->get('contrat.manager')->getHistoriquePassagesByNumeroArchive($planifiable, 2);
+                    $historiquePassagesEtablissement[$planifiable->getId()] = $this->get('passage.manager')->getRepository('AppBundle:Passage')->findPassageForEtablissementBeforeCurrentPassageDate($etbId, $planifiable->getDureeDate());
                     $previousPlanifiable = null;
                     foreach ($historiqueAllPassages[$planifiable->getId()] as $hPassage) {
                         $this->get('passage.manager')->synchroniseProduitsWithConfiguration($hPassage);
@@ -105,11 +107,8 @@ class TourneeController extends Controller {
                             $previousPlanifiable = $hPassage;
                         }
                     }
-                    if(count($historiqueAllPassages[$planifiable->getId()]) < 1) {
-                        $historiquePassagesEtablissement = $this->get('passage.manager')->getHistoriquePassagesByEtablissement($planifiable, $etbId);
-                        foreach ($historiquePassagesEtablissement as $hPassage) {
-                            $this->get('passage.manager')->synchroniseProduitsWithConfiguration($hPassage);
-                        }
+                    foreach ($historiquePassagesEtablissement[$planifiable->getId()] as $hPassage) {
+                        $this->get('passage.manager')->synchroniseProduitsWithConfiguration($hPassage);
                     }
                 }
                 $planifiableTypeName = "AppBundle\\Type\\".$planifiable->getTypePlanifiable()."MobileType";

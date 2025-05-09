@@ -111,10 +111,10 @@
       <div data-role="main" class="ui-content">
         {% set historiquePassages = [] %}
 
-        {% if historiqueAllPassages[planifiable.id] is defined and historiqueAllPassages[planifiable.id]|length > 1 %}
+        {% if historiqueAllPassages[planifiable.id] is defined and historiqueAllPassages[planifiable.id]|length > 0 %}
           {% set historiquePassages = historiqueAllPassages[planifiable.id] %}
         {% else %}
-          {% set historiquePassages = historiquePassagesEtablissement %}
+          {% set historiquePassages = historiquePassagesEtablissement[planifiable.id] %}
         {% endif %}
           {{ include('tournee/'~type~'Visualisation.html.twig', { 'planifiable' : planifiable, "technicien" : technicien, "historiquePassages" : historiquePassages,'telephoneSecretariat' : telephoneSecretariat}) }}
       </div>
