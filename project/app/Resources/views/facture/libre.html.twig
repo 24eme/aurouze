@@ -154,6 +154,12 @@
                 {{ form_widget(form.relanceCommentaire) }}
             </div>
         </div>
+        <div class="form-group">
+            <label class="col-xs-2 control-label">Email de facturation</label>
+            <div class="col-xs-10">
+                <input type="text" required="required" placeholder="Quantité" readonly="readonly" class="form-control" value="{{ facture.societe.contactCoordonnee.emailFacturation }}">
+            </div>
+        </div>
         <hr />
         <div class="row form-group">
             <div class="col-xs-4 text-left">
