@@ -21,7 +21,9 @@ Installation
 Déployer mongodb 4.0 avec docker
 --------------------------------
 
+```
 docker run --rm --name mongodb -v /var/lib/mongodb:/data/db -p 27017:27017 -d mongo:4.0
+```
 
 Téléphone
 ---------
