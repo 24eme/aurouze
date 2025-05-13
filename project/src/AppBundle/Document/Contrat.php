@@ -1217,6 +1217,16 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
         return $this->contratPassages[$etablissement->getId()]->getPassagesSorted();
     }
 
+    public function getPassagesAPlanifier()
+    {
+        $passages = [];
+        foreach ($this->etablissements as $etb) {
+            $passages = array_merge($passages,  $this->contratPassages[$etb->getId()]->getPassagesAPlanifier());
+        }
+
+        return $passages;
+    }
+
     public function getUniquePassage() {
         if ($this->getNbPassages() != 1 || count($this->getEtablissements()) > 1) {
 
