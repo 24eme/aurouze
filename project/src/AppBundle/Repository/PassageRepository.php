@@ -104,6 +104,17 @@ class PassageRepository extends BaseRepository {
                         array('etablissementIdentifiant' => $etablissementIdentifiant, 'createAt' => $createAt));
     }
 
+    public function findPassageForEtablissementBeforeCurrentPassageDate($etablissementId, $currentPassageDate) {
+        $mongoStartDate = new MongoDate(strtotime($currentPassageDate->format('Y-m-d')));
+        $query = $this->createQueryBuilder('Passage')
+                ->field('etablissement')->equals($etablissementId)
+                ->field('dateFin')->lte($mongoStartDate)
+                ->limit(2)
+                ->sort('dateFin', 'desc')
+                ->getQuery();
+        return $query->execute();
+    }
+
     public function findPassagesForEtablissement($etablissementIdentifiant) {
         $query = $this->createQueryBuilder('Passage')
                 ->field('etablissementIdentifiant')->equals($etablissementIdentifiant)
