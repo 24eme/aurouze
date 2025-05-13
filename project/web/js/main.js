@@ -283,7 +283,8 @@
 
     $.initFacture = function(){
       $('.mail_facture').on('click',function(){
-        if(!confirm('Êtes-vous sûrs de vouloir envoyer le mail?')) {
+        const mails = $(this).data('emails')
+        if(!confirm('Ce mail sera envoyé aux adresses suivantes : ' + mails + '.\r\n\r\nÊtes-vous sûrs de vouloir envoyer le mail?')) {
             return false;
         }
       });
