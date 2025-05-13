@@ -1,7 +1,7 @@
 <div class="signature" data-role="page" id="signature_{{ planifiable.id }}" data-id="{{ planifiable.id }}">
   <div data-role="header" style="overflow:hidden;" data-position="fixed">
     <h1>Tournée {{ technicien.identite }}</h1>
-    <a href="#rapport_{{ planifiable.id }}" class="signature_valider ui-btn ui-icon-arrow-l ui-btn-icon-left" data-id="{{ planifiable.id }}" >
+    <a href="#rapport_{{ planifiable.id }}" class="signature_retour ui-btn ui-icon-arrow-l ui-btn-icon-left" data-id="{{ planifiable.id }}" >
           &nbsp;Retour
     </a>
     <a data-id="{{ planifiable.id }}" class="signature_vider ui-btn ui-icon-recycle ui-btn-icon-right" data-id="{{ planifiable.id }}" >
@@ -11,6 +11,11 @@
   </div>
     <div data-role="main" class="ui-content" style="padding:3px">
     {{ form_start(form, { 'attr': { 'class': 'form-horizontal'} }) }}
+    <h6 class="ui-bar ui-bar-a ui-corner-all" style="margin-bottom:0;"><strong>Nom et signature</strong></h6>
+      <div class="ui-body ui-body" style="padding-left:0; padding-top:0;" >
+          {{ form_errors(form.nomTransmissionUpdated) }}
+          {{ form_widget(form.nomTransmissionUpdated) }}
+      </div>
     {% set passageId = planifiable.id %}
       <div class="signature-pad ui-body ui-body-a ui-corner-all" id="signature_pad_content_{{ planifiable.id }}">
           {{ form_errors(form.signatureBase64) }}
@@ -23,3 +28,16 @@
     </form>
   </div>
 </div>
+
+
+{% block javascripts %}
+
+    <script>
+      $(".signature_valider[data-id='{{ planifiable.id }}']").click(function() {
+        let signatureNomDefault = $(".nomDefault[data-id='{{ planifiable.id }}']");
+        let signatureNomUpdated = $(this).parent('form').find('input.updatedNom');
+        signatureNomDefault.val(signatureNomUpdated.val())
+      });
+    </script>
+
+{% endblock %}

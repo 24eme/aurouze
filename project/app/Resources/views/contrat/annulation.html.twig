@@ -40,8 +40,34 @@
 
             </div>
         </div>
-        <div>
-            <p class="text-warning col-xs-6" style="padding:0; margin-top:10px; font-weight:800;">Tous les passages après la date de résiliation seront annulés</p>
+        <div class="clearfix">
+            <p class="text-warning" style="padding:0; margin-top:10px; font-weight:800;">Tous les passages après la date de résiliation seront annulés</p>
+            {% for passage in contrat.passagesAPlanifier %}
+            <div class="col-xs-4">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <div class="col-xs-12">Prévu le {{ passage.datePrevision | localizeddate("medium", "none", null, null, "d MMMM yyyy") }}</div>
+                        <div class="col-xs-3">
+                            {% for prestation in passage.prestations %}
+                            {% if(prestation.wordToPicto) %}
+                                <span class="step size-24" title="{{  prestation.nomToString }}" data-toggle="tooltip">
+                                    <i class="mdi-{{prestation.wordToPicto}}" style="cursor: pointer;"></i>
+                                </span>
+                            {% else %}
+                                <span class="label label-xs label-primary">{{ prestation.nomToString }}</span>
+                            {%endif%}
+                            {% endfor %}
+                        </div>
+                        <div class="col-xs-9">
+                            <i class="mdi mdi-face mdi-lg"></i>
+                            {% for technicien in passage.techniciens %}
+                                {{ technicien.identite }}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
         </div>
         {{ form_end(form) }}
 
