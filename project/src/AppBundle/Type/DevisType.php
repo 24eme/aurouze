@@ -94,18 +94,20 @@ class DevisType extends AbstractType
                 'attr' => array("class" => "select2 select2-simple", "multiple" => "multiple", "style" => "width:100%;")
             ));
 
-            $dateAcceptationInput =  array(
-                  'required' => false,
-                  'label' => 'Date acceptation du devis',
-                  "attr" => array(
-                      'class' => 'input-inline datepicker',
-                      'data-provide' => 'datepicker',
-                      'data-date-format' => 'dd/mm/yyyy'
-                  ),
-                  'widget' => 'single_text',
-                  'format' => 'dd/MM/yyyy'
-              );
-              $builder->add('dateAcceptation', DateType::class, $dateAcceptationInput);
+            if ($builder->getData()->getId()) {
+                $dateAcceptationInput =  array(
+                    'required' => false,
+                    'label' => 'Date acceptation du devis',
+                    "attr" => array(
+                        'class' => 'input-inline datepicker',
+                        'data-provide' => 'datepicker',
+                        'data-date-format' => 'dd/mm/yyyy'
+                    ),
+                    'widget' => 'single_text',
+                    'format' => 'dd/MM/yyyy'
+                );
+                $builder->add('dateAcceptation', DateType::class, $dateAcceptationInput);
+            }
 
               $savelabel = ($builder->getData()->getId()) ? 'Sauver' : 'Créer';
               $builder->add('edit', SubmitType::class, [

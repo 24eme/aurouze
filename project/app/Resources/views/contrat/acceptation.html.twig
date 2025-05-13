@@ -114,6 +114,14 @@
                 </div>
             </div>
         </div>
+
+        <div class="alert alert-warning" role="alert">
+            <strong>Attention</strong>
+            {% for warning in warnings %}
+                {{ warning }}
+            {% endfor %}
+        </div>
+
         <hr />
 
         <div class="row">

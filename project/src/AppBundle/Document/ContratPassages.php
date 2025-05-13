@@ -5,6 +5,7 @@ namespace AppBundle\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use AppBundle\Document\Etablissement;
 use AppBundle\Document\Passage;
+use AppBundle\Manager\PassageManager;
 
 /**
  * @MongoDB\EmbeddedDocument
@@ -208,4 +209,14 @@ class ContratPassages {
         return false;
     }
 
+    public function getPassagesAPlanifier()
+    {
+        $collection = [];
+        foreach ($this->getPassages() as $passage) {
+            if ($passage->getStatut() === PassageManager::STATUT_A_PLANIFIER) {
+                $collection[] = $passage;
+            }
+        }
+        return $collection;
+    }
 }
