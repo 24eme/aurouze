@@ -217,13 +217,11 @@ class PassageRepository extends BaseRepository {
         $date = new \DateTime();
         $mongoEndDate = new MongoDate(strtotime($dateFin->format('Y-m-d')));
 
-        $techniciens = $this->dm->getRepository('AppBundle:Compte')->findAllUtilisateursTechnicienActif()->toArray();
-
         $q = $this->createQueryBuilder();
         $q->field('statut')->equals(PassageManager::STATUT_A_PLANIFIER)
           ->field('contrat')->prime(true)
           ->field('etablissement')->prime(true)
-          ->field('techniciens')->in(array_keys($techniciens))->prime(true)
+          ->field('techniciens')->prime(true)
           ->field('datePrevision')->lte($mongoEndDate);
 
         if($dateDebut){
