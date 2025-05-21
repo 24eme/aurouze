@@ -147,27 +147,33 @@ class AttachementController extends Controller {
    }
 
    /**
-   * @Route("/attachement/{id}/updateVisibleClient", name="attachement_update_visible_client")
+    * @Route("/attachement/{id}/visibility/toggle/{type}", name="attachement_update_visibility", requirements={
+    *       "type"="client|technicien"
+    * })
    */
-   public function attachementUpdateVisibleClientAction(Request $request, $id) {
+   public function attachementUpdateVisibleAction(Request $request) {
       $dm = $this->get('doctrine_mongodb')->getManager();
       $attachement = $dm->getRepository('AppBundle:Attachement')->findOneById($request->get('id'));
+
+      $type = ucfirst($request->get('type'));
+      $getVisibilite = 'getVisible'.$type;
+      $setVisibilite = 'setVisible'.$type;
 
       $entite = $attachement->getSociete();
 
       if(!$entite){
-        $entite = $attachement->getEtablissement();
+          $entite = $attachement->getEtablissement();
       }
+
       if(!$entite){
-        throw new \Exception('Une erreur s\'est produite : le document '.$attachement->getId().' ne semble être relié à rien!');
-
+          throw new \Exception('Une erreur s\'est produite : le document '.$attachement->getId().' ne semble être relié à rien!');
       }
 
-      if($attachement->getVisibleClient() === null){
-          $attachement->setVisibleClient(false);
+      if ($attachement->$getVisibilite() === null) {
+          $attachement->$setVisibilite(false);
       }
 
-      $attachement->setVisibleClient(!$attachement->getVisibleClient());
+      $attachement->$setVisibilite(! $attachement->$getVisibilite());
 
       $dm->persist($attachement);
       $dm->flush();
