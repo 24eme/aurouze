@@ -99,7 +99,13 @@ class ContratAcceptationType extends AbstractType {
     }
 
     public function getTechniciens() {
-        return $this->dm->getRepository('AppBundle:Compte')->findAllUtilisateursTechnicien();
+        $technicien = [];
+
+        if ($this->contrat->getTechnicien()) {
+            $technicien = [$this->contrat->getTechnicien()->getId() => $this->contrat->getTechnicien()];
+        }
+
+        return array_merge($technicien, $this->dm->getRepository('AppBundle:Compte')->findAllUtilisateursTechnicienActif()->toArray());
     }
 
     public function getCommerciaux() {

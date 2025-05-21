@@ -34,36 +34,29 @@
 					<div class="panel-body">
 						<div class="row">
 							<div class="col-xs-6" id="searchable" data-type="societe" data-url="{{ path('recherche_societe')  }}" data-target="0">
-							{{ form_label(formFacturesARelancer.societe) }}
-							{{ form_errors(formFacturesARelancer.societe) }}
-							{{ form_widget(formFacturesARelancer.societe) }}
+							    {{ form_label(formFacturesARelancer.societe) }}
+								{{ form_errors(formFacturesARelancer.societe) }}
+								{{ form_widget(formFacturesARelancer.societe) }}
 							</div>
 							<div class="col-xs-6">
-									{{ form_label(formFacturesARelancer.nbRelances) }}
+								{{ form_label(formFacturesARelancer.nbRelances) }}
 								{{ form_errors(formFacturesARelancer.nbRelances) }}
 								{{ form_widget(formFacturesARelancer.nbRelances) }}
 							</div>
 						</div>
 						<div class="row">
-							<div class="col-xs-6">
-							{{ form_label(formFacturesARelancer.dateFactureBasse) }}
-							{{ form_errors(formFacturesARelancer.dateFactureBasse) }}
-							{{ form_widget(formFacturesARelancer.dateFactureBasse) }}
-							</div>
-							<div class="col-xs-6">
-							{{ form_label(formFacturesARelancer.dateFactureHaute) }}
-							{{ form_errors(formFacturesARelancer.dateFactureHaute) }}
-							{{ form_widget(formFacturesARelancer.dateFactureHaute) }}
-							</div>
-						</div>
-						<br/>
-						<div class="row">
-							<div class="col-xs-6" id="datepicker">
+						    <div class="col-xs-6" id="datepicker">
 								{{ form_label(formFacturesARelancer.dateMois) }}
 								{{ form_errors(formFacturesARelancer.dateMois) }}
 								{{ form_widget(formFacturesARelancer.dateMois) }}
 							</div>
-					</div>
+                            <div class="col-xs-6">
+                                {{ form_label(formFacturesARelancer.dateFactureHaute) }}
+                                {{ form_errors(formFacturesARelancer.dateFactureHaute) }}
+                                {{ form_widget(formFacturesARelancer.dateFactureHaute) }}
+                            </div>
+						</div>
+						<br/>
 					<div class="row">
 						<div class="col-xs-12 text-right">
 							<label class="control-label">&nbsp;</label><br />

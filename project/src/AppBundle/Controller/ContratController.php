@@ -812,34 +812,40 @@ class ContratController extends Controller {
 
         $dateRecondution = new \DateTime();
         $typeContrat = null;
-	$societe = null;
-	$commercial = null;
+        $societe = null;
+        $commercial = null;
+        $zone = $request->query->get('zone', ContratManager::ZONE_PARIS);
 
         $formContratsAReconduire = $this->createForm(new ReconductionFiltresType($dm), null, array(
-        		'action' => $this->generateUrl('contrats_reconduction_massive'),
-        		'method' => 'post',
+            'action' => $this->generateUrl('contrats_reconduction_massive'),
+            'method' => 'post',
         ));
-        $formContratsAReconduire->handleRequest($request);
-        if ($formContratsAReconduire->isSubmitted() && $formContratsAReconduire->isValid()) {
 
-        	$formValues =  $formContratsAReconduire->getData();
-        	$dateRecondution = $formValues["dateRenouvellement"];
-        	$typeContrat = $formValues["typeContrat"];
-        	$societe = $formValues["societe"];
-          if(count($formValues["commercial"])>0){
-            $commercial = $formValues["commercial"];
-          }
+        $formContratsAReconduire->handleRequest($request);
+
+        if ($formContratsAReconduire->isSubmitted() && $formContratsAReconduire->isValid()) {
+            $formValues =  $formContratsAReconduire->getData();
+            $dateRecondution = $formValues["dateRenouvellement"];
+            $typeContrat = $formValues["typeContrat"];
+            $societe = $formValues["societe"];
+
+            if (count($formValues["commercial"]) > 0) {
+                $commercial = $formValues["commercial"];
+            }
         }
-        $contratsAReconduire = $cm->getRepository()->findContratsAReconduire($typeContrat, $dateRecondution, $societe, $commercial);
+
+        $contratsAReconduire = $cm->getRepository()->findContratsAReconduire($typeContrat, $dateRecondution, $societe, $commercial, $zone);
         $formReconduction = $this->createForm(new ReconductionType($contratsAReconduire), null, array(
-        		'action' => $this->generateUrl('contrats_reconduire_massivement'),
-        		'method' => 'post',
+            'action' => $this->generateUrl('contrats_reconduire_massivement'),
+            'method' => 'post',
         ));;
 
         return $this->render('contrat/reconduction_massive.html.twig',array('contratsAReconduire' => $contratsAReconduire,
                                                                             'dateRecondution' => $dateRecondution,
                                                                             'formContratsAReconduire' => $formContratsAReconduire->createView(),
-                                                                            'formReconduction' => $formReconduction->createView()));
+                                                                            'formReconduction' => $formReconduction->createView(),
+                                                                            'zone' => $zone
+        ));
     }
     /**
      * @Route("/contrat/{id}/en_attente", name="contrat_en_attente")

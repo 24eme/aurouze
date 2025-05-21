@@ -58,7 +58,7 @@ class RendezVousType extends AbstractType {
         ->add('timeFin', TextType::class, array('label' => 'Heure fin', 'attr' => array('class' => 'input-timepicker', 'data-default' => '12:00')));
 
         $builder->add('participants', DocumentType::class, array(
-            	'choices' => $this->getParticipants(),
+                'choices' => $this->getParticipants($builder->getData()->getParticipants()->toArray()),
                 'class' => 'AppBundle\Document\Compte',
         		'expanded' => false,
         		'multiple' => true,
@@ -89,8 +89,11 @@ class RendezVousType extends AbstractType {
         return 'rendezvous';
     }
 
-    public function getParticipants() {
-        return $this->dm->getRepository('AppBundle:Compte')->findAllUtilisateursTechnicien();
+    public function getParticipants(array $existants) {
+        return array_unique(array_merge(
+            $existants,
+            $this->dm->getRepository('AppBundle:Compte')->findAllUtilisateursTechnicienActif()->toArray()
+        ));
     }
 
 }

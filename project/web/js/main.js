@@ -119,21 +119,26 @@
     }
 
     $.initDevisForm = function() {
-      var devis_produit_total = document.getElementById("devis_produit_total")
+      var devis_produit_total_HT = document.getElementById("devis_produit_total_HT")
+      var devis_produit_total_TTC = document.getElementById("devis_produit_total_TTC")
 
-      if (devis_produit_total == null) {
+      if (devis_produit_total_HT == null) {
         return false;
       }
 
       var devis_produit = document.getElementById('devis_produit')
 
       var updateTotal = function (table) {
-        var trs = table.querySelectorAll('tr')
-        var total = 0
-        devis_produit_total.innerText = 0.0
+        var trs = table.querySelectorAll('tbody tr')
+        var totalHT = 0
+        var totalTaux = 0
+        devis_produit_total_HT.innerText = 0.0
+        devis_produit_total_TTC.innerText = 0.0
 
         trs.forEach(function (tr) {
           var qte = tr.querySelector('input.quantite')
+          var prix = tr.querySelector('input.prix-unitaire')
+          var taux = tr.querySelector('input.taux')
 
           if (qte == null) return
 
@@ -143,13 +148,16 @@
             qte = 0
           }
 
-          total += qte * tr.querySelector('.prix-unitaire').value
+          totalHT += qte * prix.value
+          totalTaux += qte * prix.value * taux.value
         })
 
-        devis_produit_total.innerText = Math.round(total * 100) / 100
+        devis_produit_total_HT.innerText = Math.round(totalHT * 100) / 100
+        devis_produit_total_TTC.innerText = Math.round((totalHT + totalTaux) * 100) / 100
       }
 
-      devis_produit_total.innerText = 0.0
+      devis_produit_total_HT.innerText = 0.0
+      devis_produit_total_TTC.innerText = 0.0
 
       updateTotal(devis_produit)
       devis_produit.addEventListener('input', function() {
@@ -283,7 +291,8 @@
 
     $.initFacture = function(){
       $('.mail_facture').on('click',function(){
-        if(!confirm('Êtes-vous sûrs de vouloir envoyer le mail?')) {
+        const mails = $(this).data('emails')
+        if(!confirm('Ce mail sera envoyé aux adresses suivantes : ' + mails + '.\r\n\r\nÊtes-vous sûrs de vouloir envoyer le mail?')) {
             return false;
         }
       });
