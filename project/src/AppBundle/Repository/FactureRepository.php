@@ -154,14 +154,11 @@ class FactureRepository extends BaseRepository {
         return $q;
     }
 
-    public function findFactureRetardDePaiement($dateFactureBasse = null, $dateFactureHaute = null, $nbRelance = null, $societe = null, $secteur = null, $dateMois = null, $commercial_SEINE_ET_MARNE = null){
+    public function findFactureRetardDePaiement($dateFactureHaute = null, $nbRelance = null, $societe = null, $secteur = null, $dateMois = null, $commercial_SEINE_ET_MARNE = null){
       $today = new \DateTime();
       // Factures
       $qF = $this->makeBaseFactureRetardDePaiement($nbRelance, $societe);
       $qF->field('dateLimitePaiement')->lte($today);
-      if($dateFactureBasse){
-        $qF->field('dateLimitePaiement')->gte($dateFactureBasse);
-      }
       if($dateFactureHaute){
         $qF->field('dateLimitePaiement')->lte($dateFactureHaute);
       }
@@ -176,9 +173,6 @@ class FactureRepository extends BaseRepository {
       // Devis
       $qD = $this->makeBaseFactureRetardDePaiement($nbRelance, $societe);
       $qD->field('numeroDevis')->notEqual(null);
-      if($dateFactureBasse){
-        $qD->field('dateLimitePaiement')->gte($dateFactureBasse);
-      }
       if($dateFactureHaute){
         $qD->field('dateLimitePaiement')->lte($dateFactureHaute);
       }
