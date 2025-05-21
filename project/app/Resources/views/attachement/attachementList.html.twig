@@ -42,10 +42,10 @@
                     {{ include('attachement/attachementItem.html.twig', {'attachement' : attachement}) }}
                 </td>
                 <td class="text-center">
-            {% if attachement.visibleTechnicien %}<span class="glyphicon glyphicon-check text-success"></span>{% endif %}
+                    <a href="{{ path('attachement_update_visibility', {'id': attachement.id, 'type': 'technicien' }) }}" title="Changer la visibilité"><span class="glyphicon {% if (attachement.visibleTechnicien) %} glyphicon-check text-success{% else %} glyphicon-unchecked text-danger{% endif %}"></span></a>
                 </td>
                 <td class="text-center">
-                    <a href="{{ path('attachement_update_visible_client', {'id': attachement.id }) }}" title="Changer la visibilité" ><span class="glyphicon {% if (attachement.visibleClient) %} glyphicon-check text-success{% else %} glyphicon-unchecked text-danger{% endif %}"></span></a>
+                    <a href="{{ path('attachement_update_visibility', {'id': attachement.id, 'type': 'client' }) }}" title="Changer la visibilité" ><span class="glyphicon {% if (attachement.visibleClient) %} glyphicon-check text-success{% else %} glyphicon-unchecked text-danger{% endif %}"></span></a>
                 </td>
                 <td class="text-center">
                     <a href="{{ path('attachement_delete', {'id': attachement.id }) }}" onclick="return confirm('Êtes vous sûr de vouloir supprimer ce document?')" class="attachement-remove btn btn-default btn-xs" style="border-radius: 10%; z-index: 10; cursor:pointer;" ><span class="glyphicon glyphicon-remove"></a>
