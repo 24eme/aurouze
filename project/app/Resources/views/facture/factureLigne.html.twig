@@ -92,7 +92,7 @@
                 <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="actionButton">
                     {% if (societe.contactCoordonnee.emailFacturation or societe.contactCoordonnee.email) %}
                       <li>
-                        <a href="{{ path('email_facture', {'id': facture.id}) }}" class="mail_facture">Envoyer par mail
+                        <a href="{{ path('email_facture', {'id': facture.id}) }}" class="mail_facture" data-emails="{{ facture.destinatairesEmail | join(', ') }}">Envoyer par mail
                         <span> <i class="glyphicon glyphicon-envelope"></i></span>
                         </a>
                       </li>

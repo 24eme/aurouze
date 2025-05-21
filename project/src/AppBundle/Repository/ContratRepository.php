@@ -185,7 +185,7 @@ class ContratRepository extends BaseRepository {
         return null;
     }
 
-    public function findContratsAReconduire($typeContrat = null, \DateTime $date, $societe = null, $commercial = null) {
+    public function findContratsAReconduire($typeContrat = null, \DateTime $date, $societe = null, $commercial = null, $zone = ContratManager::ZONE_PARIS) {
           $date = new \DateTime($date->format('Y-m-d')." 23:59:59");
           $q = $this->createQueryBuilder();
           if ($societe) {
@@ -210,6 +210,7 @@ class ContratRepository extends BaseRepository {
           $q->addOr($q->expr()->field('reconduit')->equals(false))
             ->addOr($q->expr()->field('reconduit')->exists(false));
 	  $q->field('statut')->notEqual(ContratManager::STATUT_EN_ATTENTE_ACCEPTATION);
+          $q->field('zone')->equals($zone);
           $q->sort('dateFin', 'desc');
           $query = $q->getQuery();
 

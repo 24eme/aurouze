@@ -271,18 +271,19 @@
                 <th class="text-right">Montant HT</th>
                 <th class="text-right">TVA</th>
                 <th class="text-right">Montant TTC</th>
+                <th class="text-right">Montant payé</th>
             </tr>
         </thead>
         <tbody>
         {% if(not contrat.mouvements | length and not factures | length and contrat.nbFactures) %}
         <tr>
-            <td colspan="4"><em>Aucune facture</em></td>
+            <td colspan="7"><em>Aucune facture</em></td>
         </tr>
         {% endif %}
 
         {% set total=0 %}
         {% set totalTTC=0 %}
-        {% set i=1 %}
+        {% set totalPaye=0 %}
         {% for facture in factures|sort %}
             {% for mouvement in facture.lignes %}
                 <tr>
@@ -297,9 +298,11 @@
                     {% set montantTTC = montant + (montant * mouvement.tauxTaxe) %}
                     {% set total = total + montant %}
                     {% set totalTTC = totalTTC + montantTTC %}
+                    {% set totalPaye = totalPaye + facture.montantPaye %}
                     <td class="text-right">{{ "%0.2f" | format(montant) }} €</td>
                     <td class="text-right">{{ "%0.2f" | format(mouvement.tauxTaxe * 100) }} %</td>
                     <td class="text-right">{{ "%0.2f" | format(montantTTC) }} €</td>
+                    <td class="text-right">{{ "%0.2f" | format(facture.montantPaye) }} €</td>
                 </tr>
             {% endfor %}
         {% endfor %}
@@ -311,6 +314,7 @@
                 {% set montant = mouvement.prixUnitaire * mouvement.quantite %}
                 {% set total = total + montant %}
                 <td class="text-right">{{ "%0.2f" | format(montant) }} €</td>
+                <td class="text-right"></td>
                 <td class="text-right"></td>
                 <td class="text-right"></td>
             </tr>
@@ -326,6 +330,7 @@
                 <td class="text-right">{{ "%0.2f" | format(mouvement.prixUnitaire) }} €</td>
                 <td class="text-right"></td>
                 <td class="text-right"></td>
+                <td class="text-right"></td>
             </tr>
         </tfoot>
         {% endif %}
@@ -336,6 +341,7 @@
             <td>Factures manuelles à créer</td>
             <td class="text-right"></td>
             <td class="text-center"><a onclick="return confirm('Etes vous sûr de vouloir préparer des factures manuelles ? ');" href="{{ path('factures_manuelles_creation', {'societe': contrat.societe.id,'type': 'facture', 'facturationManuelle': contrat.facturationManuelle, 'nbFactures': contrat.nbFactures, 'contratId' : contrat.id})}}">Préparer des factures manuelles</a></td>
+            <td class="text-right"></td>
             <td class="text-right"></td>
             <td class="text-right"></td>
             <td class="text-right"></td>
@@ -352,6 +358,7 @@
             <td class="text-right"></td>
             <td class="text-right"></td>
             <td class="text-right"></td>
+            <td class="text-right"></td>
           </tr>
         </tfoot>
         {% endif %}
@@ -362,6 +369,7 @@
         <th class="text-right">{{ "%0.2f" | format(total) }} €</th>
         <th></th>
         <th class="text-right">{{ "%0.2f" | format(totalTTC) }} €</th>
+        <th class="text-right">{{ "%0.2f" | format(totalPaye) }} €</th>
         </tr>
     </table>
 </div>

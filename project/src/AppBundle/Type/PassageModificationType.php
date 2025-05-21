@@ -35,8 +35,9 @@ class PassageModificationType extends AbstractType
             ->add('typePassage', ChoiceType::class, array('label' => 'Type de passage :', 'choices' => array_merge(array("" => ""), PassageManager::$typesPassageLibelles), "attr" => array("class" => "select2 select2-simple", "data-placeholder" => "Sélectionner un type")));
 
         if(!$builder->getData()->getRendezVous()) {
+            $currentTechniciens = $builder->getData()->getTechniciens()->toArray();
             $builder->add('techniciens', DocumentType::class, array(
-                	'choices' => $this->getTechniciens(),
+                    'choices' => $this->getTechniciens($currentTechniciens),
                     'class' => 'AppBundle\Document\Compte',
                     'required' => false,
             		'expanded' => false,
@@ -86,8 +87,11 @@ class PassageModificationType extends AbstractType
         return 'passage';
     }
 
-    public function getTechniciens() {
-        return $this->dm->getRepository('AppBundle:Compte')->findAllUtilisateursTechnicien();
+    public function getTechniciens(array $currentTechniciens) {
+        return array_unique(array_merge(
+            $currentTechniciens,
+            $this->dm->getRepository('AppBundle:Compte')->findAllUtilisateursTechnicienActif()->toArray()
+        ));
     }
 
     public function getPrestations()

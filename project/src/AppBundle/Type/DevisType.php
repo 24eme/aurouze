@@ -84,9 +84,10 @@ class DevisType extends AbstractType
                   $datePrevisionInput=array_merge($datePrevisionInput,array('disabled' => 'disabled'));
                 }
 
+            $currentTechniciens = $builder->getData()->getTechniciens()->toArray();
             $builder->add('datePrevision', DateType::class, $datePrevisionInput)
             ->add('techniciens', DocumentType::class, array(
-                'choices' => $this->getParticipants(),
+                'choices' => $this->getParticipants($currentTechniciens),
                 'class' => Compte::class,
                 'expanded' => false,
                 'multiple' => true,
@@ -160,8 +161,11 @@ class DevisType extends AbstractType
         return $this->dm->getRepository('AppBundle:Compte')->findOneByIdentifiant($this->com);
     }
 
-    public function getParticipants() {
-        return $this->dm->getRepository('AppBundle:Compte')->findAllUtilisateursTechnicien();
+    public function getParticipants(array $currentTechniciens) {
+        return array_unique(array_merge(
+            $currentTechniciens,
+            $this->dm->getRepository('AppBundle:Compte')->findAllUtilisateursTechnicienActif()->toArray()
+        ));
     }
 
 }

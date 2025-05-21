@@ -18,7 +18,7 @@
             </div>
         </td>
         <td>
-            {{ form_widget(form.tauxTaxe, {'value' : (form.tauxTaxe.vars.value) ? form.tauxTaxe.vars.value : 0.2, 'attr': {'class': 'text-right form-control'}}) }}
+            {{ form_widget(form.tauxTaxe, {'value' : (form.tauxTaxe.vars.value) ? form.tauxTaxe.vars.value : 0.2, 'attr': {'class': 'text-right form-control taux'}}) }}
         </td>
         <td style="width: 0;" class="text-right">
             <button {% if (readOnly) %}disabled="disabled"{% endif %} type="button" tabindex="-1" class="btn btn-default dynamic-collection-remove"><span class="glyphicon glyphicon-remove"></span></button>
@@ -108,8 +108,9 @@
         </table>
 
         <div class="clearfix">
-          <p class="pull-right">
-            <strong>Total :</strong> <span id="devis_produit_total"></span> € HT
+          <p class="pull-right text-right">
+            <strong>Total :</strong> <span id="devis_produit_total_HT"></span> € HT</br>
+            <strong>Total TTC :</strong> <span id="devis_produit_total_TTC"></span> € TTC
           </p>
         </div>
 
