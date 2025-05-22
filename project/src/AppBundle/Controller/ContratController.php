@@ -370,6 +370,10 @@ class ContratController extends Controller {
                         continue;
                     }
 
+                    if($passage->getDateDebut() !== null && $passage->getDateDebut()->format('Ymd') >= $contrat->getDateResiliation()->format('Ymd')) {
+                        $passage->setDatePrevision($passage->getDateDebut());
+                    }
+
                     if($passage->getDatePrevision()->format('Ymd') <= $contrat->getDateResiliation()->format('Ymd')) {
                         continue;
                     }
