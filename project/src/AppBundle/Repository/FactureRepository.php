@@ -256,7 +256,7 @@ class FactureRepository extends BaseRepository {
     }
 
     public function findRetardDePaiementBySociete(Societe $societe, $nbJourSeuil = 0){
-      return $this->findFactureRetardDePaiement(null, null, null, $societe, null);
+      return $this->findFactureRetardDePaiement(null, null, $societe, null);
     }
 
     public function getMontantTropPaye(Societe $societe, $factureIds = null){
