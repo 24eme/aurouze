@@ -33,7 +33,7 @@ class AttachementType extends AbstractType {
         $builder->add('imageFile', VichFileType::class, array(
             'required' => false,
             'allow_delete' => false,
-            'label' => 'Choisir un document (.jpg, .png, .pdf)',
+            'label' => 'Choisir un document (.jpg, .png, .pdf, .doc)',
           ))
           ->add('titre', TextType::class, array('label' => 'Nom* :','required' => false))
           ->add('updatedAt', DateType::class, array(
