@@ -238,21 +238,28 @@ class FactureRepository extends BaseRepository {
         return $retards;
     }
 
-    public function getMontantFacture($societe, $factureIds = null) {
-        $command = array();
-        $command['aggregate'] = "Facture";
-        $command['pipeline'] = array(
-            array('$match' => array('societe' => $societe->getId(), "numeroFacture" => array('$ne' => null ))),
-            array('$group' => array('_id' => 'somme_montant_facture', 'montantTTC' => array('$sum' => '$montantTTC')))
-        );
+    public function getMontantFacture($societe, $factureIds = null)
+    {
+        $builder = $this->dm->createAggregationBuilder(\AppBundle\Document\Facture::class);
+        $builder
+            ->match()
+            ->field('societe')->equals($societe->getId())
+            ->field('numeroFacture')->notEqual(null);
+
         if(!is_null($factureIds)) {
-            $command['pipeline'][0]['$match']['_id'] = array('$in' => $factureIds);
+            $builder->match()->field('_id')->in($factureIds);
         }
 
-        $db = $this->getDocumentManager()->getDocumentDatabase(\AppBundle\Document\Facture::class);
-        $resultat = $db->command($command);
+        $builder
+            ->group()
+            ->field('id')
+            ->expression(null)
+            ->field('somme_montant_facture')
+            ->sum('$montantTTC');
 
-        return (isset($resultat['result'][0]))? $resultat['result'][0]['montantTTC'] : 0;
+        $resultat = $builder->execute();
+
+        return $resultat->count() ? $resultat->getSingleResult()['somme_montant_facture'] : 0;
     }
 
     public function findRetardDePaiementBySociete(Societe $societe, $nbJourSeuil = 0){
