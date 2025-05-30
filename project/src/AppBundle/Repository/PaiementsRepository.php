@@ -26,20 +26,29 @@ class PaiementsRepository extends BaseRepository {
                         ->execute();
     }
 
-    public function getMontantPaye($societe, $factureIds = null) {
-      $command = array();
-      $command['aggregate'] = "Paiements";
-      $command['pipeline'] = array(
-          array('$unwind' => '$paiement'),
-          array('$match' => array('paiement.societe' => $societe->getId(), 'paiement.typeReglement' => ['$ne' => 'REGULARISATION_AVOIR'])),
-          array('$group' => array('_id' => 'somme_montant_paye', 'montant' => array('$sum' => '$paiement.montant')))
-      );
+    public function getMontantPaye($societe, $factureIds = null)
+    {
+      $builder = $this->dm->createAggregationBuilder(\AppBundle\Document\Paiements::class);
+      $builder
+          ->unwind('$paiement')
+          ->match()
+            ->field('paiement.societe')->equals($societe->getId())
+            ->field('paiement.typeReglement')->notEqual('REGULARISATION_AVOIR');
+
       if(!is_null($factureIds)) {
-          $command['pipeline'][1]['$match']['paiement.facture'] = array('$in' => $factureIds);
+          $builder->match()->field('paiement.facture')->in($factureIds);
       }
-      $db = $this->getDocumentManager()->getDocumentDatabase(\AppBundle\Document\Paiements::class);
-      $resultat = $db->command($command);
-      return (isset($resultat['result'][0]))? $resultat['result'][0]['montant'] : 0;
+
+      $builder
+          ->group()
+            ->field('id')
+            ->expression(null)
+            ->field('somme_montant_paye')
+            ->sum('$paiement.montant');
+
+      $resultat = $builder->execute();
+
+      return $resultat->count() ? $resultat->getSingleResult()['somme_montant_paye'] : 0;
     }
 
     public function getBySociete(Societe $societe) {
