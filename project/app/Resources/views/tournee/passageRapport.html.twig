@@ -17,7 +17,7 @@
   </div>
   </div>
   <div data-role="main" class="ui-content">
-  {{ form_start(form, { 'attr': { 'class': 'form-horizontal'} }) }}
+  {{ form_start(form, { 'attr': { 'class': 'form-horizontal', 'id': 'form_rapport_' ~ planifiable.id } }) }}
         <h2>Rapport de visite</h2>
         <h3><strong>{% if planifiable.etablissement.societe.raisonSociale != planifiable.etablissementInfos.nom %}{{ planifiable.etablissement.societe.raisonSociale }}, {% endif %}{{ planifiable.etablissementInfos.nom }}</strong></h3>
         <h4><strong>{{ planifiable.etablissementInfos.adresse.adresse }}&nbsp;{{ planifiable.etablissementInfos.adresse.codePostal }}&nbsp;{{ planifiable.etablissementInfos.adresse.commune }}
@@ -105,27 +105,9 @@
 </ul>
 </div>
 
-  <h3 class="ui-bar ui-bar-a ui-corner-all"><strong>Nom</strong></h3>
-    <div class="ui-body ui-body">
-      {{ form_errors(form.nomTransmission) }}
-      {{ form_widget(form.nomTransmission) }}
-    </div>
-
-    <h3 class="ui-bar ui-bar-a ui-corner-all"><strong>Email</strong></h3>
-    <div class="ui-body ui-body">
-      {{ form_errors(form.emailTransmission) }}
-      {{ form_widget(form.emailTransmission) }}
-    </div>
-
-    <h3 class="ui-bar ui-bar-a ui-corner-all"><strong>Email supplémentaire</strong></h3>
-    <div class="ui-body ui-body">
-      {{ form_errors(form.secondEmailTransmission) }}
-      {{ form_widget(form.secondEmailTransmission) }}
-    </div>
-
     <div>{{ form_widget(form.signatureBase64) }}</div>
     <h3 class="ui-bar ui-bar-a ui-corner-all">
-      <a class="ui-btn ui-icon-edit ui-btn-icon-left" data-id="{{ planifiable.id }}" href="#signature_{{ planifiable.id }}" >Signer</a>
+      <a class="ui-btn ui-icon-edit ui-btn-icon-left sign-button" data-id="{{ planifiable.id }}" href="#signature_{{ planifiable.id }}" >Signer</a>
     </h3>
 </form>
 </div>

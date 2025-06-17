@@ -110,12 +110,14 @@
     <div class="visualisation" data-role="page" id="visualisation_{{ planifiable.id }}">
       <div data-role="main" class="ui-content">
         {% set historiquePassages = [] %}
-
-        {% if historiqueAllPassages[planifiable.id] is defined and historiqueAllPassages[planifiable.id]|length > 0 %}
-          {% set historiquePassages = historiqueAllPassages[planifiable.id] %}
-        {% else %}
-          {% set historiquePassages = historiquePassagesEtablissement[planifiable.id] %}
+        {% if planifiable.getDocumentType() is not constant('AppBundle\\Document\\Devis::DOCUMENT_TYPE') %}
+            {% if historiqueAllPassages[planifiable.id] is defined and historiqueAllPassages[planifiable.id]|length > 0 %}
+                {% set historiquePassages = historiqueAllPassages[planifiable.id] %}
+            {% else %}
+                {% set historiquePassages = historiquePassagesEtablissement[planifiable.id] %}
+            {% endif %}
         {% endif %}
+
           {{ include('tournee/'~type~'Visualisation.html.twig', { 'planifiable' : planifiable, "technicien" : technicien, "historiquePassages" : historiquePassages,'telephoneSecretariat' : telephoneSecretariat}) }}
       </div>
     </div>

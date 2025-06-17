@@ -132,27 +132,19 @@ class PassageMobileType extends AbstractType
           'label' => 'Email :',
           'required' => false,
           'data' => $defaultEmail,
-          'attr' => array("placeholder" => 'Email de transmission')));
+          'attr' => array("placeholder" => 'Email de transmission', 'form' => 'form_rapport_'.$passageId)));
 
         $builder->add('secondEmailTransmission', EmailType::class, array(
           'label' => 'Second email :',
           'required' => false,
           'data' => $defaultSecondEmail,
-          'attr' => array("placeholder" => 'Email supplémentaire de transmission')));
+          'attr' => array("placeholder" => 'Email supplémentaire de transmission', 'form' => 'form_rapport_'.$passageId)));
 
         $builder->add('nomTransmission', TextType::class, array(
           'label' => 'Nom :',
            'required' => false,
            'data' => $defaultNomResp,
-           'attr' => array('class' => " phoenix nomDefault","placeholder" => 'Nom du signataire', 'data-id' => $this->passageId )));
-
-        $builder->add('nomTransmissionUpdated', TextType::class, array(
-        'label' => 'Nom signataire :',
-        'empty_data' => $defaultNomResp,
-        'data' => $defaultNomResp,
-        'required' => false,
-        'mapped' => false,
-        'attr' => array('class' => 'updatedNom', 'placeholder' => 'Nom du signataire')));
+           'attr' => array('class' => " phoenix nomDefault","placeholder" => 'Nom du signataire', 'data-id' => $this->passageId, 'form' => 'form_rapport_'.$passageId)));
 
         $builder->add('signatureBase64', HiddenType::class, array('required' => false, 'attr' => array('class' => "phoenix", "data-cible" => "mobile_".$passageId."_signatureBase64")));
     }
