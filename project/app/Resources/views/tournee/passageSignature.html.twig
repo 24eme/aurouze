@@ -11,12 +11,26 @@
   </div>
     <div data-role="main" class="ui-content" style="padding:3px">
     {{ form_start(form, { 'attr': { 'class': 'form-horizontal'} }) }}
-    <h6 class="ui-bar ui-bar-a ui-corner-all" style="margin-bottom:0;"><strong>Nom et signature</strong></h6>
+    <h6 class="ui-bar ui-bar-a ui-corner-all" style="margin-bottom:0;"><strong>Nom</strong></h6>
       <div class="ui-body ui-body" style="padding-left:0; padding-top:0;" >
-          {{ form_errors(form.nomTransmissionUpdated) }}
-          {{ form_widget(form.nomTransmissionUpdated) }}
+          {{ form_errors(form.nomTransmission) }}
+          {{ form_widget(form.nomTransmission) }}
       </div>
+
+      <h6 class="ui-bar ui-bar-a ui-corner-all" style="margin-bottom:0;"><strong>Email</strong></h6>
+        <div class="ui-body ui-body" style="padding-left:0; padding-top:0;" >
+            {{ form_errors(form.emailTransmission) }}
+            {{ form_widget(form.emailTransmission) }}
+        </div>
+
+    <h6 class="ui-bar ui-bar-a ui-corner-all" style="margin-bottom:0;"><strong>Email supplémentaire</strong></h6>
+        <div class="ui-body ui-body" style="padding-left:0; padding-top:0;" >
+        {{ form_errors(form.secondEmailTransmission) }}
+        {{ form_widget(form.secondEmailTransmission) }}
+        </div>
+
     {% set passageId = planifiable.id %}
+    <h6 class="ui-bar ui-bar-a ui-corner-all" style="margin-bottom:0;"><strong>Signature</strong></h6>
       <div class="signature-pad ui-body ui-body-a ui-corner-all" id="signature_pad_content_{{ planifiable.id }}">
           {{ form_errors(form.signatureBase64) }}
           {{ form_widget(form.signatureBase64) }}
