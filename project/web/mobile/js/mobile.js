@@ -127,20 +127,6 @@
           forms[$(this).closest('.rapport').attr('data-id')] = $(this);
       });
 
-      $('.signature_valider').on("click",function(){
-        var signaturePadIndex = "signature_pad_"+$(this).attr('data-id');
-        var signatureHiddenCible = "input[data-cible='mobile_"+$(this).attr('data-id')+"_signatureBase64']";
-
-
-        var signaturePad = signaturesPad[signaturePadIndex];
-        if(typeof signaturePad != undefined){
-            $(signatureHiddenCible).each(function(){
-              $(this).val(signaturePad.toDataURL());
-             });
-        }
-
-      });
-
       $('.signature_vider').on("click",function(){
         var signaturePadIndex = "signature_pad_"+$(this).attr('data-id');
         var divs = document.querySelectorAll('canvas');
@@ -246,11 +232,17 @@
       });
       var divs = document.querySelectorAll('canvas');
       [].forEach.call(divs, function(div) {
-          var idCanva = div.id;
+          let idCanva = div.id;
           delete signaturesPad[idCanva];
           signaturesPad[idCanva] = new SignaturePad(div);
-          var idObject = $("#"+idCanva).parents('.signature').attr('data-id');
-          var signatureHiddenCible = "input[data-cible='mobile_"+idObject+"_signatureBase64']";
+          let idObject = $("#"+idCanva).parents('.signature').attr('data-id');
+          let signatureHiddenCible = "input[data-cible='mobile_"+idObject+"_signatureBase64']";
+          signaturesPad[idCanva].onEnd = function(e) {
+            let signaturePad = this;
+              $(signatureHiddenCible).each(function(){
+                $(this).val(signaturePad.toDataURL());
+              });
+          };
           $(signatureHiddenCible).each(function(){
             if ($(this).val()) {
               signaturesPad[idCanva].fromDataURL($(this).val());
