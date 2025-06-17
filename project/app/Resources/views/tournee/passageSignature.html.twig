@@ -17,8 +17,8 @@
           {{ form_widget(form.nomTransmissionUpdated) }}
       </div>
     {% set passageId = planifiable.id %}
-    <div class="signature-pad ui-body ui-body-a ui-corner-all" id="signature_pad_content_{{ planifiable.id }}">
-        {{ form_errors(form.signatureBase64) }}
+      <div class="signature-pad ui-body ui-body-a ui-corner-all" id="signature_pad_content_{{ planifiable.id }}">
+          {{ form_errors(form.signatureBase64) }}
           {{ form_widget(form.signatureBase64) }}
           <canvas id="signature_pad_{{ planifiable.id }}"></canvas>
       </div>
@@ -38,42 +38,6 @@
         let signatureNomUpdated = $(this).parent('form').find('input.updatedNom');
         signatureNomDefault.val(signatureNomUpdated.val())
       });
-
-
-        window.addEventListener("load", function () {
-          if (document.getElementById("signature_pad_{{ planifiable.id }}").closest(".ui-page-active")) {
-            const canvasPad_{{ planifiable.id|replace({ "-": ""}) }} = document.getElementById("signature_pad_{{ planifiable.id }}");
-
-            const signButton = document.querySelector(".sign-button[data-id='{{ planifiable.id }}']");
-
-            signButton.addEventListener("click", () => {
-
-            canvasPad_{{ planifiable.id|replace({ "-": ""}) }}.addEventListener("mousedown", () => {
-              console.log("Signature started");
-
-
-              canvasPad_{{ planifiable.id|replace({ "-": ""}) }}.addEventListener("mouseup", () => {
-                console.log("Signature stopped");
-              localStorage.setItem("signature_{{ planifiable.id|replace({ '-': ''}) }}", canvasPad_{{ planifiable.id|replace({ "-": ""}) }}.toDataURL());
-            }, { once: true });
-            });
-            });
-
-            const data = localStorage.getItem("signature_{{ planifiable.id|replace({ '-': ''}) }}");
-
-            const signaturePad_{{ planifiable.id|replace({ "-": ""}) }} = new SignaturePad(canvasPad_{{ planifiable.id|replace({ "-": ""}) }});
-
-          if (data) {
-            signaturePad_{{ planifiable.id|replace({ "-": ""}) }}.fromDataURL(data);
-          }
-          const clearButton = document.querySelector(".signature_vider[data-id='{{ planifiable.id }}']");
-            clearButton.addEventListener("click", () => {
-              signaturePad_{{ planifiable.id|replace({ "-": ""}) }}.clear();
-              localStorage.removeItem('signature');
-            });
-          }
-        })
-
     </script>
 
 {% endblock %}
