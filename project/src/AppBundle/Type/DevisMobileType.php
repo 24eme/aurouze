@@ -48,19 +48,19 @@ class DevisMobileType extends AbstractType
           'label' => 'Email:',
           'required' => false,
           'data' => $defaultEmail,
-          'attr' => array('class' => " phoenix","placeholder" => 'Email de transmission')));
+          'attr' => array('class' => " phoenix","placeholder" => 'Email de transmission', 'form' => 'form_devis_'.$devisId)));
 
         $builder->add('secondEmailTransmission', EmailType::class, array(
           'label' => 'Second email :',
           'required' => false,
           'data' => $defaultSecondEmail,
-          'attr' => array('class' => " phoenix","placeholder" => 'Email supplémentaire de transmission')));
+          'attr' => array('class' => " phoenix","placeholder" => 'Email supplémentaire de transmission', 'form' => 'form_devis_'.$devisId)));
 
         $builder->add('nomTransmission', TextType::class, array(
           'label' => 'Nom :',
            'required' => false,
            'data' => $defaultNomResp,
-           'attr' => array('class' => " phoenix","placeholder" => 'Nom du signataire')));
+           'attr' => array('class' => " phoenix","placeholder" => 'Nom du signataire', 'form' => 'form_devis_'.$devisId)));
 
         $builder->add('signatureBase64', HiddenType::class, array('required' => false, 'attr' => array('class' => "phoenix", "data-cible" => "mobile_".$devisId."_signatureBase64")));
     }
