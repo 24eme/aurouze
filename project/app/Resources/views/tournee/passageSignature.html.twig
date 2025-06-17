@@ -40,59 +40,39 @@
       });
 
 
-        function observeCurrentActivePage() {
-          const observer = new MutationObserver(function(mutations) {
-            mutations.forEach(function(mutation) {
-              const activePage = mutation.target.classList.value.includes("ui-page-active");
+        window.addEventListener("load", function () {
+          if (document.getElementById("signature_pad_{{ planifiable.id }}").closest(".ui-page-active")) {
+            const canvasPad_{{ planifiable.id|replace({ "-": ""}) }} = document.getElementById("signature_pad_{{ planifiable.id }}");
 
-              const signaturePad_{{ planifiable.id|replace({ "-": ""}) }} = document.querySelector("#signature_pad_{{ planifiable.id }}");
-              if(activePage && mutation.target.id.includes(signaturePad_{{ planifiable.id|replace({ "-": ""}) }}.id.substring(22))) {
-                const canvas_{{ planifiable.id|replace({ "-": ""}) }} = new SignaturePad(document.querySelector("#signature_pad_{{ planifiable.id }}"));
-                retrieveOrSaveSignature(canvas_{{ planifiable.id|replace({ "-": ""}) }});
-              }
+            const signButton = document.querySelector(".sign-button[data-id='{{ planifiable.id }}']");
+
+            signButton.addEventListener("click", () => {
+
+            canvasPad_{{ planifiable.id|replace({ "-": ""}) }}.addEventListener("mousedown", () => {
+              console.log("Signature started");
+
+
+              canvasPad_{{ planifiable.id|replace({ "-": ""}) }}.addEventListener("mouseup", () => {
+                console.log("Signature stopped");
+              localStorage.setItem("signature_{{ planifiable.id|replace({ '-': ''}) }}", canvasPad_{{ planifiable.id|replace({ "-": ""}) }}.toDataURL());
+            }, { once: true });
             });
-          });
-
-          const targetsNode_{{ planifiable.id|replace({ "-": ""}) }} = document.querySelectorAll(".signature");
-          targetsNode_{{ planifiable.id|replace({ "-": ""}) }}.forEach(function(targetNode_{{ planifiable.id|replace({ "-": ""}) }}) {
-            observer.observe(targetNode_{{ planifiable.id|replace({ "-": ""}) }}, {
-              attributes: true,
-              attributeFilter: ["class"],
-              attributeOldValue: true,
             });
-        });
 
-        function retrieveOrSaveSignature(canvas_{{ planifiable.id|replace({ "-": ""}) }}) {
-            for (let localStorageKey = 0, len = localStorage.length; localStorageKey < len; ++localStorageKey) {
-              let key = localStorage.key(localStorageKey);
+            const data = localStorage.getItem("signature_{{ planifiable.id|replace({ '-': ''}) }}");
 
-              if (localStorage.getItem(key) && key.includes(canvas_{{ planifiable.id|replace({ "-": ""}) }}._canvas.id.substring(22))) {
-                const data_{{ planifiable.id|replace({ "-": ""}) }} = localStorage.getItem(key);
-                canvas_{{ planifiable.id|replace({ "-": ""}) }}.fromDataURL(data_{{ planifiable.id|replace({ "-": ""}) }});
+            const signaturePad_{{ planifiable.id|replace({ "-": ""}) }} = new SignaturePad(canvasPad_{{ planifiable.id|replace({ "-": ""}) }});
 
-                const clearButton_{{ planifiable.id|replace({ "-": ""}) }} = document.querySelector(".signature_vider[data-id='{{ planifiable.id }}']");
-                console.log( clearButton_{{ planifiable.id|replace({ "-": ""}) }});
-
-                if (clearButton_{{ planifiable.id|replace({ "-": ""}) }}) {
-                  clearButton_{{ planifiable.id|replace({ "-": ""}) }}.addEventListener("click", () => {
-                        canvas_{{ planifiable.id|replace({ "-": ""}) }}.clear();
-                        localStorage.removeItem(key);
-                  });
-                }
-              }
-            }
-
-            if (canvas_{{ planifiable.id|replace({ "-": ""}) }}) {
-              canvas_{{ planifiable.id|replace({ "-": ""}) }}._canvas.addEventListener("touchstart", () => {
-
-                canvas_{{ planifiable.id|replace({ "-": ""}) }}._canvas.addEventListener("touchend", () => {
-                  localStorage.setItem("signature_{{ planifiable.id }}", canvas_{{ planifiable.id|replace({ "-": ""}) }}.toDataURL());
-                });
-              });
-            }
+          if (data) {
+            signaturePad_{{ planifiable.id|replace({ "-": ""}) }}.fromDataURL(data);
           }
-        }
-      observeCurrentActivePage();
+          const clearButton = document.querySelector(".signature_vider[data-id='{{ planifiable.id }}']");
+            clearButton.addEventListener("click", () => {
+              signaturePad_{{ planifiable.id|replace({ "-": ""}) }}.clear();
+              localStorage.removeItem('signature');
+            });
+          }
+        })
 
     </script>
 
