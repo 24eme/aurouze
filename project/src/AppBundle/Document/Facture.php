@@ -1189,7 +1189,7 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
     }
     public function addRelanceCommentaire($relanceCommentaire)
     {
-        if($relanceCommentaire) {
+        if(!$relanceCommentaire) {
             return $this;
         }
 

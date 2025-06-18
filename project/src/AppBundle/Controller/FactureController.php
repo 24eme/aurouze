@@ -1182,7 +1182,7 @@ class FactureController extends Controller
               continue;
           }
 
-           $message = $this->getMailRelance($facture, $this->createPdfFacture($request,$facture->getId()));
+          $message = $this->getMailRelance($facture, $this->createPdfFacture($request,$facture->getId()));
 
           $nbRelance = intval($facture->getNbRelance()) + 1;
           $facture->setNbRelance($nbRelance);
