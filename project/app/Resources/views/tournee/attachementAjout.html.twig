@@ -5,7 +5,7 @@
   <a href="#visualisation_{{ planifiable.id }}" class="ui-btn ui-icon-arrow-l ui-btn-icon-left" >
         &nbsp;Retour
   </a>
-  <button type="submit" class="ui-btn ui-icon-check ui-btn-icon-right rapport">
+  <button type="submit" class="ui-btn ui-icon-check ui-btn-icon-right rapport" form="form_attachement_ajout_{{ planifiable.id }}">
       Valider&nbsp;
   </button>
   <div class="reloadWarning ui-bar ui-bar-b" style="display:none;">
@@ -17,7 +17,7 @@
   </div>
   </div>
   <div data-role="main" class="ui-content">
-  <form method="post" action="{{ attachementform.action }}" {{ form_enctype(attachementform.form) }} data-ajax="false" class="attachementform" >
+  <form id="form_attachement_ajout_{{ planifiable.id }}" method="post" action="{{ attachementform.action }}" {{ form_enctype(attachementform.form) }} data-ajax="false" class="attachementform" >
   <div class="row">
         <div class="form-group">
             {{ form_label(attachementform.form.imageFile, null, {'label_attr': {'class': 'col-xs-4 control-label'}}) }}
