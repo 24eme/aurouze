@@ -128,6 +128,9 @@
       });
 
       $('.signature_vider').on("click",function(){
+        if(!confirm("Êtes-vous sûr de vouloir effacer la signature ?")) {
+          return;
+        }
         var signaturePadIndex = "signature_pad_"+$(this).attr('data-id');
         var divs = document.querySelectorAll('canvas');
         [].forEach.call(divs, function(div) {
