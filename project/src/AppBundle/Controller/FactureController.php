@@ -1200,6 +1200,10 @@ class FactureController extends Controller
           }
       }
 
+      if(!count($factureARelancer)) {
+          return $this->redirectToRoute('factures_retard');
+      }
+
       $html = $this->renderView('facture/pdfRelanceMassive.html.twig', array(
           'facturesRelancees' => $factureARelancer,
           'lignesFacturesRelancees' => $lignesFacturesRelancees,
