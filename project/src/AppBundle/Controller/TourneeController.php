@@ -121,10 +121,10 @@ class TourneeController extends Controller {
 
 
                 $attachementsForms[$etbId] = array('form' => $this->createForm(new AttachementTourneeType($dm, false), new Attachement(), array(
-                    'action' => $this->generateUrl('tournee_attachement_upload', array('technicien' => $technicien, 'date' => $date->format('Y-m-d'),'idetablissement' => $etbId,'retour' => 'passage_visualisation_'.$planifiable->getId())),
+                    'action' => $this->generateUrl('tournee_attachement_upload', array('technicien' => $technicien, 'date' => $date->format('Y-m-d'),'idetablissement' => $etbId,'retour' => 'visualisation_'.$planifiable->getId())),
                     'method' => 'POST',
                 ))->createView(),
-                'action' => $this->generateUrl('tournee_attachement_upload', array('technicien' => $technicien, 'date' => $date->format('Y-m-d'),'idetablissement' => $etbId, 'retour' => 'passage_visualisation_'.$planifiable->getId())));
+                'action' => $this->generateUrl('tournee_attachement_upload', array('technicien' => $technicien, 'date' => $date->format('Y-m-d'),'idetablissement' => $etbId, 'retour' => 'visualisation_'.$planifiable->getId())));
             }
         }
 
