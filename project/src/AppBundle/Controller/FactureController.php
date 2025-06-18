@@ -1157,9 +1157,11 @@ class FactureController extends Controller
       set_time_limit(0);
       $dm = $this->get('doctrine_mongodb')->getManager();
       $fm = $this->get('facture.manager');
+
+      $urlReturn = $request->request->get('url_origin', $this->redirectToRoute('factures_retard'));
+
       $factureARelancer = array();
       $formRequest = $request->request->get('relance');
-
 
       foreach ($formRequest as $key => $value) {
         if(preg_match("/^FACTURE-/",$key)){
@@ -1201,7 +1203,7 @@ class FactureController extends Controller
       }
 
       if(!count($factureARelancer)) {
-          return $this->redirectToRoute('factures_retard');
+          return $this->redirect($urlReturn);
       }
 
       $html = $this->renderView('facture/pdfRelanceMassive.html.twig', array(
@@ -1220,8 +1222,8 @@ class FactureController extends Controller
       }
       $path = './pdf/relances/';
       $this->get('knp_snappy.pdf')->generateFromHtml($html, $path.$filename);
-      return $this->redirectToRoute('factures_retard',array('pdf' => $filename));
 
+      return $urlReturn.(parse_url($urlReturn, PHP_URL_QUERY) ? '&' : '?') . 'pdf='.urlencode($filename);
     }
 
     /**
