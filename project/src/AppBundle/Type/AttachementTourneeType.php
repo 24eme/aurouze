@@ -17,13 +17,9 @@ use AppBundle\Document\Attachement;
 class AttachementTourneeType extends AbstractType
 {
     protected $dm;
-    protected $visibleTechnicienOption;
-    protected $visibleClientOption;
 
-    public function __construct(DocumentManager $documentManager, $visibleTechnicienOption = true, $visibleClientOption = true) {
+    public function __construct(DocumentManager $documentManager) {
         $this->dm = $documentManager;
-        $this->visibleTechnicienOption = $visibleTechnicienOption;
-        $this->visibleClientOption = $visibleClientOption;
     }
 
     /**
@@ -64,15 +60,8 @@ class AttachementTourneeType extends AbstractType
             'format' => 'dd/MM/yyyy',
             'data' => new \DateTime("now"),
             'label' => 'Date d\'ajout :',
-          ))
-          ->add('numeroContrat', TextType::class, array('label' => 'Numéro de contrat :','required' => false));;
-
-          if($this->visibleTechnicienOption){
-              $builder->add('visibleTechnicien', CheckboxType::class, array('label' => ' ', 'required' => false, "attr" => array("class" => "switcher", "data-size" => "mini")));
-          }
-          if($this->visibleClientOption){
-              $builder->add('visibleClient', CheckboxType::class, array('label' => ' ', 'required' => false, "attr" => array("class" => "switcher", "data-size" => "mini")));
-          }
+          ));
+          $builder->add('visibleClient', CheckboxType::class, array('label' => ' ', 'required' => false, "attr" => array("class" => "switcher", "data-size" => "mini")));
     }
 
     /**
