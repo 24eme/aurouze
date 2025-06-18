@@ -115,7 +115,7 @@
               <th class="col-xs-2">Commentaire</th>
               <th class="col-xs-1">Relance(s)</th>
               <th class="col-xs-2">
-                  <label style="margin:0; "for="select-all">Clôtur. &hairsp;|&hairsp;  Sélect.</label>
+                  <label style="margin:0;" for="select-all">Clôtur. &hairsp;|&hairsp;  Sélect.</label>
                   <input type="checkbox" id="select-all" name="select-all" />
               </th>
 			  <th class="col-xs-1"></th>
@@ -206,21 +206,19 @@
 								{% if not factureEnRetard.has1ereRelance and (factureEnRetard.societe.contactCoordonnee.emailFacturation or factureEnRetard.societe.contactCoordonnee.email)  %}
 									<a href="{{ path('relance_email', {'id': factureEnRetard.id}) }}" class="relance_lien_envoyer_mail" data-relance ="1"><i class="mdi mdi-send mdi-lg" title="Envoyer mail 1ère relance"></i></a>
 								{% elseif factureEnRetard.has1ereRelance and not factureEnRetard.has2ndRelance and (factureEnRetard.societe.contactCoordonnee.emailFacturation or factureEnRetard.societe.contactCoordonnee.email) %}
-                                    <a href="{{ path('relance_email', {'id': factureEnRetard.id}) }}" class="relance_lien_envoyer_mail" data-relance ="2"><i class="mdi mdi-send mdi-lg" title="Envoyer mail 2nd relance"></i></a>
+                                    <a href="{{ path('relance_email', {'id': factureEnRetard.id}) }}" class="rela   nce_lien_envoyer_mail" data-relance ="2"><i class="mdi mdi-send mdi-lg" title="Envoyer mail 2nd relance"></i></a>
                                 {% endif %}
 							</td>
             </tr>
             {% endfor %}
           </tbody>
         </table>
-        <div class="row">
-          <div class="col-xs-12 text-right">
+          <div class="text-right">
             <strong>Total : {{ facturesEnRetard | sommeRetards }} €</strong>
           </div>
         </div>
-        </div>
       </div>
-      <div class="hide-print">
+      <div class="hide-print text-right" style="margin-top: 20px; margin-bottom: 20px;">
       {{ form_end(formRelance) }}
 		</div>
 			{% if pdf %}
@@ -230,10 +228,10 @@
 			    <div class="modal-content">
 			      <div class="modal-header">
 			        <button type="button" class="close" data-dismiss="modal">&times;</button>
-			        <h4 class="modal-title">PDF des relances générées</h4>
+			        <h4 class="modal-title">PDF des relances générées à envoyer</h4>
 			      </div>
 			      <div class="modal-body">
-			        <p><a data-toggle="tooltip" data-original-title="Télécharger les relances massives" href="/pdf/relances/{{pdf}}">Cliquez ici pour obtenir le pdf des relances générées : <span class="glyphicon glyphicon-file"></span></a></p>
+			        <p><a data-toggle="tooltip" data-original-title="Télécharger les relances massives" href="/pdf/relances/{{pdf}}"><span class="glyphicon glyphicon-file"></span> Télécharger le pdf des relances générées qui n'ont pas pu être envoyées par mail</a></p>
 			      </div>
 			      <div class="modal-footer">
 			        <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>

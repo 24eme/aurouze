@@ -1181,6 +1181,9 @@ class FactureController extends Controller
           if($facture->getNbRelance() > 2) {
               continue;
           }
+
+          $message = $this->getMailRelance($facture, $this->createPdfFacture($request,$facture->getId()));
+
           $nbRelance = intval($facture->getNbRelance()) + 1;
           $facture->setNbRelance($nbRelance);
           $dm->flush();
@@ -1189,8 +1192,17 @@ class FactureController extends Controller
           $relance->setNumeroRelance($nbRelance);
           $facture->addRelance($relance);
           $dm->flush();
+
+          if(isset($formRequest['send_mail']) && $formRequest['send_mail'] && $message && $this->get('mailer')->send($message)) {
+              $facture->addRelanceCommentaire(sprintf("R%s le %s", $nbRelance, date('d/m/Y')));
+              $dm->flush();
+              unset($factureARelancer[$facture->getId()]);
+          }
       }
 
+      if(!count($factureARelancer)) {
+          return $this->redirectToRoute('factures_retard');
+      }
 
       $html = $this->renderView('facture/pdfRelanceMassive.html.twig', array(
           'facturesRelancees' => $factureARelancer,
@@ -1284,6 +1296,56 @@ class FactureController extends Controller
       throw new \Exception('Une erreur s\'est produite');
       }
 
+      public function getMailRelance($facture, $pdf) {
+          $fm = $this->get('facture.manager');
+
+          $parameters = $fm->getParameters();
+
+          $fromEmail = $parameters['coordonnees']['email'];
+          $fromName = $parameters['coordonnees']['nom'];
+          $subject = "FACTURE NON PAYEE ( FACTURE n°".$facture->getNumeroFacture()." de ".$facture->getMontantTTC()." € )";
+
+          $email_footer = $this->container->getParameter('email_footer');
+
+          $commercial_SEINE_ET_MARNE = ($this->container->getParameter("commercial_seine_et_marne")) ? $this->container->getParameter("commercial_seine_et_marne") : null;
+
+          if(($facture->getCommercial() && $facture->getCommercial()->getNom() == $commercial_SEINE_ET_MARNE) or ($facture->getContrat() && $facture->getContrat()->getZone() == ContratManager::ZONE_SEINE_ET_MARNE) or ($facture->getContrat() && $facture->getContrat()->getCommercial() && $facture->getContrat()->getCommercial()->getNom() == $commercial_SEINE_ET_MARNE)){
+              $email_footer = $this->container->getParameter('email_footer_SEINE_ET_MARNE');
+          }
+
+          if( !$facture->getNbRelance()){
+              $body = $this->render('facture/mailPremiereRelance.html.twig', ['facture' => $facture, 'dateLimite' => date('d/m/Y', strtotime(' + 10 days')),'email_footer' => $email_footer])->getContent();
+          }
+          elseif($facture->getNbRelance() == 1){
+              $body = $this->render('facture/mailDeuxiemeRelance.html.twig', ['facture' => $facture, 'dateLimite' => date('d/m/Y', strtotime(' + 8 days')),'email_footer' => $email_footer])->getContent();
+          } else {
+              return null;
+          }
+
+          if($facture->getSociete()->getContactCoordonnee()->getEmailFacturation()){
+            $toEmail = $facture->getSociete()->getContactCoordonnee()->getEmailFacturation();
+          }
+          elseif($facture->getSociete()->getContactCoordonnee()->getEmail()) {
+            $toEmail = $facture->getSociete()->getContactCoordonnee()->getEmail();
+          }
+          else{
+            return null;
+          }
+
+          $message = \Swift_Message::newInstance()
+              ->setSubject($subject)
+              ->setFrom(array($fromEmail => $fromName))
+              ->setTo(explode(";", $toEmail))
+              ->setBody($body,'text/plain')
+              ->setReadReceiptTo($fromEmail);
+
+          $namePdf = "FACTURE-".$facture->getNumeroFacture().".pdf";
+          $attachment = \Swift_Attachment::newInstance($pdf,$namePdf,'application/pdf');
+          $message->attach($attachment);
+
+          return $message;
+      }
+
 
       /**
        * @Route("/passage/relance-email/{id}", name="relance_email")
@@ -1292,55 +1354,14 @@ class FactureController extends Controller
       public function relanceEmailAction(Request $request, Facture $facture){
         $response = new Response();
 
-        $fm = $this->get('facture.manager');
+        $message = $this->getMailRelance($facture, $this->createPdfFacture($request,$facture->getId()));
 
-        $parameters = $fm->getParameters();
-
-        $fromEmail = $parameters['coordonnees']['email'];
-        $fromName = $parameters['coordonnees']['nom'];
-        $subject = "FACTURE NON PAYEE ( FACTURE n°".$facture->getNumeroFacture()." de ".$facture->getMontantTTC()." € )";
-
-        $email_footer = $this->container->getParameter('email_footer');
-
-        $commercial_SEINE_ET_MARNE = ($this->container->getParameter("commercial_seine_et_marne")) ? $this->container->getParameter("commercial_seine_et_marne") : null;
-
-        if(($facture->getCommercial() && $facture->getCommercial()->getNom() == $commercial_SEINE_ET_MARNE) or ($facture->getContrat() && $facture->getContrat()->getZone() == ContratManager::ZONE_SEINE_ET_MARNE) or ($facture->getContrat() && $facture->getContrat()->getCommercial() && $facture->getContrat()->getCommercial()->getNom() == $commercial_SEINE_ET_MARNE)){
-            $email_footer = $this->container->getParameter('email_footer_SEINE_ET_MARNE');
+        if(!$message ){
+            var_dump('NO mailer config');
+            $request->getSession()->getFlashBag()->add('notice', 'success');
+            $referer = $request->headers->get('referer');
+            return $this->redirect($referer);
         }
-
-        if( !$facture->getNbRelance()){
-            $body = $this->render('facture/mailPremiereRelance.html.twig', ['facture' => $facture, 'dateLimite' => date('d/m/Y', strtotime(' + 10 days')),'email_footer' => $email_footer])->getContent();
-        }
-        else{
-            $body = $this->render('facture/mailDeuxiemeRelance.html.twig', ['facture' => $facture, 'dateLimite' => date('d/m/Y', strtotime(' + 8 days')),'email_footer' => $email_footer])->getContent();
-        }
-
-        if($facture->getSociete()->getContactCoordonnee()->getEmailFacturation()){
-          $toEmail = $facture->getSociete()->getContactCoordonnee()->getEmailFacturation();
-        }
-        elseif($facture->getSociete()->getContactCoordonnee()->getEmail()) {
-          $toEmail = $facture->getSociete()->getContactCoordonnee()->getEmail();
-        }
-        else{
-          var_dump('NO mailer config');
-          $request->getSession()->getFlashBag()->add('notice', 'success');
-          $referer = $request->headers->get('referer');
-          return $this->redirect($referer);
-        }
-
-        $message = \Swift_Message::newInstance()
-            ->setSubject($subject)
-            ->setFrom(array($fromEmail => $fromName))
-            ->setTo(explode(";", $toEmail))
-            ->setBody($body,'text/plain')
-            ->setReadReceiptTo($fromEmail);
-
-            $pdf = $this->createPdfFacture($request,$facture->getId());
-            $namePdf = "FACTURE-".$facture->getNumeroFacture().".pdf";
-            $attachment = \Swift_Attachment::newInstance($pdf,$namePdf,'application/pdf');
-            $message->attach($attachment);
-
-
 
         try {
             $this->get('mailer')->send($message);

@@ -42,16 +42,3 @@
     </form>
   </div>
 </div>
-
-
-{% block javascripts %}
-
-    <script>
-      $(".signature_valider[data-id='{{ planifiable.id }}']").click(function() {
-        let signatureNomDefault = $(".nomDefault[data-id='{{ planifiable.id }}']");
-        let signatureNomUpdated = $(this).parent('form').find('input.updatedNom');
-        signatureNomDefault.val(signatureNomUpdated.val())
-      });
-    </script>
-
-{% endblock %}
