@@ -4,8 +4,8 @@
     <a href="#rapport_{{ planifiable.id }}" class="signature_retour ui-btn ui-icon-arrow-l ui-btn-icon-left" data-id="{{ planifiable.id }}" >
           &nbsp;Retour
     </a>
-    <a data-id="{{ planifiable.id }}" class="signature_vider ui-btn" data-id="{{ planifiable.id }}" >
-      <i class="mdi mdi-delete mdi-lg" style="color:rgba(0,0,0,.3); font-size:1.7em; float:right;"></i>Effacer&nbsp;
+    <a class="ui-btn ui-icon-check ui-btn-icon-right" href="#rapport_{{ planifiable.id }}" data-id="{{ planifiable.id }}">
+        Valider&nbsp;
     </a>
     <div class="reloadWarning ui-bar ui-bar-b" style="display:none;"></div>
   </div>
@@ -28,15 +28,15 @@
         {{ form_errors(form.secondEmailTransmission) }}
         {{ form_widget(form.secondEmailTransmission) }}
         </div>
-
     {% set passageId = planifiable.id %}
     <h6 class="ui-bar ui-bar-a ui-corner-all" style="margin-bottom:0;"><strong>Signature</strong></h6>
       <div class="signature-pad ui-body ui-body-a ui-corner-all" id="signature_pad_content_{{ planifiable.id }}">
           {{ form_errors(form.signatureBase64) }}
           {{ form_widget(form.signatureBase64) }}
           <canvas id="signature_pad_{{ planifiable.id }}"></canvas>
+          <a data-id="{{ planifiable.id }}" class="signature_vider" data-id="{{ planifiable.id }}" style="position: absolute; right: 2px; bottom: 8px; cursor: pointer;"><i class="mdi mdi-delete mdi-lg" style="color:rgba(0,0,0,.3); font-size:1.25em; float:right;"></i></a>
       </div>
-      <a  class="signature_valider ui-btn ui-icon-check ui-btn-icon-right rapport"  href="#rapport_{{ planifiable.id }}" data-id="{{ planifiable.id }}" >
+      <a class="signature_valider ui-btn ui-icon-check ui-btn-icon-right rapport"  href="#rapport_{{ planifiable.id }}" data-id="{{ planifiable.id }}" >
           Valider la saisie&nbsp;
       </a>
     </form>
