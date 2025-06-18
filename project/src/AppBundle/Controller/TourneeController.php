@@ -120,11 +120,11 @@ class TourneeController extends Controller {
                 ))->createView();
 
 
-                $attachementsForms[$etbId] = array('form' => $this->createForm(new AttachementTourneeType($dm, false), new Attachement(), array(
-                    'action' => $this->generateUrl('tournee_attachement_upload', array('technicien' => $technicien, 'date' => $date->format('Y-m-d'),'idetablissement' => $etbId,'retour' => 'passage_visualisation_'.$planifiable->getId())),
+                $attachementsForms[$etbId] = array('form' => $this->createForm(new AttachementTourneeType($dm), new Attachement(), array(
+                    'action' => $this->generateUrl('tournee_attachement_upload', array('technicien' => $technicien, 'date' => $date->format('Y-m-d'),'idetablissement' => $etbId,'retour' => 'visualisation_'.$planifiable->getId())),
                     'method' => 'POST',
                 ))->createView(),
-                'action' => $this->generateUrl('tournee_attachement_upload', array('technicien' => $technicien, 'date' => $date->format('Y-m-d'),'idetablissement' => $etbId, 'retour' => 'passage_visualisation_'.$planifiable->getId())));
+                'action' => $this->generateUrl('tournee_attachement_upload', array('technicien' => $technicien, 'date' => $date->format('Y-m-d'),'idetablissement' => $etbId, 'retour' => 'visualisation_'.$planifiable->getId())));
             }
         }
 
@@ -293,7 +293,7 @@ class TourneeController extends Controller {
        $attachement = new Attachement();
        $dm = $this->get('doctrine_mongodb')->getManager();
        $etablissement = $this->get('etablissement.manager')->getRepository()->find($idetablissement);
-       $uploadAttachementForm = $this->createForm(new AttachementTourneeType($dm,false), $attachement, array(
+       $uploadAttachementForm = $this->createForm(new AttachementTourneeType($dm), $attachement, array(
            'action' => $this->generateUrl('tournee_attachement_upload', array('technicien' => $technicien, 'date' => $date,'idetablissement' => $idetablissement,'retour' => $retour)),
            'method' => 'POST',
        ));

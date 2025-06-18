@@ -31,7 +31,8 @@ class RelanceType extends AbstractType {
 		foreach ($this->factures as $facture) {
         		$builder->add($facture->getId(), CheckboxType::class, array('label' => ' ', 'required' => false, 'label_attr' => array('class' => 'small')));
     }
-    $builder->add('relancer', 'submit', array('label' => "Générer la relance suivante (sans envoi de mail)", "attr" => array("class" => "btn btn-primary pull-right")));
+    $builder->add('send_mail', CheckboxType::class, array('label' => "Envoyer les mails (quand c'est possible pour les relances 1 et 2)", 'required' => false, 'value' => true, "attr" => ['checked' => true]));
+    $builder->add('relancer', 'submit', array('label' => "Générer la relance suivante", "attr" => array("class" => "btn btn-primary")));
 	}
 
 
