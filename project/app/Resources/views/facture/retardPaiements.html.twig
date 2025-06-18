@@ -73,6 +73,7 @@
 
 {{ form_start(formRelance) }}
 
+<input type="hidden" name="url_origin" value="{{ app.request.requestUri }}" />
 
 <div class="row">
 	{% for factureEnRetard in facturesEnRetard %}
