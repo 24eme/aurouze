@@ -39,15 +39,17 @@ class FacturesEnRetardFiltresType extends AbstractType {
 						        "required" => false,
                 		"attr" => array("class" => "select2 select2-simple nbRelance")));
 
-    $builder->add('dateFactureHaute', DateType::class, array('required' => false,
-                        "label" => "Date limite de règlement",
-                        "attr" => array('class' => 'input-inline datepicker ',
-                				'data-provide' => 'datepicker',
-                				'data-date-format' => 'dd/mm/yyyy'
-                		),
-                		'widget' => 'single_text',
-                		'format' => 'dd/MM/yyyy',
-		));
+	$builder->add('anneeComptable', DateType::class, array('required' => false,
+	                    "label" => "Année comptable de facturation",
+						"attr" => array("class" => "input-inline datepicker",
+						    "data-provide" => "datepicker",
+							"data-date-format" => "yyyy",
+							"data-date-min-view-mode" => "years",
+						),
+						"widget" => "single_text",
+						"format" => "yyyy",
+					));
+
     $builder->add('dateMois', DateType::class, array('required' => false,
                 "label" => "Mois de facturation",
                 "attr" => array('class' => 'input-inline datepickermonthyear','data-provide' => 'datepicker','data-date-format' => 'mm/yyyy'),
