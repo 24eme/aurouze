@@ -7,6 +7,7 @@ use AppBundle\Tool\RechercheTool;
 use AppBundle\Document\societe;
 use AppBundle\Manager\FactureManager;
 use AppBundle\Manager\EtablissementManager;
+use MongoDate as MongoDate;
 
 /**
  * FactureRepository
@@ -154,13 +155,16 @@ class FactureRepository extends BaseRepository {
         return $q;
     }
 
-    public function findFactureRetardDePaiement($dateFactureHaute = null, $nbRelance = null, $societe = null, $secteur = null, $dateMois = null, $commercial_SEINE_ET_MARNE = null){
+    public function findFactureRetardDePaiement($anneeComptable = null, $nbRelance = null, $societe = null, $secteur = null, $dateMois = null, $commercial_SEINE_ET_MARNE = null){
       $today = new \DateTime();
       // Factures
       $qF = $this->makeBaseFactureRetardDePaiement($nbRelance, $societe);
       $qF->field('dateLimitePaiement')->lte($today);
-      if($dateFactureHaute){
-        $qF->field('dateLimitePaiement')->lte($dateFactureHaute);
+      if($anneeComptable){
+        $mongoStartDate = new MongoDate(strtotime($anneeComptable->format("Y-01-01")));
+        $mongoEndDate = new MongoDate(strtotime($anneeComptable->format("Y-12-31")));
+        $qF->field('dateFacturation')->gte($mongoStartDate);
+        $qF->field('dateFacturation')->lte($mongoEndDate);
       }
       if($dateMois){
         $datePlusOnemonth = clone $dateMois;
@@ -173,14 +177,13 @@ class FactureRepository extends BaseRepository {
       // Devis
       $qD = $this->makeBaseFactureRetardDePaiement($nbRelance, $societe);
       $qD->field('numeroDevis')->notEqual(null);
-      if($dateFactureHaute){
-        $qD->field('dateLimitePaiement')->lte($dateFactureHaute);
+      if($anneeComptable){
+        $mongoStartDate = new MongoDate(strtotime($anneeComptable->format("Y-01-01")));
+        $mongoEndDate = new MongoDate(strtotime($anneeComptable->format("Y-12-31")));
+        $qD->field('dateFacturation')->gte($mongoStartDate);
+        $qD->field('dateFacturation')->lte($mongoEndDate);
       }
-      if (!$dateFactureHaute) {
-          $todayDevis = clone $today;
-          $todayDevis->modify("-".FactureManager::DEFAUT_FREQUENCE_JOURS." days");
-          $qD->field('dateFacturation')->lt($todayDevis);
-      }
+
       if($dateMois){
         $qD->field('dateFacturation')->gte($dateMois);
         $qD->field('dateFacturation')->lte($datePlusOnemonth);

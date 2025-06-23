@@ -2,7 +2,7 @@
 
 namespace AppBundle\Controller;
 
-use AppBundle\Type\AttachementNameType;
+use AppBundle\Type\AttachementModificationType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -257,7 +257,7 @@ class AttachementController extends Controller {
         $attachement = $dm->getRepository('AppBundle:Attachement')->findForAttachements($request->get('id'));
         $societe = $attachement->getSociete();
         $etablissement = $attachement->getEtablissement();
-        $form = $this->createForm(new AttachementNameType($dm), $attachement);
+        $form = $this->createForm(new AttachementModificationType($dm), $attachement);
 
         if($request->isMethod('POST')) {
             $form->handleRequest($request);
