@@ -1111,9 +1111,9 @@ class FactureController extends Controller
 
       $pdf = $request->get('pdf',null);
 
-      $dateFactureHaute = null;
       $nbRelances = null;
       $dateMois = null;
+      $anneeComptable = null;
 
       $formFacturesEnRetard = $this->createForm(new FacturesEnRetardFiltresType($this->container, $this->get('doctrine_mongodb')->getManager(),$societe), null, array(
           'action' => $this->generateUrl('factures_retard'),
@@ -1123,12 +1123,12 @@ class FactureController extends Controller
       $formFacturesEnRetard->handleRequest($request);
       if ($formFacturesEnRetard->isSubmitted() && $formFacturesEnRetard->isValid()) {
         $formValues =  $formFacturesEnRetard->getData();
-        $dateFactureHaute = $formValues["dateFactureHaute"] ? $formValues["dateFactureHaute"]->add(new \DateInterval('PT23H59M')) : null;
+        $anneeComptable = $formValues["anneeComptable"];
         $dateMois = $formValues["dateMois"];
         $nbRelances = intval($formValues["nbRelances"]) -1;
         $societe = $formValues["societe"];
       }
-      $facturesEnRetard = $fm->getRepository()->findFactureRetardDePaiement($dateFactureHaute, $nbRelances, $societe, $secteur,$dateMois, $this->getParameter("commercial_seine_et_marne"));
+      $facturesEnRetard = $fm->getRepository()->findFactureRetardDePaiement($anneeComptable, $nbRelances, $societe, $secteur,$dateMois, $this->getParameter("commercial_seine_et_marne"));
       $formRelance = $this->createForm(new RelanceType($facturesEnRetard), null, array(
           'action' => $this->generateUrl('factures_relance_massive'),
           'method' => 'post',

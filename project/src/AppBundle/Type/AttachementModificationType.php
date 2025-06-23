@@ -14,7 +14,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 
 
 
-class AttachementNameType extends AbstractType {
+class AttachementModificationType extends AbstractType {
 
     protected $dm;
 
@@ -51,6 +51,7 @@ class AttachementNameType extends AbstractType {
                 'format' => 'dd/MM/yyyy',
                 'label' => 'Modifier la date d\'ajout',
                 ))
+            ->add('numeroContrat', TextType::class, array('label' => 'Modifier le numéro de contrat lié :','required' => false))
             ->add('save', SubmitType::class, array(
             'label' => 'Sauvegarder'
             ))

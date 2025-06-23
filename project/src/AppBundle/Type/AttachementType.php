@@ -47,7 +47,7 @@ class AttachementType extends AbstractType {
             'data' => new \DateTime("now"),
             'label' => 'Date d\'ajout :',
             ))
-           ->add('numeroContrat', TextType::class, array('label' => 'Numéro de contrat :','required' => false));;
+           ->add('numeroContrat', TextType::class, array('label' => 'Numéro de contrat :','required' => false));
 
           if($this->visibleTechnicienOption){
               $builder->add('visibleTechnicien', CheckboxType::class, array('label' => ' ', 'required' => false, "attr" => array("class" => "switcher", "data-size" => "mini")));
