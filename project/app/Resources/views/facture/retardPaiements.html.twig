@@ -45,15 +45,20 @@
 							</div>
 						</div>
 						<div class="row">
-						    <div class="col-xs-6" id="datepicker">
+                             <div class="col-xs-3" id="datepicker">
+                                {{ form_label(formFacturesARelancer.anneeComptable) }}
+                                {{ form_errors(formFacturesARelancer.anneeComptable) }}
+                                {{ form_widget(formFacturesARelancer.anneeComptable) }}
+                            </div>
+						    <div class="col-xs-3" id="datepicker">
 								{{ form_label(formFacturesARelancer.dateMois) }}
 								{{ form_errors(formFacturesARelancer.dateMois) }}
 								{{ form_widget(formFacturesARelancer.dateMois) }}
 							</div>
                             <div class="col-xs-6">
-                                {{ form_label(formFacturesARelancer.anneeComptable) }}
-                                {{ form_errors(formFacturesARelancer.anneeComptable) }}
-                                {{ form_widget(formFacturesARelancer.anneeComptable) }}
+                                {{ form_label(formFacturesARelancer.dateFactureHaute) }}
+                                {{ form_errors(formFacturesARelancer.dateFactureHaute) }}
+                                {{ form_widget(formFacturesARelancer.dateFactureHaute) }}
                             </div>
 						</div>
 						<br/>
