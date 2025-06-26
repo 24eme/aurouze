@@ -105,7 +105,7 @@
 
 
 {% for rendezvous in rendezVousByTechnicien %}
-    {% if rendezvous.planifiable and rendezvous.passage %}
+    {% if rendezvous.planifiable %}
             {% set planifiable = rendezvous.planifiable %}
             {% set type = planifiable.getTypePlanifiable|lower %}
 
@@ -127,23 +127,4 @@
     {% endif %}
 {% endfor %}
 
-
-{% for rendezvous in rendezVousByTechnicien %}
-    {% if rendezvous.planifiable and rendezvous.devis %}
-        {% set planifiable = rendezvous.planifiable %}
-        {% set type = planifiable.getTypePlanifiable|lower %}
-
-        <div class="visualisation" data-role="page" id="visualisation_{{ planifiable.id }}">
-            <div data-role="main" class="ui-content">
-
-            {% set historiquePassages = [] %}
-                {{ include('tournee/'~type~'Visualisation.html.twig', { 'planifiable' : planifiable, "technicien" : technicien, "historiquePassages" : historiquePassages,'telephoneSecretariat' : telephoneSecretariat}) }}
-            </div>
-        </div>
-        {{ include('tournee/'~type~'Rapport.html.twig', { 'planifiable' : planifiable, "technicien" : technicien, "form" : planifiableForms[planifiable.id]}) }}
-        {{ include('tournee/'~type~'Signature.html.twig', { 'planifiable' : planifiable, "technicien" : technicien, "form" : planifiableForms[planifiable.id]}) }}
-        {{ include('tournee/attachementAjout.html.twig', { 'planifiable' : planifiable, "technicien" : technicien, "attachementform" : attachementsForms[planifiable.etablissement.id]}) }}
-    {% endif %}
-
-{% endfor %}
 {% endblock %}
