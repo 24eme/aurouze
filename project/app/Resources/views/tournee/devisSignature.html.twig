@@ -29,8 +29,7 @@
       {{ form_errors(form.secondEmailTransmission) }}
       {{ form_widget(form.secondEmailTransmission) }}
       </div>
-    <div data-role="main" class="ui-content" style="padding:3px">
-    {{ form_start(form, { 'attr': { 'class': 'form-horizontal'} }) }}
+
     {% set passageId = planifiable.id %}
     <h6 class="ui-bar ui-bar-a ui-corner-all" style="margin-bottom:0;"><strong>Signature</strong></h6>
       <div class="signature-pad ui-body ui-body-a ui-corner-all" id="signature_pad_content_{{ planifiable.id }}">
