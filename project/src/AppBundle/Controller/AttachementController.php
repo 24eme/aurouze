@@ -102,17 +102,30 @@ class AttachementController extends Controller {
           $actif = $etablissement;
           $urlForm = $this->generateUrl('etablissement_upload_attachement', array('id' => $etablissement->getId()));
           $attachements = $attachementRepository->findByEtablissement($etablissement);
+
+
       } else { // visu tous les documents
           $attachements = $attachementRepository->getSocieteAndEtablissements($societe);
       }
       uasort($attachements, array("AppBundle\Document\Attachement", "cmpUpdateAt"));
+
+      $attachementsGroupedByDate = [];
+      foreach($attachements as $attachement) {
+              $updatedDate = $attachement->getUpdatedAt()->format('Y-m-d');
+
+              if (!isset($attachementsGroupedByDate[$updatedDate])) {
+                  $attachementsGroupedByDate[$updatedDate] = [];
+              }
+
+              $attachementsGroupedByDate[$updatedDate][] = $attachement;
+      }
 
       $form = $this->createForm(new AttachementType($dm), $attachement, array(
               'action' => $urlForm,
               'method' => 'POST',
       ));
 
-      return $this->render('attachement/listing.html.twig', array('attachements'  => $attachements, 'societe' => $societe, 'etablissement' => $etablissement, 'actif' => $actif, 'urlForm' => $urlForm, 'form' => $form->createView(), 'all' => $all, 'facets' => $facets, 'add' => boolval($request->get('add'))));
+      return $this->render('attachement/listing.html.twig', array('attachements'  => $attachements, 'societe' => $societe, 'etablissement' => $etablissement, 'actif' => $actif, 'urlForm' => $urlForm, 'form' => $form->createView(), 'attachementsGroupedByDate' => $attachementsGroupedByDate, 'all' => $all, 'facets' => $facets, 'add' => boolval($request->get('add'))));
     }
 
     /**
