@@ -400,3 +400,20 @@ textarea:required:invalid{
         left:30%;
     }
 }
+
+
+/* PAGE DOCUMENT : COLLAPSING ATTACHEMENTS */
+
+  .collapse.imageAttachements {
+    transition: opacity 0.5 linear;
+  }
+
+  .collapsing.imageAttachements {
+    opacity: 0;
+    height: auto;
+    transition: opacity 0.5 linear;
+  }
+
+  .collapse.in.imageAttachements {
+  transition: all 0.8s linear;
+  }
