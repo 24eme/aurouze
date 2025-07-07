@@ -111,7 +111,11 @@ class AttachementController extends Controller {
 
       $attachementsGroupedByDate = [];
       foreach($attachements as $attachement) {
+            if($attachement->getUpdatedAt()) {
               $updatedDate = $attachement->getUpdatedAt()->format('Y-m-d');
+            } else {
+              $updatedDate = '2015-01-01';
+            }
 
               if (!isset($attachementsGroupedByDate[$updatedDate])) {
                   $attachementsGroupedByDate[$updatedDate] = [];
