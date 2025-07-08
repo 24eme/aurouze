@@ -12,6 +12,6 @@
 		<h2>10 derniers documents ajoutés</h2>
 	</div>
 
-	{{ include('attachement/attachementList.html.twig', {'attachements' : lastAttachements}) }}
+	{{ include('attachement/attachementList.html.twig', {'attachements' : lastAttachements, 'attachementsGroupedByDate' : attachementsGroupedByDate}) }}
 
 {% endblock %}
