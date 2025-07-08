@@ -27,7 +27,18 @@ class AttachementController extends Controller {
 
     	$dm = $this->get('doctrine_mongodb')->getManager();
         $lastAttachements = $this->get('attachement.manager')->getRepository()->findLast();
-    	return $this->render('attachement/index.html.twig',array('lastAttachements' => $lastAttachements));
+        $attachementsGroupedByDate = [];
+        foreach($lastAttachements as $attachement) {
+                $updatedDate = $attachement->getUpdatedAt()->format('Y-m-d');
+
+                if (!isset($attachementsGroupedByDate[$updatedDate])) {
+                    $attachementsGroupedByDate[$updatedDate] = [];
+                }
+
+                $attachementsGroupedByDate[$updatedDate][] = $attachement;
+        }
+
+        return $this->render('attachement/index.html.twig',array('lastAttachements' => $lastAttachements, 'attachementsGroupedByDate' => $attachementsGroupedByDate,));
     }
 
     /**
@@ -111,7 +122,11 @@ class AttachementController extends Controller {
 
       $attachementsGroupedByDate = [];
       foreach($attachements as $attachement) {
+            if($attachement->getUpdatedAt()) {
               $updatedDate = $attachement->getUpdatedAt()->format('Y-m-d');
+            } else {
+              $updatedDate = '2015-01-01';
+            }
 
               if (!isset($attachementsGroupedByDate[$updatedDate])) {
                   $attachementsGroupedByDate[$updatedDate] = [];
