@@ -821,7 +821,7 @@ class ContratController extends Controller {
         $zone = $request->query->get('zone', ContratManager::ZONE_PARIS);
 
         $formContratsAReconduire = $this->createForm(new ReconductionFiltresType($dm), null, array(
-            'action' => $this->generateUrl('contrats_reconduction_massive'),
+            'action' => $this->generateUrl('contrats_reconduction_massive', ['zone' => $zone]),
             'method' => 'post',
         ));
 
