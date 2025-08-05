@@ -17,6 +17,7 @@
 
 #### Truc relou
 
+* Potentiellement, le téléphone demande une permission particulière pour ajouter un raccourci sur l'écran d'accueil (ex. Xiaomi). Pour autoriser l'ajout, il faut aller dans Paramètres > Applications > Firefox / Chrome / ... > Autorisations > Toutes les autorisations / Autres permissions (potentiellement caché dans un sous menu en haut à gauche) > Créer un raccourci [[source](https://old.reddit.com/r/firefox/comments/1c2geoa/add_to_home_screen_not_working/kzc2xny/)]
 * Désactiver l'application météo qui demande tout le temps la position
 * Installer Swiftkey car le clavier par défaut de HTC est vu comme un nuisible : https://swiftkey-keyboard.fr.uptodown.com/android puis l'activer dans les paramètres
 
