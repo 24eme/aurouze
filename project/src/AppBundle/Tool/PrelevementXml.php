@@ -45,8 +45,9 @@ protected $xml;
 
         $this->xml = $this->directDebit->asXML();
         $nameXml = 'prelevements_'.$date->format("Ymd-His");
-        file_put_contents(realpath('..').'/data/'.$nameXml.'.xml',$this->xml);
-        return $nameXml;
+        $path = realpath(__DIR__.'/../../..').'/data/'.$nameXml.'.xml';
+        file_put_contents($path, $this->xml);
+        return $path;
 
     }
 
