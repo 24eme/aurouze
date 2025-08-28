@@ -731,17 +731,17 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
         }
     }
 
-    public function getArrayTauxTaxe() {
-        $arrayTauxTaxe = [];
+    public function getArrayLigneTauxTva() {
+        $arrayTauxTva= [];
 
         foreach ($this->getLignes() as $ligne) {
-            if(array_key_exists("".$ligne->getTauxTaxe(), $arrayTauxTaxe) === false ) {
-                $arrayTauxTaxe["".$ligne->getTauxTaxe()] = 0;
+            if(array_key_exists("".$ligne->getTauxTaxe(), $arrayTauxTva) === false ) {
+                $arrayTauxTva["".$ligne->getTauxTaxe()] = 0;
             }
-            $arrayTauxTaxe["".$ligne->getTauxTaxe()] += $ligne->getMontantTaxe();
+            $arrayTauxTva["".$ligne->getTauxTaxe()] += $ligne->getMontantTaxe();
         }
 
-        return $arrayTauxTaxe;
+        return $arrayTauxTva;
     }
 
     public function calculDateLimitePaiement() {
