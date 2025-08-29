@@ -103,7 +103,7 @@ class PaiementsManager {
             self::EXPORT_DATE_PAIEMENT => "Date de la pièce de banque",
             self::EXPORT_CODE_COMPTABLE => "Code Client tronqué à 8 caractères",
             self::EXPORT_VR_PRIX => "",
-            self::EXPORT_FACTURE_NUM_RAISON_SOCIALE => "",
+            self::EXPORT_FACTURE_NUM_RAISON_SOCIALE => "Numéro facture - Raison Sociale",
             self::EXPORT_PRIX => "Montant du règlement",
             self::EXPORT_EMPTY => "",
             self::EXPORT_CODE_COMPTABLE => "Code Comptable",
