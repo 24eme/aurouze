@@ -223,21 +223,23 @@ class PaiementsManager {
                     $paiementArr[self::EXPORT_TVA_196] = "";
 
                     foreach ($paiement->getFacture()->getLignes() as $ligneFacture) {
-                        switch ($ligneFacture->getTauxTaxe()) {
-                            case 0.1:
-                                $tauxTaxe = 0.1;
-                                $paiementArr[self::EXPORT_TVA_10] = number_format($paiement->getMontantTaxe($tauxTaxe, $ligneFacture), 2, ",", "");
-                                break;
-                            case 0.2:
-                                $tauxTaxe = 0.2;
-                                $paiementArr[self::EXPORT_TVA_20] = number_format($paiement->getMontantTaxe($tauxTaxe, $ligneFacture), 2, ",", "");
-                                break;
-                            default:
-                                $paiementArr[self::EXPORT_TVA_10] = "";
-                                $paiementArr[self::EXPORT_TVA_20] = "";
-                                break;
+                        if ($ligneFacture->getTauxTaxe() == 0.1) {
+                            $tauxTaxe = 0.1;
+                            $paiementArr[self::EXPORT_TVA_10] = number_format($paiement->getMontantTaxe($tauxTaxe, $ligneFacture), 2, ",", "");
+                        }
+                        if (!isset($paiementArr[self::EXPORT_TVA_10])) {
+                            $paiementArr[self::EXPORT_TVA_10] = "";
+                        }
+
+                        if ($ligneFacture->getTauxTaxe() == 0.2) {
+                            $tauxTaxe = 0.2;
+                            $paiementArr[self::EXPORT_TVA_20] = number_format($paiement->getMontantTaxe($tauxTaxe, $ligneFacture), 2, ",", "");
+                        }
+                        if (!isset($paiementArr[self::EXPORT_TVA_20])) {
+                            $paiementArr[self::EXPORT_TVA_20] = "";
                         }
                     }
+
                     if(isset(self::$moyens_paiement_libelles[$paiement->getMoyenPaiement()])) {
                         $paiementArr[self::EXPORT_MODE_REGLEMENT] = self::$moyens_paiement_libelles[$paiement->getMoyenPaiement()];
                     } else {

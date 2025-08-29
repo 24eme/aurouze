@@ -727,7 +727,7 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
 
     public function getTva() {
         foreach ($this->getLignes() as $ligne) {
-                return $ligne->getTauxTaxe();
+            return $ligne->getTauxTaxe();
         }
     }
 
