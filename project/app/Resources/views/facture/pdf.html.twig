@@ -115,11 +115,17 @@
                     <td colspan="2">Total HT</td>
                     <td colspan="2" class="text-right">{{ facture.montantHT|number_format(2, ',', ' ')  }} €</td>
                 </tr>
+
+                 {% for tvaKey, tvaValue in facture.arrayLigneTauxTva%}
+                    <tr>
+                        <td colspan="2">TVA {{ (tvaKey * 100)|number_format(2, ',', ' ') }}%</td>
+                        <td colspan="2" class="text-right">{{ tvaValue|number_format(2, ',', ' ') }} €</td>
+                    </tr>
+                {% endfor %}
                 <tr>
-                    <td colspan="2">TVA {{ (facture.tva * 100)|number_format(2, ',', ' ') }}%</td>
-                    <td colspan="2" class="text-right">{{ facture.montantTaxe|number_format(2, ',', ' ') }} €</td>
-                </tr>
-                <tr>
+                    {% if facture.arrayLigneTauxTva|length > 1 %}
+                        <td colspan="1" style="border:none !important;"></td>
+                    {% endif %}
                     <td colspan="2">Total TTC</td>
                     <td colspan="2" class="text-right">{{ facture.montantTTC|number_format(2, ',', ' ')  }} €</td>
                 </tr>

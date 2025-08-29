@@ -726,16 +726,22 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
     }
 
     public function getTva() {
-        $tva = 0;
         foreach ($this->getLignes() as $ligne) {
-            if (!$tva) {
-                $tva = $ligne->getTauxTaxe();
-            }
-            if ($tva != $ligne->getTauxTaxe()) {
-                throw new \Exception("TVA différente dans les lignes de facture.");
-            }
+            return $ligne->getTauxTaxe();
         }
-        return $tva;
+    }
+
+    public function getArrayLigneTauxTva() {
+        $arrayTauxTva= [];
+
+        foreach ($this->getLignes() as $ligne) {
+            if(array_key_exists("".$ligne->getTauxTaxe(), $arrayTauxTva) === false ) {
+                $arrayTauxTva["".$ligne->getTauxTaxe()] = 0;
+            }
+            $arrayTauxTva["".$ligne->getTauxTaxe()] += $ligne->getMontantTaxe();
+        }
+
+        return $arrayTauxTva;
     }
 
     public function calculDateLimitePaiement() {

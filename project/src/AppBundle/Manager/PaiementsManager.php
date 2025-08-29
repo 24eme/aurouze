@@ -221,16 +221,25 @@ class PaiementsManager {
                 $paiementArr[self::EXPORT_CLIENT_RAISON_SOCIALE] = $paiement->getFacture()->getSociete()->getRaisonSociale();
                     $paiementArr[self::EXPORT_TVA_7] = "";
                     $paiementArr[self::EXPORT_TVA_196] = "";
-                    if($paiement->getFacture()->getTva() == 0.1){
-                      $paiementArr[self::EXPORT_TVA_10] = number_format($paiement->getMontantTaxe(), 2, ",", "");
-                    }else{
-                      $paiementArr[self::EXPORT_TVA_10] = "";
+
+                    foreach ($paiement->getFacture()->getLignes() as $ligneFacture) {
+                        if ($ligneFacture->getTauxTaxe() == 0.1) {
+                            $tauxTaxe = 0.1;
+                            $paiementArr[self::EXPORT_TVA_10] = number_format($paiement->getMontantTaxe($tauxTaxe, $ligneFacture), 2, ",", "");
+                        }
+                        if (!isset($paiementArr[self::EXPORT_TVA_10])) {
+                            $paiementArr[self::EXPORT_TVA_10] = "";
+                        }
+
+                        if ($ligneFacture->getTauxTaxe() == 0.2) {
+                            $tauxTaxe = 0.2;
+                            $paiementArr[self::EXPORT_TVA_20] = number_format($paiement->getMontantTaxe($tauxTaxe, $ligneFacture), 2, ",", "");
+                        }
+                        if (!isset($paiementArr[self::EXPORT_TVA_20])) {
+                            $paiementArr[self::EXPORT_TVA_20] = "";
+                        }
                     }
-                    if($paiement->getFacture()->getTva() == 0.2){
-                      $paiementArr[self::EXPORT_TVA_20] = number_format($paiement->getMontantTaxe(), 2, ",", "");
-                    }else{
-                      $paiementArr[self::EXPORT_TVA_20] = "";
-                    }
+
                     if(isset(self::$moyens_paiement_libelles[$paiement->getMoyenPaiement()])) {
                         $paiementArr[self::EXPORT_MODE_REGLEMENT] = self::$moyens_paiement_libelles[$paiement->getMoyenPaiement()];
                     } else {
@@ -250,7 +259,7 @@ class PaiementsManager {
                           $paiementArr[self::EXPORT_TYPE_PIECE_BANQUE] = "";
                       }
                       $paiementArr[self::EXPORT_MONTANT_PIECE_BANQUE] = number_format($paiements->getMontantTotalByOperation($paiement), 2, ",", "");
-                      $paiementArr[self::EXPORT_MONTANT_CHEQUE] = ($paiement->getMoyenPaiement() == self::MOYEN_PAIEMENT_CHEQUE)? $paiements->getMontantTotalByMoyenPaiement(self::MOYEN_PAIEMENT_CHEQUE) : "";
+                      $paiementArr[self::EXPORT_MONTANT_CHEQUE] = ($paiement->getMoyenPaiement() == self::MOYEN_PAIEMENT_CHEQUE) ? number_format($paiement->getMontantByMoyenPaiement(self::MOYEN_PAIEMENT_CHEQUE), 2, ",", "") : "";
 
                       $paiementArr[self::EXPORT_TYPE_RELANCE] = ($paiement->getFacture()->getNbRelance())? FactureManager::$types_nb_relance[$paiement->getFacture()->getNbRelance()] :FactureManager::$types_nb_relance[0];
                       $paiementArr[self::EXPORT_DATE_RELANCE] = "";
