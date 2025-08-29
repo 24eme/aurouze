@@ -305,4 +305,12 @@ class Paiement {
             return round($ligneFacture->getMontantHT() * $tauxTaxe, 2);
     }
 
+    public function getMontantByMoyenPaiement($moyen_paiement) {
+        $montantMoyenPaiement = 0;
+            if($moyen_paiement == $this->getMoyenPaiement()) {
+                $montantMoyenPaiement = $this->getMontant();
+        }
+        return $montantMoyenPaiement;
+    }
+
 }
