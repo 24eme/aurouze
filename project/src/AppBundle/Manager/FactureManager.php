@@ -746,7 +746,7 @@ public static $export_factures_en_retards = array(
                   }
                   $factureLigne[self::EXPORT_SOCIETE_ECHEANCE] =  $facture->getDateLimitePaiement()->format('d/m/Y');
                   $factureLigne[self::EXPORT_SOCIETE_DEBIT] =  number_format($facture->getMontantTTC(), 2, ",", "");
-                  $factureLigne[self::EXPORT_SOCIETE_CREDIT] =  ($facture->isAvoir())? number_format($facture->getMontantTTC() , 2, ",", "") : number_format($credit , 2, ",", "");
+                  $factureLigne[self::EXPORT_SOCIETE_CREDIT] =  number_format($credit , 2, ",", "");
                   if(count($facture->getPaiements()) > 1){
                       $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] = "";
                       foreach($facture->getPaiements() as $ps){
@@ -767,7 +767,7 @@ public static $export_factures_en_retards = array(
                       $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] .= "\n(".$paiement->getDatePaiement()->format('d/m/Y').')';
                   }
                   if($facture->getPayeeAvecTropPercu()){
-                      $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] .= "\n et Réglée avec le trop perçu";
+                      $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] .= "\n et Soldée avec le trop perçu";
                   }
                 }
             }
@@ -787,9 +787,9 @@ public static $export_factures_en_retards = array(
           $factureLigne[self::EXPORT_SOCIETE_DEBIT] =  number_format($facture->getMontantTTC(), 2, ",", "");
           $factureLigne[self::EXPORT_SOCIETE_CREDIT] =  ($facture->isAvoir())? number_format($facture->getMontantTTC() , 2, ",", "") : "0";
           if($facture->getPayeeAvecTropPercu()){
-              $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] = "Réglée avec le trop perçu";
+              $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] = "Soldée avec le trop perçu";
           }else{
-              $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] = ($facture->getAvoirPartielRemboursementCheque())? "Remboursement par chèque le ".$facture->getDateFacturation()->format('d/m/Y') : "-";
+              $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] = ($facture->getAvoirPartielRemboursementCheque())? "Remboursement par chèque le ".$facture->getDateFacturation()->format('d/m/Y') : "";
           }
         }
       return $factureLigne;
