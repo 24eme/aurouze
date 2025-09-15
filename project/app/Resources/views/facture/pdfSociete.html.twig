@@ -80,7 +80,7 @@
                 {% endif %}
 
                 <td {% if loop.last %} colspan="2"  {% endif %} style="border: 0 !important; padding: 0;" class="text-right">{{ factureRow.row.3 }}</td>
-                <td style="border: 0 !important; padding: 0;" class="text-right">{% if factureRow.row.5 %}{{ factureRow.row.4|number_format(2, ',', ' ') }} €{% endif %}</td>
+                <td style="border: 0 !important; padding: 0;" class="text-right">{% if factureRow.row.4 %}{{ factureRow.row.4|number_format(2, ',', ' ') }} €{% endif %}</td>
                 <td style="border: 0 !important; padding: 0;" class="text-right">{% if factureRow.row.5 %}{{ factureRow.row.5|number_format(2, ',', ' ') }} €{% endif %}</td>
                 <td style="border: 0 !important; padding: 0;"></td>
             </tr>
