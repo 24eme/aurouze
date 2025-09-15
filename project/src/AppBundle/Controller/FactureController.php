@@ -524,6 +524,7 @@ class FactureController extends Controller
                 'data-provide' => 'datepicker',
                 'data-date-format' => 'dd/mm/yyyy'
                 ),
+            "empty_data" => date('d/m/Y'),
             'widget' => 'single_text',
             'format' => 'dd/MM/yyyy',
             'label' => 'Date de fin* :',
