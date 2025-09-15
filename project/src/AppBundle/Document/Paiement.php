@@ -301,9 +301,16 @@ class Paiement {
         return $this->factureMontantTTC ;
     }
 
-    public function getMontantTaxe() {
+    public function getMontantTaxe($tauxTaxe, $ligneFacture) {
+            return round($ligneFacture->getMontantHT() * $tauxTaxe, 2);
+    }
 
-        return round($this->getMontant() - round($this->getMontant() / (1 + $this->getFacture()->getTva()), 2), 2);
+    public function getMontantByMoyenPaiement($moyen_paiement) {
+        $montantMoyenPaiement = 0;
+            if($moyen_paiement == $this->getMoyenPaiement()) {
+                $montantMoyenPaiement = $this->getMontant();
+        }
+        return $montantMoyenPaiement;
     }
 
 }
