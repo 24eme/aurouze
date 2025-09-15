@@ -787,9 +787,11 @@ public static $export_factures_en_retards = array(
           $factureLigne[self::EXPORT_SOCIETE_DEBIT] =  number_format($facture->getMontantTTC(), 2, ",", "");
           $factureLigne[self::EXPORT_SOCIETE_CREDIT] =  "-";
           if($facture->isAvoir()){
-              $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] = "Aucun (Avoir)";
+              $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] = "-";
           } elseif($facture->getPayeeAvecTropPercu()){
               $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] = "Soldée avec le trop perçu";
+          } elseif($facture->getAvoir()) {
+              $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] = "Cette facture a donnée lieu à un avoir";
           }else{
               $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] = ($facture->getAvoirPartielRemboursementCheque())? "Remboursement par chèque le ".$facture->getDateFacturation()->format('d/m/Y') : "";
           }
