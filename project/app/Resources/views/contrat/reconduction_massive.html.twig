@@ -43,12 +43,14 @@
 </div>
 {{ form_end(formContratsAReconduire) }}
 
+{% if hasSecteurs %}
 <div class="clearfix">
     <div class="btn-group pull-right">
         <a class="btn btn-default{% if zone == 75 %} active{% endif %}" href="?zone=75">Paris</a>
         <a class="btn btn-default{% if zone == 77 %} active{% endif %}" href="?zone=77"> Seine et Marne</a>
     </div>
 </div>
+{% endif %}
 
 {{ form_start(formReconduction) }}
     <a class="pull-right" style="margin-top: 5px;" href="{{ path('contrats_reconduction_historique') }}">Historique des reconduction</a>
