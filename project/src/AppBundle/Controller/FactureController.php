@@ -804,7 +804,7 @@ class FactureController extends Controller
         }
 
     /**
-     * @Route("/facture/export-client/{societe}/{etablissement} ", name="factures_export_client", defaults={"etablissement" = null})
+     * @Route("/export-client/{societe}/{etablissement} ", name="factures_export_client", defaults={"etablissement" = null})
      * @ParamConverter("societe", class="AppBundle:Societe")
 
      */
