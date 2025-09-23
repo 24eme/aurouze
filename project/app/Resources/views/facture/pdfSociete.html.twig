@@ -47,7 +47,7 @@
         <tr>
             <th class="col-xs-2">Date</th>
             <th class="text-center col-xs-1">Pièce</th>
-            <th class="text-right col-xs-2">Type de Règlement</th>
+            <th class="text-right col-xs-2">Type de pièce</th>
             <th class="text-right col-xs-1">Echéance</th>
             <th class="text-right col-xs-2">Débit</th>
             <th class="text-right col-xs-2">Crédit</th>
@@ -80,7 +80,7 @@
                 {% endif %}
 
                 <td {% if loop.last %} colspan="2"  {% endif %} style="border: 0 !important; padding: 0;" class="text-right">{{ factureRow.row.3 }}</td>
-                <td style="border: 0 !important; padding: 0;" class="text-right">{{ factureRow.row.4|number_format(2, ',', ' ') }} €</td>
+                <td style="border: 0 !important; padding: 0;" class="text-right">{% if factureRow.row.4 %}{{ factureRow.row.4|number_format(2, ',', ' ') }} €{% endif %}</td>
                 <td style="border: 0 !important; padding: 0;" class="text-right">{% if factureRow.row.5 %}{{ factureRow.row.5|number_format(2, ',', ' ') }} €{% endif %}</td>
                 <td style="border: 0 !important; padding: 0;"></td>
             </tr>

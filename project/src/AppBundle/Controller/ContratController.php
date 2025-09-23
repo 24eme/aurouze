@@ -819,6 +819,7 @@ class ContratController extends Controller {
         $societe = null;
         $commercial = null;
         $zone = $request->query->get('zone', ContratManager::ZONE_PARIS);
+        $hasSecteurs = $this->getParameter('secteurs');
 
         $formContratsAReconduire = $this->createForm(new ReconductionFiltresType($dm), null, array(
             'action' => $this->generateUrl('contrats_reconduction_massive', ['zone' => $zone]),
@@ -848,7 +849,8 @@ class ContratController extends Controller {
                                                                             'dateRecondution' => $dateRecondution,
                                                                             'formContratsAReconduire' => $formContratsAReconduire->createView(),
                                                                             'formReconduction' => $formReconduction->createView(),
-                                                                            'zone' => $zone
+                                                                            'zone' => $zone,
+                                                                            'hasSecteurs' => $hasSecteurs,
         ));
     }
     /**
