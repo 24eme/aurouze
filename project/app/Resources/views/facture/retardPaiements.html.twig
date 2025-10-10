@@ -13,15 +13,30 @@
 	  <div class="col-xs-9">
 	    <h3>{{ facturesEnRetard | length }} factures en retard de paiements </h3>
 	  </div>
-      {% if secteur %}
+
+      {% set retard = 0 %}
+      {% set url = 'factures_retard' %}
+      {% set societe = null %}
+         {% if secteur %}
                 <div class="col-xs-3 text-right">
                     <div class="btn-group">
                         {% if secteur %}
-                        <a class="btn btn-default {% if secteur == "PARIS" %}active{% endif %}" href="{{ path('factures_retard', {'secteur' :"PARIS"}) }}">{{ etablissementManager.secteursNom("PARIS") }}</a><a class="btn btn-default {% if secteur == "SEINE_ET_MARNE" %}active{% endif %}" href="{{ path('factures_retard', {'secteur' :"SEINE_ET_MARNE"}) }}">{{ etablissementManager.secteursNom("SEINE_ET_MARNE") }}</a>
+                            {% if(app.request.get('societe')) %}
+                                {% set societe = app.request.get('societe').id %}
+                                {% set url = 'factures_retard_societe' %}
+                                {% set retardsTotalSociete = facture_manager.getRetardDePaiementBySociete(app.request.get('societe')) | length %}
+                                {% set sameTotal = retardsTotalSociete == facturesEnRetard | length %}
+                                {% set retardParisActive =  facturesEnRetard | length %}
+                                {% set retardSeineEtMarneActive =  facturesEnRetard | length %}
+                                {% set retardParisInactive = retardsTotalSociete - retardSeineEtMarneActive %}
+                                {% set retardSeineEtMarneInactive = retardsTotalSociete - retardParisActive %}
+                            {% endif %}
+
+                            <a class="btn btn-default {% if secteur == "PARIS" %}active{% endif %}" href="{{ path(url, {'secteur' :"PARIS", 'id': societe}) }}">{{ etablissementManager.secteursNom("PARIS") }} {% if(app.request.get('societe') and not sameTotal) %} &nbsp;<span class="badge badge-warning">{% if secteur == "PARIS" %}{{ retardParisActive }} {% else %} {{ retardParisInactive }} {% endif %}</span> {% endif %} </a><a class="btn btn-default {% if secteur == "SEINE_ET_MARNE" %}active{% endif %}" href="{{ path(url, {'secteur' :"SEINE_ET_MARNE", 'id': societe}) }}">{{ etablissementManager.secteursNom("SEINE_ET_MARNE") }}   {% if(app.request.get('societe') and not sameTotal) %}  &nbsp;<span class="badge badge-warning">{% if secteur == "SEINE_ET_MARNE" %}{{ retardSeineEtMarneActive }} {% else %} {{ retardSeineEtMarneInactive }} {% endif %}</span> {% endif %} </a>
                         {% endif %}
                     </div>
                 </div>
-            {% endif %}
+         {% endif %}
 	</div>
 	{{ form_start(formFacturesARelancer) }}
 	<br/><br/>
