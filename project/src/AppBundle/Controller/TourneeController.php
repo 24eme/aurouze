@@ -303,6 +303,7 @@ class TourneeController extends Controller {
              $files = $uploadAttachementForm->getData()->getImageFile();
              if($files){
                  foreach ($files as $file) {
+                     $file->setUpdatedAt(new \DateTime($date));
                      $file->setVisibleTechnicien(true);
                      $file->setVisibleClient(true);
                      $file->setEtablissement($etablissement);
