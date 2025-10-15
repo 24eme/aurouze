@@ -804,7 +804,7 @@ class FactureController extends Controller
         }
 
     /**
-     * @Route("/facture/export-client/{societe}/{etablissement} ", name="factures_export_client", defaults={"etablissement" = null})
+     * @Route("/export-client/{societe}/{etablissement} ", name="factures_export_client", defaults={"etablissement" = null})
      * @ParamConverter("societe", class="AppBundle:Societe")
 
      */
@@ -1079,8 +1079,8 @@ class FactureController extends Controller
      */
 
      public function retardsSocieteAction(Request $request, Societe $societe) {
-       $societe = $societe->getId();
-       return $this->retardsFilters($request, $societe);
+       $societeId = $societe->getId();
+       return $this->retardsFilters($request, $societeId, 'factures_retard_societe');
      }
 
 
@@ -1088,18 +1088,17 @@ class FactureController extends Controller
      * @Route("/retards-de-facture", name="factures_retard")
      */
     public function retardsAction(Request $request) {
+        return $this->retardsFilters($request);
+    }
+
+    private function retardsFilters($request, $societeId = null, $route = 'factures_retard'){
         if($request->get('secteur')) { // <-- requete http
-            $response = new RedirectResponse($this->generateUrl('factures_retard'));
+            $response = new RedirectResponse($this->generateUrl($route, ['id' => $societeId]));
             $response->headers->setCookie(new Cookie('secteurZone', $request->get('secteur'), time() + (365 * 24 * 60 * 60)));
 
             return $response;
         }
 
-        return $this->retardsFilters($request);
-
-    }
-
-    private function retardsFilters($request, $societe = null, $route = 'factures_retard'){
         $secteur = null;
 
         if($this->getParameter('secteurs')) { // <-- CONFIG parameters.yml
@@ -1116,7 +1115,7 @@ class FactureController extends Controller
       $dateMois = null;
       $anneeComptable = null;
 
-      $formFacturesEnRetard = $this->createForm(new FacturesEnRetardFiltresType($this->container, $this->get('doctrine_mongodb')->getManager(),$societe), null, array(
+      $formFacturesEnRetard = $this->createForm(new FacturesEnRetardFiltresType($this->container, $this->get('doctrine_mongodb')->getManager(),$societeId), null, array(
           'action' => $this->generateUrl('factures_retard'),
           'method' => 'GET',
       ));
@@ -1128,9 +1127,9 @@ class FactureController extends Controller
         $anneeComptable = $formValues["anneeComptable"];
         $dateMois = $formValues["dateMois"];
         $nbRelances = intval($formValues["nbRelances"]) -1;
-        $societe = $formValues["societe"];
+        $societeId = $formValues["societe"];
       }
-      $facturesEnRetard = $fm->getRepository()->findFactureRetardDePaiement($dateFactureHaute,  $nbRelances, $societe, $secteur,$anneeComptable,$dateMois,$this->getParameter("commercial_seine_et_marne"));
+      $facturesEnRetard = $fm->getRepository()->findFactureRetardDePaiement($dateFactureHaute,  $nbRelances, $societeId, $secteur,$anneeComptable,$dateMois,$this->getParameter("commercial_seine_et_marne"));
 
       $formRelance = $this->createForm(new RelanceType($facturesEnRetard), null, array(
           'action' => $this->generateUrl('factures_relance_massive'),

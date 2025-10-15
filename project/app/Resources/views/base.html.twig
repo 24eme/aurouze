@@ -53,9 +53,9 @@
 
                     <a id="logo" href="{{ path('accueil') }}" alt="{{ application.shortname }}"><img src="{{ asset('/images/logo_'~instanceapp~'.svg') }}" height="40" style="margin-top: 5px;"  class="hidden-sm" /> <img src="{{ asset('/apple-touch-icon_'~instanceapp~'.png') }}" height="40" style="margin-top: 5px;"  class="visible-sm" /></a>
                 </div>
-                {% set retard = 0 %}
+                {% set retardTotalSociete = 0 %}
                 {% if(app.request.get('societe')) %}
-                  {% set retard = facture_manager.getRetardDePaiementBySociete(app.request.get('societe')) | length %}
+                    {% set retardTotalSociete = facture_manager.getRetardDePaiementBySociete(app.request.get('societe')) | length %} {# variable utilisée dans le template retardpaiements #}
                 {% endif %}
                 <div id="navbar" class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
@@ -73,7 +73,7 @@
                         <li class="{%if (_menu_active == 'paiements') %}active{% endif %}"><a href="{% if(app.request.get('societe') and _menu_active != 'paiements') %}{{ path('paiements_societe', { id: app.request.get('societe').id }) }}{% else %}{{ path('paiements_liste') }}{% endif %}">Paiements</a></li>
                         <li class="{%if (_menu_active == 'paiementsRetard') %}active{% endif %}"><a href="{% if(app.request.get('societe') and _menu_active != 'paiementsRetard') %}
                       {{ path('factures_retard_societe',{ id : app.request.get('societe').id }) }}
-                      {% else %}  {{ path('factures_retard') }}{% endif %}"></span>Retard{% if(retard > 0) %}&nbsp;<span class="badge badge-danger">{{ retard }}</span>{% endif %}</a></li>
+                      {% else %}  {{ path('factures_retard') }}{% endif %}"></span>Retard{% if(retardTotalSociete > 0) %}&nbsp;<span class="badge badge-danger">{{ retardTotalSociete }}</span>{% endif %}</a></li>
                         <li class="{%if (_menu_active == 'attachements') %}active{% endif %}"><a href="{% if(app.request.get('etablissement') and _menu_active != 'attachements') %}{{ path('attachements_etablissement', { id: app.request.get('etablissement').id }) }}{% elseif(app.request.get('societe') and _menu_active != 'attachements') %}{{ path('attachements_societe', { id: app.request.get('societe').id, all: true }) }}{% else %}{{ path('attachements_last') }}{% endif %}">
                           Documents
                       </a></li>

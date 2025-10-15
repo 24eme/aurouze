@@ -48,19 +48,7 @@ class AttachementTourneeType extends AbstractType
                   }
               ))
           )
-          ->add('titre', TextType::class, array('label' => 'Nom* :','required' => false))
-          ->add('updatedAt', DateType::class, array(
-            'required' => false,
-            'attr' => array(
-                'class' => 'input-inline datepicker',
-                'data-provide' => 'datepicker',
-                'data-date-format' => 'dd/mm/yyyy'
-            ),
-            'widget' => 'single_text',
-            'format' => 'dd/MM/yyyy',
-            'data' => new \DateTime("now"),
-            'label' => 'Date d\'ajout :',
-          ));
+          ->add('titre', TextType::class, array('label' => 'Nom* :','required' => false));
           $builder->add('visibleClient', CheckboxType::class, array('label' => ' ', 'required' => false, "attr" => array("class" => "switcher", "data-size" => "mini")));
     }
 
