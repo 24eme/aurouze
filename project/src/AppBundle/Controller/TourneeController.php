@@ -315,9 +315,22 @@ class TourneeController extends Controller {
                  }
              }
            }
-           $urlRetour = $this->generateUrl('tournee_technicien', array('technicien' => $technicien, 'date' => $date))."#".$retour;
+              }
+       if(! $uploadAttachementForm->isValid()) {
+           if (UPLOAD_ERR_INI_SIZE) {
+               $this->addFlash(
+                   'upload_error',
+                   "Vos fichiers sont trop lourds. Veuillez réduire leur taille et/ou les télécharger en plusieurs fois."
+               );
+           }
+           $passageId = substr($retour, -32);
+           $passage = $this->get('passage.manager')->getRepository()->find($passageId);
+           $urlRetour= $this->generateUrl('tournee_technicien', array('technicien' => $technicien, 'date' => $date))."#attachement_add_".$passage->getId();
            return $this->redirect($urlRetour);
        }
+       $urlRetour = $this->generateUrl('tournee_technicien', array('technicien' => $technicien, 'date' => $date))."#".$retour;
+       return $this->redirect($urlRetour);
+
    }
 
 
