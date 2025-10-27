@@ -304,6 +304,7 @@ public static $export_factures_en_retards = array(
 
                 $factureLigne->setMontantHT($factureLigne->getPrixUnitaire());
                 $factureLigne->setOrigineDocument($contrat);
+                $factureLigne->setMontantTaxe($factureLigne->getTauxTaxe() * $factureLigne->getMontantHT());
 
                 $numeroFacture = $i + 1;
                 $factureLigne->setLibelle(sprintf("Facture %s/%s - Proposition n° %s du %s au %s", $numeroFacture, $nbFactures, $contrat->getNumeroArchive(), $contrat->getDateDebut()->format('d/m/Y'), $contrat->getDateFin()->format('d/m/Y')));
@@ -313,11 +314,10 @@ public static $export_factures_en_retards = array(
 
                 $facture->addLigne($factureLigne);
 
-                $tauxTaxe = $factureLigne->getTauxTaxe();
                 $montantHT = $factureLigne->getMontantHT();
-                $facture->setMontantHT($montantHT);
-                $facture->setMontantTaxe($montantHT * $tauxTaxe);
-                $facture->setMontantTTC($montantHT + $facture->getMontantTaxe());
+                $facture->setMontantHT($factureLigne->getMontantHT());
+                $facture->setMontantTaxe($factureLigne->getMontantTaxe());
+                $facture->setMontantTTC($facture->getMontantHT() + $facture->getMontantTaxe());
 
                 $this->dm->persist($facture);
                 $this->dm->flush();
