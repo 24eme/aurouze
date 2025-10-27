@@ -16,6 +16,11 @@
     </h3>
   </div>
   </div>
+  {% if app.session.flashBag.has('upload_error')  %}
+      <div class="ui-content" style="color:#ff0000ba">
+          {{  app.session.flashBag.get('upload_error')|first }}
+      </div>
+  {% endif %}
   <div data-role="main" class="ui-content">
   <form id="form_attachement_ajout_{{ planifiable.id }}" method="post" action="{{ attachementform.action }}" {{ form_enctype(attachementform.form) }} data-ajax="false" class="attachementform" >
   <div class="row">
