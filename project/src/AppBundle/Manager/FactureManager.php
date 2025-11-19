@@ -282,7 +282,7 @@ public static $export_factures_en_retards = array(
             $commercial = $contrat->getCommercial();
             $dateFacturation = new \DateTime();
 
-            $startDate = $contrat->getDateDebut();
+            $startDate = new \DateTime();
             $endDate = $contrat->getDateFin();
 
             $period= $startDate->diff($endDate)->format('%a');
