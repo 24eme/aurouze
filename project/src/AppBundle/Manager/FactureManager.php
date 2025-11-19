@@ -280,10 +280,14 @@ public static $export_factures_en_retards = array(
             $nbFactures = $contrat->getNbFactures();
 
             $commercial = $contrat->getCommercial();
-            $dateFacturation = new \DateTime();
 
-            $startDate = new \DateTime();
+            $startDate = $contrat->getDateDebut();
+            if($contrat->getDateDebut() < new DateTime()) {
+                $startDate = new DateTime();
+            }
             $endDate = $contrat->getDateFin();
+
+            $dateFacturation = clone $startDate;
 
             $period= $startDate->diff($endDate)->format('%a');
             $interval = $period / $nbFactures;
