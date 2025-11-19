@@ -674,10 +674,9 @@ class Devis implements DocumentSocieteInterface, DocumentPlanifiableInterface, F
      */
 
     public function setZone($commercialSeineEtMarne){
-      if($this->getCommercial()->getNom() == $commercialSeineEtMarne){
+        if($commercialSeineEtMarne && preg_match("/".$commercialSeineEtMarne."/", $this->getCommercial()->getNom())) {
         $this->zone = ContratManager::ZONE_SEINE_ET_MARNE;
-      }
-      else{
+      } else {
         $this->zone = ContratManager::ZONE_PARIS;
       }
       return $this;
