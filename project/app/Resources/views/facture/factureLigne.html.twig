@@ -35,7 +35,7 @@
                   &nbsp;<a href="{{ path("factures_retard_societe", { 'id' : facture.societe.id }) }}"><span style="cursor: pointer;" data-toggle="tooltip" title="{{ facture.relanceCommentaire }}" class="pull-right label label-xs label-danger"><span class="glyphicon glyphicon-info-sign"></span></span></a>
                 {% endif %}
             </td>
-          <td class="col-xs-1">{% if facture.numeroFacture %}{{ facture.dateLimitePaiement | localizeddate("short", "none", null, null, "dd/MM/Y")  }} {% endif %}</td>
+          <td class="col-xs-1">{% if facture.numeroFacture %}{{ facture.dateLimitePaiement | localizeddate("short", "none")  }} {% endif %}</td>
           <td class="text-right">{% if not facture.isDevis and not (facture.paye or facture.isAvoir or facture.isRedressee) and facture.numeroFacture and facture.sepa and facture.getSepa.actif  %}<i class ="mdi mdi-autorenew mdi-lg pull-left" title="Prélèvement automatique"></i>{% endif %}{{ "%0.2f" | format(facture.montantTTC)  }}&nbsp;€</td>
             <td class="text-right {% if facture.isDevis %}active{% endif %}">
             {% if ( facture.paye and facture.inPrelevement > date()) %}
