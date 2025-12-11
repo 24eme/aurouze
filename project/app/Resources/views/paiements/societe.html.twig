@@ -18,24 +18,31 @@
             <th class="col-xs-2">Date</th>
             <th class="col-xs-2">Type</th>
             <th class="col-xs-3">Libelle</th>
-            <th class="col-xs-3">Facture</th>
-            <th class="col-xs-1">Montant</th>
+            <th class="col-xs-2">Facture</th>
             <th class="col-xs-2">Total</th>
             </tr>
         </thead>
         <tbody>
           {% for paiements in paiementsDocs %}
+          <tr style="background-color:#dbdbdb;">
+              <td colspan="4">
+                  <strong>{{ paiements.dateCreation | localizeddate("medium", "none", null, null, "d MMM yyyy") }}</strong>
+              </td>
+              <td class="text-right"><strong>{{ paiements.getTotalBySociete(societe) | number_format(2, ',', ' ') }}&nbsp;€</strong></td>
+          </tr>
+
           {% set date = null %}
           {% for regKey, reglement in paiements.aggregatePaiements(societe) %}
             {% for libKey, libelle in reglement.items %}
+            <tr style="background-color: #eee;">
+                <td colspan="2"></td>
+                <td colspan="2" class="text-muted"><strong>{{ libelle.libelle }}</strong></td>
+                <td class="text-right text-muted"><strong>{{ paiements.getTotalByLibelle(libelle.libelle) | number_format(2, ',', ' ') }}&nbsp;€</strong></td>
+            </tr>
                 {% for paiement in libelle.items %}
                 <tr>
                   <td>
-                    {% if paiements.dateCreation != date %}
-                      <strong>{{ paiements.dateCreation | localizeddate("medium", "none", null, null, "d MMM yyyy") }}</strong>
-                    {% else %}
                       <span class="text-muted">{{ paiements.dateCreation | localizeddate("medium", "none", null, null, "d MMM yyyy") }}</span>
-                    {% endif %}
                   </td>
                   <td>{{ reglement.libelle }}</td>
                   <td>{{ libelle.libelle }}</td>
@@ -46,13 +53,6 @@
                     {% endif %}
                   </td>
                   <td class="text-right">{{ paiement.montant | number_format(2, ',', ' ') }}&nbsp;€</td>
-                  <td class="text-right">
-                  {% if paiements.dateCreation != date %}
-                    <strong>{{ paiements.getTotalBySociete(societe) | number_format(2, ',', ' ') }}&nbsp;€</strong>
-                  {% else %}
-                    <span class="text-muted">{{ paiements.getTotalBySociete(societe) | number_format(2, ',', ' ') }}&nbsp;€</span>
-                  {% endif %}
-                  </td>
                   {% set  date = paiements.dateCreation %}
                 </tr>
             {% endfor %}
