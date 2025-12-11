@@ -321,6 +321,16 @@ class Paiements {
         return $montantTotal;
     }
 
+    public function getTotalByLibelle($libelle) {
+        $montantTotal = 0;
+        foreach ($this->getPaiement() as $paiement) {
+            if($libelle == $paiement->getLibelle()) {
+                $montantTotal+= $paiement->getMontant();
+            }
+        }
+        return $montantTotal;
+    }
+
     public function getFacturesArrayIds() {
         return array_keys($this->getFacturesArray());
     }
