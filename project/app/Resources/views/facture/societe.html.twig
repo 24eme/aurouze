@@ -185,7 +185,7 @@
         <tbody>
             {% set totalRestant = 0.0 %}
             {% for facture in factures %}
-             {% if not facture.isDevis and not (facture.paye or facture.isAvoir or facture.isRedressee) and facture.numeroFacture %}
+             {% if not facture.isDevis and not (facture.paye or facture.isAvoir) and facture.numeroFacture %}
                 {% set totalRestant = totalRestant + facture.montantAPayer %}
               {{ include('facture/factureLigne.html.twig', {'facture': facture, 'societe' : societe,'resteTropPaye' : resteTropPaye, 'etablissement_id': etablissement_id}) }}
               {% endif %}
@@ -210,7 +210,7 @@
           </thead>
           <tbody>
               {% for facture in factures %}
-               {% if facture.paye or facture.isAvoir or facture.isRedressee %}
+               {% if facture.paye or facture.isAvoir %}
                   {{ include('facture/factureLigne.html.twig', {'facture': facture, 'societe' : societe,'resteTropPaye' : resteTropPaye, 'etablissement_id': etablissement_id }) }}
                 {% endif %}
               {% endfor %}
