@@ -9,7 +9,10 @@
     <tbody>
         {% for compte in comptes %}
         <tr>
-            <td><i class="mdi mdi-face mdi-lg"></i> {{ compte.identite }} {% if(compte.fonction) %}<span class="label label-info">{{ compte.fonction }}</span>{% endif %} <a class="btn btn-default btn-xs pull-right" href="{{ path('compte_modification', {'societe': societe.id, 'id': compte.id }) }}"><span class="glyphicon glyphicon-pencil"></span></a>
+            <td><i class="mdi mdi-face mdi-lg"></i> {{ compte.identite }} {% if(compte.fonction) %}<span class="label label-info">{{ compte.fonction }}</span>{% endif %}<a class="btn btn-default btn-xs pull-right" href="{{ path('compte_modification', {'societe': societe.id, 'id': compte.id }) }}"><span class="glyphicon glyphicon-pencil"></span></a>
+            {% if compte.getTags() | length %}
+            <div style="margin-top: 5px;">{% for tag in compte.getTags() %}<span class="btn btn-xs btn-default">{{ tag.nom }}</span> {% endfor %}</div>
+            {% endif %}
 </td>
             <td>{% if(not compte.sameAdresseThanSociete) %}{{ compte.adresse.adresse }}{% else %}<em class="text-muted">Même que la société</em>{% endif %}</td>
             <td>{% if(not compte.sameAdresseThanSociete) %}{{ compte.adresse.codePostal }} {{ compte.adresse.commune }}{% else %}<em class="text-muted">Même que la société</em>{% endif %}</td>
