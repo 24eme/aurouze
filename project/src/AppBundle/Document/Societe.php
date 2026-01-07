@@ -622,7 +622,10 @@ class Societe implements InterlocuteurInterface {
     }
 
     public function getTagsNom() {
-        $result= array();
+        if(!$this->getTags()) {
+            return [];
+        }
+        $result= [];
         foreach ($this->getTags() as $tag) {
            $result[] = $tag;
         }
