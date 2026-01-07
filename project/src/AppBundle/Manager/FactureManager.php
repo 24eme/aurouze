@@ -282,8 +282,9 @@ public static $export_factures_en_retards = array(
             $commercial = $contrat->getCommercial();
 
             $startDate = $contrat->getDateDebut();
-            if($contrat->getDateDebut() < new DateTime()) {
-                $startDate = new DateTime();
+            $now = new \DateTime();
+            if($startDate < $now) {
+                $startDate = $now;
             }
             $endDate = $contrat->getDateFin();
 
