@@ -19,7 +19,7 @@
                 {% set imagesArray = [] %}
 
                 {% for key in keys %}
-                    {% if "image" in (attachements[key].ext) %}
+                    {% if "image" in (attachements[key].ext) and attachements[key].visibleTechnicien %}
                         {% set imagesArray = imagesArray|merge([attachements[key]]) %}
                     {% endif %}
                 {% endfor %}
@@ -37,14 +37,14 @@
                         <td>
 
                         <td>
-                            <a data-toggle="collapse" href="[data-id=groupedByDate{{keyAttachementsGrouped|replace({'-':''})}}]" aria-expanded="false" aria-controls="groupedByDate{{keyAttachementsGrouped|replace({'-':''})}}" style="color: inherit;"> Voir {% if (imagesArray|length == 1) %} la photo {% else %} les photos {% endif %} <span class="glyphicon glyphicon-menu-down " style="margin-left:5px;"></span>
+                            <a data-toggle="collapse" href="[data-id=groupedByDate{{keyAttachementsGrouped|replace({'-':''})}}]" aria-expanded="false" aria-controls="groupedByDate{{keyAttachementsGrouped|replace({'-':''})}}" style="color: inherit;"> {% if (imagesArray|length == 1) %} Photo {% else %} Photos {% endif %} techniciens <span class="glyphicon glyphicon-menu-down " style="margin-left:5px;"></span>
                             </a>
                         </td>
                     </tr>
                 {% endif %}
 
                 {% for attachement in attachements %}
-                    {% if attachement.isImage %}
+                    {% if attachement.isImage and attachement.visibleTechnicien %}
                         <tr class="collapse imageAttachements" data-id="groupedByDate{{ attachement.updatedAt | localizeddate('medium', 'none', null, null, 'yyyyMMdd') }}">
                     {% else %}
                         <tr>
