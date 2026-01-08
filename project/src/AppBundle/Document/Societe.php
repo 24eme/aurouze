@@ -621,6 +621,17 @@ class Societe implements InterlocuteurInterface {
         return $this->tags;
     }
 
+    public function getTagsNom() {
+        if(!$this->getTags()) {
+            return [];
+        }
+        $result= [];
+        foreach ($this->getTags() as $tag) {
+           $result[] = $tag;
+        }
+        return $result;
+    }
+
     /**
      * Set contactCoordonnee
      *

@@ -48,6 +48,6 @@ class DevisGenerator extends AbstractIdGenerator
         $command['upsert'] = true;
         $command['new'] = true;
         $result = $db->command($command);
-        $document->setNumeroDevis(sprintf("%s%04d", $annee, $result['value'][$annee]));
+        $document->setNumeroDevis(sprintf("%s%s%04d", 'D', $annee, $result['value'][$annee]));
     }
 }

@@ -175,8 +175,8 @@ public static $export_factures_en_retards = array(
       $zone = ContratManager::ZONE_PARIS;
       $commercial_SEINE_ET_MARNE = $this->config->get("commercial_seine_et_marne");
       if (
-          ($facture->getCommercial() && $facture->getCommercial()->getNom() == $commercial_SEINE_ET_MARNE)
-          || ($facture->getContrat() && $facture->getContrat()->getCommercial() && $facture->getContrat()->getCommercial()->getNom() == $commercial_SEINE_ET_MARNE)
+          ($facture->getCommercial() && preg_match("/".$commercial_SEINE_ET_MARNE."/", $facture->getCommercial()->getNom()))
+          || ($facture->getContrat() && $facture->getContrat()->getCommercial() && preg_match("/".$commercial_SEINE_ET_MARNE."/", $facture->getContrat()->getCommercial()->getNom()))
           || ($contrat && $contrat->getZone() == ContratManager::ZONE_SEINE_ET_MARNE)
       ) {
 
@@ -280,10 +280,15 @@ public static $export_factures_en_retards = array(
             $nbFactures = $contrat->getNbFactures();
 
             $commercial = $contrat->getCommercial();
-            $dateFacturation = new \DateTime();
 
             $startDate = $contrat->getDateDebut();
+            $now = new \DateTime();
+            if($startDate < $now) {
+                $startDate = $now;
+            }
             $endDate = $contrat->getDateFin();
+
+            $dateFacturation = clone $startDate;
 
             $period= $startDate->diff($endDate)->format('%a');
             $interval = $period / $nbFactures;

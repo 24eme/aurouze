@@ -211,18 +211,16 @@ class FactureRepository extends BaseRepository {
       }
       $results = array_merge($resultsFacture->toArray(), $resultsDevis->toArray());
         $retards = array();
-
         if(count($commerciauxNom)) {
             foreach($results as $retard) {
                 if ($retard->getContrat() && !$retard->getContrat()->getCommercial() && !$retard->getCommercial()) {
                     continue;
                 }
-
-                if ($retard->getContrat() && $retard->getContrat()->getCommercial() && !in_array($retard->getContrat()->getCommercial()->getNom(), $commerciauxNom)){
+                if ($retard->getContrat() && $retard->getContrat()->getCommercial() && !preg_match("/".$commercial_SEINE_ET_MARNE."/", $retard->getContrat()->getCommercial()->getNom())) {
                     continue;
                 }
 
-                if(!$retard->getContrat() && $retard->getCommercial() && !in_array($retard->getCommercial()->getNom(),$commerciauxNom)){
+                if(!$retard->getContrat() && $retard->getCommercial() && !preg_match("/".$commercial_SEINE_ET_MARNE."/", $retard->getCommercial()->getNom())) {
                     continue;
                 }
 
@@ -230,11 +228,11 @@ class FactureRepository extends BaseRepository {
             }
         } elseif(count($commerciauxNomToExclude)) {
             foreach($results as $retard) {
-                if ($retard->getContrat() && $retard->getContrat()->getCommercial() && in_array($retard->getContrat()->getCommercial()->getNom(), $commerciauxNomToExclude)){
+                if ($retard->getContrat() && $retard->getContrat()->getCommercial() && preg_match("/".$commercial_SEINE_ET_MARNE."/", $retard->getContrat()->getCommercial()->getNom())) {
                     continue;
                 }
 
-                if(!$retard->getContrat() && $retard->getCommercial() && in_array($retard->getCommercial()->getNom(),$commerciauxNomToExclude)){
+                if(!$retard->getContrat() && $retard->getCommercial() && preg_match("/".$commercial_SEINE_ET_MARNE."/", $retard->getCommercial()->getNom())) {
                     continue;
                 }
 
