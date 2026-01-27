@@ -304,7 +304,22 @@ class PassageRepository extends BaseRepository {
           $resultAnnee[$annee]->nb = $resultAnnee[$annee]->nb + 1;
           $resultMoisAnnee[$moisAnnee]->nb = $resultMoisAnnee[$moisAnnee]->nb + 1;
       }
-
+      foreach ($devis as $d) {
+          $moisAnnee = $d->getDatePrevision()->format('Ym');
+          $annee = $d->getDatePrevision()->format('Y');
+          if (!array_key_exists($annee, $resultAnnee)) {
+              $resultAnnee[$annee] = new \stdClass();
+              $resultAnnee[$annee]->nb = 0;
+              $resultAnnee[$annee]->date = $d->getDatePrevision();
+          }
+          if (!array_key_exists($moisAnnee, $resultMoisAnnee)) {
+              $resultMoisAnnee[$moisAnnee] = new \stdClass();
+              $resultMoisAnnee[$moisAnnee]->nb = 0;
+              $resultMoisAnnee[$moisAnnee]->date = $d->getDatePrevision();
+          }
+          $resultAnnee[$annee]->nb = $resultAnnee[$annee]->nb + 1;
+          $resultMoisAnnee[$moisAnnee]->nb = $resultMoisAnnee[$moisAnnee]->nb + 1;
+      }
       unset($resultAnnee[date('Y') + 1]);
       ksort($resultAnnee);
       ksort($resultMoisAnnee);
