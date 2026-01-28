@@ -750,33 +750,36 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
             return $this->getPrelevementDate();
         }
 
-        $frequence = $this->getFrequencePaiement();
-        $date = null;
-        if($this->getDateFacturation()) {
-            $date = clone $this->getDateFacturation();
-        }
-        $date = ($date) ? $date : clone $this->getDateEmission();
-        $date = ($date) ? $date : new \DateTime();
-        switch ($frequence) {
-            case ContratManager::FREQUENCE_PRELEVEMENT :
-                $date->modify('+2 month');
-                $date->modify('first day of')->modify('+19 day');
-                break;
-            case ContratManager::FREQUENCE_30J :
-                $date->modify('+30 day');
-                break;
-            case ContratManager::FREQUENCE_30JMOIS :
-                $date->modify('+30 day')->modify('last day of');
-                break;
-            case ContratManager::FREQUENCE_45JMOIS :
-                $date->modify('+45 day')->modify('last day of');
-                break;
-            case ContratManager::FREQUENCE_60J :
-                $date->modify('+60 day');
-                break;
-            default:
-                $date->modify('+' . FactureManager::DEFAUT_FREQUENCE_JOURS . ' day');
-        }
+            $frequence = $this->getFrequencePaiement();
+            $date = null;
+            if($this->getDateFacturation()) {
+                $date = clone $this->getDateFacturation();
+            }
+            $date = ($date) ? $date : clone $this->getDateEmission();
+            $date = ($date) ? $date : new \DateTime();
+            switch ($frequence) {
+                case FactureManager::FREQUENCE_PERSO :
+                    $date = $this->getDateLimitePaiement();
+                    break;
+                case ContratManager::FREQUENCE_PRELEVEMENT :
+                    $date->modify('+2 month');
+                    $date->modify('first day of')->modify('+19 day');
+                    break;
+                case ContratManager::FREQUENCE_30J :
+                    $date->modify('+30 day');
+                    break;
+                case ContratManager::FREQUENCE_30JMOIS :
+                    $date->modify('+30 day')->modify('last day of');
+                    break;
+                case ContratManager::FREQUENCE_45JMOIS :
+                    $date->modify('+45 day')->modify('last day of');
+                    break;
+                case ContratManager::FREQUENCE_60J :
+                    $date->modify('+60 day');
+                    break;
+                default:
+                    $date->modify('+' . FactureManager::DEFAUT_FREQUENCE_JOURS . ' day');
+            }
 
         return $date;
     }
@@ -819,8 +822,11 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
      * @return self
      */
     public function setFrequencePaiement($frequencePaiement) {
-        $this->frequencePaiement = $frequencePaiement;
-
+        if ($frequencePaiement == FactureManager::FREQUENCE_PERSO) {
+            $this->frequencePaiement = FactureManager::FREQUENCE_PERSO;
+        } else {
+            $this->frequencePaiement = $frequencePaiement;
+        }
         return $this;
     }
 

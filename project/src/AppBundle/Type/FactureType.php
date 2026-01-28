@@ -13,6 +13,8 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use AppBundle\Manager\FactureManager;
+
 
 class FactureType extends AbstractType
 {
@@ -78,6 +80,16 @@ class FactureType extends AbstractType
             'widget' => 'single_text',
             'format' => 'dd/MM/yyyy'
         ));
+        $builder->add('dateLimitePaiement', DateType::class, array(
+            'label' => 'Date limite de paiement',
+            "attr" => array(
+                'class' => 'input-inline datepicker',
+                'data-provide' => 'datepicker',
+                'data-date-format' => 'dd/mm/yyyy'
+            ),
+            'widget' => 'single_text',
+            'format' => 'dd/MM/yyyy'
+        ));
     }
 
     /**
@@ -100,6 +112,8 @@ class FactureType extends AbstractType
 
     public function getFrequences() {
         $tags = $this->dm->getRepository('AppBundle:Contrat')->findAllFrequences();
+        $frequenceFixe = FactureManager::$frequences;
+        $tags[key($frequenceFixe)] = $frequenceFixe['PERSO'];
         return array_merge(array(null => null), $tags);
     }
 

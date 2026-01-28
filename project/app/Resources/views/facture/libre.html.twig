@@ -77,6 +77,18 @@
                         {{ form_widget(form.frequencePaiement) }}
                     </div>
                 </div>
+                {% if (form.dateLimitePaiement is defined) %}
+                <div class="form-group">
+                    {{ form_errors(form.dateLimitePaiement) }}
+                    {{ form_label(form.dateLimitePaiement, "Échéance de paiement", {'label_attr': {'class': 'col-xs-5 control-label'}}) }}
+                    <div class="col-xs-7">
+                        <div class="input-group">
+                            {{ form_widget(form.dateLimitePaiement) }}
+                            <div class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
                 {% if (form.commercial is defined) %}
                 <div class="form-group">
                     {{ form_errors(form.commercial) }}
