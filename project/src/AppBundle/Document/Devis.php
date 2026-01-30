@@ -12,6 +12,7 @@ use AppBundle\Model\DocumentPlanifiableTrait;
 use AppBundle\Model\FacturableInterface;
 use AppBundle\Manager\DevisManager;
 use AppBundle\Manager\ContratManager;
+use AppBundle\Manager\FactureManager;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\HasLifecycleCallbacks;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -109,6 +110,18 @@ class Devis implements DocumentSocieteInterface, DocumentPlanifiableInterface, F
      * @MongoDB\Field(type="date")
      */
     protected $pdfTelecharge;
+
+    /**
+     * @MongoDB\Field(type="date")
+     */
+    protected $dateLimitePaiement;
+
+    /**
+     * @MongoDB\Field(type="string")
+     */
+    protected $frequencePaiement;
+
+
 
     public function __construct() {
         $this->etablissementInfos = new EtablissementInfos();
@@ -474,7 +487,7 @@ class Devis implements DocumentSocieteInterface, DocumentPlanifiableInterface, F
     public function update() {
         $this->updateCalcul();
         $this->storeDestinataire();
-
+        $this->calculDateLimitePaiement();
     }
 
     public function storeDestinataire() {
@@ -701,4 +714,93 @@ class Devis implements DocumentSocieteInterface, DocumentPlanifiableInterface, F
     public function getPdfTelecharge() {
         return $this->pdfTelecharge;
     }
+
+    /**
+     * Set frequencePaiement
+     *
+     * @param string $frequencePaiement
+     * @return self
+     */
+    public function setFrequencePaiement($frequencePaiement) {
+        $this->frequencePaiement = $this->getSociete()->getFrequencePaiement();
+        return $this;
+    }
+
+    /**
+     * Get frequencePaiement
+     *
+     * @return string $frequencePaiement
+     */
+    public function getFrequencePaiement() {
+        $frequencePaiement = $this->getSociete()->getFrequencePaiement();
+
+        if (! $this->frequencePaiement) {
+            $this->setFrequencePaiement($frequencePaiement);
+        }
+
+        return $this->frequencePaiement;
+    }
+
+    public function getFrequencePaiementLibelle() {
+
+        return ContratManager::$frequences[$this->getFrequencePaiement()];
+    }
+
+    /**
+     * Set dateLimitePaiement
+     *
+     * @param date $dateLimitePaiement
+     * @return self
+     */
+    public function setDateLimitePaiement($dateLimitePaiement) {
+        $this->dateLimitePaiement = $dateLimitePaiement;
+        return $this;
+    }
+
+    /**
+     * Get dateLimitePaiement
+     *
+     * @return date $dateLimitePaiement
+     */
+    public function getDateLimitePaiement() {
+        if (is_null($this->dateLimitePaiement)) {
+
+            return clone $this->calculDateLimitePaiement();
+        }
+
+        return $this->dateLimitePaiement;
+    }
+
+    public function calculDateLimitePaiement() {
+            $frequence = $this->getSociete()->getFrequencePaiement();
+            $date = null;
+            if($this->getDateAcceptation()) {
+                $date = clone $this->getDateAcceptation();
+            }
+            $date = ($date) ? $date : clone $this->getDateEmission();
+            $date = ($date) ? $date : new \DateTime();
+            switch ($frequence) {
+                case ContratManager::FREQUENCE_PRELEVEMENT :
+                    $date->modify('+2 month');
+                    $date->modify('first day of')->modify('+19 day');
+                    break;
+                case ContratManager::FREQUENCE_30J :
+                    $date->modify('+30 day');
+                    break;
+                case ContratManager::FREQUENCE_30JMOIS :
+                    $date->modify('+30 day')->modify('last day of');
+                    break;
+                case ContratManager::FREQUENCE_45JMOIS :
+                    $date->modify('+45 day')->modify('last day of');
+                    break;
+                case ContratManager::FREQUENCE_60J :
+                    $date->modify('+60 day');
+                    break;
+                default:
+                    $date->modify('+' . FactureManager::DEFAUT_FREQUENCE_JOURS . ' day');
+            }
+
+        return $date;
+    }
+
 }
