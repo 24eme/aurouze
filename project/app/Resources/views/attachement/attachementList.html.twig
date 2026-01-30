@@ -19,7 +19,7 @@
                 {% set imagesArray = [] %}
 
                 {% for key in keys %}
-                    {% if "image" in (attachements[key].ext) and attachements[key].visibleTechnicien %}
+                    {% if ("image" in (attachements[key].ext) or "octet-stream" in (attachements[key].ext)) and attachements[key].visibleTechnicien %}
                         {% set imagesArray = imagesArray|merge([attachements[key]]) %}
                     {% endif %}
                 {% endfor %}
