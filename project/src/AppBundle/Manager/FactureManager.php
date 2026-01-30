@@ -20,6 +20,7 @@ class FactureManager {
     protected $config;
 
     const DEFAUT_FREQUENCE_JOURS = 10;
+    const FREQUENCE_PERSO = "PERSO";
 
     const EXPORT_DATE = 0 ;
     const EXPORT_JOURNAL= 1;
@@ -141,6 +142,11 @@ public static $export_factures_en_retards = array(
   self::EXPORT_RETARD_MONTANT_PAYE => "Montant payé",
   self::EXPORT_RETARD_NB_RELANCES => "Nombre de relances"
 );
+
+    public static $frequences = array(
+        self::FREQUENCE_PERSO => 'Échéance personnalisée',
+    );
+
     function __construct(DocumentManager $dm, MouvementManager $mm, Config $config) {
         $this->dm = $dm;
         $this->mm = $mm;
@@ -237,6 +243,8 @@ public static $export_factures_en_retards = array(
         foreach ($devis->getLignes() as $ligne) {
           $facture->addLigne($ligne);
         }
+
+        $facture->setDateLimitePaiement($devis->getDateLimitePaiement());
 
         $facture->update();
 

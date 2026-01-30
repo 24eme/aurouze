@@ -340,4 +340,31 @@ class DevisController extends Controller
         return $this->redirectToRoute('passage_etablissement', array('id' => $passage->getEtablissement()->getId()));
     }
 
+
+    /**
+     * Retourne des informations supplémentaires sur l'établissement,
+     * la société, le devis,... pour accélérer le chargement de la
+     * page d'index
+     *
+     * @Route("/ajax/passage/{devis}/infos", name="ajax_more_infos_devis")
+     */
+    public function showInformationsAction(Devis $devis)
+    {
+        $dm = $this->get('doctrine_mongodb')->getManager();
+
+        $etablissement = $devis->getEtablissementInfos();
+        $societe = $devis->getSociete();
+        $facture = $this->get('facture.manager');
+        $solde = $facture->getSolde($societe);
+
+        return $this->render('devis/infossupplementaires.html.twig',
+            [
+                'devis' => $devis,
+                'etablissement' => $etablissement,
+                'societe' => $societe,
+                'solde' => $solde
+            ]
+        );
+    }
+
 }

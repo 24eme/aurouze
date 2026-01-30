@@ -16,6 +16,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use AppBundle\Document\Compte;
 use AppBundle\Document\Etablissement;
 use AppBundle\Document\Societe;
+use AppBundle\Manager\FactureManager;
 
 class DevisType extends AbstractType
 {
@@ -110,6 +111,28 @@ class DevisType extends AbstractType
                 $builder->add('dateAcceptation', DateType::class, $dateAcceptationInput);
             }
 
+            $builder->add('frequencePaiement', ChoiceType::class, array(
+                'label' => 'Fréquence de paiment',
+                'choices' => $this->getFrequences(),
+                'expanded' => false,
+                'multiple' => false,
+                'required' => false,
+                'attr' => array("class" => "select2 select2-simple", "data-placeholder" => "Séléctionner une fréquence de paiement"),
+        ));
+
+            $builder->add('dateLimitePaiement', DateType::class, array(
+                'label' => 'Date limite de paiement',
+                "attr" => array(
+                    'class' => 'input-inline datepicker',
+                    'data-provide' => 'datepicker',
+                    'data-date-format' => 'dd/mm/yyyy',
+                    'readonly' => true,
+                    'disabled'=> true
+                ),
+                'widget' => 'single_text',
+                'format' => 'dd/MM/yyyy'
+            ));
+
               $savelabel = ($builder->getData()->getId()) ? 'Sauver' : 'Créer';
               $builder->add('edit', SubmitType::class, [
                   'label' => $savelabel,
@@ -150,6 +173,8 @@ class DevisType extends AbstractType
 
     public function getFrequences() {
         $tags = $this->dm->getRepository('AppBundle:Contrat')->findAllFrequences();
+        $frequenceFacture = FactureManager::$frequences;
+        $tags[key($frequenceFacture)] = $frequenceFacture['PERSO'];
         return array_merge(array(null => null), $tags);
     }
 
