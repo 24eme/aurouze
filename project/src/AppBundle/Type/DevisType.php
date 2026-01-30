@@ -16,6 +16,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use AppBundle\Document\Compte;
 use AppBundle\Document\Etablissement;
 use AppBundle\Document\Societe;
+use AppBundle\Manager\FactureManager;
 
 class DevisType extends AbstractType
 {
@@ -173,6 +174,8 @@ class DevisType extends AbstractType
 
     public function getFrequences() {
         $tags = $this->dm->getRepository('AppBundle:Contrat')->findAllFrequences();
+        $frequenceFacture = FactureManager::$frequences;
+        $tags[key($frequenceFacture)] = $frequenceFacture['PERSO'];
         return array_merge(array(null => null), $tags);
     }
 

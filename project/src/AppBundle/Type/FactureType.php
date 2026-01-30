@@ -112,8 +112,8 @@ class FactureType extends AbstractType
 
     public function getFrequences() {
         $tags = $this->dm->getRepository('AppBundle:Contrat')->findAllFrequences();
-        $frequenceFixe = FactureManager::$frequences;
-        $tags[key($frequenceFixe)] = $frequenceFixe['PERSO'];
+        $frequenceFacture = FactureManager::$frequences;
+        $tags[key($frequenceFacture)] = $frequenceFacture['PERSO'];
         return array_merge(array(null => null), $tags);
     }
 

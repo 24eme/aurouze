@@ -722,7 +722,11 @@ class Devis implements DocumentSocieteInterface, DocumentPlanifiableInterface, F
      * @return self
      */
     public function setFrequencePaiement($frequencePaiement) {
-        $this->frequencePaiement = $this->getSociete()->getFrequencePaiement();
+        if ($frequencePaiement == FactureManager::FREQUENCE_PERSO) {
+            $this->frequencePaiement = FactureManager::FREQUENCE_PERSO;
+        } else {
+            $this->frequencePaiement = $frequencePaiement;
+        }
         return $this;
     }
 
@@ -732,12 +736,10 @@ class Devis implements DocumentSocieteInterface, DocumentPlanifiableInterface, F
      * @return string $frequencePaiement
      */
     public function getFrequencePaiement() {
-        $frequencePaiement = $this->getSociete()->getFrequencePaiement();
 
-        if (! $this->frequencePaiement) {
-            $this->setFrequencePaiement($frequencePaiement);
+        if ($this->frequencePaiement) {
+            return $this->frequencePaiement;
         }
-
         return $this->frequencePaiement;
     }
 
@@ -772,7 +774,7 @@ class Devis implements DocumentSocieteInterface, DocumentPlanifiableInterface, F
     }
 
     public function calculDateLimitePaiement() {
-            $frequence = $this->getSociete()->getFrequencePaiement();
+            $frequence = $this->getFrequencePaiement();
             $date = null;
             if($this->getDateAcceptation()) {
                 $date = clone $this->getDateAcceptation();

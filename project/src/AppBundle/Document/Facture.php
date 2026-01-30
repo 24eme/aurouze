@@ -744,8 +744,14 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
         return $arrayTauxTva;
     }
 
+
     public function calculDateLimitePaiement() {
-        if($this->getSepa() && $this->getSepa()->getActif() && $this->getFrequencePaiement() != FactureManager::FREQUENCE_PERSO) {
+        if($this->getFrequencePaiement() == FactureManager::FREQUENCE_PERSO || $this->hasDevis()) {
+            $date = $this->getDateLimitePaiement();
+            return $date;
+        }
+
+        if($this->getSepa() && $this->getSepa()->getActif()) {
 
             return $this->getPrelevementDate();
         }
@@ -758,9 +764,6 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
             $date = ($date) ? $date : clone $this->getDateEmission();
             $date = ($date) ? $date : new \DateTime();
             switch ($frequence) {
-                case FactureManager::FREQUENCE_PERSO :
-                    $date = $this->getDateLimitePaiement();
-                    break;
                 case ContratManager::FREQUENCE_PRELEVEMENT :
                     $date->modify('+2 month');
                     $date->modify('first day of')->modify('+19 day');

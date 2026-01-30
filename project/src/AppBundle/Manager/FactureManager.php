@@ -244,6 +244,8 @@ public static $export_factures_en_retards = array(
           $facture->addLigne($ligne);
         }
 
+        $facture->setDateLimitePaiement($devis->getDateLimitePaiement());
+
         $facture->update();
 
         return $facture;
