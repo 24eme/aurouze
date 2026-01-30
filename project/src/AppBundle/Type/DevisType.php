@@ -111,15 +111,14 @@ class DevisType extends AbstractType
                 $builder->add('dateAcceptation', DateType::class, $dateAcceptationInput);
             }
 
-            $builder->add('frequencePaiement', TextType::class, array(
+            $builder->add('frequencePaiement', ChoiceType::class, array(
                 'label' => 'Fréquence de paiment',
+                'choices' => $this->getFrequences(),
+                'expanded' => false,
+                'multiple' => false,
                 'required' => false,
-                'data' => $builder->getData()->getSociete()->getFrequencePaiementLibelle(),
-                'attr' => array(
-                    'class' => 'form-control',
-                    'readonly' => true,
-                    'disabled'=> true)
-                    ));
+                'attr' => array("class" => "select2 select2-simple", "data-placeholder" => "Séléctionner une fréquence de paiement"),
+        ));
 
             $builder->add('dateLimitePaiement', DateType::class, array(
                 'label' => 'Date limite de paiement',
