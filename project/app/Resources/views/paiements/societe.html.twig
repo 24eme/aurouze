@@ -52,7 +52,7 @@
                         <span class="pull-right glyphicon glyphicon-time" title="Sera prélevée le {{ paiement.datePaiement | localizeddate("medium", "none", null, null, "d MMM yyyy") }}"></span>
                     {% endif %}
                   </td>
-                  <td class="text-right">{{ paiement.montant | number_format(2, ',', ' ') }}&nbsp;€</td>
+                  <td class="text-right"><a class="pull-left" href="{{ path('paiements_modification', {'id': reglement.id }) }}#{{ paiement.facture.id }}"><span class="glyphicon glyphicon-pencil"></span></a> {{ paiement.montant | number_format(2, ',', ' ') }}&nbsp;€</td>
                   {% set  date = paiements.dateCreation %}
                 </tr>
             {% endfor %}

@@ -45,7 +45,7 @@
             <td>
               <span class="text-muted">{{ reglement.libelle }}</span>
             </td>
-            <td>{{ libelle.libelle }}</td>
+            <td><a href="{{ path('facture_societe', {'id': paiement.facture.societe.id }) }}">{{ libelle.libelle }}</a></td>
             <td><a href="{{ path('facturable_pdf', {'document': paiement.facture.id , 'key': paiement.facture.getSecretKey()})}}">Facture n° {{ paiement.facture.numeroFacture }}</a></td>
             <td class="text-right">{{ paiement.montant | number_format(2, ',', ' ') }}&nbsp;€</td>
             <td class="text-right"></td>
