@@ -90,9 +90,9 @@
                                 {% set dptKeyWord = (passage.etablissementInfos.adresse.codePostal | slice(0, 2)) ? "Département "~passage.etablissementInfos.adresse.codePostal | slice(0, 2) : "" %}
                                 {% if(passage.techniciens | length == 0) %}
                                     {% set words = [dptKeyWord, "Sans technicien", passage.etablissementInfos.adresse.codePostal | trim, passage.etablissementInfos.adresse.commune | trim, passage.etablissementInfos.type, passage.datePrevision | localizeddate("medium", "none", null, null, "MMMM yyyy") | capitalize, passage.etablissementInfos.nom] | merge(passage.prestationsNom) | merge(passage.wordingsArrFacturant) | json_encode(constant('JSON_UNESCAPED_UNICODE')) %}
-                                    {% set techColor = 'black' %}
-                                    {% set techBgColor = 'white' %}
-                                    {% set techIdentite = "Technicien non renseigné" %}
+                                    {% set techColor = 'white' %}
+                                    {% set techBgColor = 'transparent' %}
+                                    {% set techIdentite = "" %}
                                 {% else %}
                                     {% set words = [dptKeyWord, passage.techniciens[0].identite, passage.etablissementInfos.adresse.codePostal | trim, passage.etablissementInfos.adresse.commune | trim, passage.etablissementInfos.type, passage.datePrevision | localizeddate("medium", "none", null, null, "MMMM yyyy") | capitalize, passage.etablissementInfos.nom, passage] | merge(passage.prestationsNom) | merge(passage.wordingsArrFacturant) | json_encode(constant('JSON_UNESCAPED_UNICODE')) %}
                                     {% set techColor = passage.techniciens[0].couleurText %}
