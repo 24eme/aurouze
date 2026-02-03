@@ -746,8 +746,9 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
 
 
     public function calculDateLimitePaiement() {
-        if($this->getFrequencePaiement() == FactureManager::FREQUENCE_PERSO || $this->hasDevis()) {
+        if($this->getFrequencePaiement() == FactureManager::FREQUENCE_PERSO || !$this->getNumeroFacture() && $this->hasDevis() && $this->getDateLimitePaiement()) {
             $date = $this->getDateLimitePaiement();
+
             return $date;
         }
 
@@ -1367,9 +1368,9 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
     public function getMesPaiements(){
     $arrayPaiements = array();
         foreach ($this->getPaiements() as $paiements) {
-          foreach ($paiements->getPaiement() as $paiement) {
+          foreach ($paiements->getPaiement() as $key => $paiement) {
               if ($paiement->getFacture()->getId() == $this->getId()) {
-                $arrayPaiements[] = $paiement;
+                $arrayPaiements[$paiements->getId()."/".$key] = $paiement;
               }
           }
         }
