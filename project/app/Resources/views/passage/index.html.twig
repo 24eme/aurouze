@@ -90,19 +90,17 @@
                                 {% set dptKeyWord = (passage.etablissementInfos.adresse.codePostal | slice(0, 2)) ? "Département "~passage.etablissementInfos.adresse.codePostal | slice(0, 2) : "" %}
                                 {% if(passage.techniciens | length == 0) %}
                                     {% set words = [dptKeyWord, "Sans technicien", passage.etablissementInfos.adresse.codePostal | trim, passage.etablissementInfos.adresse.commune | trim, passage.etablissementInfos.type, passage.datePrevision | localizeddate("medium", "none", null, null, "MMMM yyyy") | capitalize, passage.etablissementInfos.nom] | merge(passage.prestationsNom) | merge(passage.wordingsArrFacturant) | json_encode(constant('JSON_UNESCAPED_UNICODE')) %}
-                                    {% set techColor = 'black' %}
-                                    {% set techBgColor = 'white' %}
-                                    {% set techIdentite = "Technicien non renseigné" %}
+                                    {% set techColor = 'white' %}
+                                    {% set techBgColor = 'transparent' %}
+                                    {% set techIdentite = "" %}
                                 {% else %}
                                     {% set words = [dptKeyWord, passage.techniciens[0].identite, passage.etablissementInfos.adresse.codePostal | trim, passage.etablissementInfos.adresse.commune | trim, passage.etablissementInfos.type, passage.datePrevision | localizeddate("medium", "none", null, null, "MMMM yyyy") | capitalize, passage.etablissementInfos.nom, passage] | merge(passage.prestationsNom) | merge(passage.wordingsArrFacturant) | json_encode(constant('JSON_UNESCAPED_UNICODE')) %}
                                     {% set techColor = passage.techniciens[0].couleurText %}
                                     {% set techBgColor = passage.techniciens[0].couleur %}
                                     {% set techIdentite = passage.techniciens[0].identiteCourt %}
                                 {% endif %}
-                                {% if passage.getDocumentType() is constant('AppBundle\\Document\\Passage::DOCUMENT_TYPE') %}
+                                {% if passage.getDocumentType() is not constant('AppBundle\\Document\\Devis::DOCUMENT_TYPE') %}
                                     <div data-url="{{ path('ajax_more_infos_passage', {'passage': passage.id }) }}"></div>
-                                {% elseif passage.getDocumentType() is constant('AppBundle\\Document\\Devis::DOCUMENT_TYPE') %}
-                                    <div data-url="{{ path('ajax_more_infos_devis', {'devis': passage.id }) }}"></div>
                                 {% endif %}
                             <div {% if passage.isPlanifie %}
                                     style="opacity:0.5"
@@ -115,7 +113,7 @@
                                     {% if not passage.etablissementInfos.adresse.coordonnees.lat and not passage.etablissementInfos.adresse.coordonnees.lon %}
                                     no-geojson
                                     {% endif %}
-                                    {% if not passage.isPlanifie %}
+                                    {% if passage.getDocumentType() is not constant('AppBundle\\Document\\Devis::DOCUMENT_TYPE') and not passage.isPlanifie %}
                                     btn-more-info" style="cursor:pointer"
                                     {% else %}
                                     "
