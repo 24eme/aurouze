@@ -174,7 +174,7 @@ class PaiementsManager {
               $paiementDate = $paiement->getDatePaiement();
               $paiementArr = array();
               $paiementArr[self::EXPORT_DATE_PAIEMENT] = $paiementDate->format('d/m/Y');
-              $paiementArr[self::EXPORT_CODE_COMPTABLE] = $paiement->getFacture()->getSociete()->getCodeComptable();
+              $paiementArr[self::EXPORT_CODE_COMPTABLE] = str_replace('AHRB_', '', $paiement->getFacture()->getSociete()->getCodeComptable());
               $paiementArr[self::EXPORT_CLIENT_RAISON_SOCIALE] = $paiement->getFacture()->getSociete()->getRaisonSociale();
               $paiementArr[self::EXPORT_FACTURE_NUM] = $paiement->getFacture()->getNumeroFacture();
               $paiementArr[self::EXPORT_PRIX] = number_format($paiement->getMontant(), 2, ",", "");
@@ -211,7 +211,7 @@ class PaiementsManager {
               if(($paiementDate  >= $dateDebut) && ($dateFin > $paiementDate)){
                 $paiementArr = array();
                 $paiementArr[self::EXPORT_DATE_PAIEMENT] = $paiementDate->format('d/m/Y');
-                $paiementArr[self::EXPORT_CODE_COMPTABLE] = $paiement->getFacture()->getSociete()->getCodeComptable();
+                $paiementArr[self::EXPORT_CODE_COMPTABLE] = str_replace('AHRB_', '', $paiement->getFacture()->getSociete()->getCodeComptable());
                 $paiementArr[self::EXPORT_VR_PRIX] = "";
                 $paiementArr[self::EXPORT_FACTURE_NUM_RAISON_SOCIALE] = $paiement->getFacture()->getNumeroFacture()." ".$paiement->getFacture()->getSociete()->getRaisonSociale();
                 $paiementArr[self::EXPORT_PRIX] = number_format($paiement->getMontant(), 2, ",", "");
