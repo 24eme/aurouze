@@ -817,7 +817,7 @@ public static $export_factures_en_retards = array(
     $factureLigne[self::EXPORT_DATE] = $facture->getDateFacturation()->format('d/m/Y');
     $factureLigne[self::EXPORT_JOURNAL] =  "VENTES" ;
     if($typeLigne == self::EXPORT_LIGNE_GENERALE){
-        $factureLigne[self::EXPORT_COMPTE] = $facture->getSociete()->getCodeComptable();
+        $factureLigne[self::EXPORT_COMPTE] = str_replace('AHRB_', '', $facture->getSociete()->getCodeComptable());
         $factureLigne[self::EXPORT_DEBIT] = number_format(($facture->isAvoir())? "0" : $facture->getMontantTTC(), 2, ",", "");
         $factureLigne[self::EXPORT_CREDIT] = number_format(($facture->isAvoir())? (-1*$facture->getMontantTTC()): "0", 2, ",", "");
     }elseif($typeLigne == self::EXPORT_LIGNE_TVA){
