@@ -1311,10 +1311,10 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
     }
 
     public function getPrelevementDate(){
-      $dateEmission = clone $this->getDateEmission();
-      $dateEmission->modify("+1 month");
+      $dateFacturation = clone $this->getDateFacturation();
+      $dateFacturation->modify("+1 month");
 
-      $dueDate = \DateTime::createFromFormat("Ymd",$dateEmission->format("Y").$dateEmission->format("m")."20");
+      $dueDate = \DateTime::createFromFormat("Ymd",$dateFacturation->format("Y").$dateFacturation->format("m")."20");
       $now = new \DateTime();
 
       if($dueDate < $now){
