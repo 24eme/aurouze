@@ -160,16 +160,18 @@
                           <th class="col-xs-3">Libellé</th>
                           <th scope="col">Moyen</th>
                           <th scope="col" class="text-right">MontantTTC</th>
+                          <th></th>
                         </tr>
                       </thead>
                       <tbody>
                       {% if facture.getMesPaiements() %}
-                      {% for paiement in facture.getMesPaiements() %}
+                      {% for paiementKey, paiement in facture.getMesPaiements() %}
                           <tr>
                           <td>{{ paiement.datePaiement | date("d-m-Y") }}</td>
                           <td>{{ paiement.libelle }}</td>
                           <td>{{ paiement.moyenPaiement }}</td>
                           <td class="text-right">{{ paiement.montant | number_format(2, ',', ' ')}}&nbsp;€ </td>
+                          <td><a href="{{ path('paiements_modification', {'id': (paiementKey | split('/'))[0]}) }}#{{ facture.id }}"><span class="glyphicon glyphicon-pencil"></span></a></td>
                           </tr>
                       {% endfor %}
                       {% endif %}
