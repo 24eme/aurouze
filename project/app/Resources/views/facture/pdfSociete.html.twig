@@ -60,8 +60,11 @@
          	<tr style="page-break-inside: avoid;" class="active">
             {% for field in factureRow.row %}
               <td class="{% if loop.index != 1 %}text-right{% endif %}">
-								{{field}}
-							</span>
+                <span style="{% if factureRow.facture.rejetBanque %}color:red;{% endif %}"> {{ field }}
+                {% if factureRow.facture.rejetBanque and loop.last %}
+                    <span style="font-size:10px;">-REJET BANQUE</bold> </span>
+                {% endif %}
+              </span>
 						</td>
             {% endfor %}
           </tr>
