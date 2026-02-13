@@ -191,6 +191,11 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
      */
     protected $pdfTelecharge;
 
+    /**
+     * @MongoDB\Field(type="bool")
+     */
+    protected $rejetBanque;
+
     public function __construct() {
         $this->lignes = new \Doctrine\Common\Collections\ArrayCollection();
         $this->emetteur = new Soussigne();
@@ -1455,6 +1460,27 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
         }
 
         return $toEmail;
+    }
+
+
+    /**
+     * Set rejetBanque
+     *
+     * @param boolean $rejetBanque
+     * @return self
+     */
+    public function setRejetBanque($rejetBanque) {
+        $this->rejetBanque = $rejetBanque;
+        return $this;
+    }
+
+    /**
+     * Get rejetBanque
+     *
+     * @return boolean $rejetBanque
+     */
+    public function getRejetBanque() {
+        return $this->rejetBanque;
     }
 
 }
