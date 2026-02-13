@@ -885,20 +885,12 @@ class FactureController extends Controller
             }
               $facturesForPdf[$currentPage][$key] = $factureObj;
             if($factureObj->facture){
-                $dateNow = new \DateTime();
-                if ($factureObj->facture->getSepa()->isFullAndActif() && $factureObj->facture->getMontantPaye() == 0 && $factureObj->facture->getInPrelevement() < $dateNow) {
-                    $factureObj->facture->setRejetBanque(true);
-                } else {
-                    $factureObj->facture->setRejetBanque(false);
-                }
-
               if($factureObj->facture->getAvoirPartielRemboursementCheque()){
                 $cpt+=2;
               }else{
                 $cpt++;
               }
             }
-
           }
 
           $html = $this->renderView('facture/pdfSociete.html.twig', array(
