@@ -775,7 +775,9 @@ public static $export_factures_en_retards = array(
                           }
                       }
                   }else{
-                      if($facture->isAvoir() && $facture->getAvoirPartielRemboursementCheque()){
+                      if($paiement->getMoyenPaiement() == PaiementsManager::MOYEN_PAIEMENT_PRELEVEMENT_BANQUAIRE && $paiement->getMontant() == 0) {
+                        $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] = "Rejet de prélèvement bancaire";
+                      } elseif($facture->isAvoir() && $facture->getAvoirPartielRemboursementCheque()){
                         $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] =  $paiement->getMoyenPaiementLibelle();
                       }else{
                         $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] =  $paiement->getMoyenPaiementLibelle();
