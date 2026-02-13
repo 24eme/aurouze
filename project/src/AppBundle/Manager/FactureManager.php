@@ -767,7 +767,11 @@ public static $export_factures_en_retards = array(
                               if ($p->getFacture()->getId() != $facture->getId()) {
                                   continue;
                               }
-                              $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] .= "\n".$p->getMoyenPaiementLibelle()."\n(".$p->getDatePaiement()->format('d/m/Y').')';
+                              if($p->getMoyenPaiement() == PaiementsManager::MOYEN_PAIEMENT_PRELEVEMENT_BANQUAIRE && $p->getMontant() == 0) {
+                                  $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] .= "\n Rejet de prélèvement bancaire\n(".$p->getDatePaiement()->format('d/m/Y').')';
+                              } else {
+                                  $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] .= "\n".$p->getMoyenPaiementLibelle()."\n(".$p->getDatePaiement()->format('d/m/Y').')';
+                              }
                           }
                       }
                   }else{
