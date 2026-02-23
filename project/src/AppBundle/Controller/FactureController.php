@@ -1328,11 +1328,15 @@ class FactureController extends Controller
               return null;
           }
 
-          if($facture->getSociete()->getContactCoordonnee()->getEmailFacturation()){
-            $toEmail = $facture->getSociete()->getContactCoordonnee()->getEmailFacturation();
+          $toEmailFacturationSociete = $facture->getSociete()->getContactCoordonnee()->getEmailFacturation();
+
+          $toEmailSociete = $facture->getSociete()->getContactCoordonnee()->getEmail();
+
+          if($toEmailFacturationSociete && filter_var($toEmailFacturationSociete, FILTER_VALIDATE_EMAIL)){
+            $toEmail = $toEmailFacturationSociete;
           }
-          elseif($facture->getSociete()->getContactCoordonnee()->getEmail()) {
-            $toEmail = $facture->getSociete()->getContactCoordonnee()->getEmail();
+          elseif($toEmailSociete && filter_var($toEmailSociete, FILTER_VALIDATE_EMAIL)) {
+            $toEmail = $toEmailSociete;
           }
           else{
             return null;
