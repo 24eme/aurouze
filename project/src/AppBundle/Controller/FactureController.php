@@ -1227,7 +1227,7 @@ class FactureController extends Controller
       $path = './pdf/relances/';
       $this->get('knp_snappy.pdf')->generateFromHtml($html, $path.$filename);
 
-      return $urlReturn.(parse_url($urlReturn, PHP_URL_QUERY) ? '&' : '?') . 'pdf='.urlencode($filename);
+      return new RedirectResponse($urlReturn.(parse_url($urlReturn, PHP_URL_QUERY) ? '&' : '?') . 'pdf='.urlencode($filename));
     }
 
     /**
