@@ -209,8 +209,10 @@ class ContratRepository extends BaseRepository {
           $q->field('dateFin')->lte($date);
           $q->addOr($q->expr()->field('reconduit')->equals(false))
             ->addOr($q->expr()->field('reconduit')->exists(false));
-	  $q->field('statut')->notEqual(ContratManager::STATUT_EN_ATTENTE_ACCEPTATION);
-          $q->field('zone')->equals($zone);
+          $q->field('statut')->notEqual(ContratManager::STATUT_EN_ATTENTE_ACCEPTATION);
+			if ($zone != null) {
+                $q->field('zone')->equals($zone);
+			}
           $q->sort('dateFin', 'desc');
           $query = $q->getQuery();
 
