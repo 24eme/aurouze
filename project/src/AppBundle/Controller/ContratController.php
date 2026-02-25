@@ -818,8 +818,13 @@ class ContratController extends Controller {
         $typeContrat = null;
         $societe = null;
         $commercial = null;
-        $zone = $request->query->get('zone', ContratManager::ZONE_PARIS);
         $hasSecteurs = $this->getParameter('secteurs');
+
+        if ($hasSecteurs) {
+            $zone = $request->query->get('zone', ContratManager::ZONE_PARIS);
+        } else {
+            $zone = null;
+        }
 
         $formContratsAReconduire = $this->createForm(new ReconductionFiltresType($dm), null, array(
             'action' => $this->generateUrl('contrats_reconduction_massive', ['zone' => $zone]),
