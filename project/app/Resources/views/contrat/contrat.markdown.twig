@@ -5,7 +5,7 @@
 >{{ contrat.devisAdresse.codePostal }} {{ contrat.devisAdresse.commune|trim|raw }}
 
 
-# PROPOSITION {% if contrat.isTypeReconductionTacite %} TACITE {% elseif contrat.isTypePonctuel %} PONCTUELLE {% elseif contrat.isTypeRenouvelableSurProposition %} DE RENOUVELLEMENT {% endif %} {% if certification_bois and constant('AppBundle\\Manager\\ContratManager::MOYEN_3D') not in contrat.moyens %}COMMERCIALE{% else %}DE PREVENTION ET LUTTE CONTRE LES NUISIBLES ET PARASITES{% endif %}
+# PROPOSITION {% if contrat.isTypeReconductionTacite %} TACITE {% elseif contrat.isTypePonctuel %} PONCTUELLE {% elseif contrat.isTypeRenouvelableSurProposition %} {% if nbContratNumArchive > 1 %} DE RENOUVELLEMENT {% else %} {% endif %} {% endif %} {% if certification_bois and constant('AppBundle\\Manager\\ContratManager::MOYEN_3D') not in contrat.moyens %}COMMERCIALE{% else %}DE PREVENTION ET LUTTE CONTRE LES NUISIBLES ET PARASITES{% endif %}
 
 entre
 

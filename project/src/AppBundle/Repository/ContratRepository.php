@@ -274,4 +274,12 @@ class ContratRepository extends BaseRepository {
 
     }
 
+    public function findByNumeroArchive($numeroArchive) {
+        return $this->createQueryBuilder()
+                        ->field('numeroArchive')
+                        ->equals($numeroArchive)
+                        ->getQuery()
+                        ->getIterator();
+    }
+
 }
