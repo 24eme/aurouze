@@ -947,7 +947,13 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
         }
 
         if($mouvement->isPassageHorsContrat()) {
-            $mouvement->setPrixUnitaire($this->getPrixPassage());
+            $passageHorsContrat = $mouvement->getOrigineDocumentGeneration();
+
+             if($passageHorsContrat->getPrixUnitaireHorsContrat() != null ) {
+                 $mouvement->setPrixUnitaire($passageHorsContrat->getPrixUnitaireHorsContrat());
+             } else {
+                 $mouvement->setPrixUnitaire($this->getPrixPassage());
+             }
             $mouvement->setLibelle(sprintf("Intervention hors contrat n° %s du %s", $this->getNumeroArchive(), $origineDocumentGeneration->getDateDebut()->format('d/m/Y')));
         } else {
             $mouvement->setPrixUnitaire(round($this->getPrixRestant() / $this->getNbFacturesRestantes(), 2));

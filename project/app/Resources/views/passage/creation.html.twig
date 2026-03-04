@@ -38,6 +38,25 @@
         	                </div>
                         </div>
     	            </div>
+    	            <div class="form-group prix-unitaire-hc">
+                     <div>
+    	                {{ form_errors(form.prixUnitaireHorsContrat) }}
+                        {{ form_label(form.prixUnitaireHorsContrat, "Prix Unitaire", {'label_attr': {'class': 'col-xs-2 contral-label'}}) }}
+                        <div class="col-xs-4">
+        	                <div class="input-group">
+                             {{ form_widget(form.prixUnitaireHorsContrat, {'attr': {'class': 'text-right prix-unitaire form-control'}}) }}
+        	                    <div class="input-group-addon">€ HT</div>
+        	                </div>
+                        </div>
+                     </div>
+                        <div>
+                            {{ form_errors(form.tauxTaxeHorsContrat) }}
+                            {{ form_label(form.tauxTaxeHorsContrat, "Taux de TVA", {'label_attr': {'class': 'col-xs-2 contral-label'}}) }}
+                            <div class="col-xs-1">
+                                {{ form_widget(form.tauxTaxeHorsContrat, {'value' : (form.tauxTaxeHorsContrat.vars.value) ? form.tauxTaxeHorsContrat.vars.value : 0.2, 'attr': {'class': 'text-right form-control'}}) }}
+                            </div>
+                        </div>
+    	            </div>
 
                     <div class="form-group">
     	                {{ form_errors(form.techniciens) }}
@@ -65,4 +84,40 @@
         	{{ form_end(form) }}
         </div>
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript">
+        // Afficher le champs prix unitaire dynamiquement
+
+        const delay = ms => new Promise(res => setTimeout(res, ms));
+
+        const getSelectPassageHorsContrat = async () => {
+            await delay(1);
+
+            const typePassageSpan = document.getElementById("select2-passage_typePassage-container");
+
+           showHidePrixUnitaireHC(typePassageSpan.title);
+
+            new MutationObserver(function(mutations) {
+                const typePassageTitle = typePassageSpan.title;
+                showHidePrixUnitaireHC(typePassageSpan.title);
+            }).observe(
+                typePassageSpan,
+                { subtree: true, characterData: true, childList: true }
+            );
+        }
+
+        getSelectPassageHorsContrat();
+
+        function showHidePrixUnitaireHC(typePassageSpan) {
+            const prixUnitaireHCGroup = document.getElementsByClassName("prix-unitaire-hc");
+            if (typePassageSpan != "Hors contrat - Facturant") {
+                prixUnitaireHCGroup[0].style.display = "none";
+            } else {
+                prixUnitaireHCGroup[0].style.display = "block";
+            }
+        }
+
+    </script>
 {% endblock %}
