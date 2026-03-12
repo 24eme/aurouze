@@ -948,9 +948,12 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
 
         if($mouvement->isPassageHorsContrat()) {
             $passageHorsContrat = $mouvement->getOrigineDocumentGeneration();
-
-             if($passageHorsContrat->getPrixUnitaireHorsContrat() != null ) {
+             if($passageHorsContrat->getPrixUnitaireHorsContrat()) {
                  $mouvement->setPrixUnitaire($passageHorsContrat->getPrixUnitaireHorsContrat());
+
+                 if($passageHorsContrat->getTauxTaxeHorsContrat()) {
+                    $mouvement->setTauxTaxe($passageHorsContrat->getTauxTaxeHorsContrat());
+                 }
              } else {
                  $mouvement->setPrixUnitaire($this->getPrixPassage());
              }
@@ -961,7 +964,11 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
         }
 
         $mouvement->setQuantite(1);
-        $mouvement->setTauxTaxe($this->getTva());
+        if($mouvement->getTauxTaxe() == null ){
+            $mouvement->setTauxTaxe($this->getTva());
+        } else {
+            $mouvement->getTauxTaxe();
+        }
         $mouvement->setFacturable(true);
         $mouvement->setFacture(false);
         $mouvement->setSociete($this->getSociete());

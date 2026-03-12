@@ -47,11 +47,17 @@ class PassageCreationType extends AbstractType
 
         $builder->add('prixUnitaireHorsContrat', NumberType::class, array(
                 'attr' => array(
-                        'min' => '0',
-                        'class' => 'form-control prix-unitaire'),
+                    'min' => '0',
+                    'class' => 'form-control prix-unitaire'),
+                'data' => $builder->getData()->getContrat()->getPrixPassage(),
                 'scale' => 2));
 
-        $builder->add('tauxTaxeHorsContrat', NumberType::class, array('attr' => array('placeholder' => "Taux de TVA"), 'scale' => 3));
+        $builder->add('tauxTaxeHorsContrat', NumberType::class, array(
+                'attr' => array(
+                    'min' => '0',
+                    'class' => 'form-control prix-unitaire'),
+                'data' => $builder->getData()->getContrat()->getTva(),
+                'scale' => 3));
 
         $builder->add('techniciens', DocumentType::class, array(
             	'choices' => $this->getTechniciens(),
