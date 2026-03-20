@@ -629,9 +629,11 @@ class ContratController extends Controller {
         $dm = $this->get('doctrine_mongodb')->getManager();
         $cm = $this->get('contrat.manager');
         $contratConfSeineEtMarne = $this->container->getParameter('contrat_seine_et_marne') ? $this->container->getParameter('contrat_seine_et_marne') : null;
+        $anciensContrats = $dm->getRepository("AppBundle:Contrat")->findByNumeroArchive($contrat->getNumeroArchive());
+        $nbContratNumArchive = count($anciensContrats);
 
         if (in_array($contrat->getStatut(), [ContratManager::STATUT_BROUILLON, ContratManager::STATUT_EN_ATTENTE_ACCEPTATION])) {
-            $contrat->setMarkdown($this->renderView('contrat/contrat.markdown.twig', array('contrat' => $contrat, 'contratManager' => $cm, 'enteteSeineEtMarne' => $contratConfSeineEtMarne)));
+            $contrat->setMarkdown($this->renderView('contrat/contrat.markdown.twig', array('contrat' => $contrat, 'contratManager' => $cm, 'enteteSeineEtMarne' => $contratConfSeineEtMarne, 'nbContratNumArchive' => $nbContratNumArchive)));
             $dm->persist($contrat);
             $dm->flush();
         }
@@ -818,8 +820,13 @@ class ContratController extends Controller {
         $typeContrat = null;
         $societe = null;
         $commercial = null;
-        $zone = $request->query->get('zone', ContratManager::ZONE_PARIS);
         $hasSecteurs = $this->getParameter('secteurs');
+
+        if ($hasSecteurs) {
+            $zone = $request->query->get('zone', ContratManager::ZONE_PARIS);
+        } else {
+            $zone = null;
+        }
 
         $formContratsAReconduire = $this->createForm(new ReconductionFiltresType($dm), null, array(
             'action' => $this->generateUrl('contrats_reconduction_massive', ['zone' => $zone]),

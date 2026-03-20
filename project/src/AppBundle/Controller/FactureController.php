@@ -1227,7 +1227,7 @@ class FactureController extends Controller
       $path = './pdf/relances/';
       $this->get('knp_snappy.pdf')->generateFromHtml($html, $path.$filename);
 
-      return $urlReturn.(parse_url($urlReturn, PHP_URL_QUERY) ? '&' : '?') . 'pdf='.urlencode($filename);
+      return new RedirectResponse($urlReturn.(parse_url($urlReturn, PHP_URL_QUERY) ? '&' : '?') . 'pdf='.urlencode($filename));
     }
 
     /**
@@ -1328,11 +1328,15 @@ class FactureController extends Controller
               return null;
           }
 
-          if($facture->getSociete()->getContactCoordonnee()->getEmailFacturation()){
-            $toEmail = $facture->getSociete()->getContactCoordonnee()->getEmailFacturation();
+          $toEmailFacturationSociete = $facture->getSociete()->getContactCoordonnee()->getEmailFacturation();
+
+          $toEmailSociete = $facture->getSociete()->getContactCoordonnee()->getEmail();
+
+          if($toEmailFacturationSociete && filter_var($toEmailFacturationSociete, FILTER_VALIDATE_EMAIL)){
+            $toEmail = $toEmailFacturationSociete;
           }
-          elseif($facture->getSociete()->getContactCoordonnee()->getEmail()) {
-            $toEmail = $facture->getSociete()->getContactCoordonnee()->getEmail();
+          elseif($toEmailSociete && filter_var($toEmailSociete, FILTER_VALIDATE_EMAIL)) {
+            $toEmail = $toEmailSociete;
           }
           else{
             return null;
