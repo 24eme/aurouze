@@ -1332,20 +1332,19 @@ class FactureController extends Controller
 
           $toEmailSociete = $facture->getSociete()->getContactCoordonnee()->getEmail();
 
-          if($toEmailFacturationSociete && filter_var($toEmailFacturationSociete, FILTER_VALIDATE_EMAIL)){
-            $toEmail = $toEmailFacturationSociete;
+          $toEmails = [];
+
+          if($toEmailFacturationSociete) {
+            $toEmails = array_filter(explode(";", $toEmailFacturationSociete), function($email) { return filter_var($email, FILTER_VALIDATE_EMAIL); });
           }
-          elseif($toEmailSociete && filter_var($toEmailSociete, FILTER_VALIDATE_EMAIL)) {
-            $toEmail = $toEmailSociete;
-          }
-          else{
-            return null;
+          elseif($toEmailSociete) {
+            $toEmails = array_filter(explode(";", $toEmailSociete), function($email) { return filter_var($email, FILTER_VALIDATE_EMAIL); });
           }
 
           $message = \Swift_Message::newInstance()
               ->setSubject($subject)
               ->setFrom(array($fromEmail => $fromName))
-              ->setTo(explode(";", $toEmail))
+              ->setTo($toEmails)
               ->setBody($body,'text/plain')
               ->setReadReceiptTo($fromEmail);
 
