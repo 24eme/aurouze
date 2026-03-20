@@ -264,7 +264,7 @@
              }
              else{
               alert("IL Y A UNE ERREUR, LE MAIL N'A PAS PU ETRE ENVOYE");
-              throw new Error(response.status);
+              return null;
              }
            })
            .then(function(text) {
