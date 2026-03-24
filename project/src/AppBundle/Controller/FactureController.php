@@ -1332,20 +1332,19 @@ class FactureController extends Controller
 
           $toEmailSociete = $facture->getSociete()->getContactCoordonnee()->getEmail();
 
-          if($toEmailFacturationSociete && filter_var($toEmailFacturationSociete, FILTER_VALIDATE_EMAIL)){
-            $toEmail = $toEmailFacturationSociete;
+          $toEmails = [];
+
+          if($toEmailFacturationSociete) {
+            $toEmails = array_filter(explode(";", $toEmailFacturationSociete), function($email) { return filter_var($email, FILTER_VALIDATE_EMAIL); });
           }
-          elseif($toEmailSociete && filter_var($toEmailSociete, FILTER_VALIDATE_EMAIL)) {
-            $toEmail = $toEmailSociete;
-          }
-          else{
-            return null;
+          elseif($toEmailSociete) {
+            $toEmails = array_filter(explode(";", $toEmailSociete), function($email) { return filter_var($email, FILTER_VALIDATE_EMAIL); });
           }
 
           $message = \Swift_Message::newInstance()
               ->setSubject($subject)
               ->setFrom(array($fromEmail => $fromName))
-              ->setTo(explode(";", $toEmail))
+              ->setTo($toEmails)
               ->setBody($body,'text/plain')
               ->setReadReceiptTo($fromEmail);
 
@@ -1367,37 +1366,26 @@ class FactureController extends Controller
         $message = $this->getMailRelance($facture, $this->createPdfFacture($request,$facture->getId()));
 
         if(!$message ){
-            var_dump('NO mailer config');
-            $request->getSession()->getFlashBag()->add('notice', 'success');
-            $referer = $request->headers->get('referer');
-            return $this->redirect($referer);
+            throw new \Exception("Le mail n'a pas été créé");
         }
 
-        try {
-            $this->get('mailer')->send($message);
-            $dm = $this->get('doctrine_mongodb')->getManager();
+        $this->get('mailer')->send($message);
+        $dm = $this->get('doctrine_mongodb')->getManager();
 
-            if(!$facture->getNbRelance()){
-                $facture->setNbRelance(1);
-            }
-            else{
-                $facture->setNbRelance(2);
-            }
-            $dm->flush();
-            $relance = new Relance();
-            $relance->setDateRelance(new \DateTime());
-            $relance->setNumeroRelance($facture->getNbRelance());
-            $facture->addRelance($relance);
+        if(!$facture->getNbRelance()){
+            $facture->setNbRelance(1);
+        }
+        else{
+            $facture->setNbRelance(2);
+        }
+        $dm->flush();
+        $relance = new Relance();
+        $relance->setDateRelance(new \DateTime());
+        $relance->setNumeroRelance($facture->getNbRelance());
+        $facture->addRelance($relance);
 
-            $commentaire = $facture->getRelanceCommentaire();
-            $dm->flush();
-        }
-        catch(Exception $e) {
-            var_dump('NO mailer config');
-            $request->getSession()->getFlashBag()->add('notice', 'success');
-            $referer = $request->headers->get('referer');
-            return $this->redirect($referer);
-        }
+        $commentaire = $facture->getRelanceCommentaire();
+        $dm->flush();
 
         $request->getSession()->getFlashBag()->add('notice', 'success');
         $referer = $request->headers->get('referer');
