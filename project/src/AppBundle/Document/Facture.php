@@ -717,6 +717,10 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
      * @return date $dateLimitePaiement
      */
     public function getDateLimitePaiement() {
+        if ($this->getFrequencePaiement() == FactureManager::FREQUENCE_PERSO) {
+            return $this->dateLimitePaiement;
+        }
+
         if (is_null($this->dateLimitePaiement)) {
 
             return clone $this->calculDateLimitePaiement();
