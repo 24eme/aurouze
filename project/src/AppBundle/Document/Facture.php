@@ -746,13 +746,13 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
 
 
     public function calculDateLimitePaiement() {
-        if($this->getFrequencePaiement() == FactureManager::FREQUENCE_PERSO || !$this->getNumeroFacture() && $this->hasDevis() && $this->getDateLimitePaiement()) {
-            $date = $this->getDateLimitePaiement();
-
-            return $date;
+        if ($this->getFrequencePaiement() == FactureManager::FREQUENCE_PERSO) {
+            return $this->getPrelevementDate();
+        } elseif (!$this->getNumeroFacture() && $this->hasDevis() && $this->getDateLimitePaiement()) {
+            return $this->getDateLimitePaiement();
         }
 
-        if($this->getSepa() && $this->getSepa()->getActif()) {
+        if ($this->getSepa() && $this->getSepa()->getActif()) {
 
             return $this->getPrelevementDate();
         }
@@ -1311,6 +1311,10 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
     }
 
     public function getPrelevementDate(){
+      if ($this->getFrequencePaiement() == FactureManager::FREQUENCE_PERSO) {
+          return $this->getDateLimitePaiement();
+      }
+
       $dateFacturation = clone $this->getDateFacturation();
       $dateFacturation->modify("+1 month");
 
