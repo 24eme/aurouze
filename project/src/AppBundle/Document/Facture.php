@@ -191,6 +191,8 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
      */
     protected $pdfTelecharge;
 
+    protected $generateNumero = true;
+
     public function __construct() {
         $this->lignes = new \Doctrine\Common\Collections\ArrayCollection();
         $this->emetteur = new Soussigne();
@@ -294,6 +296,14 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
         }
 
         return $origines;
+    }
+
+    public function isGenerateNumero() {
+        return $this->generateNumero;
+    }
+
+    public function setGenerateNumero($generate) {
+        $this->generateNumero = $generate;
     }
 
     /**
