@@ -305,6 +305,7 @@ public static $export_factures_en_retards = array(
 
             for($i = 0; $i < $nbFactures; $i++) {
                 $facture = $this->createVierge($societe, $contrat);
+                $facture->setGenerateNumero(false);
                 $facture->setDateFacturation($dateFacturation);
                 $facture->setCommercial($commercial);
                 $facture->setDateEmission($facture->getDateFacturation());
@@ -336,12 +337,6 @@ public static $export_factures_en_retards = array(
                 $this->dm->flush();
 
                 $dateFacturation->modify('+ ' . round($interval) . " days");
-
-                if($facture->getNumeroFacture()){
-                    $facture->removeNumeroFacture();
-                    $this->dm->persist($facture);
-                    $this->dm->flush();
-                }
             }
             return $facture;
         }
