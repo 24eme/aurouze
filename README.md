@@ -25,6 +25,11 @@ Déployer mongodb 4.0 avec docker
 docker run --rm --name mongodb -v /var/lib/mongodb:/data/db -p 27017:27017 -d mongo:4.0
 ```
 
+Compass
+-------
+
+Version de compass compatible avec mongo 4.0 : https://github.com/mongodb-js/compass/releases/tag/v1.46.1
+
 Déployer le projet en local avec PHP7.4 sur Debian/Ubuntu
 ------------------------------
 ### Installer php7.4
