@@ -28,7 +28,7 @@ use Symfony\Component\HttpFoundation\File\File;
 class Attachement
 {
 
-    const MONGO_BYTES_LIMIT = 52428800;
+    const MONGO_BYTES_LIMIT = 16777216;
 
   /**
     * @MongoDB\Id(strategy="AUTO")
