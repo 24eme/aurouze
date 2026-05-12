@@ -7,6 +7,7 @@ use AppBundle\Document\RendezVous;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Document\Etablissement;
@@ -573,6 +574,35 @@ class ContratController extends Controller {
     }
 
     /**
+     * @Route("/contrat/{id}/share", name="contrat_share")
+     * @ParamConverter("contrat", class="AppBundle:Contrat")
+     */
+    public function shareAction(Request $request, Contrat $contrat)
+    {
+        $dm = $this->get('doctrine_mongodb')->getManager();
+
+        $request->query->set('share', true);
+
+        $pdf = $this->forward(
+            'AppBundle:Contrat:pdf',
+            ['request' => $request, 'contrat' => $contrat->getId()]
+        )->getContent();
+
+        $api = $this->get('contrat.signature_api');
+        $json = $api->upload($pdf, 'test');
+
+        $contrat->shared->url = $json->url;
+        $contrat->shared->symmkey = $json->symmetrickey;
+        $contrat->shared->hash = $json->hash;
+        $contrat->shared->adminkey = $json->adminkey;
+
+        $dm->persist($contrat);
+        $dm->flush();
+
+        return new JsonResponse($json);
+    }
+
+    /**
      * @Route("/contrat/{id}/suppression", name="contrat_suppression")
      * @ParamConverter("contrat", class="AppBundle:Contrat")
      */
@@ -685,6 +715,10 @@ class ContratController extends Controller {
             }
         } else {
             copy($tmpfile, $tmpfile.'.pdf');
+        }
+
+        if ($request->query->get('share')) {
+            return new Response($tmpfile.'.pdf');
         }
 
         return new Response(file_get_contents($tmpfile.'.pdf'), 200, array(

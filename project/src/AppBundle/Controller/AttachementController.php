@@ -228,11 +228,18 @@ class AttachementController extends Controller {
             $attachement->setSociete($societe);
             $dm->persist($attachement);
             $societe->addAttachement($attachement);
-            $dm->flush();
-
             $attachement->convertBase64AndRemove();
-            $dm->flush();
+            if (!$attachement->verifyBase64Bytes()) {
+                    $request->getSession()->getFlashBag()->add('upload_error_mongo', "Le fichier est trop lourd, <a href='https://pdf.24eme.fr/compress' target='_blank'>veuillez le compresser ici </a> s'il s'agit d'un PDF ");
+                    return $this->redirectToRoute('attachements_societe', array('id' => $societe->getId()));
             }
+            $dm->flush();
+        }else {
+            foreach ($uploadAttachementForm->getErrors(true, true) as $formError) {
+                $request->getSession()->getFlashBag()->add('upload_error', $formError->getMessage());
+            }
+
+        }
         return $this->redirectToRoute('attachements_societe', array('id' => $societe->getId()));
       }
   }
@@ -253,14 +260,13 @@ class AttachementController extends Controller {
       if ($request->isMethod('POST')) {
           $uploadAttachementForm->handleRequest($request);
           if($uploadAttachementForm->isValid()){
-
             $attachement->setEtablissement($etablissement);
             $dm->persist($attachement);
             $etablissement->addAttachement($attachement);
 
             $attachement->convertBase64AndRemove();
             if (!$attachement->verifyBase64Bytes()) {
-                    $request->getSession()->getFlashBag()->add('upload_error_mongo', "Le fichier est trop gros, veuillez le compresser s'il s'agit d'un PDF ");
+                    $request->getSession()->getFlashBag()->add('upload_error_mongo', "Le fichier est trop lourd, <a href='https://pdf.24eme.fr/compress' target='_blank'>veuillez le compresser ici </a> s'il s'agit d'un PDF ");
                     return $this->redirectToRoute('attachements_etablissement', array('id' => $etablissement->getId()));
             }
             $dm->flush();
