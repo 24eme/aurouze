@@ -141,6 +141,7 @@ class Prestation {
         $mot_travaux = array('TRAVAUX', 'DIVERS', 'TRAVAUX DIVERS');
         $mot_DEIV = array('MAINTENANCE', 'D.E.I.V');
         $mot_desinfection = array('DESINFECTION','ASSAINISSEMENT');
+        $mot_piege = array('LOCATION', 'PRET');
         if($this->isPictoForLibelles($nom_libelles, $mot_rongeur)){
             $type_rongeur = "";
             if($this->isPictoForLibelles($nom_libelles,array('RATS'))){
@@ -175,6 +176,8 @@ class Prestation {
             return 'settings-input-component mdi';
         }elseif($this->isPictoForLibelles($nom_libelles, $mot_desinfection)){
             return 'delete mdi';
+        }elseif($this->isPictoForLibelles($nom_libelles, $mot_piege)) {
+            return 'markunread-mailbox mdi';
         }
 
 
