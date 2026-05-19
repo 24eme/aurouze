@@ -37,8 +37,8 @@ $(function () {
      */
     var doubleClick = false;
     $('#calendrier').fullCalendar({
-        minTime: '05:00:00',
-        maxTime:(calendarExtra)? '22:00:00' : '20:00:00',
+        minTime: '00:00:00',
+        maxTime:'24:00:00',
         height: (calendarExtra)? 915 : 810,
         customButtons: {
             prevButton: {
