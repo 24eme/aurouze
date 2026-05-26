@@ -218,8 +218,6 @@ $(function () {
               rdvDateDebut = e.start;
               rdvDateFin = e.end;
 
-              console.log(rangeNuitFin)
-
               if (((rdvDateDebut > rangeNuitDebut) && (rdvDateDebut < rangeNuitFin)) || ((rdvDateDebut > rangeNuitDebutSameDay) && (rdvDateDebut < rangeNuitFinSameDay)) || ((rdvDateFin > rangeNuitDebut) && (rdvDateFin < rangeNuitFin))) {
                 eventDate = e.start._i.substring(0, 10);
                 if (eventDate === key) {
