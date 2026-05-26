@@ -97,6 +97,7 @@ $(function () {
                 $.callbackEventForm();
             }
             );
+            $("#calendrier").fullCalendar("refetchEvents");
         },
         dayClick: function(date, jsEvent, view) {
           if(!doubleClick) {
@@ -153,6 +154,7 @@ $(function () {
                 start: event.start.format(),
                 end: event.end.format()
             });
+            $("#calendrier").fullCalendar("refetchEvents");
         },
         eventRender: function(event, element) {
           if(event.retourMap){
