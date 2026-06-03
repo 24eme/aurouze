@@ -37,8 +37,8 @@ $(function () {
      */
     var doubleClick = false;
     $('#calendrier').fullCalendar({
-        minTime: '05:00:00',
-        maxTime:(calendarExtra)? '22:00:00' : '20:00:00',
+        minTime: '00:00:00',
+        maxTime:'24:00:00',
         height: (calendarExtra)? 915 : 810,
         customButtons: {
             prevButton: {
@@ -97,6 +97,7 @@ $(function () {
                 $.callbackEventForm();
             }
             );
+            $("#calendrier").fullCalendar("refetchEvents");
         },
         dayClick: function(date, jsEvent, view) {
           if(!doubleClick) {
@@ -153,6 +154,7 @@ $(function () {
                 start: event.start.format(),
                 end: event.end.format()
             });
+            $("#calendrier").fullCalendar("refetchEvents");
         },
         eventRender: function(event, element) {
           if(event.retourMap){
@@ -172,9 +174,71 @@ $(function () {
 						element.find(".fc-title").append('<span class="text-muted" style="position:absolute; bottom: -10px; right: 0px;" ><span class="mdi mdi-add-alert"></span>&nbsp;N.C.</span>');
 						element.find(".fc-bg").css("border", "1px solid red");
 					}
+
+
+
         },
         eventAfterRender: function(event, element) {
+
           $.callbackCalendarDynamicButton();
+        },
+
+        eventAfterAllRender: function(view) {
+          const joursSemaineObject = {};
+          document.querySelectorAll("th[data-date]").forEach(function(e) {
+            joursSemaineObject[e.dataset.date] = false;
+          });
+
+          view_start = view.start._i;
+          view_end = view.end._d.toISOString().substring(0, 10);
+
+          const eventsArray = $("#calendrier").fullCalendar("clientEvents", function(events){ return (moment(events.start).format("YYYY-MM-DD") >= view_start && view_end > moment(events.start).format("YYYY-MM-DD"))});
+
+          Object.entries(joursSemaineObject).forEach(([key, value]) => {
+            eventsArray.forEach(function(e) {
+              rangeNuitDebut = moment(structuredClone(e.start));
+              rangeNuitDebut = moment(rangeNuitDebut).set("hour",22);
+              rangeNuitDebut = moment(rangeNuitDebut).set("minute",00);
+              rangeNuitDebut = rangeNuitDebut.utc();
+
+              rangeNuitFin = moment(structuredClone(e.end));
+              rangeNuitFin = moment(rangeNuitFin).add(1,"days");
+              rangeNuitFin = moment(rangeNuitFin).set("hour",05);
+              rangeNuitFin = moment(rangeNuitFin).set("minute",00);
+              rangeNuitFin = rangeNuitFin.utc();
+
+              rangeNuitDebutSameDay = moment(structuredClone(e.start));
+              rangeNuitDebutSameDay = moment(rangeNuitDebutSameDay).set("hour",00);
+              rangeNuitDebutSameDay = moment(rangeNuitDebutSameDay).set("minute",00);
+              rangeNuitDebutSameDay = rangeNuitDebutSameDay.utc();
+
+              rangeNuitFinSameDay = moment(structuredClone(e.end));
+              rangeNuitFinSameDay = moment(rangeNuitFinSameDay).set("hour",05);
+              rangeNuitFinSameDay = moment(rangeNuitFinSameDay).set("minute",00);
+              rangeNuitFinSameDay = rangeNuitFinSameDay.utc();
+
+              rdvDateDebut = e.start;
+              rdvDateFin = e.end;
+
+              if (((rdvDateDebut > rangeNuitDebut) && (rdvDateDebut < rangeNuitFin)) || ((rdvDateDebut > rangeNuitDebutSameDay) && (rdvDateDebut < rangeNuitFinSameDay)) || ((rdvDateFin > rangeNuitDebut) && (rdvDateFin < rangeNuitFin))) {
+                eventDate = e.start._i.substring(0, 10);
+                if (eventDate === key) {
+                  joursSemaineObject[key] = true;
+                }
+              }
+            });
+          });
+
+          document.querySelectorAll("th[data-date]").forEach(function(e) {
+            Object.entries(joursSemaineObject).forEach(([key, value]) => {
+              if (key == e.getAttribute("data-date") && value == true){
+                  e.classList.add("rdv-nuit");
+              } else if (e.classList.contains("rdv-nuit") && key == e.getAttribute("data-date") && value == false) {
+                  e.classList.remove("rdv-nuit");
+              }
+            });
+          });
         }
+
     });
 });

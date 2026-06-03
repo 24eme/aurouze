@@ -117,7 +117,7 @@ class DevisType extends AbstractType
                 'expanded' => false,
                 'multiple' => false,
                 'required' => false,
-                'attr' => array("class" => "select2 select2-simple", "data-placeholder" => "Séléctionner une fréquence de paiement"),
+                'attr' => array("class" => "select2 select2-simple", "data-placeholder" => "Sélectionner une fréquence de paiement"),
         ));
 
             $builder->add('dateLimitePaiement', DateType::class, array(

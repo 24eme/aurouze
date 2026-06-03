@@ -7,7 +7,7 @@
         <li><a href="{{ path('passage_societe',{ 'id' : societe.id }) }}">&nbsp;{{ societe.raisonSociale }}</a></li>
     </ol>
 
-    <h3>Séléctionner un établissement pour voir ses passages</h3>
+    <h3>Sélectionner un établissement pour voir ses passages</h3>
 
     {{ include('etablissement/list.html.twig', {'etablissements': societe.getEtablissementsByStatut(true)}) }}
 {% endblock %}

@@ -67,7 +67,7 @@ class StatistiquesController extends Controller
                 'class' => 'AppBundle\Document\Compte',
                 'expanded' => false,
                 'multiple' => false,
-                "attr" => array("class" => "select2 select2-simple", "data-placeholder" => "Séléctionner un commercial", "style"=> "width:100%;")));
+                "attr" => array("class" => "select2 select2-simple", "data-placeholder" => "Sélectionner un commercial", "style"=> "width:100%;")));
         	}
 					if(in_array($exporttype, array(PaiementsManager::TYPE_EXPORT_DETAIL_CA_PRESTA))) {
 						$prestations = $this->get('doctrine_mongodb')->getManager()->getRepository('AppBundle:Configuration')->findConfiguration()->getPrestationsArray();

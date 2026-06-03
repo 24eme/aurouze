@@ -53,7 +53,7 @@ class FactureType extends AbstractType
                     'expanded' => false,
                     'multiple' => false,
                     'required' => false,
-                    'attr' => array("class" => "select2 select2-simple", "data-placeholder" => "Séléctionner une fréquence de paiement"),
+                    'attr' => array("class" => "select2 select2-simple", "data-placeholder" => "Sélectionner une fréquence de paiement"),
             ))
             ->add('description', TextareaType::class, array('label' => 'Informations complémentaires :', 'required' => false, "attr" => array("class" => "form-control", "rows" => 3)))
             ->add('relanceCommentaire', TextareaType::class, array('label' => 'Commentaire interne :', 'required' => false, "attr" => array("class" => "form-control", "rows" => 3)))

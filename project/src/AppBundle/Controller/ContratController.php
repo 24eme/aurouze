@@ -289,6 +289,10 @@ class ContratController extends Controller {
             $warnings[] = "Le contrat dure 12 mois ou plus alors qu'il est ponctuel.";
         }
 
+        if ($contrat->getTypeContrat() === ContratManager::TYPE_CONTRAT_RECONDUCTION_TACITE && $contrat->getDuree() < 2) {
+            $warnings[] = ": Le contrat dure 1 mois alors qu'il est tacite.";
+        }
+
         return $this->render('contrat/acceptation.html.twig', array('contrat' => $contrat, 'factures' => $factures, 'form' => $form->createView(), 'societe' => $contrat->getSociete(), 'warnings' => $warnings));
     }
 
