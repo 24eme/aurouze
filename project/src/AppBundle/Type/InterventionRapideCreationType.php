@@ -36,14 +36,14 @@ class InterventionRapideCreationType extends AbstractType {
                     'class' => 'AppBundle\Document\Compte',
                     'expanded' => false,
                     'multiple' => false,
-                    "attr" => array("class" => "select2 select2-simple", "data-placeholder" => "Séléctionner un commercial")))
+                    "attr" => array("class" => "select2 select2-simple", "data-placeholder" => "Sélectionner un commercial")))
                 ->add('technicien', DocumentType::class, array(
                     "choices" => array_merge(array('' => ''), $this->getTechniciens()),
                     'label' => 'Technicien :',
                     'class' => 'AppBundle\Document\Compte',
                     'expanded' => false,
                     'multiple' => false,
-                    "attr" => array("class" => "select2 select2-simple", "data-placeholder" => "Séléctionner un technicien")))
+                    "attr" => array("class" => "select2 select2-simple", "data-placeholder" => "Sélectionner un technicien")))
                 ->add('dateDebut', DateType::class, array(
                     'label' => 'Date début :',
                     "attr" => array(
