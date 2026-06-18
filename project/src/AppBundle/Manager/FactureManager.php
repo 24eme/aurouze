@@ -309,7 +309,6 @@ public static $export_factures_en_retards = array(
                 $facture->setDateFacturation($dateFacturation);
                 $facture->setCommercial($commercial);
                 $facture->setDateEmission($facture->getDateFacturation());
-                $facture->setDateLimitePaiement($facture->calculDateLimitePaiement());
 
                 $factureLigne = new LigneFacturable();
                 $factureLigne->setPrixUnitaire($montantTotalHT / $nbFactures);
@@ -328,15 +327,14 @@ public static $export_factures_en_retards = array(
 
                 $facture->addLigne($factureLigne);
 
-                $montantHT = $factureLigne->getMontantHT();
-                $facture->setMontantHT($factureLigne->getMontantHT());
-                $facture->setMontantTaxe($factureLigne->getMontantTaxe());
-                $facture->setMontantTTC($facture->getMontantHT() + $facture->getMontantTaxe());
+                $dateFacturation->modify('+ ' . round($interval) . " days");
+
+                $facture->update();
+                $facture->updateRestantAPayer();
 
                 $this->dm->persist($facture);
                 $this->dm->flush();
 
-                $dateFacturation->modify('+ ' . round($interval) . " days");
             }
             return $facture;
         }
