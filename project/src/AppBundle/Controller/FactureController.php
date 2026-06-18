@@ -433,8 +433,13 @@ class FactureController extends Controller
           $facture->setDateFacturation($df);
         }
 
-        $facture->setDateFacturation(new \DateTime);
-        $facture->setDateLimitePaiement($facture->calculDateLimitePaiement());
+        if ($facture->getDateLimitePaiement())  {
+            $facture->setDateLimitePaiement($facture->getDateLimitePaiement());
+        } else {
+            $facture->setDateFacturation(new \DateTime);
+            $facture->setDateLimitePaiement($facture->calculDateLimitePaiement());
+        }
+
 
         $fm->getRepository()->getClassMetadata()->idGenerator->generateNumeroFacture($dm, $facture);
         $dm->persist($facture);
