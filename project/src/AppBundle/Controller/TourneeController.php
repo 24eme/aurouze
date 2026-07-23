@@ -120,7 +120,7 @@ class TourneeController extends Controller {
                 ))->createView();
 
 
-                $attachementsForms[$etbId] = array('form' => $this->createForm(new AttachementTourneeType($dm), new Attachement(), array(
+                $attachementsForms[$etbId][$planifiable->getId()] = array('form' => $this->createForm(new AttachementTourneeType($dm), new Attachement(), array(
                     'action' => $this->generateUrl('tournee_attachement_upload', array('technicien' => $technicien, 'date' => $date->format('Y-m-d'),'idetablissement' => $etbId,'retour' => 'visualisation_'.$planifiable->getId())),
                     'method' => 'POST',
                 ))->createView(),
