@@ -232,9 +232,6 @@ $(function () {
                   eventDate = e.start._i.substring(0, 10)
                 }
 
-                  ? e.start._i.slice(0, 3).join("")
-                  :
-                ;
                 if (eventDate === key) {
                   joursSemaineObject[key] = true;
                 }
