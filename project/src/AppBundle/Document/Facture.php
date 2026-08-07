@@ -420,6 +420,7 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
      * @return self
      */
     public function setDateFacturation($dateFacturation) {
+        $dateFacturation = $dateFacturation->modify('midnight');
         $this->dateFacturation = $dateFacturation;
         return $this;
     }
