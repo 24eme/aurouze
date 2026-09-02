@@ -126,7 +126,9 @@
         </div>
         <br />
 
-        <div style="position:absolute; bottom: 0; width: 100%; padding: 0 30px;left: 0; right: 0; height:270px;">
+        <div style="margin:2em;"></div>
+
+        <div style="position:absolute; bottom: 0; width: 100%; padding: 0 30px;left: 0; right: 0; height:250px;">
             <small>
             <p class="text-center" style="line-height: 18px; font-size: 15px;">
                 <small>
@@ -156,10 +158,8 @@
                     </div>
                 </div>
             </div>
-            <div style=" margin-top:4em;">
-                {% if (instanceapp == "aurouze") %}
-                    <img style="width: 50em;" src="file://{{ kernelRootDir }}/../web/images/bg-footer-pdf-contrat-{{ instanceapp }}.jpg" />
-                {% endif %}
-            </div>
+            {% if (instanceapp == "aurouze") %}
+                <img style="margin-top:2em; width: 48em;" src="file://{{ kernelRootDir }}/../web/images/bg-footer-pdf-contrat-{{ instanceapp }}.jpg" />
+            {% endif %}
         </div>
     </div>
