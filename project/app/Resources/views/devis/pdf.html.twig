@@ -120,7 +120,7 @@
             Numero Commande : <strong>{{ devis.numeroCommande }}</strong>
         </p>
 
-        <div style="position:absolute; bottom: 0; width: 100%; padding: 0 30px;left: 0; right: 0;">
+        <div style="position:absolute; bottom: 0; width: 100%; padding: 0 30px;left: 0; right: 0; height:300px;">
             <small>
             <p class="text-center" style="line-height: 18px; font-size: 15px;">
                 <small>
@@ -153,6 +153,9 @@
                         </p>
                     </div>
                 </div>
+                {% if (instanceapp == "aurouze") %}
+                    <img style="width: 50em; margin-top:3em;" src="file://{{ kernelRootDir }}/../web/images/bg-footer-pdf-contrat-{{ instanceapp }}.jpg" />
+                {% endif %}
             </div>
         </div>
     </div>
