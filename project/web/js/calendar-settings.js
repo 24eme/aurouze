@@ -220,8 +220,18 @@ $(function () {
               rdvDateDebut = e.start;
               rdvDateFin = e.end;
 
-              if (((rdvDateDebut > rangeNuitDebut) && (rdvDateDebut < rangeNuitFin)) || ((rdvDateDebut > rangeNuitDebutSameDay) && (rdvDateDebut < rangeNuitFinSameDay)) || ((rdvDateFin > rangeNuitDebut) && (rdvDateFin < rangeNuitFin))) {
-                eventDate = e.start._i.substring(0, 10);
+              if (
+                ((rdvDateDebut > rangeNuitDebut) && (rdvDateDebut < rangeNuitFin))
+                || ((rdvDateDebut > rangeNuitDebutSameDay) && (rdvDateDebut < rangeNuitFinSameDay))
+                || ((rdvDateFin > rangeNuitDebut) && (rdvDateFin < rangeNuitFin))
+              ) {
+                if (Array.isArray(e.start._i)) {
+                  toDate = new Date(e.start._i.slice(0, 3))
+                  eventDate = toDate.toISOString().slice(0,10).replaceAll('-', '')
+                } else {
+                  eventDate = e.start._i.substring(0, 10)
+                }
+
                 if (eventDate === key) {
                   joursSemaineObject[key] = true;
                 }

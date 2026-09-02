@@ -102,4 +102,9 @@
     <img src="{{ image }}">
   {% endfor %}
   </div>
+  <div>
+    {% if (instanceapp == "aurouze") %}
+        <img style="width: 62em; margin-top:22em;" src="file://{{ kernelRootDir }}/../web/images/bg-footer-pdf-contrat-{{ instanceapp }}.jpg" />
+    {% endif %}
+  </div>
 {% endblock %}
