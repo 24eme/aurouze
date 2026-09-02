@@ -14,7 +14,7 @@
                 {% endif %}
                 Tél : {{ facture.emetteur.telephone }}<br />
                 {% if(facture.emetteur.email) %}
-                E-mail: {{ facture.emetteur.email }}
+                E-mail: {{ facture.emetteur.email| replace({";" : "-"}) }}
                 {% endif %}
             </p>
         </div>
