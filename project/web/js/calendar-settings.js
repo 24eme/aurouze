@@ -220,7 +220,7 @@ $(function () {
               rdvDateDebut = e.start;
               rdvDateFin = e.end;
 
-              let eventConges = (e.backgroundColor == "#f7f7f9" || e.source.url.includes("populateWithHolidays")) && e.title.match(/conge|congé|ferie|ferié/i);
+              let eventConges = (e.backgroundColor == "#f7f7f9" || (Object.hasOwn(e.source, "url") && e.source.url.includes("populateWithHolidays"))) && e.title.match(/conge|congé|ferie|ferié/i);
               if (! eventConges &&
                 (((rdvDateDebut > rangeNuitDebut) && (rdvDateDebut < rangeNuitFin))
                 || ((rdvDateDebut > rangeNuitDebutSameDay) && (rdvDateDebut < rangeNuitFinSameDay))
