@@ -220,11 +220,11 @@ $(function () {
               rdvDateDebut = e.start;
               rdvDateFin = e.end;
 
-              if (
-                ((rdvDateDebut > rangeNuitDebut) && (rdvDateDebut < rangeNuitFin))
+              let eventConges = (e.backgroundColor == "#f7f7f9" || e.source.url.includes("populateWithHolidays")) && e.title.match(/conge|congé|ferie|ferié/i);
+              if (! eventConges &&
+                (((rdvDateDebut > rangeNuitDebut) && (rdvDateDebut < rangeNuitFin))
                 || ((rdvDateDebut > rangeNuitDebutSameDay) && (rdvDateDebut < rangeNuitFinSameDay))
-                || ((rdvDateFin > rangeNuitDebut) && (rdvDateFin < rangeNuitFin))
-              ) {
+                || ((rdvDateFin > rangeNuitDebut) && (rdvDateFin < rangeNuitFin)))){
                 if (Array.isArray(e.start._i)) {
                   toDate = new Date(e.start._i.slice(0, 3))
                   eventDate = toDate.toISOString().slice(0,10).replaceAll('-', '')
