@@ -16,7 +16,7 @@
   {% for contratsReconduits in listeReconductions %}
   <div class="row">
       <div class="col-xs-12">
-        <h4>Contrat reconduit le {{ contratsReconduits.date | date("d/m/Y") }} <span class="badge">{{ contratsReconduits | length }}</span></h4>
+        <h4>Contrat reconduit le {{ contratsReconduits.date | date("d/m/Y") }} <span class="badge">{{ contratsReconduits.contrats | length }}</span></h4>
       </div>
   </div>
     {{ include('contrat/contratTableau.html.twig', {'contrats': contratsReconduits.contrats }) }}
