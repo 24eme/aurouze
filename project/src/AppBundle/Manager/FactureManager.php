@@ -327,14 +327,13 @@ public static $export_factures_en_retards = array(
 
                 $facture->addLigne($factureLigne);
 
-                $dateFacturation->modify('+ ' . round($interval) . " days");
-
                 $facture->update();
                 $facture->updateRestantAPayer();
 
                 $this->dm->persist($facture);
                 $this->dm->flush();
 
+                $dateFacturation->modify('+ ' . round($interval) . " days");
             }
             return $facture;
         }
