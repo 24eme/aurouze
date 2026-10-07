@@ -169,6 +169,10 @@
 	                            {% if (factureEnRetard.societe.contactCoordonnee.telephoneMobile is defined and factureEnRetard.societe.contactCoordonnee.telephoneMobile)%}
 	                                <br /><small><i class="glyphicon glyphicon-phone"></i>&nbsp;{{ factureEnRetard.societe.contactCoordonnee.telephoneMobileFormatte }}</small>
 	                            {% endif %}
+                                {% if factureEnRetard.societe.tags | length %}
+                                <br />
+                                <small>{% for tag in factureEnRetard.societe.tags %}<a href="" class="label label-info">{{ tag }}</a>{% endfor %}</small>
+                                {% endif %}
 							</td>
               <td>
 								<a href="{{ path('facturable_pdf', {'document': factureEnRetard.id, 'key': factureEnRetard.getSecretKey() })}}"><span class="glyphicon glyphicon-file"></span>&nbsp;Facture n° {{ factureEnRetard.numeroFacture }}</a>

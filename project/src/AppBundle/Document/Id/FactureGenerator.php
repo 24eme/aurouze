@@ -27,9 +27,9 @@ class FactureGenerator extends AbstractIdGenerator
 
         $id = sprintf("%s-%s", "FACTURE", $document->getIdentifiant());
 
-        $hasNumero = true;
+        $hasNumero = $document->isGenerateNumero();
         foreach ($document->getLignes() as $ligne) {
-            if($ligne->getOrigineDocument()){
+            if($hasNumero && $ligne->getOrigineDocument()){
                 $hasNumero = boolval($ligne->getOrigineDocument()->getNbFactures());
             }
         }

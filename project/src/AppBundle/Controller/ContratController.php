@@ -7,6 +7,7 @@ use AppBundle\Document\RendezVous;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Document\Etablissement;
@@ -286,6 +287,10 @@ class ContratController extends Controller {
         $warnings = [];
         if ($contrat->getTypeContrat() === ContratManager::TYPE_CONTRAT_PONCTUEL && $contrat->getDuree() >= 12) {
             $warnings[] = "Le contrat dure 12 mois ou plus alors qu'il est ponctuel.";
+        }
+
+        if ($contrat->getTypeContrat() === ContratManager::TYPE_CONTRAT_RECONDUCTION_TACITE && $contrat->getDuree() < 2) {
+            $warnings[] = ": Le contrat dure 1 mois alors qu'il est tacite.";
         }
 
         return $this->render('contrat/acceptation.html.twig', array('contrat' => $contrat, 'factures' => $factures, 'form' => $form->createView(), 'societe' => $contrat->getSociete(), 'warnings' => $warnings));
@@ -573,6 +578,35 @@ class ContratController extends Controller {
     }
 
     /**
+     * @Route("/contrat/{id}/share", name="contrat_share")
+     * @ParamConverter("contrat", class="AppBundle:Contrat")
+     */
+    public function shareAction(Request $request, Contrat $contrat)
+    {
+        $dm = $this->get('doctrine_mongodb')->getManager();
+
+        $request->query->set('share', true);
+
+        $pdf = $this->forward(
+            'AppBundle:Contrat:pdf',
+            ['request' => $request, 'contrat' => $contrat->getId()]
+        )->getContent();
+
+        $api = $this->get('contrat.signature_api');
+        $json = $api->upload($pdf, 'test');
+
+        $contrat->shared->url = $json->url;
+        $contrat->shared->symmkey = $json->symmetrickey;
+        $contrat->shared->hash = $json->hash;
+        $contrat->shared->adminkey = $json->adminkey;
+
+        $dm->persist($contrat);
+        $dm->flush();
+
+        return new JsonResponse($json);
+    }
+
+    /**
      * @Route("/contrat/{id}/suppression", name="contrat_suppression")
      * @ParamConverter("contrat", class="AppBundle:Contrat")
      */
@@ -629,9 +663,11 @@ class ContratController extends Controller {
         $dm = $this->get('doctrine_mongodb')->getManager();
         $cm = $this->get('contrat.manager');
         $contratConfSeineEtMarne = $this->container->getParameter('contrat_seine_et_marne') ? $this->container->getParameter('contrat_seine_et_marne') : null;
+        $anciensContrats = $dm->getRepository("AppBundle:Contrat")->findByNumeroArchive($contrat->getNumeroArchive());
+        $nbContratNumArchive = count($anciensContrats);
 
         if (in_array($contrat->getStatut(), [ContratManager::STATUT_BROUILLON, ContratManager::STATUT_EN_ATTENTE_ACCEPTATION])) {
-            $contrat->setMarkdown($this->renderView('contrat/contrat.markdown.twig', array('contrat' => $contrat, 'contratManager' => $cm, 'enteteSeineEtMarne' => $contratConfSeineEtMarne)));
+            $contrat->setMarkdown($this->renderView('contrat/contrat.markdown.twig', array('contrat' => $contrat, 'contratManager' => $cm, 'enteteSeineEtMarne' => $contratConfSeineEtMarne, 'nbContratNumArchive' => $nbContratNumArchive)));
             $dm->persist($contrat);
             $dm->flush();
         }
@@ -683,6 +719,10 @@ class ContratController extends Controller {
             }
         } else {
             copy($tmpfile, $tmpfile.'.pdf');
+        }
+
+        if ($request->query->get('share')) {
+            return new Response($tmpfile.'.pdf');
         }
 
         return new Response(file_get_contents($tmpfile.'.pdf'), 200, array(
@@ -818,8 +858,13 @@ class ContratController extends Controller {
         $typeContrat = null;
         $societe = null;
         $commercial = null;
-        $zone = $request->query->get('zone', ContratManager::ZONE_PARIS);
         $hasSecteurs = $this->getParameter('secteurs');
+
+        if ($hasSecteurs) {
+            $zone = $request->query->get('zone', ContratManager::ZONE_PARIS);
+        } else {
+            $zone = null;
+        }
 
         $formContratsAReconduire = $this->createForm(new ReconductionFiltresType($dm), null, array(
             'action' => $this->generateUrl('contrats_reconduction_massive', ['zone' => $zone]),

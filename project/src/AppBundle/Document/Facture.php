@@ -191,6 +191,8 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
      */
     protected $pdfTelecharge;
 
+    protected $generateNumero = true;
+
     public function __construct() {
         $this->lignes = new \Doctrine\Common\Collections\ArrayCollection();
         $this->emetteur = new Soussigne();
@@ -294,6 +296,14 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
         }
 
         return $origines;
+    }
+
+    public function isGenerateNumero() {
+        return $this->generateNumero;
+    }
+
+    public function setGenerateNumero($generate) {
+        $this->generateNumero = $generate;
     }
 
     /**
@@ -410,6 +420,7 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
      * @return self
      */
     public function setDateFacturation($dateFacturation) {
+        $dateFacturation = $dateFacturation->modify('midnight');
         $this->dateFacturation = $dateFacturation;
         return $this;
     }
@@ -717,6 +728,10 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
      * @return date $dateLimitePaiement
      */
     public function getDateLimitePaiement() {
+        if ($this->getFrequencePaiement() == FactureManager::FREQUENCE_PERSO) {
+            return $this->dateLimitePaiement;
+        }
+
         if (is_null($this->dateLimitePaiement)) {
 
             return clone $this->calculDateLimitePaiement();
@@ -744,39 +759,46 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
         return $arrayTauxTva;
     }
 
+
     public function calculDateLimitePaiement() {
-        if($this->getSepa() && $this->getSepa()->getActif()) {
+        if ($this->getFrequencePaiement() == FactureManager::FREQUENCE_PERSO) {
+            return $this->getPrelevementDate();
+        } elseif (!$this->getNumeroFacture() && $this->hasDevis() && $this->getDateLimitePaiement()) {
+            return $this->getDateLimitePaiement();
+        }
+
+        if ($this->getSepa() && $this->getSepa()->getActif()) {
 
             return $this->getPrelevementDate();
         }
 
-        $frequence = $this->getFrequencePaiement();
-        $date = null;
-        if($this->getDateFacturation()) {
-            $date = clone $this->getDateFacturation();
-        }
-        $date = ($date) ? $date : clone $this->getDateEmission();
-        $date = ($date) ? $date : new \DateTime();
-        switch ($frequence) {
-            case ContratManager::FREQUENCE_PRELEVEMENT :
-                $date->modify('+2 month');
-                $date->modify('first day of')->modify('+19 day');
-                break;
-            case ContratManager::FREQUENCE_30J :
-                $date->modify('+30 day');
-                break;
-            case ContratManager::FREQUENCE_30JMOIS :
-                $date->modify('+30 day')->modify('last day of');
-                break;
-            case ContratManager::FREQUENCE_45JMOIS :
-                $date->modify('+45 day')->modify('last day of');
-                break;
-            case ContratManager::FREQUENCE_60J :
-                $date->modify('+60 day');
-                break;
-            default:
-                $date->modify('+' . FactureManager::DEFAUT_FREQUENCE_JOURS . ' day');
-        }
+            $frequence = $this->getFrequencePaiement();
+            $date = null;
+            if($this->getDateFacturation()) {
+                $date = clone $this->getDateFacturation();
+            }
+            $date = ($date) ? $date : clone $this->getDateEmission();
+            $date = ($date) ? $date : new \DateTime();
+            switch ($frequence) {
+                case ContratManager::FREQUENCE_PRELEVEMENT :
+                    $date->modify('+2 month');
+                    $date->modify('first day of')->modify('+19 day');
+                    break;
+                case ContratManager::FREQUENCE_30J :
+                    $date->modify('+30 day');
+                    break;
+                case ContratManager::FREQUENCE_30JMOIS :
+                    $date->modify('+30 day')->modify('last day of');
+                    break;
+                case ContratManager::FREQUENCE_45JMOIS :
+                    $date->modify('+45 day')->modify('last day of');
+                    break;
+                case ContratManager::FREQUENCE_60J :
+                    $date->modify('+60 day');
+                    break;
+                default:
+                    $date->modify('+' . FactureManager::DEFAUT_FREQUENCE_JOURS . ' day');
+            }
 
         return $date;
     }
@@ -819,8 +841,11 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
      * @return self
      */
     public function setFrequencePaiement($frequencePaiement) {
-        $this->frequencePaiement = $frequencePaiement;
-
+        if ($frequencePaiement == FactureManager::FREQUENCE_PERSO) {
+            $this->frequencePaiement = FactureManager::FREQUENCE_PERSO;
+        } else {
+            $this->frequencePaiement = $frequencePaiement;
+        }
         return $this;
     }
 
@@ -1301,10 +1326,14 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
     }
 
     public function getPrelevementDate(){
-      $dateEmission = clone $this->getDateEmission();
-      $dateEmission->modify("+1 month");
+      if ($this->getFrequencePaiement() == FactureManager::FREQUENCE_PERSO) {
+          return $this->getDateLimitePaiement();
+      }
 
-      $dueDate = \DateTime::createFromFormat("Ymd",$dateEmission->format("Y").$dateEmission->format("m")."20");
+      $dateFacturation = clone $this->getDateFacturation();
+      $dateFacturation->modify("+1 month");
+
+      $dueDate = \DateTime::createFromFormat("Ymd",$dateFacturation->format("Y").$dateFacturation->format("m")."20");
       $now = new \DateTime();
 
       if($dueDate < $now){
@@ -1358,9 +1387,9 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
     public function getMesPaiements(){
     $arrayPaiements = array();
         foreach ($this->getPaiements() as $paiements) {
-          foreach ($paiements->getPaiement() as $paiement) {
+          foreach ($paiements->getPaiement() as $key => $paiement) {
               if ($paiement->getFacture()->getId() == $this->getId()) {
-                $arrayPaiements[] = $paiement;
+                $arrayPaiements[$paiements->getId()."/".$key] = $paiement;
               }
           }
         }

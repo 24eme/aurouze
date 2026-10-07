@@ -405,6 +405,14 @@ class Compte implements DocumentSocieteInterface, InterlocuteurInterface {
         return $this->tags;
     }
 
+    public function getTagsNom() {
+        $result= array();
+        foreach ($this->getTags() as $tag) {
+           $result[] = $tag->getNom();
+        }
+        return $result;
+    }
+
     public function getTagsArray() {
         $result= array();
         foreach ($this->getTags() as $tag) {

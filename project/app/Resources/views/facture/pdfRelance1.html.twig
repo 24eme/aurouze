@@ -135,7 +135,10 @@
         </div>
     </div>
     <br />
-    <div style="position:absolute; bottom: 0; width: 100%; padding: 0 30px;left: 0; right: 0;">
+
+    <div style="margin:2em;"></div>
+
+    <div style="position:absolute; bottom: 0; width: 100%; padding: 0 30px;left: 0; right: 0; height:250px;">
         <small>
         <p class="text-center" style="line-height: 18px; font-size: 15px;">
             <small>
@@ -147,7 +150,7 @@
         </p>
         </small>
         <br />
-        <div style="border-top: 1px dashed #ccc; border-bottom: 1px dashed #ccc; margin-top: 15px;">
+        <div style="border-top: 1px dashed #ccc; margin-top: 15px;">
             <div class="row">
                 <div class="col-xs-12 text-center">
                     <small><small><small>Coupon à joindre avec votre règlement</small></small></small>
@@ -165,5 +168,8 @@
                 </div>
             </div>
         </div>
+        {% if (instanceapp == "aurouze") %}
+            <img style="display:block;margin: 0 0 0 auto; width: 110px;" src="file://{{ kernelRootDir }}/../web/images/aurouze_certif_logo.png" />
+        {% endif %}
     </div>
 </div>

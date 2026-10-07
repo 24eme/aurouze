@@ -331,7 +331,7 @@ class Attachement
     }
 
     public function isImage(){
-      return preg_match('/(\.jpg|\.jpeg|\.gif|\.png)$/i',$this->getImageName());
+      return preg_match('/(\.jpg|\.jpeg|\.gif|\.png|\.heic)$/i',$this->getImageName());
     }
 
     public function isJpg(){

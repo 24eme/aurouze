@@ -17,6 +17,13 @@
            <th class="col-xs-3">Etablissement</th>
            <th class="col-xs-2">N° Facture</th>
            <th class="col-xs-1">Montant</th>
+           {% for paiement in paiements %}
+            {% if paiement.prelevement %}
+                <th class="col-xs-1">Échéance</th>
+            {% endif %}
+           {% endfor %}
+
+
        </tr>
    </thead>
   {% for paiement in paiements %}
@@ -53,6 +60,11 @@
           <td><a title="Voir la société" href="{{ path('societe_visualisation', {'id': p.facture.societe.id })}}">{% if p.facture.societe.raisonSociale | length > 40 %}{{ p.facture.societe.raisonSociale | slice(0, 40)~"..." }}{%else%}{{ p.facture.societe.raisonSociale }}{% endif %}</a></td>
           <td><a href="{{ path('facturable_pdf', {'document': p.facture.id , 'key': p.facture.getSecretKey()})}}">Facture n°{{ p.facture.numeroFacture }}</a></td>
           <td class="text-right">{{ p.montant | number_format(2, ',', ' ') }}&nbsp;€</td>
+          <td class="text-right">
+          {% if paiement.prelevement %}
+                  <span> {{ p.facture.dateLimitePaiement|date("d/m/Y") }} </span>
+          {% endif %}
+          </td>
        </tr>
      {% endif %}
      {% endfor %}

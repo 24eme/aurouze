@@ -3,8 +3,20 @@
 <tr style="cursor: pointer;" onclick="document.location.href='{{ path('societe_visualisation', {'id': item.doc.societe.id}) }}'">
     <td>{{ item.instance }}<br /><small>{{ item.doc.identifiant }}</small></td>
     <td>
-        {% if not item.doc.actif %}<small class="pull-right"><label class="label label-xs label-danger">SUSPENDU</label></small>{% endif %}
-        <i class="mdi mdi-{{ item.doc.icon }} mdi-lg"></i>&nbsp;{{ item.doc.libelleComplet }}<br />
+        <div style="display: flex;justify-content: space-between;">
+            <div>
+                {% if not item.doc.actif %}<small class="pull-right"><label class="label label-xs label-danger">SUSPENDU</label></small>{% endif %}
+                <i class="mdi mdi-{{ item.doc.icon }} mdi-lg"></i>&nbsp;{{ item.doc.libelleComplet }}<br />
+            </div>
+            {% for tag in item.doc.tags %}
+                {% if (tag == "AHRB") %}
+                    <div>
+                        <a href="{{ path('recherche_tag', {'q': tag}) }}" class="btn btn-info btn-xs" style="font-size:10px;">{{ tag }}</a>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
         <small>
             {% if (item.doc.contactCoordonnee.telephoneFixe or item.doc.contactCoordonnee.telephoneMobile or item.doc.contactCoordonnee.fax or item.doc.contactCoordonnee.email or item.doc.contactCoordonnee.siteInternet or item.doc.contactCoordonnee.libelle)  %}
             	{% if(societe.contactCoordonnee.libelle is defined and societe.contactCoordonnee.libelle)%}{{ societe.contactCoordonnee.libelle }}&nbsp;{%endif%}

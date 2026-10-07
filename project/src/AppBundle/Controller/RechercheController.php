@@ -137,6 +137,7 @@ class RechercheController extends Controller {
             $newResult->icon = $object->getIcon();
             $newResult->libelle = $object->getLibelleComplet();
             $newResult->text = $object->getLibelleComplet();
+            $newResult->tags = (method_exists($object, 'getTags') && count($object->getTagsNom())) ? array_values($object->getTagsNom()) : [];
             $newResult->instance = $item['instance'];
             $newResult->actif = ($object->getActif())? 1 : 0;
             $result[] = $newResult;

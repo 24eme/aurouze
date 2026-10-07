@@ -14,7 +14,7 @@
                 {% endif %}
                 Tél : {{ facture.emetteur.telephone }}<br />
                 {% if(facture.emetteur.email) %}
-                E-mail: {{ facture.emetteur.email }}
+                E-mail: {{ facture.emetteur.email| replace({";" : "-"}) }}
                 {% endif %}
             </p>
         </div>
@@ -164,7 +164,7 @@
         </p>
         {% endif %}
 
-        <div style="position:absolute; bottom:0; width:100%; padding:0 30px; left:0; right:0; height:200px;">
+        <div style="position:absolute; bottom:0; width:100%; padding:0 30px; left:0; right:0; height:270px;">
             <small>
             <p class="text-center" style="line-height: 18px; font-size: 15px;">
                 <small>
@@ -232,6 +232,9 @@
                 </div>
             </div>
             {% endif %}
+                {% if (instanceapp == "aurouze") %}
+                    <img style="display:block;margin:8px 0 0 auto; width: 130px; padding:0;" src="file://{{ kernelRootDir }}/../web/images/aurouze_certif_logo.png" />
+                {% endif %}
         </div>
     </div>
 {% endblock %}

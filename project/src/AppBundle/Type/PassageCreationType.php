@@ -11,6 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use AppBundle\Document\Compte;
 use AppBundle\Manager\PassageManager;
@@ -43,6 +44,20 @@ class PassageCreationType extends AbstractType
 				'format' => 'dd/MM/yyyy'
 			))
         ;
+
+        $builder->add('prixUnitaireHorsContrat', NumberType::class, array(
+                'attr' => array(
+                    'min' => '0',
+                    'class' => 'form-control prix-unitaire'),
+                'data' => $builder->getData()->getContrat()->getPrixPassage(),
+                'scale' => 2));
+
+        $builder->add('tauxTaxeHorsContrat', NumberType::class, array(
+                'attr' => array(
+                    'min' => '0',
+                    'class' => 'form-control prix-unitaire'),
+                'data' => $builder->getData()->getContrat()->getTva(),
+                'scale' => 3));
 
         $builder->add('techniciens', DocumentType::class, array(
             	'choices' => $this->getTechniciens(),

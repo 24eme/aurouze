@@ -433,6 +433,9 @@ class FactureController extends Controller
           $facture->setDateFacturation($df);
         }
 
+        $facture->setDateFacturation(new \DateTime);
+        $facture->setDateLimitePaiement($facture->calculDateLimitePaiement());
+
         $fm->getRepository()->getClassMetadata()->idGenerator->generateNumeroFacture($dm, $facture);
         $dm->persist($facture);
         $dm->flush();
@@ -1224,7 +1227,7 @@ class FactureController extends Controller
       $path = './pdf/relances/';
       $this->get('knp_snappy.pdf')->generateFromHtml($html, $path.$filename);
 
-      return $urlReturn.(parse_url($urlReturn, PHP_URL_QUERY) ? '&' : '?') . 'pdf='.urlencode($filename);
+      return new RedirectResponse($urlReturn.(parse_url($urlReturn, PHP_URL_QUERY) ? '&' : '?') . 'pdf='.urlencode($filename));
     }
 
     /**
@@ -1312,7 +1315,7 @@ class FactureController extends Controller
 
           $commercial_SEINE_ET_MARNE = ($this->container->getParameter("commercial_seine_et_marne")) ? $this->container->getParameter("commercial_seine_et_marne") : null;
 
-          if(($facture->getCommercial() && $facture->getCommercial()->getNom() == $commercial_SEINE_ET_MARNE) or ($facture->getContrat() && $facture->getContrat()->getZone() == ContratManager::ZONE_SEINE_ET_MARNE) or ($facture->getContrat() && $facture->getContrat()->getCommercial() && $facture->getContrat()->getCommercial()->getNom() == $commercial_SEINE_ET_MARNE)){
+          if(($facture->getCommercial() && preg_match("/".$commercial_SEINE_ET_MARNE."/", $facture->getCommercial()->getNom())) or ($facture->getContrat() && $facture->getContrat()->getZone() == ContratManager::ZONE_SEINE_ET_MARNE) or ($facture->getContrat() && $facture->getContrat()->getCommercial() && preg_match("/".$commercial_SEINE_ET_MARNE."/", $facture->getContrat()->getCommercial()->getNom()))){
               $email_footer = $this->container->getParameter('email_footer_SEINE_ET_MARNE');
           }
 
@@ -1325,20 +1328,23 @@ class FactureController extends Controller
               return null;
           }
 
-          if($facture->getSociete()->getContactCoordonnee()->getEmailFacturation()){
-            $toEmail = $facture->getSociete()->getContactCoordonnee()->getEmailFacturation();
+          $toEmailFacturationSociete = $facture->getSociete()->getContactCoordonnee()->getEmailFacturation();
+
+          $toEmailSociete = $facture->getSociete()->getContactCoordonnee()->getEmail();
+
+          $toEmails = [];
+
+          if($toEmailFacturationSociete) {
+            $toEmails = array_filter(explode(";", $toEmailFacturationSociete), function($email) { return filter_var($email, FILTER_VALIDATE_EMAIL); });
           }
-          elseif($facture->getSociete()->getContactCoordonnee()->getEmail()) {
-            $toEmail = $facture->getSociete()->getContactCoordonnee()->getEmail();
-          }
-          else{
-            return null;
+          elseif($toEmailSociete) {
+            $toEmails = array_filter(explode(";", $toEmailSociete), function($email) { return filter_var($email, FILTER_VALIDATE_EMAIL); });
           }
 
           $message = \Swift_Message::newInstance()
               ->setSubject($subject)
               ->setFrom(array($fromEmail => $fromName))
-              ->setTo(explode(";", $toEmail))
+              ->setTo($toEmails)
               ->setBody($body,'text/plain')
               ->setReadReceiptTo($fromEmail);
 
@@ -1360,37 +1366,26 @@ class FactureController extends Controller
         $message = $this->getMailRelance($facture, $this->createPdfFacture($request,$facture->getId()));
 
         if(!$message ){
-            var_dump('NO mailer config');
-            $request->getSession()->getFlashBag()->add('notice', 'success');
-            $referer = $request->headers->get('referer');
-            return $this->redirect($referer);
+            throw new \Exception("Le mail n'a pas été créé");
         }
 
-        try {
-            $this->get('mailer')->send($message);
-            $dm = $this->get('doctrine_mongodb')->getManager();
+        $this->get('mailer')->send($message);
+        $dm = $this->get('doctrine_mongodb')->getManager();
 
-            if(!$facture->getNbRelance()){
-                $facture->setNbRelance(1);
-            }
-            else{
-                $facture->setNbRelance(2);
-            }
-            $dm->flush();
-            $relance = new Relance();
-            $relance->setDateRelance(new \DateTime());
-            $relance->setNumeroRelance($facture->getNbRelance());
-            $facture->addRelance($relance);
+        if(!$facture->getNbRelance()){
+            $facture->setNbRelance(1);
+        }
+        else{
+            $facture->setNbRelance(2);
+        }
+        $dm->flush();
+        $relance = new Relance();
+        $relance->setDateRelance(new \DateTime());
+        $relance->setNumeroRelance($facture->getNbRelance());
+        $facture->addRelance($relance);
 
-            $commentaire = $facture->getRelanceCommentaire();
-            $dm->flush();
-        }
-        catch(Exception $e) {
-            var_dump('NO mailer config');
-            $request->getSession()->getFlashBag()->add('notice', 'success');
-            $referer = $request->headers->get('referer');
-            return $this->redirect($referer);
-        }
+        $commentaire = $facture->getRelanceCommentaire();
+        $dm->flush();
 
         $request->getSession()->getFlashBag()->add('notice', 'success');
         $referer = $request->headers->get('referer');
@@ -1417,7 +1412,7 @@ class FactureController extends Controller
           $email_footer = $this->container->getParameter('email_footer');
 
           $commercial_SEINE_ET_MARNE = ($this->container->getParameter("commercial_seine_et_marne")) ? $this->container->getParameter("commercial_seine_et_marne") : null;
-          if(($facture->getCommercial() && $facture->getCommercial()->getNom() == $commercial_SEINE_ET_MARNE) or ($facture->getContrat() && $facture->getContrat()->getCommercial()->getNom() == $commercial_SEINE_ET_MARNE )or ($facture->getContrat() && $facture->getContrat()->getZone() == ContratManager::ZONE_SEINE_ET_MARNE)){
+          if(($facture->getCommercial() && preg_match("/".$commercial_SEINE_ET_MARNE."/", $facture->getCommercial()->getNom())) or ($facture->getContrat() && preg_match("/".$commercial_SEINE_ET_MARNE."/", $facture->getContrat()->getCommercial()->getNom())) or ($facture->getContrat() && $facture->getContrat()->getZone() == ContratManager::ZONE_SEINE_ET_MARNE)){
               $email_footer = $this->container->getParameter('email_footer_SEINE_ET_MARNE');
           }
 

@@ -13,6 +13,8 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use AppBundle\Manager\FactureManager;
+
 
 class FactureType extends AbstractType
 {
@@ -51,7 +53,7 @@ class FactureType extends AbstractType
                     'expanded' => false,
                     'multiple' => false,
                     'required' => false,
-                    'attr' => array("class" => "select2 select2-simple", "data-placeholder" => "Séléctionner une fréquence de paiement"),
+                    'attr' => array("class" => "select2 select2-simple", "data-placeholder" => "Sélectionner une fréquence de paiement"),
             ))
             ->add('description', TextareaType::class, array('label' => 'Informations complémentaires :', 'required' => false, "attr" => array("class" => "form-control", "rows" => 3)))
             ->add('relanceCommentaire', TextareaType::class, array('label' => 'Commentaire interne :', 'required' => false, "attr" => array("class" => "form-control", "rows" => 3)))
@@ -70,6 +72,16 @@ class FactureType extends AbstractType
 
         $builder->add('dateFacturation', DateType::class, array(
             'label' => 'Date de facturation',
+            "attr" => array(
+                'class' => 'input-inline datepicker',
+                'data-provide' => 'datepicker',
+                'data-date-format' => 'dd/mm/yyyy'
+            ),
+            'widget' => 'single_text',
+            'format' => 'dd/MM/yyyy'
+        ));
+        $builder->add('dateLimitePaiement', DateType::class, array(
+            'label' => 'Date limite de paiement',
             "attr" => array(
                 'class' => 'input-inline datepicker',
                 'data-provide' => 'datepicker',
@@ -100,6 +112,8 @@ class FactureType extends AbstractType
 
     public function getFrequences() {
         $tags = $this->dm->getRepository('AppBundle:Contrat')->findAllFrequences();
+        $frequenceFacture = FactureManager::$frequences;
+        $tags[key($frequenceFacture)] = $frequenceFacture['PERSO'];
         return array_merge(array(null => null), $tags);
     }
 

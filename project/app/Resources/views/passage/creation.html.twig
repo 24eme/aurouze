@@ -38,6 +38,28 @@
         	                </div>
                         </div>
     	            </div>
+                 <div class="form-group prix-hc-group col-xs-12">
+                     <div>
+    	                {{ form_errors(form.prixUnitaireHorsContrat) }}
+                        {{ form_label(form.prixUnitaireHorsContrat, "Prix Unitaire", {'label_attr': {'class': 'col-xs-2'}}) }}
+                        <div class="col-xs-4">
+        	                <div class="input-group">
+                             {{ form_widget(form.prixUnitaireHorsContrat, {'attr': {'class': 'text-right'}}) }}
+        	                    <div class="input-group-addon">€ HT</div>
+        	                </div>
+                        </div>
+                     </div>
+                        <div>
+                            {{ form_errors(form.tauxTaxeHorsContrat) }}
+                            {{ form_label(form.tauxTaxeHorsContrat, "Taux de TVA", {'label_attr': {'class': 'col-xs-2', 'style' : 'width:150px;'}}) }}
+                            <div class="col-xs-2">
+                                {{ form_widget(form.tauxTaxeHorsContrat, {'attr': {'class': 'text-right'}}) }}
+                            </div>
+                        </div>
+                        <div class="control-label col-xs-2">
+                            <strong>Total :</strong> <span id="totalTTCHorsContrat"></span> € TTC
+                        </div>
+    	            </div>
 
                     <div class="form-group">
     	                {{ form_errors(form.techniciens) }}
@@ -65,4 +87,67 @@
         	{{ form_end(form) }}
         </div>
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript">
+        // Afficher le champs prix unitaire dynamiquement
+
+        const delay = ms => new Promise(res => setTimeout(res, ms));
+
+        const getSelectPassageHorsContrat = async () => {
+            await delay(1);
+
+            const typePassageSpan = document.getElementById("select2-passage_typePassage-container");
+
+           showHidePrixUnitaireHC(typePassageSpan.title);
+
+            new MutationObserver(function(mutations) {
+                showHidePrixUnitaireHC(typePassageSpan.title);
+            }).observe(
+                typePassageSpan,
+                { subtree: true, characterData: true, childList: true }
+            );
+        }
+
+        getSelectPassageHorsContrat();
+
+        function showHidePrixUnitaireHC(typePassageSpan) {
+            const prixUnitaireHCGroup = document.getElementsByClassName("prix-hc-group");
+            if (typePassageSpan != "Hors contrat - Facturant") {
+                prixUnitaireHCGroup[0].style.display = "none";
+            } else {
+                prixUnitaireHCGroup[0].style.display = "block";
+
+                showTotalTTCPassageHorsContrat();
+            }
+
+            function showTotalTTCPassageHorsContrat() {
+                let totalTTC = 0;
+                let prixHT = document.getElementById("passage_prixUnitaireHorsContrat");
+
+                let tauxTVA = document.getElementById("passage_tauxTaxeHorsContrat");
+
+                updateTotalTTCPassageHorsContrat(prixHT, tauxTVA);
+
+                let infosPrixArray = document.querySelectorAll("#passage_prixUnitaireHorsContrat, #passage_tauxTaxeHorsContrat");
+
+                infosPrixArray.forEach(function(info){
+                    info.addEventListener('change', function() {
+                    let prixHT = document.getElementById("passage_prixUnitaireHorsContrat");
+
+                    let tauxTVA = document.getElementById("passage_tauxTaxeHorsContrat");
+                    updateTotalTTCPassageHorsContrat(prixHT, tauxTVA);
+                    });
+                });
+            }
+
+            showTotalTTCPassageHorsContrat();
+
+            function updateTotalTTCPassageHorsContrat(prixHT, tauxTVA) {
+                document.getElementById("totalTTCHorsContrat").innerHTML = (Number(prixHT.value.replace(",", ".")) +(Number(prixHT.value.replace(",", ".")) * Number(tauxTVA.value.replace(",", ".")))).toFixed(2);
+            }
+        }
+
+    </script>
 {% endblock %}

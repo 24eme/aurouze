@@ -132,12 +132,13 @@
           return;
         }
         var signaturePadIndex = "signature_pad_"+$(this).attr('data-id');
+        let passageId = $(this).attr('data-id')
         var divs = document.querySelectorAll('canvas');
         [].forEach.call(divs, function(div) {
             if(signaturePadIndex == div.id){
               var idCanva = div.id;
               signaturesPad[idCanva].clear();
-              var signatureHiddenCible = "input[data-cible='mobile_"+$(this).attr('data-id')+"_signatureBase64']";
+              var signatureHiddenCible = "input[data-cible='mobile_"+passageId+"_signatureBase64']";
               $(signatureHiddenCible).each(function(){ $(this).val(""); });
             }
           });

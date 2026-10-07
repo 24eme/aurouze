@@ -264,7 +264,7 @@
              }
              else{
               alert("IL Y A UNE ERREUR, LE MAIL N'A PAS PU ETRE ENVOYE");
-              throw new Error(response.status);
+              return null;
              }
            })
            .then(function(text) {
@@ -719,6 +719,12 @@
               suggestion: function (e) {
             	  if (type == 'societe') {
 	            	  var result = '<i class="mdi mdi-'+e.icon+' mdi-lg"></i>&nbsp;'+e.libelle+' <small>n°&nbsp;'+e.identifiant+'</small>';
+																console.log(e.tags);
+									if (e.tags && e.tags.length) {
+									  for(let tag of e.tags) {
+									    result = result+' <small><label class="label label-xs label-info">'+tag+'</label></small>';
+										}
+									}
 	            	  if (!e.actif) {
 	            		  result = result+' <small><label class="label label-xs label-danger">SUSPENDU</label></small>';
 	            	  }

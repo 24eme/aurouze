@@ -797,7 +797,7 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
      * @return self
      */
     public function setZone($commercialSeineEtMarne){
-      if($this->getCommercial()->getNom() == $commercialSeineEtMarne){
+      if($commercialSeineEtMarne && preg_match("/".$commercialSeineEtMarne."/", $this->getCommercial()->getNom())) {
         $this->zone = ContratManager::ZONE_SEINE_ET_MARNE;
       }
       else{
@@ -857,7 +857,11 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
         return $this->getDureeFormatee($duree);
     }
 
-    public function getPrixPassage() {
+    public function getPrixPassage()
+    {
+        if ($this->getNbPassages() === 0) {
+          return 0;
+        }
         return round($this->getPrixHt() / $this->getNbPassages(), 2);
     }
 
@@ -947,7 +951,16 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
         }
 
         if($mouvement->isPassageHorsContrat()) {
-            $mouvement->setPrixUnitaire($this->getPrixPassage());
+            $passageHorsContrat = $mouvement->getOrigineDocumentGeneration();
+             if($passageHorsContrat->getPrixUnitaireHorsContrat()) {
+                 $mouvement->setPrixUnitaire($passageHorsContrat->getPrixUnitaireHorsContrat());
+
+                 if($passageHorsContrat->getTauxTaxeHorsContrat()) {
+                    $mouvement->setTauxTaxe($passageHorsContrat->getTauxTaxeHorsContrat());
+                 }
+             } else {
+                 $mouvement->setPrixUnitaire($this->getPrixPassage());
+             }
             $mouvement->setLibelle(sprintf("Intervention hors contrat n° %s du %s", $this->getNumeroArchive(), $origineDocumentGeneration->getDateDebut()->format('d/m/Y')));
         } else {
             $mouvement->setPrixUnitaire(round($this->getPrixRestant() / $this->getNbFacturesRestantes(), 2));
@@ -955,7 +968,11 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
         }
 
         $mouvement->setQuantite(1);
-        $mouvement->setTauxTaxe($this->getTva());
+        if($mouvement->getTauxTaxe() == null ){
+            $mouvement->setTauxTaxe($this->getTva());
+        } else {
+            $mouvement->getTauxTaxe();
+        }
         $mouvement->setFacturable(true);
         $mouvement->setFacture(false);
         $mouvement->setSociete($this->getSociete());

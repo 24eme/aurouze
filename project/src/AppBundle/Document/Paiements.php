@@ -183,6 +183,7 @@ class Paiements {
     			$result[$k]['items'] = array();
     			$result[$k]['montant'] = 0;
     			$result[$k]['factures'] = 0;
+                $result[$k]['id'] = $this->getId();
     		}
 
     		$result[$k]['libelle'] = ($paiement->getMoyenPaiement())? PaiementsManager::$moyens_paiement_libelles[$k] : '';
@@ -317,6 +318,16 @@ class Paiements {
         $montantTotal = 0;
         foreach ($this->getPaiementBySociete($societe) as $paiement) {
             $montantTotal+=$paiement->getMontant();
+        }
+        return $montantTotal;
+    }
+
+    public function getTotalByLibelle($libelle) {
+        $montantTotal = 0;
+        foreach ($this->getPaiement() as $paiement) {
+            if($libelle == $paiement->getLibelle()) {
+                $montantTotal+= $paiement->getMontant();
+            }
         }
         return $montantTotal;
     }

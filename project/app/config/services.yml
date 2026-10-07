@@ -136,3 +136,6 @@ services:
         public: false
         tags:
             - { name: twig.extension }
+    contrat.signature_api:
+        class: AppBundle\Tool\SignatureAPITool
+        arguments: ['%signature_contrat_api.url%']

@@ -173,6 +173,18 @@ class Passage implements DocumentEtablissementInterface, DocumentSocieteInterfac
      */
     protected $dateEnvoiMailRapport;
 
+    /**
+     * @MongoDB\Field(type="float")
+     */
+    protected $prixUnitaireHorsContrat;
+
+    /**
+     * @MongoDB\Field(type="float")
+     */
+    protected $tauxTaxeHorsContrat;
+
+
+
 
     public function __construct() {
         $this->etablissementInfos = new EtablissementInfos();
@@ -1243,6 +1255,51 @@ class Passage implements DocumentEtablissementInterface, DocumentSocieteInterfac
 
     public function getPdfRapportDateEnvoi(){
       return $this->dateEnvoiMailRapport;
+    }
+
+    /**
+     * Set prixUnitaireHorsContrat
+     *
+     * @param float $prixUnitaireHorsContrat
+     * @return self
+     */
+    public function setPrixUnitaireHorsContrat($prixUnitaireHorsContrat)
+    {
+        $this->prixUnitaireHorsContrat = $prixUnitaireHorsContrat;
+        return $this;
+    }
+
+    /**
+     * Get prixUnitaireHorsContrat
+     *
+     * @return float $prixUnitaireHorsContrat
+     */
+    public function getPrixUnitaireHorsContrat()
+    {
+        return $this->prixUnitaireHorsContrat;
+    }
+
+
+    /**
+     * Set tauxTaxeHorsContrat
+     *
+     * @param float $tauxTaxeHorsContrat
+     * @return self
+     */
+    public function setTauxTaxeHorsContrat($tauxTaxeHorsContrat)
+    {
+        $this->tauxTaxeHorsContrat = $tauxTaxeHorsContrat;
+        return $this;
+    }
+
+    /**
+     * Get tauxTaxeHorsContrat
+     *
+     * @return float $tauxTaxeHorsContrat
+     */
+    public function getTauxTaxeHorsContrat()
+    {
+        return $this->tauxTaxeHorsContrat;
     }
 
 }

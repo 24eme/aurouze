@@ -20,6 +20,7 @@ class FactureManager {
     protected $config;
 
     const DEFAUT_FREQUENCE_JOURS = 10;
+    const FREQUENCE_PERSO = "PERSO";
 
     const EXPORT_DATE = 0 ;
     const EXPORT_JOURNAL= 1;
@@ -141,6 +142,11 @@ public static $export_factures_en_retards = array(
   self::EXPORT_RETARD_MONTANT_PAYE => "Montant payé",
   self::EXPORT_RETARD_NB_RELANCES => "Nombre de relances"
 );
+
+    public static $frequences = array(
+        self::FREQUENCE_PERSO => 'Échéance personnalisée',
+    );
+
     function __construct(DocumentManager $dm, MouvementManager $mm, Config $config) {
         $this->dm = $dm;
         $this->mm = $mm;
@@ -175,8 +181,8 @@ public static $export_factures_en_retards = array(
       $zone = ContratManager::ZONE_PARIS;
       $commercial_SEINE_ET_MARNE = $this->config->get("commercial_seine_et_marne");
       if (
-          ($facture->getCommercial() && $facture->getCommercial()->getNom() == $commercial_SEINE_ET_MARNE)
-          || ($facture->getContrat() && $facture->getContrat()->getCommercial() && $facture->getContrat()->getCommercial()->getNom() == $commercial_SEINE_ET_MARNE)
+          ($facture->getCommercial() && preg_match("/".$commercial_SEINE_ET_MARNE."/", $facture->getCommercial()->getNom()))
+          || ($facture->getContrat() && $facture->getContrat()->getCommercial() && preg_match("/".$commercial_SEINE_ET_MARNE."/", $facture->getContrat()->getCommercial()->getNom()))
           || ($contrat && $contrat->getZone() == ContratManager::ZONE_SEINE_ET_MARNE)
       ) {
 
@@ -238,6 +244,8 @@ public static $export_factures_en_retards = array(
           $facture->addLigne($ligne);
         }
 
+        $facture->setDateLimitePaiement($devis->getDateLimitePaiement());
+
         $facture->update();
 
         return $facture;
@@ -280,10 +288,15 @@ public static $export_factures_en_retards = array(
             $nbFactures = $contrat->getNbFactures();
 
             $commercial = $contrat->getCommercial();
-            $dateFacturation = new \DateTime();
 
             $startDate = $contrat->getDateDebut();
+            $now = new \DateTime();
+            if($startDate < $now) {
+                $startDate = $now;
+            }
             $endDate = $contrat->getDateFin();
+
+            $dateFacturation = clone $startDate;
 
             $period= $startDate->diff($endDate)->format('%a');
             $interval = $period / $nbFactures;
@@ -292,10 +305,10 @@ public static $export_factures_en_retards = array(
 
             for($i = 0; $i < $nbFactures; $i++) {
                 $facture = $this->createVierge($societe, $contrat);
+                $facture->setGenerateNumero(false);
                 $facture->setDateFacturation($dateFacturation);
                 $facture->setCommercial($commercial);
                 $facture->setDateEmission($facture->getDateFacturation());
-                $facture->setDateLimitePaiement($facture->calculDateLimitePaiement());
 
                 $factureLigne = new LigneFacturable();
                 $factureLigne->setPrixUnitaire($montantTotalHT / $nbFactures);
@@ -314,21 +327,13 @@ public static $export_factures_en_retards = array(
 
                 $facture->addLigne($factureLigne);
 
-                $montantHT = $factureLigne->getMontantHT();
-                $facture->setMontantHT($factureLigne->getMontantHT());
-                $facture->setMontantTaxe($factureLigne->getMontantTaxe());
-                $facture->setMontantTTC($facture->getMontantHT() + $facture->getMontantTaxe());
+                $facture->update();
+                $facture->updateRestantAPayer();
 
                 $this->dm->persist($facture);
                 $this->dm->flush();
 
                 $dateFacturation->modify('+ ' . round($interval) . " days");
-
-                if($facture->getNumeroFacture()){
-                    $facture->removeNumeroFacture();
-                    $this->dm->persist($facture);
-                    $this->dm->flush();
-                }
             }
             return $facture;
         }
@@ -754,11 +759,17 @@ public static $export_factures_en_retards = array(
                               if ($p->getFacture()->getId() != $facture->getId()) {
                                   continue;
                               }
-                              $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] .= "\n".$p->getMoyenPaiementLibelle()."\n(".$p->getDatePaiement()->format('d/m/Y').')';
+                              if($p->getMoyenPaiement() == PaiementsManager::MOYEN_PAIEMENT_PRELEVEMENT_BANQUAIRE && $p->getMontant() == 0) {
+                                  $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] .= "\n Rejet de prélèvement bancaire\n(".$p->getDatePaiement()->format('d/m/Y').')';
+                              } else {
+                                  $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] .= "\n".$p->getMoyenPaiementLibelle()."\n(".$p->getDatePaiement()->format('d/m/Y').')';
+                              }
                           }
                       }
                   }else{
-                      if($facture->isAvoir() && $facture->getAvoirPartielRemboursementCheque()){
+                      if($paiement->getMoyenPaiement() == PaiementsManager::MOYEN_PAIEMENT_PRELEVEMENT_BANQUAIRE && $paiement->getMontant() == 0) {
+                        $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] = "Rejet de prélèvement bancaire";
+                      } elseif($facture->isAvoir() && $facture->getAvoirPartielRemboursementCheque()){
                         $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] =  $paiement->getMoyenPaiementLibelle();
                       }else{
                         $factureLigne[self::EXPORT_SOCIETE_MOYEN_REGLEMENT] =  $paiement->getMoyenPaiementLibelle();
@@ -804,7 +815,7 @@ public static $export_factures_en_retards = array(
     $factureLigne[self::EXPORT_DATE] = $facture->getDateFacturation()->format('d/m/Y');
     $factureLigne[self::EXPORT_JOURNAL] =  "VENTES" ;
     if($typeLigne == self::EXPORT_LIGNE_GENERALE){
-        $factureLigne[self::EXPORT_COMPTE] = $facture->getSociete()->getCodeComptable();
+        $factureLigne[self::EXPORT_COMPTE] = str_replace('AHRB_', '', $facture->getSociete()->getCodeComptable());
         $factureLigne[self::EXPORT_DEBIT] = number_format(($facture->isAvoir())? "0" : $facture->getMontantTTC(), 2, ",", "");
         $factureLigne[self::EXPORT_CREDIT] = number_format(($facture->isAvoir())? (-1*$facture->getMontantTTC()): "0", 2, ",", "");
     }elseif($typeLigne == self::EXPORT_LIGNE_TVA){

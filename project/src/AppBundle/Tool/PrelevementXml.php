@@ -81,7 +81,7 @@ protected $xml;
             $facture->setInPrelevement($facture->getPrelevementDate());
 
             $this->directDebit->addTransfer($d, array(
-                'amount'                => ''.$facture->getMontantAPayer()*100,
+                'amount'                => ''.intval(round($facture->getMontantAPayer()*100)),
                 'debtorIban'            => str_ireplace(" ","",$facture->getSepa()->getIban()),
                 'debtorBic'             => str_ireplace(" ","",$facture->getSepa()->getBic()),
                 'debtorName'            => $facture->getSepa()->getNomBancaire(),
