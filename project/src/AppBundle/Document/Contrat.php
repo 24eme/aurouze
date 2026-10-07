@@ -857,7 +857,11 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
         return $this->getDureeFormatee($duree);
     }
 
-    public function getPrixPassage() {
+    public function getPrixPassage()
+    {
+        if ($this->getNbPassages() === 0) {
+          return 0;
+        }
         return round($this->getPrixHt() / $this->getNbPassages(), 2);
     }
 
