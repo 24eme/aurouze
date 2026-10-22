@@ -423,3 +423,8 @@ textarea:required:invalid{
       background-repeat: no-repeat;
       background-position: 85% 25%;
   }
+
+  .ui-icon-trash:after {
+    background-image: url("../images/trash-icon.svg");
+    background-color: white;
+  }

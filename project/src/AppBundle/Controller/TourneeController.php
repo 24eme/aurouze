@@ -333,6 +333,25 @@ class TourneeController extends Controller {
 
    }
 
+   /**
+   * @Route("/tournee-technicien/{technicien}/attachement/{id}/{date}/supprimer/{retour}", name="tournee_attachement_delete")
+   */
+   public function attachementDeleteAction(Request $request, $id, $technicien, $date, $retour) {
+        $technicien = $request->get('technicien');
+        $date = $request->get('date');
+        $retour = $request->get('retour');
+        $attachement = $this->get('attachement.manager')->getRepository()->find($id);
+
+        $dm = $this->get('doctrine_mongodb')->getManager();
+
+        $dm->remove($attachement);
+        $dm->flush();
+
+
+        $urlRetour = $this->generateUrl('tournee_technicien', array('technicien' => $technicien, 'date' => $date))."#visualisation_".$retour;
+        return $this->redirect($urlRetour);
+   }
+
 
    public function sortPlanifiablesByTechnicien($planifiablesForAllTechniciens){
        $planifiablesByTechniciens = array();
