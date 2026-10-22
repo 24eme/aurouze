@@ -68,6 +68,30 @@ sudo apt install -y php7.4 php7.4-json php7.4-common php7.4-gd php7.4-mbstring p
 php7.4 -v
 ```
 
+#### Installer php7.4-intl
+
+L'extension intl n'est pas distribuée par le dépôt sury (au moins pour Debian 14)
+Un dépôt Github compile les différentes versions de php-intl (de php 5.6 à 8.5) linké aux différentes lib ICU (de 50.2 à 78.3)
+
+Il suffit de télécharger la bonne version en fonction de la version de libicu installé sur la machine et de la version de php :
+```sh
+dpkg -l | grep libicu
+dpkg -l | grep php
+```
+
+Le dépôt se trouve ici : [icu-intl](https://github.com/shivammathur/icu-intl)
+
+(D'autres versions existent dans la page release s'il s'agit d'une machine arm ou en version thread safe)
+
+Il faut ensuite placer le `.so` téléchargé dans le dossier des modules de php7.4, trouvable via la commande `php-config74 --extension-dir`, le renommer en `intl.so`, et l'activer dans la configuration :
+
+```sh
+sudoedit /etc/php/7.4/cli/conf.d/20-intl.ini
+```
+```ini
+extension=intl.so
+```
+
 ### Installer l'extension MongoDB PHP 1.20.1 pour PHP 7.4
 La bonne version de l'extension MongoDB PHP peut être récupérée sur [PECL](https://pecl.php.net/) (un dêpot d'extensions PHP).
 
@@ -95,7 +119,7 @@ extension=mongodb.so
 
 - Installer les dépendances avec Composer en pointant sur PHP 7.4
 ```sh
-/usr/bin/php7.4 /usr/local/bin/composer update composer install
+/usr/bin/php7.4 /usr/local/bin/composer install
 ```
 
 Téléphone
