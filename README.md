@@ -66,13 +66,13 @@ sudo apt install -y php7.4 php7.4-json php7.4-common php7.4-gd php7.4-mbstring p
 php7.4 -v
 ```
 
-### Installer l'extension MongoDB PHP 1.12.1 pour PHP 7.4
+### Installer l'extension MongoDB PHP 1.20.1 pour PHP 7.4
 La bonne version de l'extension MongoDB PHP peut être récupérée sur [PECL](https://pecl.php.net/) (un dêpot d'extensions PHP).
 
-```
-wget https://pecl.php.net/get/mongodb-1.12.1.tgz
-tar -xvzf mongodb-1.12.1.tgz
-cd mongodb-1.12.1/
+```sh
+wget https://pecl.php.net/get/mongodb-1.20.1.tgz
+tar -xvzf mongodb-1.20.1.tgz
+cd mongodb-1.20.1/
 phpize
 ./configure
 make all -j 5
