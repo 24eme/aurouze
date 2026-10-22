@@ -21,7 +21,7 @@ Installation
 Déployer mongodb 4.0 avec docker
 --------------------------------
 
-```
+```sh
 docker run --rm --name mongodb -v /var/lib/mongodb:/data/db -p 27017:27017 -d mongo:4.0
 ```
 
@@ -32,37 +32,39 @@ Version de compass compatible avec mongo 4.0 : https://github.com/mongodb-js/com
 
 Déployer le projet en local avec PHP7.4 sur Debian/Ubuntu
 ------------------------------
+
 ### Installer php7.4
+
 Le dépôt d'Ondřej Surý est réputé mais n'est pas un dépôt officiel. Il est donc important d'être vigilant.
 
 - Installer les dépendances nécessaires
-```
+```sh
 sudo apt install -y apt-transport-https lsb-release ca-certificates wget
 ```
 
 - Ajouter le dépôt d'Ondřej Surý
-```
+```sh
 sudo wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
 ```
 
 - Ajouter le dépôt PHP
-```
+```sh
 echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/php.list
 ```
 
 - Mettre à jour la liste des paquets
 
-```
+```sh
 sudo apt update
 ```
 
 #### Installer PHP 7.4 et les extensions nécessaires
-```
+```sh
 sudo apt install -y php7.4 php7.4-json php7.4-common php7.4-gd php7.4-mbstring php7.4-curl php7.4-xml php7.4-dev
 ```
 
 - Vérifier l'installation
-```
+```sh
 php7.4 -v
 ```
 
@@ -75,24 +77,24 @@ tar -xvzf mongodb-1.20.1.tgz
 cd mongodb-1.20.1/
 phpize
 ./configure
-make all -j 5
+make all -j $(nproc)
 sudo make install
 ```
 
 - Ajouter l'extension dans php.ini
-```
+```sh
 sudo nano /etc/php/7.4/cli/conf.d/20-mongodb.ini
 ```
 
-```
+```ini
 extension=mongodb.so
 ```
 
 ### Installer les dépendances nécessaires au projet
-- Se rendre dans le dossier ```project/```
+- Se rendre dans le dossier `project/`
 
 - Installer les dépendances avec Composer en pointant sur PHP 7.4
-```
+```sh
 /usr/bin/php7.4 /usr/local/bin/composer update composer install
 ```
 
