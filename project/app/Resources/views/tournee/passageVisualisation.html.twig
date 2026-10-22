@@ -126,9 +126,14 @@
           <div style="margin-bottom: 20px;" {% if attachement.updatedAt|date("U") >= "-12 months"|date("U") %} class="recentAttachement"> {% else %} class="previousAttachement" hidden> {% endif %}
                 <h4>{{ attachement.updatedAt| localizeddate("medium", "none", null, null, "d MMMM yyyy")  }}</h4>
                   {% if attachement.isImage %}
+                  <div>
                 <a href="#popupPhoto-{{ attachement.id }}" data-rel="popup" data-position-to="window" class="ui-btn ui-corner-all ui-shadow" data-transition="fade">
                   <img src="{{ path('attachement_download', { id: attachement.id, noattachment: true }) }}" alt="{{ attachement.titre ?: attachement.originalName }}" style="width: 100%; margin-bottom:0"/>
                 </a>
+                <div>
+                    <a href="{{ path('tournee_attachement_delete', {'id': attachement.id, 'technicien': technicien.id, 'date':planifiable.dateDebut | date('Y-m-d'), 'retour': planifiable.id }) }}" onclick="return confirm('Êtes vous sûr de vouloir supprimer ce document?')" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-trash ui-btn-icon-notext " style="border-radius: 10%; cursor:pointer; display:block; width:35px; height:35px; margin: 20px 0 30px auto;" data-ajax="false"></a>
+                </div>
+                  </div>
                 <div data-role="popup" id="popupPhoto-{{ attachement.id }}" class="photopopup" data-overlay-theme="a" data-corners="false" data-tolerance="30,15">
                     <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a><img src="{{ path('attachement_download', { id: attachement.id, noattachment: true }) }}" alt="{{ attachement.titre ?: attachement.originalName }}">
                 </div>
