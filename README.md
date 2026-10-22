@@ -96,6 +96,37 @@ extension=mongodb.so
 /usr/bin/php7.4 /usr/local/bin/composer update composer install
 ```
 
+### Problèmes rencontrés
+
+Extension 'intl' introuvable :
+
+vérifier l'installation de libicu78
+
+```
+dpkg -l | grep -i libicu
+```
+
+Si libicu n'est pas installé, télécharger la dernière version depuis :
+```
+sudo apt-get install libicu78
+```
+
+Ensuite, téléchargez la version de intl correspondant à la version de libicu78 :
+https://github.com/shivammathur/icu-intl/releases/download/intl-78.3/php7.4-intl-78.3.so
+
+Déplacer le fichier des téléchargement dans les fichiers d'extension de php7.4
+
+```
+mv dossier-de-telechargement/php7.4-intl-78.3.so /usr/lib/php/20190902/intl.so
+```
+
+Direction le php.ini de php7.4 pour activer l'extension intl :
+```
+sudo vim /etc/php/7.4/cli/php.ini
+```
+Chercher la ligne 'extension=intl' et décommentez la
+
+
 Téléphone
 ---------
 
