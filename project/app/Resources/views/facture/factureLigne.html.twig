@@ -69,7 +69,11 @@
             {% if not facture.isAvoir %}
               {% if facture.numeroFacture %}
                  {% if (facture.getPayeeAvecTropPercu) %}
-                      <span data-toggle="tooltip" title="Déduction trop perçu {{ "%0.2f" | format((facture.montantTTC- facture.getMontantReelPaye)*-1) }} €">{{ "%0.2f" | format((facture.montantTTC- facture.getMontantReelPaye) *-1) }}&nbsp;€</span>
+                    {% if ((resteTropPaye > facture.getMontantReelPaye) or (resteTropPaye > facture.montantTTC)) %}
+                        <span data-toggle="tooltip" title="Déduction trop perçu {{ "%0.2f" | format(((facture.montantTTC - facture.getMontantReelPaye)*-1) - facture.getMontantReelPaye) }} €">{{ "%0.2f" | format(((facture.montantTTC - facture.getMontantReelPaye) *-1) - facture.getMontantReelPaye) }}&nbsp;€</span>
+                    {% else %}
+                      <span data-toggle="tooltip" title="Déduction trop perçu {{ "%0.2f" | format(((facture.montantTTC - facture.getMontantReelPaye)*-1)) }} €">{{ "%0.2f" | format((facture.montantTTC - facture.getMontantReelPaye) *-1) }}&nbsp;€</span>
+                    {% endif %}
                  {% elseif facture.montantAPayer < 0 %}
                      <span data-toggle="tooltip" title="Trop perçu {{ "%0.2f" | format(facture.montantAPayer*-1) }} €">
                  {% if facture.montantAPayer < 0 %}+{{ "%0.2f" | format(facture.montantAPayer*-1) }}&nbsp;€{% endif %}

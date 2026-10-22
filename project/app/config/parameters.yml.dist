@@ -18,12 +18,15 @@ parameters:
     mailer_host:       127.0.0.1
     mailer_user:       ~
     mailer_password:   ~
+    mailer_delivery_addresses: []
 
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt
 
     osm.url_search: "http://URL_DE_RECUPERATION"
     osm.return_format: "json"
+
+    signature_contrat_api.url: ~
 
     knp_snappy_pdfbinary: xvfb-run wkhtmltopdf
     knp_snappy_imagebinary: xvfb-run wkhtmltoimage
