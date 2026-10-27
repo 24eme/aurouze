@@ -435,6 +435,9 @@ class FactureController extends Controller
 
         $facture->setDateFacturation(new \DateTime);
         $facture->setDateLimitePaiement($facture->calculDateLimitePaiement());
+        if($facture->getSociete()->getSepa() && ($facture->getSepa() !== $facture->getSociete()->getSepa())){
+            $facture->setSepa($facture->getSociete()->getSepa());
+        }
 
         $fm->getRepository()->getClassMetadata()->idGenerator->generateNumeroFacture($dm, $facture);
         $dm->persist($facture);
