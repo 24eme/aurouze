@@ -439,6 +439,8 @@ class FactureController extends Controller
             $facture->setSepa($facture->getSociete()->getSepa());
         }
 
+        $facture->updateCalcul();
+
         $fm->getRepository()->getClassMetadata()->idGenerator->generateNumeroFacture($dm, $facture);
         $dm->persist($facture);
         $dm->flush();
