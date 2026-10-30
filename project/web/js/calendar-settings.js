@@ -197,7 +197,7 @@ $(function () {
           Object.entries(joursSemaineObject).forEach(([key, value]) => {
             eventsArray.forEach(function(e) {
               rangeNuitDebut = moment(structuredClone(e.start));
-              rangeNuitDebut = moment(rangeNuitDebut).set("hour",22);
+              rangeNuitDebut = moment(rangeNuitDebut).set("hour",20);
               rangeNuitDebut = moment(rangeNuitDebut).set("minute",00);
               rangeNuitDebut = rangeNuitDebut.utc();
 
