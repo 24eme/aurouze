@@ -220,7 +220,7 @@ public static $export_factures_en_retards = array(
       $facture->getEmetteur()->setEmail($parameters[$emetteur]['email']);
     }
 
-    public function createFromDevis(Devis $devis, $planification = true)
+    public function createFromDevis(Devis $devis, $dateFacturation, $planification = true)
     {
         if(!$devis->getPdfNonEnvoye() && $planification){
           return null;
@@ -233,7 +233,7 @@ public static $export_factures_en_retards = array(
         $facture->setDestinataire($devis->getDestinataire());
 
         $facture->setDateEmission(new \DateTime());
-        $facture->setDateFacturation(new \DateTime());
+        $facture->setDateFacturation($dateFacturation);
 
         $facture->setMontantHT($devis->getMontantHT());
         $facture->setMontantTTC($devis->getMontantTTC());
@@ -243,9 +243,7 @@ public static $export_factures_en_retards = array(
         foreach ($devis->getLignes() as $ligne) {
           $facture->addLigne($ligne);
         }
-
-        $facture->setDateLimitePaiement($devis->getDateLimitePaiement());
-
+        $facture->setFrequencePaiement($devis->getFrequencePaiement());
         $facture->update();
 
         return $facture;
