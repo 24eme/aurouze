@@ -46,7 +46,7 @@ class DevisType extends AbstractType
         }
 
         $builder->add('etablissement', DocumentType::class, array('label' => 'Lieux de livraison : ',
-                'choices' => $this->getEtablissements(),
+                'choices' => $this->getEtablissementsByStatut(true),
                 'class' => 'AppBundle\Document\Etablissement',
                 'expanded' => false,
                 'multiple' => false,
@@ -169,6 +169,20 @@ class DevisType extends AbstractType
 
       return $this->dm->getRepository('AppBundle:Etablissement')->findAllOrderedByIdentifiantSociete($this->societe);
 
+    }
+
+    public function getEtablissementsByStatut($statut) {
+        $etablissements = array();
+
+        foreach($this->getEtablissements() as $etablissement) {
+            if($etablissement->getActif() != $statut) {
+                continue;
+            }
+
+            $etablissements[$etablissement->getId()] = $etablissement;
+        }
+
+        return $etablissements;
     }
 
     public function getFrequences() {
