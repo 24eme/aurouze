@@ -284,7 +284,7 @@
         {% set total=0 %}
         {% set totalTTC=0 %}
         {% set totalPaye=0 %}
-        {% for facture in factures|sort %}
+        {% for facture in factures %}
             {% for mouvement in facture.lignes %}
                 <tr>
                     <td>
@@ -298,21 +298,48 @@
                     {% set montantTTC = montant + (montant * mouvement.tauxTaxe) %}
                     {% set total = total + montant %}
                     {% set totalTTC = totalTTC + montantTTC %}
-                    {% set totalPaye = totalPaye + facture.montantPaye %}
+                    {% set totalPaye = totalPaye + facture.montantReelPaye %}
                     <td class="text-right">{{ "%0.2f" | format(montant) }} €</td>
                     <td class="text-right">{{ "%0.2f" | format(mouvement.tauxTaxe * 100) }} %</td>
                     <td class="text-right">{{ "%0.2f" | format(montantTTC) }} €</td>
-                    <td class="text-right">{{ "%0.2f" | format(facture.montantPaye) }} €</td>
+                    <td class="text-right">{{ "%0.2f" | format(facture.montantReelPaye) }} €</td>
+                </tr>
+            {% endfor %}
+        {% endfor %}
+        <tr>
+        <th>Total </th>
+        <th></th>
+        <th></th>
+        <th class="text-right">{{ "%0.2f" | format(total) }} €</th>
+        <th></th>
+        <th class="text-right">{{ "%0.2f" | format(totalTTC) }} €</th>
+        <th class="text-right">{{ "%0.2f" | format(totalPaye) }} €</th>
+        </tr>
+        {% for facture in facturesPrevisionnel %}
+            {% for mouvement in facture.lignes %}
+                <tr class="text-muted">
+                    <td>
+                        {{ mouvement.libelle }}
+                    </td>
+                    <td class="text-right">{{ facture.dateFacturation | localizeddate("medium", "none", null, null, "d MMM yyyy") }}</td>
+                    <td class="text-center"><a href="{{ path('facturable_pdf', {'document': facture.id ,'key': facture.getSecretKey()})}}">En prévision</a></td>
+                    {% set montant = (facture.origineAvoir is not empty) ? mouvement.montantHT : mouvement.montantHT * mouvement.quantite %}
+                    {% set montantTTC = montant + (montant * mouvement.tauxTaxe) %}
+                    {% set total = total + montant %}
+
+                    <td class="text-right">{{ "%0.2f" | format(montant) }} €</td>
+                    <td class="text-right">{{ "%0.2f" | format(mouvement.tauxTaxe * 100) }} %</td>
+                    <td class="text-right">{{ "%0.2f" | format(montantTTC) }} €</td>
+                    <td class="text-right"></td>
                 </tr>
             {% endfor %}
         {% endfor %}
         {% for mouvement in contrat.mouvements if not mouvement.facture %}
-            <tr>
+            <tr class="text-muted">
                 <td>{{ mouvement.libelle }}</td>
                 <td class="text-right"></td>
                 <td class="text-center">En attente de génération</td>
                 {% set montant = mouvement.prixUnitaire * mouvement.quantite %}
-                {% set total = total + montant %}
                 <td class="text-right">{{ "%0.2f" | format(montant) }} €</td>
                 <td class="text-right"></td>
                 <td class="text-right"></td>
@@ -335,7 +362,7 @@
         </tfoot>
         {% endif %}
 
-        {% if contrat.nbFactures >= 2 and contrat.getFacturationManuelle() and contrat.getPrixHt() != total %}
+        {% if contrat.nbFactures >= 2 and contrat.getFacturationManuelle() and contrat.getPrixHt() != (total | round(2)) %}
         <tfoot>
           <tr>
             <td>Factures manuelles à créer</td>
@@ -362,15 +389,6 @@
           </tr>
         </tfoot>
         {% endif %}
-        <tr>
-        <th>Total </th>
-        <th></th>
-        <th></th>
-        <th class="text-right">{{ "%0.2f" | format(total) }} €</th>
-        <th></th>
-        <th class="text-right">{{ "%0.2f" | format(totalTTC) }} €</th>
-        <th class="text-right">{{ "%0.2f" | format(totalPaye) }} €</th>
-        </tr>
     </table>
 </div>
 {% endif %}

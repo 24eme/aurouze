@@ -287,7 +287,7 @@ class FactureController extends Controller
             if($facture->isDevis()){
                 $hasDevis = true;
             }
-            if (!$facture->isDevis() && !($facture->isPaye() || $facture->isAvoir() || $facture->isRedressee()) && !$facture->getNumeroFacture()) {
+            if ($facture->isFacturePrevisionnel()) {
                 $facturesPrevisionnel[] = $facture;
             }
             if($facture->getMesPaiements() and $facture->getPayeeAvecTropPercu()){
