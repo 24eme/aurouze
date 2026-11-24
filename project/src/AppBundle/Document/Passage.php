@@ -457,6 +457,10 @@ class Passage implements DocumentEtablissementInterface, DocumentSocieteInterfac
      * @return boolean $mouvementDeclenchable
      */
     public function getMouvementDeclenchable() {
+        if($this->getContrat()->getFacturationManuelle()) {
+            return false;
+        }
+
         return $this->mouvement_declenchable;
     }
 
