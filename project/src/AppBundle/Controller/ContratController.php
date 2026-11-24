@@ -494,7 +494,18 @@ class ContratController extends Controller {
 
         $dm = $this->get('doctrine_mongodb')->getManager();
 
-        $factures = $dm->getRepository('AppBundle:Facture')->findAllByContrat($contrat);
+        $factures = [];
+        $facturesPrevisionnel = [];
+        foreach($dm->getRepository('AppBundle:Facture')->findAllByContrat($contrat) as $facture) {
+            if(!$facture->isFacturePrevisionnel()) {
+                $factures[$facture->getId()] = $facture;
+            } else {
+                $facturesPrevisionnel[$facture->getId()] = $facture;
+            }
+        }
+
+        ksort($factures);
+        ksort($facturesPrevisionnel);
 
         $produitsContrat = $contrat->getProduits();
         $produitsPassages = $contrat->getProduitsUtilises();
@@ -530,7 +541,7 @@ class ContratController extends Controller {
             }
         }
 
-        return $this->render('contrat/visualisation.html.twig', array('contrat' => $contrat, 'factures' => $factures, 'societe' => $contrat->getSociete(), 'recapProduits' => $recapProduits, 'lastPassageRealise' => $lastPassageRealise, 'mailtoPassages' => $mailtoPassages));
+        return $this->render('contrat/visualisation.html.twig', array('contrat' => $contrat, 'factures' => $factures, 'facturesPrevisionnel' => $facturesPrevisionnel, 'societe' => $contrat->getSociete(), 'recapProduits' => $recapProduits, 'lastPassageRealise' => $lastPassageRealise, 'mailtoPassages' => $mailtoPassages));
     }
 
     /**
