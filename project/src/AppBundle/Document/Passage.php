@@ -183,7 +183,10 @@ class Passage implements DocumentEtablissementInterface, DocumentSocieteInterfac
      */
     protected $tauxTaxeHorsContrat;
 
-
+    /**
+    * @MongoDB\Field(type="collection")
+    */
+    protected $postes;
 
 
     public function __construct() {
@@ -1304,6 +1307,26 @@ class Passage implements DocumentEtablissementInterface, DocumentSocieteInterfac
     public function getTauxTaxeHorsContrat()
     {
         return $this->tauxTaxeHorsContrat;
+    }
+
+    /**
+     * Set postes
+     *
+     * @param collection $postes
+     * @return self
+     */
+    public function setPostes($postes) {
+        $this->postes = $postes;
+        return $this;
+    }
+
+    /**
+     * Get postes
+     *
+     * @return collection $postes
+     */
+    public function getPostes() {
+        return $this->postes;
     }
 
 }

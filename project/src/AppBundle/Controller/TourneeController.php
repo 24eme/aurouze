@@ -401,4 +401,20 @@ class TourneeController extends Controller {
       return $this->get('passage.manager')->getRepository()->findLastDateModificationPassagesForTechnicien($technicien,$date);
     }
 
+    /**
+    * @Route("/tournee-technicien/planitor/suivi_infestation/{passageId}", name="planitor_suivi_infestation")
+    */
+    public function planitorSuiviInfestationAction(Request $request)
+    {
+        $postes = json_decode($request->getContent(), true);
+        $passageId = $request->get('passageId');
+
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $currentPassage = $dm->getRepository('AppBundle:Passage')->findOneById($passageId);
+
+        $currentPassage->setPostes($postes);
+        $dm->flush();
+        exit;
+    }
+
 }
