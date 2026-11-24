@@ -673,7 +673,7 @@ class FactureController extends Controller
          * @Route("/facture/export-detailca", name="detailca_export")
          */
     	public function exportDetailCaAction(Request $request) {
-            ini_set('memory_limit', '256M');
+            ini_set('memory_limit', '-1');
         	// $response = new StreamedResponse();
         	$formRequest = $request->request->get('form');
             $commercial = (isset($formRequest['commercial']) && $formRequest['commercial'] && ($formRequest['commercial']!= ""))?
