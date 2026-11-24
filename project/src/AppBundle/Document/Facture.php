@@ -286,6 +286,11 @@ class Facture implements DocumentSocieteInterface, FacturableInterface
         return false;
     }
 
+    public function isFacturePrevisionnel() {
+
+        return !$this->isDevis() && !($this->isPaye() || $this->isAvoir() || $this->isRedressee()) && !$this->getNumeroFacture();
+    }
+
     public function getOrigines() {
         $origines = array();
         foreach ($this->getLignes() as $ligne) {
