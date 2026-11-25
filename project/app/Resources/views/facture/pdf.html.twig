@@ -118,7 +118,7 @@
 
                  {% for tvaKey, tvaValue in facture.arrayLigneTauxTva%}
                     <tr>
-                        <td colspan="2">TVA {{ (tvaKey * 100)|number_format(2, ',', ' ') }}%</td>
+                        <td colspan="2">TVA {{ (tvaKey * 100)|number_format(2, ',', ' ') }}% {% if (facture.getContrat().tvaAutoliquidation) %} <small>Autoliquidation <br> — art. 283-2 nonies du CGI</small> {% endif %} </td>
                         <td colspan="2" class="text-right">{{ tvaValue|number_format(2, ',', ' ') }} €</td>
                     </tr>
                 {% endfor %}

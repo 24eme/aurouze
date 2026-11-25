@@ -57,7 +57,7 @@
             <div class="panel-body">
                 <div class="row">
                     <div class="col-xs-7">
-                        <p class="lead text-center">{{ contrat.getPrixHt()|number_format(2, ',', ' ') }} € HT <small>soit {{ ((1+contrat.tva) * contrat.getPrixHt)|number_format(2, ',', ' ') }} € TTC (TVA à {{ (contrat.tva * 100) | number_format(2, ',', ' ') }}%)</small></p>
+                        <p class="lead text-center">{{ contrat.getPrixHt()|number_format(2, ',', ' ') }} € HT <small>soit {{ ((1+contrat.tva) * contrat.getPrixHt)|number_format(2, ',', ' ') }} € TTC (TVA à {{ (contrat.tva * 100) | number_format(2, ',', ' ') }}% {% if (contrat.tvaAutoliquidation) %} - autoliquidation {% endif %} ) </small></p>
                         <p class="lead text-center">{{ contrat.nbFactures }} facture(s)<small style="font-size:small"></small></p>
                     </div>
                     <div class="col-xs-5">

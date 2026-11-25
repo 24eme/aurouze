@@ -322,6 +322,9 @@ public static $export_factures_en_retards = array(
                 if($contrat->getTvaReduite()){
                     $factureLigne->setTauxTaxe(0.1);
                 }
+                if($contrat->getTvaAutoliquidation()){
+                  $factureLigne->setTauxTaxe(0);
+                }
 
                 $facture->addLigne($factureLigne);
 

@@ -123,7 +123,7 @@ Cette proposition {% if contrat.isTypeReconductionTacite %} tacite {% elseif con
 |                                                           |                                                                      |
 | --------------------------------------------------------- | -------------------------------------------------------------------- |
 | HT                                                        | {{ contrat.prixHt|number_format(2, ',', ' ') }}€                     |
-| TVA {{ (contrat.tva * 100)|number_format(2, ',', ' ') }}% | {{ (contrat.tva * contrat.prixHt)|number_format(2, ',', ' ') }}€     |
+| TVA {{ (contrat.tva * 100)|number_format(2, ',', ' ') }}% | {{ (contrat.tva * contrat.prixHt)|number_format(2, ',', ' ') }}€ {% if (contrat.tvaAutoliquidation) %} (Autoliquidation — art. 283-2 nonies du CGI) {% endif %}     |
 | TTC                                                       | {{ ((1+contrat.tva) * contrat.prixHt)|number_format(2, ',', ' ') }}€ |
 
 

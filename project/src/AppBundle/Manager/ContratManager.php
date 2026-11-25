@@ -189,6 +189,7 @@ class ContratManager implements MouvementManagerInterface {
         $contrat->setDureeGarantie(0);
         $contrat->setFrequencePaiement($etablissement->getSociete()->getFrequencePaiement());
         $contrat->setTvaReduite(false);
+        $contrat->setTvaAutoliquidation(false);
 
         return $contrat;
     }

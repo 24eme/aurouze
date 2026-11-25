@@ -143,6 +143,9 @@ class FactureController extends Controller
                 if($contrat->getTvaReduite()){
                   $factureLigne->setTauxTaxe(0.1);
                 }
+                if($contrat->getTvaAutoliquidation()){
+                  $factureLigne->setTauxTaxe(0);
+                }
             }
             $facture->addLigne($factureLigne);
         }

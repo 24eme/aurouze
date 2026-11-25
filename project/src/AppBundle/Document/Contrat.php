@@ -214,6 +214,11 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
     protected $tvaReduite;
 
     /**
+     * @MongoDB\Field(type="bool")
+     */
+    protected $tvaAutoliquidation;
+
+    /**
      * @MongoDB\Field(type="collection")
      */
     protected $moyens;
@@ -1556,6 +1561,29 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
         return $this->tvaReduite;
     }
 
+
+    /**
+     * Set tvaAutoliquidation
+     *
+     * @param boolean $tvaAutoliquidation
+     * @return self
+     */
+    public function setTvaAutoliquidation($tvaAutoliquidation) {
+        $this->tvaAutoliquidation = $tvaAutoliquidation;
+        return $this;
+    }
+
+    /**
+     * Get tvaAutoliquidation
+     *
+     * @return boolean $tvaAutoliquidation
+     */
+    public function getTvaAutoliquidation() {
+
+        return $this->tvaAutoliquidation;
+    }
+
+
     public function isModifiable() {
 
         if($this->hasMouvements()) {
@@ -1785,7 +1813,13 @@ class Contrat implements DocumentSocieteInterface, DocumentFacturableInterface {
     }
 
     public function getTva() {
-        return ($this->getTvaReduite()) ? 0.1 : 0.2;
+        if ($this->getTvaReduite()) {
+            return 0.1;
+        } else if ($this->getTvaAutoliquidation()) {
+            return 0;
+        } else {
+            return 0.2;
+        }
     }
 
     /**

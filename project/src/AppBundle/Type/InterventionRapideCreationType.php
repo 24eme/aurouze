@@ -55,6 +55,7 @@ class InterventionRapideCreationType extends AbstractType {
                     'format' => 'dd/MM/yyyy'))
                 ->add('prixHt', NumberType::class, array('label' => 'Prix HT', 'scale' => 2, 'required' => false))
                 ->add('tvaReduite', CheckboxType::class, array('label' => 'Tva réduite', 'required' => false))
+                ->add('tvaAutoliquidation', CheckboxType::class, array('label' => 'Autoliquidation de la TVA', 'required' => false))
                 ->add('uniquePrestations', ChoiceType::class, array(
                     		'choices' => $this->getPrestations(),
         	        		'expanded' => false,

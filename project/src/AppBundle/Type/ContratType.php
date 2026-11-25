@@ -53,7 +53,8 @@ class ContratType extends AbstractType {
                 ->add('facturationManuelle', CheckboxType::class, array('label' => 'Facturation manuelle', 'required' => false))
                 ->add('dureePassage', TextType::class, array('label' => 'Durée estimative d\'un passage* :', 'attr' => array('class' => 'input-timepicker')))
                 ->add('prixHt', NumberType::class, array('label' => 'Prix HT* :', 'scale' => 2))
-                ->add('tvaReduite', CheckboxType::class, array('label' => 'Tva réduite', 'required' => false, 'label_attr' => array('class' => 'control-label')));
+                ->add('tvaReduite', CheckboxType::class, array('label' => 'Tva réduite', 'required' => false, 'label_attr' => array('class' => 'control-label')))
+                ->add('tvaAutoliquidation', CheckboxType::class, array('label' => 'Autoliquidation de la TVA', 'required' => false, 'label_attr' => array('class' => 'control-label')));
 
         $builder->add('devisInterlocuteur', ChoiceType::class, array('label' => 'Adresse du devis* : ',
             "choices" => $this->getInterlocuteurs($builder),
